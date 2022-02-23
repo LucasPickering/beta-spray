@@ -1,0 +1,17 @@
+[tool.poetry]
+authors = ["Lucas Pickering <lucas@lucaspickering.me>"]
+description = ""
+license = "MIT"
+name = "beta-spray"
+version = "0.1.0"
+
+[tool.poetry.dependencies]
+Django = "^4.0.2"
+python = "^3.9"
+psycopg2 = "^2.9.3"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.0.0"]
