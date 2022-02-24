@@ -5,7 +5,7 @@
 CMD="cd src && poetry run ./manage.py $@"
 
 if test -f "/.dockerenv"; then
-    $CMD
+    sh -c "$CMD"
 else
     docker exec -it beta-spray_api_1 sh -c "$CMD"
 fi
