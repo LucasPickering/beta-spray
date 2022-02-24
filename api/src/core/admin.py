@@ -5,24 +5,24 @@ from .models import Beta, BetaHold, Hold, BoulderImage, Problem
 
 @admin.register(BoulderImage)
 class BoulderImageAdmin(admin.ModelAdmin):
-    pass
+    exclude = ("id",)
 
 
 @admin.register(Hold)
 class HoldAdmin(admin.ModelAdmin):
-    pass
+    exclude = ("id",)
 
 
 @admin.register(Problem)
 class ProblemAdmin(admin.ModelAdmin):
-    pass
+    exclude = ("id",)
 
 
 @admin.register(BetaHold)
 class BetaHoldAdmin(admin.ModelAdmin):
-    pass
+    exclude = ("id",)
 
 
 @admin.register(Beta)
 class BetaAdmin(admin.ModelAdmin):
-    pass
+    exclude = ("id",)

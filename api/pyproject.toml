@@ -10,6 +10,7 @@ Django = "^4.0.2"
 graphene-django = {git = "https://github.com/graphql-python/graphene-django.git", rev = "0bb9f1ca60458050911eb17ab2f0e1203561c91f"}
 psycopg2 = "^2.9.3"
 python = "^3.9"
+Pillow = "^9.0.1"
 
 [tool.poetry.dev-dependencies]
 flake8-black = "^0.2.4"

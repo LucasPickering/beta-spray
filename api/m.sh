@@ -2,10 +2,9 @@
 
 # Run a manage.py command. If not in the api container already, this will exec into it
 
-CMD="cd src && poetry run ./manage.py $@"
-
 if test -f "/.dockerenv"; then
-    sh -c "$CMD"
+    cd src && poetry run ./manage.py $@
 else
-    docker exec -it beta-spray_api_1 sh -c "$CMD"
+    # Not in docker yet, re-run the command within the container
+    docker exec -it beta-spray_api_1 ./m.sh $@
 fi

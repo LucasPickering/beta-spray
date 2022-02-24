@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.postgres.functions import RandomUUID
 
 
 class UUIDPrimaryKeyField(models.UUIDField):
@@ -10,8 +11,9 @@ class UUIDPrimaryKeyField(models.UUIDField):
     # primary_key = True
 
     def __init__(self, *args, **kwargs):
-        print(kwargs)
-        super().__init__(*args, primary_key=True, **kwargs)
+        kwargs["primary_key"] = True
+        kwargs["default"] = RandomUUID()
+        super().__init__(*args, **kwargs)
 
 
 class BoulderImage(models.Model):
@@ -20,8 +22,8 @@ class BoulderImage(models.Model):
     up one or more problem
     """
 
-    id = models.UUIDField(primary_key=True)
-    path = models.TextField()
+    id = UUIDPrimaryKeyField()
+    path = models.TextField(unique=True)
 
 
 class Hold(models.Model):
@@ -29,7 +31,7 @@ class Hold(models.Model):
     A single hold on a rock wall, which can belong to any number of problems
     """
 
-    id = models.UUIDField(primary_key=True)
+    id = UUIDPrimaryKeyField()
     image = models.ForeignKey(
         BoulderImage, related_name="holds", on_delete=models.CASCADE
     )
@@ -48,8 +50,13 @@ class Problem(models.Model):
     A problem is made up of a collection of holds
     """
 
-    id = models.UUIDField(primary_key=True)
-    holds = models.ManyToManyField(Hold)
+    id = UUIDPrimaryKeyField()
+    holds = models.ManyToManyField(Hold, related_name="problems", blank=True)
+    # Technically we could get this by going through holds, but having an extra
+    # FK makes it a lot easier
+    image = models.ForeignKey(
+        BoulderImage, related_name="problems", on_delete=models.CASCADE
+    )
 
 
 class BodyPart(models.TextChoices):
@@ -72,9 +79,15 @@ class BetaHold(models.Model):
     body parts).
     """
 
-    id = models.UUIDField(primary_key=True)
+    class Meta:
+        unique_together = ("beta", "hold", "order")
+
+    id = UUIDPrimaryKeyField()
     beta = models.ForeignKey("Beta", on_delete=models.CASCADE)
     hold = models.ForeignKey(Hold, on_delete=models.CASCADE)
+    order = models.PositiveIntegerField(
+        help_text="Ordering number of the hold in the beta, with 0 as start"
+    )
     body_part = models.CharField(
         max_length=2,
         choices=BodyPart.choices,
@@ -89,6 +102,8 @@ class Beta(models.Model):
     A prescribed series of moves to solve a problem.
     """
 
-    id = models.UUIDField(primary_key=True)
-    problem = models.ForeignKey(Problem, on_delete=models.CASCADE)
-    holds = models.ManyToManyField(Hold, through=BetaHold)
+    id = UUIDPrimaryKeyField()
+    problem = models.ForeignKey(
+        Problem, related_name="betas", on_delete=models.CASCADE
+    )
+    holds = models.ManyToManyField(Hold, related_name="betas", through=BetaHold)
