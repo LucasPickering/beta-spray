@@ -14,6 +14,7 @@ mkShell {
     pkg-config
     python310
     poetry
+    postgresql.lib
     zlib.dev
   ];
 
