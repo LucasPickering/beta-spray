@@ -11,6 +11,7 @@ graphene-django = {git = "https://github.com/graphql-python/graphene-django.git"
 psycopg2 = "^2.9.3"
 python = "^3.9"
 Pillow = "^9.0.1"
+django-filter = "^21.1"
 
 [tool.poetry.dev-dependencies]
 flake8-black = "^0.2.4"

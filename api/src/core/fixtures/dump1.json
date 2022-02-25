@@ -3,7 +3,7 @@
     "model": "core.boulderimage",
     "pk": "5668b769-858e-4ffc-b07d-c3322e361821",
     "fields": {
-        "path": "static/boulder1.jpg"
+        "path": "/static/boulder1.jpg"
     }
 },
 {
