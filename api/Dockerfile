@@ -25,9 +25,5 @@ RUN apt-get update && \
     && \
     rm -rf /var/lib/apt/lists/*
 RUN pip install poetry
-ADD pyproject.toml poetry.lock ./
-RUN poetry install
 
-ADD . ./
-
-CMD ["./m.sh", "runserver", "0.0.0.0:8000"]
+# poetry install is done during container startup

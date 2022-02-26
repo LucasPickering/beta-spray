@@ -1,8 +1,21 @@
 version: "3"
 
+volumes:
+  ui_node_modules:
+
 services:
+  db:
+    image: postgres:14-alpine
+    environment:
+      - POSTGRES_DB=beta_spray
+      - POSTGRES_USER=beta_spray
+      - POSTGRES_PASSWORD=beta_spray
+
   api:
     build: ./api/
+    command: ./scripts/cmd.sh
+    init: true # Fixes slow shutdown
+    tty: true # Colorize output
     depends_on:
       - db
     ports:
@@ -10,9 +23,19 @@ services:
     volumes:
       - ./api:/app:rw
 
-  db:
-    image: postgres:14-alpine
+  ui:
+    build: ./ui/
+    command: ./scripts/cmd.sh
+    init: true # Fixes slow shutdown
+    tty: true # Colorize output
+    depends_on:
+      - api # Need api to generate schema first
     environment:
-      - POSTGRES_DB=beta_spray
-      - POSTGRES_USER=beta_spray
-      - POSTGRES_PASSWORD=beta_spray
+      WEBPACK_HOST: 0.0.0.0
+      BETA_SPRAY_API_HOST: http://api:8000
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./ui:/app
+      - ./api/src/schema.graphql:/app/schema.graphql
+      - ui_node_modules:/app/ui/node_modules
