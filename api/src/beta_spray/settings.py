@@ -133,6 +133,10 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-GRAPHENE = {"SCHEMA": "core.schema.schema"}
+GRAPHENE = {
+    "SCHEMA": "core.schema.schema",
+    "SCHEMA_OUTPUT": "schema.graphql",
+    "SCHEMA_INDENT": 2,
+}
 
 APPEND_SLASH = False

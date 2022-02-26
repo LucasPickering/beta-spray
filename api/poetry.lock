@@ -104,7 +104,7 @@ pyflakes = ">=2.4.0,<2.5.0"
 
 [[package]]
 name = "flake8-black"
-version = "0.2.4"
+version = "0.2.5"
 description = "flake8 plugin to call black as a code style validator"
 category = "dev"
 optional = false
@@ -122,6 +122,7 @@ description = "GraphQL Framework for Python"
 category = "main"
 optional = false
 python-versions = "*"
+develop = false
 
 [package.dependencies]
 aniso8601 = ">=8,<10"
@@ -129,8 +130,14 @@ graphql-core = ">=3.1.2,<3.2.0"
 graphql-relay = ">=3.0,<4"
 
 [package.extras]
-dev = ["black (==19.10b0)", "flake8 (>=3.7,<4)", "pytest (>=5.3,<6)", "pytest-benchmark (>=3.2,<4)", "pytest-cov (>=2.8,<3)", "pytest-mock (>=2,<3)", "pytest-asyncio (>=0.10,<2)", "snapshottest (>=0.5,<1)", "coveralls (>=1.11,<2)", "promise (>=2.3,<3)", "mock (>=4.0,<5)", "pytz (==2021.1)", "iso8601 (>=0.1,<2)"]
-test = ["pytest (>=5.3,<6)", "pytest-benchmark (>=3.2,<4)", "pytest-cov (>=2.8,<3)", "pytest-mock (>=2,<3)", "pytest-asyncio (>=0.10,<2)", "snapshottest (>=0.5,<1)", "coveralls (>=1.11,<2)", "promise (>=2.3,<3)", "mock (>=4.0,<5)", "pytz (==2021.1)", "iso8601 (>=0.1,<2)"]
+dev = ["black (==19.10b0)", "flake8 (>=3.7,<4)", "pytest (>=6,<7)", "pytest-benchmark (>=3.4,<4)", "pytest-cov (>=3,<4)", "pytest-mock (>=3,<4)", "pytest-asyncio (>=0.16,<2)", "snapshottest (>=0.6,<1)", "coveralls (>=3.3,<4)", "promise (>=2.3,<3)", "mock (>=4.0,<5)", "pytz (==2021.3)", "iso8601 (>=1,<2)"]
+test = ["pytest (>=6,<7)", "pytest-benchmark (>=3.4,<4)", "pytest-cov (>=3,<4)", "pytest-mock (>=3,<4)", "pytest-asyncio (>=0.16,<2)", "snapshottest (>=0.6,<1)", "coveralls (>=3.3,<4)", "promise (>=2.3,<3)", "mock (>=4.0,<5)", "pytz (==2021.3)", "iso8601 (>=1,<2)"]
+
+[package.source]
+type = "git"
+url = "https://github.com/LucasPickering/graphene.git"
+reference = "f6e0d0ae21d144748dd001e0d26d9b298faa00f4"
+resolved_reference = "f6e0d0ae21d144748dd001e0d26d9b298faa00f4"
 
 [[package]]
 name = "graphene-django"
@@ -320,7 +327,7 @@ python-versions = ">=2"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "a0dc2576455ab41a6594622aac3388df69bb0df4f1e791615bb4eec5e67487d2"
+content-hash = "9f55b60f045826bfe31a3e83cda0e0f019e07e31701d13668941c5d94fa0d6fc"
 
 [metadata.files]
 aniso8601 = [
@@ -377,13 +384,10 @@ flake8 = [
     {file = "flake8-4.0.1.tar.gz", hash = "sha256:806e034dda44114815e23c16ef92f95c91e4c71100ff52813adf7132a6ad870d"},
 ]
 flake8-black = [
-    {file = "flake8-black-0.2.4.tar.gz", hash = "sha256:a7871bfd1cbff431a1fc91ba60ae154510c80f575e6b9a2bbb13dfb4650afd22"},
-    {file = "flake8_black-0.2.4-py3-none-any.whl", hash = "sha256:0a70dfd97c8439827f365dc6dbc6c8c9cc087f0833625c6cc6848ff7876256be"},
+    {file = "flake8-black-0.2.5.tar.gz", hash = "sha256:fb6372cc90da129eec492989485a4f99d976f41d4072536470c18e0da0164724"},
+    {file = "flake8_black-0.2.5-py3-none-any.whl", hash = "sha256:022744ef1513f9a0b748c65ae2a81024d71b992c88f48212187a3fdbb4988943"},
 ]
-graphene = [
-    {file = "graphene-3.0-py2.py3-none-any.whl", hash = "sha256:57ce5ee7c9dc194224a1df96e4f7cb48d31eae96c791091d059f8f3d4d131390"},
-    {file = "graphene-3.0.tar.gz", hash = "sha256:af48066e152200a071aac1e0b703954c717ec7268720ba190a0c91d9bcb0a122"},
-]
+graphene = []
 graphene-django = []
 graphql-core = [
     {file = "graphql-core-3.1.7.tar.gz", hash = "sha256:62ec192150ccecd9a18cfb79e3e72eb7d1fd68fb594ef19c40099b6deec8ef0c"},

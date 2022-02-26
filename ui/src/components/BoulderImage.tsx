@@ -13,8 +13,16 @@ const BoulderImage: React.FC<Props> = ({ queryRef }) => {
     graphql`
       query BoulderImageQuery($imageId: ID!) {
         image(id: $imageId) {
-          id
           path
+          holds {
+            edges {
+              node {
+                id
+                positionX
+                positionY
+              }
+            }
+          }
         }
       }
     `,
@@ -25,7 +33,32 @@ const BoulderImage: React.FC<Props> = ({ queryRef }) => {
     return <NotFound />;
   }
 
-  return <img src={data.image.path} alt="Boulder" />;
+  return (
+    <div style={{ position: "relative" }}>
+      <img
+        src={data.image.path}
+        alt="Boulder"
+        style={{
+          width: "100%",
+          height: "100%",
+        }}
+      />
+
+      {data.image.holds.edges.map(({ node }) => (
+        <span
+          key={node.id}
+          style={{
+            position: "absolute",
+            backgroundColor: "red",
+            left: `${node.positionX * 100}%`,
+            top: `${node.positionY * 100}%`,
+            width: 20,
+            height: 20,
+          }}
+        />
+      ))}
+    </div>
+  );
 };
 
 export default BoulderImage;
