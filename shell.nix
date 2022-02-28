@@ -11,6 +11,7 @@ mkShell {
     clang
     gnumake
     lld
+    nodejs-16_x
     pkg-config
     python310
     poetry

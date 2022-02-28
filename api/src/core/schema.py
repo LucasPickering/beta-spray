@@ -32,6 +32,7 @@ class ProblemNode(DjangoObjectType):
 class Query(ObjectType):
     images = DjangoFilterConnectionField(BoulderImageNode)
     image = relay.Node.Field(BoulderImageNode)
+    problem = relay.Node.Field(ProblemNode)
 
 
 schema = Schema(query=Query)

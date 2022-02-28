@@ -7,7 +7,9 @@ set -ex
 
 npm install
 
-# Disabled until https://github.com/facebook/relay/issues/3799
+# Disabled on ARM until https://github.com/facebook/relay/issues/3799
 # Run separately outside docker for now
-# npm run relay:watch &
+if [ $(uname -m) == "x86_64" ]; then
+    npm run relay:watch &
+fi
 npm run start
