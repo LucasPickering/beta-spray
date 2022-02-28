@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+from django.contrib.staticfiles import storage
 from core.models import BoulderImage, Hold
 from PIL import Image
 
@@ -7,14 +8,16 @@ class Command(BaseCommand):
     help = "Manually create holds for an image"
 
     def add_arguments(self, parser):
-        parser.add_argument("image_path")
+        parser.add_argument("image_url")
 
     def handle(self, *args, **options):
-        image_path = options["image_path"]
-        boulder_image = BoulderImage.objects.get(path=image_path)
+        image_url = options["image_url"]
+        boulder_image = BoulderImage.objects.get(path=image_url)
 
         print(f"Loaded image with id={boulder_image.id}")
-        with Image.open(image_path) as im:
+        # TODO load correct local path here
+        local_path = storage.staticfiles_storage.path(image_url)
+        with Image.open(local_path) as im:
             width = im.width
             height = im.height
 

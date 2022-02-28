@@ -1,18 +1,23 @@
 from django.db import models
-from django.contrib.postgres.functions import RandomUUID
+import uuid
 
 
 class UUIDPrimaryKeyField(models.UUIDField):
     """
     A DB column that uses a UUID as the primary key. Should be used for all
     models.
-    """
 
-    # primary_key = True
+    TODO https://code.djangoproject.com/ticket/32577
+    Set this as DEFAULT_AUTO_FIELD when possible
+    """
 
     def __init__(self, *args, **kwargs):
         kwargs["primary_key"] = True
-        kwargs["default"] = RandomUUID()
+        # Note: We *can* use RandomUUID here to generate the UUID on the pg
+        # side, but then Django doesn't load the value back after creation, so
+        # we need to generate the UUID in Python instead
+        kwargs["default"] = uuid.uuid4
+        kwargs["editable"] = False
         super().__init__(*args, **kwargs)
 
 
@@ -22,6 +27,7 @@ class BoulderImage(models.Model):
     up one or more problem
     """
 
+    # TODO use an abstract base class to define this field in all models
     id = UUIDPrimaryKeyField()
     path = models.TextField(unique=True)
 
@@ -60,12 +66,9 @@ class Problem(models.Model):
 
 
 class BodyPart(models.TextChoices):
-    """
-    All the body parts that someone could put on a hold.
+    """A body part that someone could put on a hold"""
 
-    (we could easily expand this later to include knees, spleen, etc.)
-    """
-
+    # we could easily expand this later to include knees, spleen, etc.
     LEFT_HAND = "LH"
     RIGHT_HAND = "RH"
     LEFT_FOOT = "LF"

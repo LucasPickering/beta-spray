@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_extensions",
     "django_filters",
     "graphene_django",
     "core",
@@ -124,9 +125,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
-STATIC_URL = "api/static/"
 # TODO remove this for prod config
-STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_URL = "api/static/"
+STATICFILES_DIRS = [BASE_DIR / "static/"]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
@@ -137,6 +138,7 @@ GRAPHENE = {
     "SCHEMA": "core.schema.schema",
     "SCHEMA_OUTPUT": "schema.graphql",
     "SCHEMA_INDENT": 2,
+    "MIDDLEWARE": ["core.middleware.ErrorMiddleware"],
 }
 
 APPEND_SLASH = False
