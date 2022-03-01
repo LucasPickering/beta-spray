@@ -2,37 +2,38 @@ import React from "react";
 import { graphql, useFragment } from "react-relay";
 import { Box } from "rebass";
 import { Label, Radio } from "@rebass/forms";
-import { ProblemList_image$key } from "./__generated__/ProblemList_image.graphql";
+import { ProblemList_problemConnection$key } from "./__generated__/ProblemList_problemConnection.graphql";
 
 interface Props {
-  imageKey: ProblemList_image$key;
+  dataKey: ProblemList_problemConnection$key;
   selectedProblem: string | undefined;
   setSelectedProblem: (problemId: string) => void;
 }
 
+/**
+ * Selection list of problems
+ */
 const ProblemList: React.FC<Props> = ({
-  imageKey,
+  dataKey,
   selectedProblem,
   setSelectedProblem,
 }) => {
   const data = useFragment(
     graphql`
-      fragment ProblemList_image on BoulderImageNode {
-        problems {
-          edges {
-            node {
-              id
-            }
+      fragment ProblemList_problemConnection on ProblemNodeConnection {
+        edges {
+          node {
+            id
           }
         }
       }
     `,
-    imageKey
+    dataKey
   );
 
   return (
     <div>
-      {data.problems.edges.map(({ node }, i) => (
+      {data.edges.map(({ node }, i) => (
         <Box key={node.id}>
           <Label htmlFor={`problem-${node.id}`}>
             <Radio

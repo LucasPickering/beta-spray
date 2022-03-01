@@ -107,6 +107,7 @@ class Query(graphene.ObjectType):
     images = DjangoFilterConnectionField(BoulderImageNode)
     image = relay.Node.Field(BoulderImageNode)
     problem = relay.Node.Field(ProblemNode)
+    beta = relay.Node.Field(BetaNode)
 
 
 # ========== MUTATIONS ==========

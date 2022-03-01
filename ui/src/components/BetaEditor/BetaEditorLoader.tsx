@@ -1,6 +1,6 @@
 import React, { Suspense, useEffect, useState } from "react";
 import { useQueryLoader } from "react-relay";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { assertIsDefined } from "util/func";
 import Loading from "../Loading";
 import type { BetaEditorQuery as BetaEditorQueryType } from "./__generated__/BetaEditorQuery.graphql";
@@ -8,10 +8,16 @@ import BetaEditorQuery from "./__generated__/BetaEditorQuery.graphql";
 import BetaEditor from "./BetaEditor";
 
 const BetaEditorLoader: React.FC = () => {
-  const { imageId } = useParams();
+  const { imageId, problemId, betaId } = useParams();
   assertIsDefined(imageId); // Only undefined if routing isn't hooked up right
 
-  const [selectedProblem, setSelectedProblem] = useState<string | undefined>();
+  const navigate = useNavigate();
+
+  // Read initial state values from route
+  const [selectedProblem, setSelectedProblem] = useState<string | undefined>(
+    problemId
+  );
+  const [selectedBeta, setSelectedBeta] = useState<string | undefined>(betaId);
   const [imageQueryRef, loadImageQuery] =
     useQueryLoader<BetaEditorQueryType>(BetaEditorQuery);
 
@@ -19,11 +25,10 @@ const BetaEditorLoader: React.FC = () => {
   useEffect(() => {
     loadImageQuery({
       imageId,
-      // Data won't be fetched if ID is empty
       problemId: selectedProblem ?? "",
-      includeProblem: Boolean(selectedProblem),
+      betaId: selectedBeta ?? "",
     });
-  }, [loadImageQuery, imageId, selectedProblem]);
+  }, [loadImageQuery, imageId, selectedProblem, selectedBeta]);
 
   return (
     <Suspense fallback={<Loading />}>
@@ -31,7 +36,18 @@ const BetaEditorLoader: React.FC = () => {
         <BetaEditor
           queryRef={imageQueryRef}
           selectedProblem={selectedProblem}
-          setSelectedProblem={setSelectedProblem}
+          selectedBeta={selectedBeta}
+          // Update route when changing selection
+          setSelectedProblem={(problemId) => {
+            setSelectedProblem(problemId);
+            navigate(`/images/${imageId}/problems/${problemId}`);
+          }}
+          setSelectedBeta={(betaId) => {
+            setSelectedBeta(betaId);
+            navigate(
+              `/images/${imageId}/problems/${selectedProblem}/beta/${betaId}`
+            );
+          }}
         />
       )}
     </Suspense>

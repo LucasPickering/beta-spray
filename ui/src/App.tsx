@@ -6,6 +6,7 @@ import BoulderImageLoader from "components/BetaEditor/BetaEditorLoader";
 import Loading from "components/Loading";
 import { ThemeProvider } from "@emotion/react";
 import theme from "@rebass/preset";
+import NotFound from "components/NotFound";
 
 const App: React.FC = () => {
   return (
@@ -14,7 +15,16 @@ const App: React.FC = () => {
         <ThemeProvider theme={theme}>
           <Suspense fallback={<Loading />}>
             <Routes>
-              <Route path="images/:imageId" element={<BoulderImageLoader />} />
+              <Route path="images/:imageId" element={<BoulderImageLoader />}>
+                {/* These routes are just aliases to pre-select values */}
+                <Route
+                  path="problems/:problemId"
+                  element={<BoulderImageLoader />}
+                >
+                  <Route path="beta/:betaId" element={<BoulderImageLoader />} />
+                </Route>
+              </Route>
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
         </ThemeProvider>

@@ -1,0 +1,12 @@
+.hold {
+  fill: red;
+}
+
+.snappable:hover {
+  // Need a bogus rule here so the class can be used as a d3 selector
+  display: block;
+}
+
+.snappableNear {
+  transform: scale(2);
+}

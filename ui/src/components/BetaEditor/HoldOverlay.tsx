@@ -1,65 +1,54 @@
-import React, { useEffect, useRef } from "react";
+import OverlayContext from "context/OverlayContext";
+import React, { useContext, useEffect } from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
-import * as d3 from "d3";
+import { D3Data, toD3Position } from "util/d3";
 import { HoldOverlay_holdConnection$key } from "./__generated__/HoldOverlay_holdConnection.graphql";
+import classes from "./d3.scss";
 
 interface Props {
-  holdConnectionKey: HoldOverlay_holdConnection$key;
-  aspectRatio: number;
+  dataKey: HoldOverlay_holdConnection$key;
 }
 
-const HoldOverlay: React.FC<Props> = ({ holdConnectionKey, aspectRatio }) => {
+/**
+ * Visualization of holds onto the boulder image
+ */
+const HoldOverlay: React.FC<Props> = ({ dataKey }) => {
   const data = useFragment(
     graphql`
       fragment HoldOverlay_holdConnection on HoldNodeConnection {
         edges {
           node {
+            id
             positionX
             positionY
           }
         }
       }
     `,
-    holdConnectionKey
+    dataKey
   );
 
-  const svgRef = useRef<SVGSVGElement>(null);
+  const { aspectRatio, d3Svg } = useContext(OverlayContext);
 
   // D3 stuff
   useEffect(() => {
-    // Don't render anything until the background image loads
-    if (aspectRatio === undefined) {
-      return;
-    }
-
-    const svgEl = d3.select(svgRef.current);
-    const svg = svgEl.append("g");
-
     for (const { node } of data.edges) {
-      svg
+      const position = toD3Position(node, aspectRatio);
+      d3Svg
         .append("circle")
-        .attr("r", 1)
-        .attr("cx", node.positionX * 100)
-        .attr("cy", (node.positionY * 100) / aspectRatio)
-        .attr("fill", "red");
+        .data<D3Data>([{ kind: "hold", position, holdId: node.id }])
+        .classed(classes.hold, true)
+        .classed(classes.snappable, true)
+        .attr("r", 2)
+        .attr("cx", position.x)
+        .attr("cy", position.y)
+        // Important for scaling
+        .attr("transform-origin", `${position.x} ${position.y}`);
     }
-  }, [data.edges, aspectRatio]);
+  }, [aspectRatio, d3Svg, data.edges]);
 
-  return (
-    <svg
-      ref={svgRef}
-      viewBox={`0 0 100 ${100 / aspectRatio}`}
-      width="100%"
-      height="100%"
-      style={{
-        // Overlay on top of the background image
-        position: "absolute",
-        top: 0,
-        left: 0,
-      }}
-    />
-  );
+  return null;
 };
 
 export default HoldOverlay;

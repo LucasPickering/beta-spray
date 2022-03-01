@@ -1,0 +1,44 @@
+export interface D3Position {
+  x: number;
+  y: number;
+}
+
+/**
+ * An element with an on-image position, as defined by the API. Both x and y
+ * are [0,1]
+ */
+export interface ApiPosition {
+  positionX: number;
+  positionY: number;
+}
+
+/**
+ * The different types of D3 elements that we may render on screen. We group
+ * these under one type to force some level of typechecking, since there's no
+ * way to propagate types through D3's selectors
+ */
+export type D3Data =
+  | { kind: "hold"; position: D3Position; holdId: string }
+  // TODO change to betaMove
+  | { kind: "betaHold"; position: D3Position; betaHoldId: string };
+
+export function toD3Position(
+  apiPosition: ApiPosition,
+  aspectRatio: number
+): D3Position {
+  return {
+    x: apiPosition.positionX * 100,
+    y: (apiPosition.positionY * 100) / aspectRatio,
+  };
+}
+
+export function distanceTo(p1: D3Position, p2: D3Position): number {
+  return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+}
+
+/**
+ * Convert a CSS class name to a selector
+ */
+export function selector(className: string): string {
+  return `.${className}`;
+}
