@@ -4,7 +4,7 @@ from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 import graphql_relay
 
-from core.models import Beta, BetaHold, BodyPart, BoulderImage, Hold, Problem
+from core.models import Beta, BetaMove, BodyPart, BoulderImage, Hold, Problem
 
 
 # Generate a GQL enum for BodyPart
@@ -72,9 +72,9 @@ class ProblemNode(NodeType):
         filter_fields = []
 
 
-class BetaHoldNode(NodeType):
+class BetaMoveNode(NodeType):
     class Meta:
-        model = BetaHold
+        model = BetaMove
         interfaces = (relay.Node,)
         fields = (
             "beta",
@@ -94,13 +94,8 @@ class BetaNode(NodeType):
     class Meta:
         model = Beta
         interfaces = (relay.Node,)
-        fields = ("problem",)
+        fields = ("problem", "moves")
         filter_fields = []
-
-    holds = DjangoFilterConnectionField(BetaHoldNode, required=True)
-
-    def resolve_holds(self, info, **kwargs):
-        return self.betahold_set
 
 
 class Query(graphene.ObjectType):
@@ -143,51 +138,59 @@ class DeleteBetaMutation(relay.ClientIDMutation):
         return cls(beta=beta)
 
 
-class CreateBetaHoldMutation(relay.ClientIDMutation):
+class CreateBetaMoveMutation(relay.ClientIDMutation):
     class Input:
         beta_id = graphene.ID(required=True)
-        hold_id = graphene.ID(required=True)
+        order = graphene.Int(required=True)
         body_part = BodyPartType(required=True)
-        order = graphene.Int()
+        hold_id = graphene.ID()
 
-    # TODO add BetaHoldNode
-    beta_hold = graphene.Field(BetaHoldNode, required=True)
+    beta_move = graphene.Field(BetaMoveNode, required=True)
 
     @classmethod
     def mutate_and_get_payload(
-        cls, root, info, beta_id, hold_id, body_part, order
+        cls,
+        root,
+        info,
+        beta_id,
+        order,
+        body_part,
+        hold_id=None,
     ):
         # Convert GQL IDs to PKs
         beta_id = BetaNode.get_pk_from_global_id(info, beta_id)
-        hold_id = HoldNode.get_pk_from_global_id(info, hold_id)
+        hold_id = hold_id and HoldNode.get_pk_from_global_id(info, hold_id)
 
-        beta_hold = BetaHold.objects.create(
-            beta_id=beta_id, hold_id=hold_id, body_part=body_part, order=order
+        beta_move = BetaMove.objects.create(
+            beta_id=beta_id,
+            order=order,
+            hold_id=hold_id,
+            body_part=body_part,
         )
 
-        return cls(beta_hold=beta_hold)
+        return cls(beta_move=beta_move)
 
 
-class DeleteBetaHoldMutation(relay.ClientIDMutation):
+class DeleteBetaMoveMutation(relay.ClientIDMutation):
     class Input:
-        beta_hold_id = graphene.ID(required=True)
+        beta_move_id = graphene.ID(required=True)
 
-    beta_hold = graphene.Field(BetaHoldNode, required=True)
+    beta_move = graphene.Field(BetaMoveNode, required=True)
 
     @classmethod
-    def mutate_and_get_payload(cls, root, info, beta_hold_id):
-        beta_hold = relay.Node.get_node_from_global_id(
-            info, beta_hold_id, only_type=BetaHoldNode
+    def mutate_and_get_payload(cls, root, info, beta_move_id):
+        beta_move = relay.Node.get_node_from_global_id(
+            info, beta_move_id, only_type=BetaMoveNode
         )
-        beta_hold.delete()
-        return cls(beta_hold=beta_hold)
+        beta_move.delete()
+        return cls(beta_move=beta_move)
 
 
 class Mutation(graphene.ObjectType):
     create_beta = CreateBetaMutation.Field()
     delete_beta = DeleteBetaMutation.Field()
-    create_beta_hold = CreateBetaHoldMutation.Field()
-    delete_beta_hold = DeleteBetaHoldMutation.Field()
+    create_beta_move = CreateBetaMoveMutation.Field()
+    delete_beta_move = DeleteBetaMoveMutation.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)

@@ -1,3 +1,5 @@
+import { BodyPart } from "components/BetaEditor/__generated__/BetaDetails_betaNode.graphql";
+
 export interface D3Position {
   x: number;
   y: number;
@@ -19,8 +21,13 @@ export interface ApiPosition {
  */
 export type D3Data =
   | { kind: "hold"; position: D3Position; holdId: string }
-  // TODO change to betaMove
-  | { kind: "betaHold"; position: D3Position; betaHoldId: string };
+  | {
+      kind: "betaMove";
+      position: D3Position;
+      id: string;
+      order: number;
+      bodyPart: BodyPart;
+    };
 
 export function toD3Position(
   apiPosition: ApiPosition,
@@ -41,4 +48,17 @@ export function distanceTo(p1: D3Position, p2: D3Position): number {
  */
 export function selector(className: string): string {
   return `.${className}`;
+}
+
+/**
+ * Error for assertions around the D3Data type
+ */
+export class D3DataError extends TypeError {
+  public constructor(expectedKind: D3Data["kind"], receivedData: D3Data) {
+    super(
+      `Expected D3 data to be of kind ${expectedKind}, but got: ${JSON.stringify(
+        receivedData
+      )}`
+    );
+  }
 }

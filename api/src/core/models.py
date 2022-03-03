@@ -75,31 +75,6 @@ class BodyPart(models.TextChoices):
     RIGHT_FOOT = "RF"
 
 
-class BetaHold(models.Model):
-    """
-    Beta-Hold m2m middleman. There can be multiple iterations of a beta-hold
-    pair, for repeated usage of a hold (often, but not always, with different
-    body parts).
-    """
-
-    class Meta:
-        unique_together = ("beta", "hold", "order")
-
-    id = UUIDPrimaryKeyField()
-    beta = models.ForeignKey("Beta", on_delete=models.CASCADE)
-    hold = models.ForeignKey(Hold, on_delete=models.CASCADE)
-    order = models.PositiveIntegerField(
-        help_text="Ordering number of the hold in the beta, with 0 as start"
-    )
-    body_part = models.CharField(
-        max_length=2,
-        choices=BodyPart.choices,
-        help_text="Body part to put on this hold",
-    )
-    # could potentially add room for annotations here, e.g. "drop knee",
-    # "heel hook", etc.
-
-
 class Beta(models.Model):
     """
     A prescribed series of moves to solve a problem.
@@ -109,4 +84,33 @@ class Beta(models.Model):
     problem = models.ForeignKey(
         Problem, related_name="betas", on_delete=models.CASCADE
     )
-    holds = models.ManyToManyField(Hold, related_name="betas", through=BetaHold)
+
+
+class BetaMove(models.Model):
+    """
+    Beta a single action in a beta. Most moves have a hold associated, but not
+    necessarily (e.g. smear, flag, etc.).
+    """
+
+    class Meta:
+        unique_together = ("beta", "order")
+
+    id = UUIDPrimaryKeyField()
+    beta = models.ForeignKey(
+        "Beta", related_name="moves", on_delete=models.CASCADE
+    )
+    hold = models.ForeignKey(
+        Hold,
+        on_delete=models.CASCADE,
+        null=True,
+        help_text="Optional destination hold for this move",
+    )
+    order = models.PositiveIntegerField(
+        help_text="Ordering number of the hold in the beta, with 0 as start"
+    )
+    body_part = models.CharField(
+        max_length=2,
+        choices=BodyPart.choices,
+        help_text="Body part in question",
+    )
+    # TODO add annotation, e.g. "flag", "drop knee", etc.
