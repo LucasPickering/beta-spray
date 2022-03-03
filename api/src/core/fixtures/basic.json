@@ -130,7 +130,7 @@
     "pk": "b31558f5-0540-4561-9b9e-0b36cce7a323",
     "fields": {
         "beta": "cb0b7c4e-dc0a-41ad-8064-aae76290118d",
-        "hold": "05546485-f321-4b84-8d04-38732deb258f",
+        "hold": "084a961c-aeab-46f4-938c-9778ff595af6",
         "order": 0,
         "body_part": "RH"
     }
@@ -140,7 +140,7 @@
     "pk": "f346a22e-1065-40e8-b593-c5d3225e7d73",
     "fields": {
         "beta": "cb0b7c4e-dc0a-41ad-8064-aae76290118d",
-        "hold": "05546485-f321-4b84-8d04-38732deb258f",
+        "hold": "084a961c-aeab-46f4-938c-9778ff595af6",
         "order": 1,
         "body_part": "LH"
     }

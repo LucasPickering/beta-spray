@@ -1,5 +1,6 @@
 import { BodyPart } from "components/BetaEditor/__generated__/BetaDetails_betaNode.graphql";
 
+// TODO rename to SVGPosition
 export interface D3Position {
   x: number;
   y: number;
@@ -9,9 +10,16 @@ export interface D3Position {
  * An element with an on-image position, as defined by the API. Both x and y
  * are [0,1]
  */
-export interface ApiPosition {
+export interface APIPosition {
   positionX: number;
   positionY: number;
+}
+
+/**
+ * The different types of things we can drag around using React DnD
+ */
+export enum DragType {
+  BetaMove = "betaMove",
 }
 
 /**
@@ -30,7 +38,7 @@ export type D3Data =
     };
 
 export function toD3Position(
-  apiPosition: ApiPosition,
+  apiPosition: APIPosition,
   aspectRatio: number
 ): D3Position {
   return {
