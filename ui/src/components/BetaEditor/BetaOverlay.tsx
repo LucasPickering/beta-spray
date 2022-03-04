@@ -31,6 +31,7 @@ const BetaOverlay: React.FC<Props> = ({ dataKey }) => {
           }
         }
         moves {
+          __id
           edges {
             node {
               id
@@ -49,6 +50,7 @@ const BetaOverlay: React.FC<Props> = ({ dataKey }) => {
   );
 
   const { aspectRatio } = useContext(OverlayContext);
+
   // Group the moves by body part so we can draw chains. We assume the API
   // response is ordered by `order`, so these should naturally be as well.
   const movesByBodyPart = beta.moves.edges.reduce<
@@ -70,14 +72,26 @@ const BetaOverlay: React.FC<Props> = ({ dataKey }) => {
   }, new Map());
 
   // TODO use loading state
+  // TODO centralize all mutations so we don't need spaghetti update logic
   const [createBetaMove] =
     useMutation<BetaOverlay_createBetaMoveMutation>(graphql`
       mutation BetaOverlay_createBetaMoveMutation(
         $input: CreateBetaMoveMutationInput!
+        $connections: [ID!]!
       ) {
         createBetaMove(input: $input) {
-          betaMove {
+          betaMove
+            @appendNode(
+              connections: $connections
+              edgeTypeName: "BetaMoveNodeEdge"
+            ) {
             id
+            bodyPart
+            order
+            hold {
+              positionX
+              positionY
+            }
           }
         }
       }
@@ -104,6 +118,7 @@ const BetaOverlay: React.FC<Props> = ({ dataKey }) => {
                   order: nextOrder,
                   holdId,
                 },
+                connections: [beta.moves.__id],
               },
             })
           }

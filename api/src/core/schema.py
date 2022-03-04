@@ -134,7 +134,8 @@ class DeleteBetaMutation(relay.ClientIDMutation):
         beta = relay.Node.get_node_from_global_id(
             info, beta_id, only_type=BetaNode
         )
-        beta.delete()
+        # `object.delete()` wipes out the PK field for some reason ¯\_(ツ)_/¯
+        Beta.objects.filter(id=beta.id).delete()
         return cls(beta=beta)
 
 
@@ -182,7 +183,8 @@ class DeleteBetaMoveMutation(relay.ClientIDMutation):
         beta_move = relay.Node.get_node_from_global_id(
             info, beta_move_id, only_type=BetaMoveNode
         )
-        beta_move.delete()
+        # `object.delete()` wipes out the PK field for some reason ¯\_(ツ)_/¯
+        BetaMove.objects.filter(id=beta_move.id).delete()
         return cls(beta_move=beta_move)
 
 

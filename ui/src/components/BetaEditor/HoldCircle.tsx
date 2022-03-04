@@ -13,6 +13,7 @@ interface Props {
 
 const HoldCircle: React.FC<Props> = ({ className, holdId, position }) => {
   const [{ isOver }, drop] = useDrop(() => ({
+    // TODO don't allow drop if move is already on this hold
     accept: DragType.BetaMove,
     collect: (monitor) => ({
       isOver: Boolean(monitor.isOver()),

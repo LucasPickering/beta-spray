@@ -14,9 +14,9 @@ interface Props {
 }
 
 /**
- * A circle representing a single beta move
+ * A circle representing a single beta move in a chain
  */
-const BetaMoveCircle: React.FC<Props> = ({
+const BetaChainCircle: React.FC<Props> = ({
   className,
   position,
   isLastMove,
@@ -34,6 +34,7 @@ const BetaMoveCircle: React.FC<Props> = ({
     }),
     end: (item, monitor) => {
       const result = monitor.getDropResult();
+      // TODO don't create new move if we didn't actually move
       if (result) {
         onDrop(result);
       }
@@ -55,6 +56,6 @@ const BetaMoveCircle: React.FC<Props> = ({
   );
 };
 
-BetaMoveCircle.defaultProps = {} as Partial<Props>;
+BetaChainCircle.defaultProps = {} as Partial<Props>;
 
-export default BetaMoveCircle;
+export default BetaChainCircle;

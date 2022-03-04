@@ -1,11 +1,13 @@
 import React from "react";
 import { BodyPart } from "util/api";
 import { D3Position } from "util/d3";
-import BetaMoveCircle from "./BetaMoveCircle";
+import BetaChainCircle from "./BetaChainCircle";
+import BetaChainLine from "./BetaChainLine";
 import classes from "./d3.scss";
 
 interface Props {
   bodyPart: BodyPart;
+  // TODO type alias (or fragment)
   moves: Array<{ betaMoveId: string; position: D3Position }>;
   // TODO type alias
   createBetaMove: ({ holdId }: { holdId: string }) => void;
@@ -17,25 +19,17 @@ interface Props {
  */
 const BetaChain: React.FC<Props> = ({ bodyPart, moves, createBetaMove }) => (
   <>
-    {moves.map(({ betaMoveId, position }, i) => {
+    {moves.map((move, i) => {
       const isLastMove = i === moves.length - 1;
       const prevMove = i >= 1 ? moves[i - 1] : undefined;
 
       return (
-        <React.Fragment key={betaMoveId}>
+        <React.Fragment key={move.betaMoveId}>
           {/* Draw a line from the last move to this one */}
-          {prevMove && (
-            <line
-              className={classes.betaMoveLine}
-              x1={prevMove.position.x}
-              y1={prevMove.position.y}
-              x2={position.x}
-              y2={position.y}
-            />
-          )}
+          {prevMove && <BetaChainLine startMove={prevMove} endMove={move} />}
 
-          <BetaMoveCircle
-            position={position}
+          <BetaChainCircle
+            position={move.position}
             isLastMove={isLastMove}
             onDrop={createBetaMove}
           />
