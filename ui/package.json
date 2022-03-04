@@ -58,6 +58,7 @@
     "start": "webpack serve",
     "prebuild": "npm run relay",
     "build": "NODE_ENV=production webpack",
+    "check": "npx tsc && npm run lint",
     "analyze": "NODE_ENV=production WEBPACK_BUNDLE_ANALYZER_MODE=server webpack",
     "lint": "eslint src/**/*.{ts,tsx}",
     "lint:fix": "npm run lint -- --fix",

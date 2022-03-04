@@ -4,6 +4,7 @@ import { RelayEnvironmentProvider } from "react-relay";
 import environment from "util/environment";
 import BoulderImageLoader from "components/BetaEditor/BetaEditorLoader";
 import Loading from "components/Loading";
+// TODO remove rebass/emotion
 import { ThemeProvider } from "@emotion/react";
 import theme from "@rebass/preset";
 import NotFound from "components/NotFound";

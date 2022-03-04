@@ -1,14 +1,14 @@
 import clsx from "clsx";
 import React from "react";
 import { useDrop } from "react-dnd";
-import { D3Position, DragType } from "util/d3";
+import { OverlayPosition, DragType } from "./types";
 import Circle from "./Circle";
-import classes from "./d3.scss";
+import classes from "./HoldCircle.scss";
 
 interface Props {
   className?: string;
   holdId: string;
-  position: D3Position;
+  position: OverlayPosition;
 }
 
 const HoldCircle: React.FC<Props> = ({ className, holdId, position }) => {
@@ -25,7 +25,7 @@ const HoldCircle: React.FC<Props> = ({ className, holdId, position }) => {
   return (
     <Circle
       ref={drop}
-      className={clsx(classes.hold, className)}
+      className={clsx(classes.holdCircle, className)}
       position={position}
       opacity={isOver ? 0.5 : 1.0}
     />

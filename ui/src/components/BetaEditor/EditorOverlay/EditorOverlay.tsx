@@ -8,9 +8,9 @@ interface Props {
 }
 
 /**
- * Visualization of holds onto the boulder image
+ * Visualization of holds & beta onto the boulder image
  */
-const Overlay: React.FC<Props> = ({ aspectRatio, children }) => (
+const EditorOverlay: React.FC<Props> = ({ aspectRatio, children }) => (
   <DndProvider backend={MouseBackEnd}>
     <OverlayContext.Provider value={{ aspectRatio }}>
       <svg
@@ -32,4 +32,4 @@ const Overlay: React.FC<Props> = ({ aspectRatio, children }) => (
   </DndProvider>
 );
 
-export default Overlay;
+export default EditorOverlay;

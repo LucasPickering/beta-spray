@@ -5,10 +5,10 @@ import { graphql } from "relay-runtime";
 import NotFound from "../NotFound";
 import BetaDetails from "./BetaDetails";
 import BetaList from "./BetaList";
-import BetaOverlay from "./BetaOverlay";
+import BetaOverlay from "./EditorOverlay/BetaOverlay";
 import BoulderImage from "./BoulderImage";
-import HoldOverlay from "./HoldOverlay";
-import Overlay from "./Overlay";
+import HoldOverlay from "./EditorOverlay/HoldOverlay";
+import EditorOverlay from "./EditorOverlay/EditorOverlay";
 import ProblemList from "./ProblemList";
 import { BetaEditorQuery } from "./__generated__/BetaEditorQuery.graphql";
 
@@ -89,16 +89,17 @@ const BetaEditor: React.FC<Props> = ({
             setAspectRatio(el.width / el.height);
           }}
         />
+
         {/* Don't render overlay until image loads */}
         {aspectRatio && (
-          <Overlay aspectRatio={aspectRatio}>
+          <EditorOverlay aspectRatio={aspectRatio}>
             <HoldOverlay
               // If a problem is selected+loaded, render its holds, otherwise
               // render all the holds for the image
               dataKey={data.problem ? data.problem.holds : data.image.holds}
             />
             {data.beta && <BetaOverlay dataKey={data.beta} />}
-          </Overlay>
+          </EditorOverlay>
         )}
       </div>
 

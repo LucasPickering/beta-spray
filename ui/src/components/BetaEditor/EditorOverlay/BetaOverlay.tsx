@@ -3,10 +3,10 @@ import { useFragment, useMutation } from "react-relay";
 import { graphql } from "relay-runtime";
 import { BetaOverlay_betaNode$key } from "./__generated__/BetaOverlay_betaNode.graphql";
 import OverlayContext from "context/OverlayContext";
-import { toD3Position, D3Position } from "util/d3";
+import { BetaOverlayMove, BodyPart } from "./types";
 import { BetaOverlay_createBetaMoveMutation } from "./__generated__/BetaOverlay_createBetaMoveMutation.graphql";
 import BetaChain from "./BetaChain";
-import { BodyPart } from "util/api";
+import { toOverlayPosition } from "util/func";
 
 interface Props {
   dataKey: BetaOverlay_betaNode$key;
@@ -54,7 +54,7 @@ const BetaOverlay: React.FC<Props> = ({ dataKey }) => {
   // Group the moves by body part so we can draw chains. We assume the API
   // response is ordered by `order`, so these should naturally be as well.
   const movesByBodyPart = beta.moves.edges.reduce<
-    Map<BodyPart, Array<{ betaMoveId: string; position: D3Position }>>
+    Map<BodyPart, Array<BetaOverlayMove>>
   >((acc, { node }) => {
     // TODO use position for non-hold moves
     if (!node.hold) {
@@ -64,12 +64,24 @@ const BetaOverlay: React.FC<Props> = ({ dataKey }) => {
 
     const moves = acc.get(node.bodyPart) ?? [];
     moves.push({
-      betaMoveId: node.id,
-      position: toD3Position(node.hold, aspectRatio),
+      kind: "saved",
+      id: node.id,
+      bodyPart: node.bodyPart,
+      order: node.order,
+      position: toOverlayPosition(node.hold, aspectRatio),
     });
     acc.set(node.bodyPart, moves);
     return acc;
   }, new Map());
+
+  // Within each chain, link prev<==>current<==>next, so each move knows about
+  // its neighbors
+  for (const moves of movesByBodyPart.values()) {
+    moves.forEach((move, i) => {
+      move.prev = moves[i - 1];
+      move.next = moves[i + 1];
+    });
+  }
 
   // TODO use loading state
   // TODO centralize all mutations so we don't need spaghetti update logic
@@ -107,14 +119,13 @@ const BetaOverlay: React.FC<Props> = ({ dataKey }) => {
       {Array.from(movesByBodyPart.entries(), ([bodyPart, moves]) => (
         <BetaChain
           key={bodyPart}
-          bodyPart={bodyPart as BodyPart}
           moves={moves}
           createBetaMove={({ holdId }) =>
             createBetaMove({
               variables: {
                 input: {
                   betaId: beta.id,
-                  bodyPart: bodyPart as BodyPart,
+                  bodyPart: bodyPart,
                   order: nextOrder,
                   holdId,
                 },

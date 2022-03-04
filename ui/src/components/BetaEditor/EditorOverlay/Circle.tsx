@@ -1,9 +1,9 @@
 import React from "react";
-import { D3Position, DragType } from "util/d3";
+import { OverlayPosition, DragType } from "./types";
 
 interface Props {
   className?: string;
-  position: D3Position;
+  position: OverlayPosition;
   dragType?: DragType;
 }
 
