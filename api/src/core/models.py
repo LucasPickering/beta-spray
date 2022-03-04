@@ -1,24 +1,4 @@
 from django.db import models
-import uuid
-
-
-class UUIDPrimaryKeyField(models.UUIDField):
-    """
-    A DB column that uses a UUID as the primary key. Should be used for all
-    models.
-
-    TODO https://code.djangoproject.com/ticket/32577
-    Set this as DEFAULT_AUTO_FIELD when possible
-    """
-
-    def __init__(self, *args, **kwargs):
-        kwargs["primary_key"] = True
-        # Note: We *can* use RandomUUID here to generate the UUID on the pg
-        # side, but then Django doesn't load the value back after creation, so
-        # we need to generate the UUID in Python instead
-        kwargs["default"] = uuid.uuid4
-        kwargs["editable"] = False
-        super().__init__(*args, **kwargs)
 
 
 class BoulderImage(models.Model):
@@ -27,8 +7,6 @@ class BoulderImage(models.Model):
     up one or more problem
     """
 
-    # TODO use an abstract base class to define this field in all models
-    id = UUIDPrimaryKeyField()
     path = models.TextField(unique=True)
 
 
@@ -37,7 +15,6 @@ class Hold(models.Model):
     A single hold on a rock wall, which can belong to any number of problems
     """
 
-    id = UUIDPrimaryKeyField()
     image = models.ForeignKey(
         BoulderImage, related_name="holds", on_delete=models.CASCADE
     )
@@ -56,7 +33,6 @@ class Problem(models.Model):
     A problem is made up of a collection of holds
     """
 
-    id = UUIDPrimaryKeyField()
     holds = models.ManyToManyField(Hold, related_name="problems", blank=True)
     # Technically we could get this by going through holds, but having an extra
     # FK makes it a lot easier
@@ -80,7 +56,6 @@ class Beta(models.Model):
     A prescribed series of moves to solve a problem.
     """
 
-    id = UUIDPrimaryKeyField()
     problem = models.ForeignKey(
         Problem, related_name="betas", on_delete=models.CASCADE
     )
@@ -95,7 +70,6 @@ class BetaMove(models.Model):
     class Meta:
         unique_together = ("beta", "order")
 
-    id = UUIDPrimaryKeyField()
     beta = models.ForeignKey(
         "Beta", related_name="moves", on_delete=models.CASCADE
     )
