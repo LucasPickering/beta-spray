@@ -1,7 +1,5 @@
 import React from "react";
 import { graphql, useFragment } from "react-relay";
-import { Box } from "rebass";
-import { Label, Radio } from "@rebass/forms";
 import { ProblemList_problemConnection$key } from "./__generated__/ProblemList_problemConnection.graphql";
 
 interface Props {
@@ -34,17 +32,18 @@ const ProblemList: React.FC<Props> = ({
   return (
     <div>
       {data.edges.map(({ node }, i) => (
-        <Box key={node.id}>
-          <Label htmlFor={`problem-${node.id}`}>
-            <Radio
+        <div key={node.id}>
+          <label htmlFor={`problem-${node.id}`}>
+            <input
+              type="radio"
               id={`problem-${node.id}`}
               value={selectedProblem}
               checked={selectedProblem === node.id}
               onChange={() => setSelectedProblem(node.id)}
             />
             Problem {i + 1}
-          </Label>
-        </Box>
+          </label>
+        </div>
       ))}
     </div>
   );

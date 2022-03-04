@@ -1,7 +1,5 @@
 import React from "react";
 import { graphql, useFragment } from "react-relay";
-import { Box } from "rebass";
-import { Label, Radio } from "@rebass/forms";
 import { BetaList_betaConnection$key } from "./__generated__/BetaList_betaConnection.graphql";
 
 interface Props {
@@ -36,17 +34,18 @@ const BetaList: React.FC<Props> = ({
       {data.edges.map(({ node }, i) => {
         const id = `beta-${node.id}`;
         return (
-          <Box key={node.id}>
-            <Label htmlFor={id}>
-              <Radio
+          <div key={node.id}>
+            <label htmlFor={id}>
+              <input
+                type="radio"
                 id={id}
                 value={selectedBeta}
                 checked={selectedBeta === node.id}
                 onChange={() => setSelectedBeta(node.id)}
               />
               Beta {i + 1}
-            </Label>
-          </Box>
+            </label>
+          </div>
         );
       })}
     </div>

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { PreloadedQuery, usePreloadedQuery } from "react-relay";
-import { Flex } from "rebass";
 import { graphql } from "relay-runtime";
 import NotFound from "../NotFound";
 import BetaDetails from "./BetaDetails";
@@ -11,6 +10,7 @@ import HoldOverlay from "./EditorOverlay/HoldOverlay";
 import EditorOverlay from "./EditorOverlay/EditorOverlay";
 import ProblemList from "./ProblemList";
 import { BetaEditorQuery } from "./__generated__/BetaEditorQuery.graphql";
+import classes from "./BetaEditor.scss";
 
 interface Props {
   queryRef: PreloadedQuery<BetaEditorQuery>;
@@ -73,7 +73,7 @@ const BetaEditor: React.FC<Props> = ({
   }
 
   return (
-    <Flex>
+    <div className={classes.betaEditor}>
       {/* The boulder image and decorations */}
       <div
         style={{
@@ -104,7 +104,7 @@ const BetaEditor: React.FC<Props> = ({
       </div>
 
       {/* Other stuff */}
-      <Flex flexDirection="column">
+      <div>
         <ProblemList
           dataKey={data.image.problems}
           selectedProblem={selectedProblem}
@@ -118,8 +118,8 @@ const BetaEditor: React.FC<Props> = ({
           />
         )}
         {data.beta && <BetaDetails dataKey={data.beta} />}
-      </Flex>
-    </Flex>
+      </div>
+    </div>
   );
 };
 

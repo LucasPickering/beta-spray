@@ -1,6 +1,5 @@
 import React from "react";
 import { graphql, useFragment, useMutation } from "react-relay";
-import { Box, Button } from "rebass";
 import { BetaDetails_betaNode$key } from "./__generated__/BetaDetails_betaNode.graphql";
 import { BetaDetails_deleteBetaMoveMutation } from "./__generated__/BetaDetails_deleteBetaMoveMutation.graphql";
 
@@ -47,13 +46,13 @@ const BetaDetails: React.FC<Props> = ({ dataKey }) => {
     `);
 
   return (
-    <Box>
+    <div>
       <ol>
         {beta.moves.edges.map(({ node }) => (
           <li key={node.id}>
             <span>{node.bodyPart}</span>
 
-            <Button
+            <button
               onClick={() =>
                 deleteBetaMove({
                   variables: {
@@ -64,11 +63,11 @@ const BetaDetails: React.FC<Props> = ({ dataKey }) => {
               }
             >
               x
-            </Button>
+            </button>
           </li>
         ))}
       </ol>
-    </Box>
+    </div>
   );
 };
 
