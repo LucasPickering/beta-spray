@@ -3,6 +3,7 @@ from graphene import relay
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 import graphql_relay
+from django.db.models import F
 
 from core.models import Beta, BetaMove, BodyPart, BoulderImage, Hold, Problem
 
@@ -140,6 +141,17 @@ class DeleteBetaMutation(relay.ClientIDMutation):
 
 
 class CreateBetaMoveMutation(relay.ClientIDMutation):
+    """
+    Add a new move to an existing beta. A move can optionally be associated with
+    a hold. Some moves (flagging, smearing, etc.) do not need an associated hold
+    though.
+
+    If a move already exists for the given order+beta combo, the new move will
+    be given the requested order, and every other move in the beta will "slide
+    down", e.g. if the new move is `order=3`, then the existing move #3 will
+    become #4, #4 will become #5, etc.
+    """
+
     class Input:
         beta_id = graphene.ID(required=True)
         order = graphene.Int(required=True)
@@ -147,6 +159,7 @@ class CreateBetaMoveMutation(relay.ClientIDMutation):
         hold_id = graphene.ID()
 
     beta_move = graphene.Field(BetaMoveNode, required=True)
+    beta = graphene.Field(BetaNode, required=True)
 
     @classmethod
     def mutate_and_get_payload(
@@ -162,6 +175,16 @@ class CreateBetaMoveMutation(relay.ClientIDMutation):
         beta_id = BetaNode.get_pk_from_global_id(info, beta_id)
         hold_id = hold_id and HoldNode.get_pk_from_global_id(info, hold_id)
 
+        # If the beta ID is invalid, the first query will do nothing, but the
+        # second will fail.
+
+        # Slide down the existing moves to make room for the new one (this will
+        # do nothing for moves appended at the end).
+        BetaMove.objects.filter(beta_id=beta_id, order__gte=order).update(
+            order=F("order") + 1
+        )
+
+        # TODO handle if new order value is too high
         beta_move = BetaMove.objects.create(
             beta_id=beta_id,
             order=order,
@@ -183,8 +206,15 @@ class DeleteBetaMoveMutation(relay.ClientIDMutation):
         beta_move = relay.Node.get_node_from_global_id(
             info, beta_move_id, only_type=BetaMoveNode
         )
+
         # `object.delete()` wipes out the PK field for some reason ¯\_(ツ)_/¯
         BetaMove.objects.filter(id=beta_move.id).delete()
+
+        # Collapse down order values to fill in the gap
+        BetaMove.objects.filter(
+            beta_id=beta_move.beta_id, order__gt=beta_move.order
+        ).update(order=F("order") - 1)
+
         return cls(beta_move=beta_move)
 
 

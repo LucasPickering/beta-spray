@@ -68,7 +68,16 @@ class BetaMove(models.Model):
     """
 
     class Meta:
-        unique_together = ("beta", "order")
+        constraints = [
+            # constraint needs to be deferred to avoid unique violations within
+            # "waterfall" updates
+            # https://dba.stackexchange.com/questions/104987/avoid-unique-violation-in-atomic-transaction
+            models.UniqueConstraint(
+                name="beta_order_unique",
+                fields=("beta", "order"),
+                deferrable=models.Deferrable.DEFERRED,
+            )
+        ]
 
     beta = models.ForeignKey(
         "Beta", related_name="moves", on_delete=models.CASCADE
