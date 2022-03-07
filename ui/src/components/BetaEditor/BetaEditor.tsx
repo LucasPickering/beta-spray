@@ -11,6 +11,8 @@ import EditorOverlay from "./EditorOverlay/EditorOverlay";
 import ProblemList from "./ProblemList";
 import { BetaEditorQuery } from "./__generated__/BetaEditorQuery.graphql";
 import classes from "./BetaEditor.scss";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
 interface Props {
   queryRef: PreloadedQuery<BetaEditorQuery>;
@@ -104,21 +106,23 @@ const BetaEditor: React.FC<Props> = ({
       </div>
 
       {/* Other stuff */}
-      <div>
-        <ProblemList
-          dataKey={data.image.problems}
-          selectedProblem={selectedProblem}
-          setSelectedProblem={setSelectedProblem}
-        />
-        {data.problem && (
-          <BetaList
-            dataKey={data.problem.betas}
-            selectedBeta={selectedBeta}
-            setSelectedBeta={setSelectedBeta}
+      <DndProvider backend={HTML5Backend} context={{}}>
+        <div>
+          <ProblemList
+            dataKey={data.image.problems}
+            selectedProblem={selectedProblem}
+            setSelectedProblem={setSelectedProblem}
           />
-        )}
-        {data.beta && <BetaDetails dataKey={data.beta} />}
-      </div>
+          {data.problem && (
+            <BetaList
+              dataKey={data.problem.betas}
+              selectedBeta={selectedBeta}
+              setSelectedBeta={setSelectedBeta}
+            />
+          )}
+          {data.beta && <BetaDetails dataKey={data.beta} />}
+        </div>
+      </DndProvider>
     </div>
   );
 };

@@ -1,7 +1,8 @@
 import clsx from "clsx";
 import React from "react";
 import { useDrop } from "react-dnd";
-import { OverlayPosition, DragType } from "./types";
+import { OverlayPosition } from "./types";
+import { DragType } from "util/dnd";
 import Circle from "./Circle";
 import classes from "./HoldCircle.scss";
 
@@ -14,7 +15,7 @@ interface Props {
 const HoldCircle: React.FC<Props> = ({ className, holdId, position }) => {
   const [{ isOver }, drop] = useDrop(() => ({
     // TODO don't allow drop if move is already on this hold
-    accept: DragType.BetaMove,
+    accept: DragType.BetaMoveSvg,
     collect: (monitor) => ({
       isOver: Boolean(monitor.isOver()),
     }),

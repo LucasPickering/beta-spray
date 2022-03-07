@@ -43,13 +43,6 @@ export type BetaOverlayMove = (
 };
 
 /**
- * The different types of things we can drag around using React DnD
- */
-export enum DragType {
-  BetaMove = "betaMove",
-}
-
-/**
  * An alias for the BodyPart enum from the API. Makes imports a bit simpler.
  */
 export type BodyPart = BodyPartApi;

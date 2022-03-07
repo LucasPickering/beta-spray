@@ -11,7 +11,8 @@ interface Props {
  * Visualization of holds & beta onto the boulder image
  */
 const EditorOverlay: React.FC<Props> = ({ aspectRatio, children }) => (
-  <DndProvider backend={MouseBackEnd}>
+  // HTML5 backend doesn't work in SVG, so we need to override it here
+  <DndProvider backend={MouseBackEnd} context={window}>
     <OverlayContext.Provider value={{ aspectRatio }}>
       <svg
         // TODO figure out a better way to handle coords so we don't need to

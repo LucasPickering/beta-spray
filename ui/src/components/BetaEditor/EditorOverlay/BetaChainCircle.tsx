@@ -1,9 +1,10 @@
 import clsx from "clsx";
 import React from "react";
 import { useDrag } from "react-dnd";
-import { DragType, BetaOverlayMove } from "./types";
+import { BetaOverlayMove } from "./types";
 import Circle from "./Circle";
 import classes from "./BetaChainCircle.scss";
+import { DragType } from "util/dnd";
 
 interface Props {
   className?: string;
@@ -23,7 +24,7 @@ const BetaChainCircle: React.FC<Props> = ({ className, move, onDrop }) => {
     { holdId: string },
     { isDragging: boolean }
   >(() => ({
-    type: DragType.BetaMove,
+    type: DragType.BetaMoveSvg,
     collect: (monitor) => ({
       isDragging: Boolean(monitor.isDragging()),
     }),

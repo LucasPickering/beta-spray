@@ -1,5 +1,6 @@
 import React from "react";
-import { OverlayPosition, DragType } from "./types";
+import { DragType } from "util/dnd";
+import { OverlayPosition } from "./types";
 
 interface Props {
   className?: string;
