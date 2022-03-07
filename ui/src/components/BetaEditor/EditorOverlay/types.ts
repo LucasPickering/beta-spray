@@ -22,6 +22,9 @@ export interface APIPosition {
  * One move rendered onto the beta overlay. There are a few types of moves,
  * depending on whether the move has been persisted to the API yet or is still
  * under construction.
+ *
+ * TODO this needs a bit more fleshing out, in most cases we're only rendering
+ * saved moves so we don't need the ADT everywhere
  */
 export type BetaOverlayMove = (
   | {

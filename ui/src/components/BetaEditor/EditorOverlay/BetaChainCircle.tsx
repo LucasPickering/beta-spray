@@ -9,7 +9,7 @@ interface Props {
   className?: string;
   move: BetaOverlayMove;
   // TODO type alias
-  onDrop: ({ holdId }: { holdId: string }) => void;
+  onDrop: (input: { holdId: string }) => void;
 }
 
 /**
@@ -19,6 +19,7 @@ const BetaChainCircle: React.FC<Props> = ({ className, move, onDrop }) => {
   // TODO type alias
   const [{ isDragging }, drag] = useDrag<
     undefined,
+    // TODO type alias
     { holdId: string },
     { isDragging: boolean }
   >(() => ({

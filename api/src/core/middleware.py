@@ -8,7 +8,10 @@ class ErrorMiddleware(object):
     Graphene middleware to properly forward errors
     """
 
-    def on_error(self, error):
-        # Apparently this is enough to make errors appear in the GQl output
-        logger.error(error)
-        raise error
+    def resolve(self, next, root, info, *args, **kwargs):
+        try:
+            return next(root, info, *args, **kwargs)
+        except Exception as e:
+            # TODO better formatting
+            logger.error(f"Error handling GraphQL request:\n{info}", exc_info=e)
+            raise e

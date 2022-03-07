@@ -1,3 +1,4 @@
+from core.query import BetaMoveQuerySet
 from django.db import models
 
 
@@ -78,6 +79,9 @@ class BetaMove(models.Model):
                 deferrable=models.Deferrable.DEFERRED,
             )
         ]
+
+    # Custom query set
+    objects = BetaMoveQuerySet.as_manager()
 
     beta = models.ForeignKey(
         "Beta", related_name="moves", on_delete=models.CASCADE

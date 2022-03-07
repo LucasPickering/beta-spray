@@ -3,7 +3,6 @@ from graphene import relay
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 import graphql_relay
-from django.db.models import F
 
 from core.models import Beta, BetaMove, BodyPart, BoulderImage, Hold, Problem
 
@@ -175,23 +174,31 @@ class CreateBetaMoveMutation(relay.ClientIDMutation):
         beta_id = BetaNode.get_pk_from_global_id(info, beta_id)
         hold_id = hold_id and HoldNode.get_pk_from_global_id(info, hold_id)
 
-        # If the beta ID is invalid, the first query will do nothing, but the
-        # second will fail.
-
-        # Slide down the existing moves to make room for the new one (this will
-        # do nothing for moves appended at the end).
-        BetaMove.objects.filter(beta_id=beta_id, order__gte=order).update(
-            order=F("order") + 1
-        )
-
         # TODO handle if new order value is too high
-        beta_move = BetaMove.objects.create(
-            beta_id=beta_id,
-            order=order,
-            hold_id=hold_id,
-            body_part=body_part,
+        beta_move = BetaMove.objects.add_to_beta(
+            beta_id=beta_id, order=order, body_part=body_part, hold_id=hold_id
         )
 
+        return cls(beta_move=beta_move)
+
+
+class UpdateBetaMoveMutation(relay.ClientIDMutation):
+    class Input:
+        beta_move_id = graphene.ID(required=True)
+        order = graphene.Int()
+        hold_id = graphene.ID()
+
+    beta_move = graphene.Field(BetaMoveNode, required=True)
+
+    @classmethod
+    def mutate_and_get_payload(
+        cls, root, info, beta_move_id, order=None, hold_id=None
+    ):
+        beta_move_id = BetaMoveNode.get_pk_from_global_id(info, beta_move_id)
+        hold_id = hold_id and HoldNode.get_pk_from_global_id(info, hold_id)
+        beta_move = BetaMove.objects.update_in_beta(
+            beta_move_id=beta_move_id, order=order, hold_id=hold_id
+        )
         return cls(beta_move=beta_move)
 
 
@@ -203,18 +210,8 @@ class DeleteBetaMoveMutation(relay.ClientIDMutation):
 
     @classmethod
     def mutate_and_get_payload(cls, root, info, beta_move_id):
-        beta_move = relay.Node.get_node_from_global_id(
-            info, beta_move_id, only_type=BetaMoveNode
-        )
-
-        # `object.delete()` wipes out the PK field for some reason ¯\_(ツ)_/¯
-        BetaMove.objects.filter(id=beta_move.id).delete()
-
-        # Collapse down order values to fill in the gap
-        BetaMove.objects.filter(
-            beta_id=beta_move.beta_id, order__gt=beta_move.order
-        ).update(order=F("order") - 1)
-
+        beta_move_id = BetaMoveNode.get_pk_from_global_id(info, beta_move_id)
+        beta_move = BetaMove.objects.delete_from_beta(beta_move_id=beta_move_id)
         return cls(beta_move=beta_move)
 
 
@@ -222,6 +219,7 @@ class Mutation(graphene.ObjectType):
     create_beta = CreateBetaMutation.Field()
     delete_beta = DeleteBetaMutation.Field()
     create_beta_move = CreateBetaMoveMutation.Field()
+    update_beta_move = UpdateBetaMoveMutation.Field()
     delete_beta_move = DeleteBetaMoveMutation.Field()
 
 

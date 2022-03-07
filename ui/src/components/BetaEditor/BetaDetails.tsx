@@ -13,7 +13,6 @@ const BetaDetails: React.FC<Props> = ({ dataKey }) => {
       fragment BetaDetails_betaNode on BetaNode {
         id
         moves {
-          __id
           edges {
             node {
               id
@@ -35,11 +34,13 @@ const BetaDetails: React.FC<Props> = ({ dataKey }) => {
     useMutation<BetaDetails_deleteBetaMoveMutation>(graphql`
       mutation BetaDetails_deleteBetaMoveMutation(
         $input: DeleteBetaMoveMutationInput!
-        $connections: [ID!]!
       ) {
         deleteBetaMove(input: $input) {
           betaMove {
-            id @deleteEdge(connections: $connections)
+            beta {
+              # Refetch to update UI
+              ...BetaOverlay_betaNode
+            }
           }
         }
       }
@@ -57,7 +58,6 @@ const BetaDetails: React.FC<Props> = ({ dataKey }) => {
                 deleteBetaMove({
                   variables: {
                     input: { betaMoveId: node.id },
-                    connections: [beta.moves.__id],
                   },
                 })
               }

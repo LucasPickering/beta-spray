@@ -1,6 +1,7 @@
 version: "3"
 
 volumes:
+  api_poetry_cache:
   ui_node_modules:
 
 services:
@@ -22,6 +23,7 @@ services:
       - "8000:8000"
     volumes:
       - ./api:/app:rw
+      - api_poetry_cache:/root/.cache/poetry
 
   ui:
     build: ./ui/

@@ -7,6 +7,7 @@ import { BetaOverlayMove, BodyPart } from "./types";
 import { BetaOverlay_createBetaMoveMutation } from "./__generated__/BetaOverlay_createBetaMoveMutation.graphql";
 import BetaChain from "./BetaChain";
 import { toOverlayPosition } from "util/func";
+import { BetaOverlay_updateBetaMoveMutation } from "./__generated__/BetaOverlay_updateBetaMoveMutation.graphql";
 
 interface Props {
   dataKey: BetaOverlay_betaNode$key;
@@ -31,7 +32,6 @@ const BetaOverlay: React.FC<Props> = ({ dataKey }) => {
           }
         }
         moves {
-          __id
           edges {
             node {
               id
@@ -84,25 +84,35 @@ const BetaOverlay: React.FC<Props> = ({ dataKey }) => {
   }
 
   // TODO use loading state
-  // TODO centralize all mutations so we don't need spaghetti update logic
+  // TODO centralize all mutations
   const [createBetaMove] =
     useMutation<BetaOverlay_createBetaMoveMutation>(graphql`
       mutation BetaOverlay_createBetaMoveMutation(
         $input: CreateBetaMoveMutationInput!
-        $connections: [ID!]!
       ) {
         createBetaMove(input: $input) {
-          betaMove
-            @appendNode(
-              connections: $connections
-              edgeTypeName: "BetaMoveNodeEdge"
-            ) {
-            id
-            bodyPart
-            order
-            hold {
-              positionX
-              positionY
+          betaMove {
+            beta {
+              # Refetch to update UI
+              ...BetaOverlay_betaNode
+            }
+          }
+        }
+      }
+    `);
+
+  // TODO use loading state
+  // TODO centralize all mutations
+  const [updateBetaMove] =
+    useMutation<BetaOverlay_updateBetaMoveMutation>(graphql`
+      mutation BetaOverlay_updateBetaMoveMutation(
+        $input: UpdateBetaMoveMutationInput!
+      ) {
+        updateBetaMove(input: $input) {
+          betaMove {
+            beta {
+              # Refetch to update UI
+              ...BetaOverlay_betaNode
             }
           }
         }
@@ -129,7 +139,16 @@ const BetaOverlay: React.FC<Props> = ({ dataKey }) => {
                   order: nextOrder,
                   holdId,
                 },
-                connections: [beta.moves.__id],
+              },
+            })
+          }
+          updateBetaMove={({ betaMoveId, holdId }) =>
+            updateBetaMove({
+              variables: {
+                input: {
+                  betaMoveId,
+                  holdId,
+                },
               },
             })
           }
