@@ -138,10 +138,6 @@ const BetaOverlay: React.FC<Props> = ({ dataKey }) => {
       }
     `);
 
-  // The `order` value of the next move to be created
-  const nextOrder =
-    Math.max(0, ...beta.moves.edges.map(({ node }) => node.order)) + 1;
-
   // Render one "chain" of moves per body part
   return (
     <>
@@ -149,13 +145,13 @@ const BetaOverlay: React.FC<Props> = ({ dataKey }) => {
         <BetaChain
           key={bodyPart}
           moves={moves}
-          createBetaMove={({ holdId }) =>
+          createBetaMove={({ holdId, order }) =>
             createBetaMove({
               variables: {
                 input: {
                   betaId: beta.id,
                   bodyPart: bodyPart,
-                  order: nextOrder,
+                  order,
                   holdId,
                 },
               },

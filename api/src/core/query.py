@@ -7,11 +7,18 @@ class BetaMoveQuerySet(QuerySet):
         # If the beta ID is invalid, the first query will do nothing, but the
         # second will fail.
 
-        self.validate_order(beta_id=beta_id, order=order)
+        if order is not None:
+            self.validate_order(beta_id=beta_id, order=order)
 
-        # Slide down the existing moves to make room for the new one (this will
-        # do nothing for moves appended at the end).
-        self.slide_moves(beta_id=beta_id, from_order=order, down=True)
+            # Slide down the existing moves to make room for the new one
+            self.slide_moves(beta_id=beta_id, from_order=order, down=True)
+        else:
+            # If order isn't given, just do max+1
+            order = (
+                self.filter(beta_id=beta_id)
+                .aggregate(max_order=Max("order") + 1)
+                .get("max_order", 0)
+            )
 
         beta_move = self.create(
             beta_id=beta_id,

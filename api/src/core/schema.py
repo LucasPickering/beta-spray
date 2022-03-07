@@ -149,12 +149,14 @@ class CreateBetaMoveMutation(relay.ClientIDMutation):
     be given the requested order, and every other move in the beta will "slide
     down", e.g. if the new move is `order=3`, then the existing move #3 will
     become #4, #4 will become #5, etc.
+
+    If no order is given, the move will be appended to the end.
     """
 
     class Input:
         beta_id = graphene.ID(required=True)
-        order = graphene.Int(required=True)
         body_part = BodyPartType(required=True)
+        order = graphene.Int()
         hold_id = graphene.ID()
 
     beta_move = graphene.Field(BetaMoveNode, required=True)
@@ -166,8 +168,8 @@ class CreateBetaMoveMutation(relay.ClientIDMutation):
         root,
         info,
         beta_id,
-        order,
         body_part,
+        order=None,
         hold_id=None,
     ):
         # Convert GQL IDs to PKs

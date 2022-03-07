@@ -7,7 +7,7 @@ import { assertDataKind } from "util/func";
 interface Props {
   moves: BetaOverlayMove[];
   // TODO type alias
-  createBetaMove: (input: { holdId: string }) => void;
+  createBetaMove: (input: { holdId?: string; order?: number }) => void;
   updateBetaMove: (input: { betaMoveId: string; holdId: string }) => void;
   deleteBetaMove: (input: { betaMoveId: string }) => void;
 }
@@ -27,7 +27,15 @@ const BetaChain: React.FC<Props> = ({
       // There *should* only be one "new" move at a time
       <React.Fragment key={move.kind === "saved" ? move.id : "new"}>
         {/* Draw a line from the last move to this one */}
-        {move.prev && <BetaChainLine startMove={move.prev} endMove={move} />}
+        {move.prev && (
+          <BetaChainLine
+            startMove={move.prev}
+            endMove={move}
+            onDrop={({ holdId }) => {
+              createBetaMove({ holdId, order: move.order });
+            }}
+          />
+        )}
 
         <BetaChainCircle
           move={move}

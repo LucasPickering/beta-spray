@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { graphql, useFragment, useMutation } from "react-relay";
 import BetaDetailsMove from "./BetaDetailsMove";
 import {
@@ -37,6 +37,11 @@ const BetaDetails: React.FC<Props> = ({ dataKey }) => {
   const [moves, setMoves] = useState<BetaMove[]>(() =>
     beta.moves.edges.map(({ node }) => node)
   );
+
+  // Whenever the beta updates from the API, refresh the local state to match
+  useEffect(() => {
+    setMoves(beta.moves.edges.map(({ node }) => node));
+  }, [beta.moves.edges]);
 
   // TODO use loading state
   const [deleteBetaMove] =
