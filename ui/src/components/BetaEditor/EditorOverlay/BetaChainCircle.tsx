@@ -10,13 +10,19 @@ interface Props {
   className?: string;
   move: BetaOverlayMove;
   // TODO type alias
-  onDrop: (input: { holdId: string }) => void;
+  onDrop?: (input: { holdId: string }) => void;
+  onDoubleClick?: () => void;
 }
 
 /**
  * A circle representing a single beta move in a chain
  */
-const BetaChainCircle: React.FC<Props> = ({ className, move, onDrop }) => {
+const BetaChainCircle: React.FC<Props> = ({
+  className,
+  move,
+  onDrop,
+  onDoubleClick,
+}) => {
   // TODO type alias
   const [{ isDragging }, drag] = useDrag<
     undefined,
@@ -31,7 +37,7 @@ const BetaChainCircle: React.FC<Props> = ({ className, move, onDrop }) => {
     end: (item, monitor) => {
       const result = monitor.getDropResult();
       // TODO don't create new move if we didn't actually move
-      if (result) {
+      if (result && onDrop) {
         onDrop(result);
       }
     },
@@ -52,6 +58,7 @@ const BetaChainCircle: React.FC<Props> = ({ className, move, onDrop }) => {
       )}
       position={move.position}
       opacity={isDragging ? 0.5 : 1.0}
+      onDoubleClick={onDoubleClick}
     />
   );
 };

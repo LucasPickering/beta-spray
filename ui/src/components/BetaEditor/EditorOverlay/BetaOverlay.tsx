@@ -8,6 +8,7 @@ import { BetaOverlay_createBetaMoveMutation } from "./__generated__/BetaOverlay_
 import BetaChain from "./BetaChain";
 import { toOverlayPosition } from "util/func";
 import { BetaOverlay_updateBetaMoveMutation } from "./__generated__/BetaOverlay_updateBetaMoveMutation.graphql";
+import { BetaOverlay_deleteBetaMoveMutation } from "./__generated__/BetaOverlay_deleteBetaMoveMutation.graphql";
 
 interface Props {
   dataKey: BetaOverlay_betaNode$key;
@@ -119,6 +120,24 @@ const BetaOverlay: React.FC<Props> = ({ dataKey }) => {
       }
     `);
 
+  // TODO use loading state
+  // TODO centralize all mutations
+  const [deleteBetaMove] =
+    useMutation<BetaOverlay_deleteBetaMoveMutation>(graphql`
+      mutation BetaOverlay_deleteBetaMoveMutation(
+        $input: DeleteBetaMoveMutationInput!
+      ) {
+        deleteBetaMove(input: $input) {
+          betaMove {
+            beta {
+              # Refetch to update UI
+              ...BetaOverlay_betaNode
+            }
+          }
+        }
+      }
+    `);
+
   // The `order` value of the next move to be created
   const nextOrder =
     Math.max(0, ...beta.moves.edges.map(({ node }) => node.order)) + 1;
@@ -148,6 +167,15 @@ const BetaOverlay: React.FC<Props> = ({ dataKey }) => {
                 input: {
                   betaMoveId,
                   holdId,
+                },
+              },
+            })
+          }
+          deleteBetaMove={({ betaMoveId }) =>
+            deleteBetaMove({
+              variables: {
+                input: {
+                  betaMoveId,
                 },
               },
             })

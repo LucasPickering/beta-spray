@@ -9,6 +9,7 @@ interface Props {
   // TODO type alias
   createBetaMove: (input: { holdId: string }) => void;
   updateBetaMove: (input: { betaMoveId: string; holdId: string }) => void;
+  deleteBetaMove: (input: { betaMoveId: string }) => void;
 }
 
 /**
@@ -19,6 +20,7 @@ const BetaChain: React.FC<Props> = ({
   moves,
   createBetaMove,
   updateBetaMove,
+  deleteBetaMove,
 }) => (
   <>
     {moves.map((move) => (
@@ -43,6 +45,11 @@ const BetaChain: React.FC<Props> = ({
               createBetaMove({ holdId });
             }
           }}
+          onDoubleClick={
+            move.kind === "saved"
+              ? () => deleteBetaMove({ betaMoveId: move.id })
+              : undefined
+          }
         />
       </React.Fragment>
     ))}
