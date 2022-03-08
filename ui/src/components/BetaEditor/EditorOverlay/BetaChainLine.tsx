@@ -47,8 +47,9 @@ const BetaChainCircle: React.FC<Props> = ({
       ref={drag}
       className={clsx(
         classes.betaChainLine,
-        classes[startMove.bodyPart],
+        commonClasses.draggable,
         isDragging && commonClasses.dragging,
+        classes[startMove.bodyPart],
         className
       )}
       x1={startMove.position.x}

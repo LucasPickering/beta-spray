@@ -47,6 +47,7 @@ const BetaPrototypeCircle: React.FC<Props> = ({
       // The last move in the chain gets styled differently
       className={clsx(
         classes.betaPrototype,
+        commonClasses.draggable,
         isDragging && commonClasses.dragging,
         classes[bodyPart],
         className
