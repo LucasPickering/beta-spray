@@ -1,6 +1,6 @@
 @import "palette.scss";
 
-.betaMove {
+.betaPrototype {
   &.LEFT_HAND {
     fill: $left-hand-secondary;
   }
@@ -16,4 +16,10 @@
   &.RIGHT_FOOT {
     fill: $right-foot-secondary;
   }
+}
+
+.text {
+  font-size: 3px;
+  user-select: none;
+  pointer-events: none;
 }

@@ -19,9 +19,14 @@ export interface APIPosition {
 }
 
 /**
- * An alias for the BodyPart enum from the API. Makes imports a bit simpler.
+ * All supported body parts. Defined as an enum so we can iterate over it.
  */
-export type BodyPart = BodyPartApi;
+export enum BodyPart {
+  LEFT_HAND = "LEFT_HAND",
+  RIGHT_HAND = "RIGHT_HAND",
+  LEFT_FOOT = "LEFT_FOOT",
+  RIGHT_FOOT = "RIGHT_FOOT",
+}
 
 /**
  * One move rendered onto the beta overlay.
@@ -38,6 +43,8 @@ export interface BetaOverlayMove {
 export type DndDragItem =
   // Dragging a move around
   | { kind: "move"; move: BetaOverlayMove }
+  // Dragging the move "prototype"
+  | { kind: "newMove"; bodyPart: BodyPart }
   // Dragging a line between two moves (to insert a move)
   | { kind: "line"; startMove: BetaOverlayMove };
 
@@ -46,3 +53,14 @@ export type DndDragItem =
  * The move could land one a few different types of objects.
  */
 export type DndDropResult = { kind: "hold"; holdId: string };
+
+/**
+ * Convert a body part value from the API type to the local type
+ */
+export function toBodyPart(bodyPart: BodyPartApi): BodyPart {
+  if (bodyPart === "%future added value") {
+    throw new Error(`Unknown body part: ${bodyPart}`);
+  }
+
+  return BodyPart[bodyPart];
+}

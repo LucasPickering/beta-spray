@@ -1,27 +1,27 @@
 import clsx from "clsx";
 import React from "react";
 import { useDrag } from "react-dnd";
-import { BetaOverlayMove, DndDragItem, DndDropResult } from "./types";
+import { BodyPart, DndDragItem, DndDropResult, OverlayPosition } from "./types";
 import Circle from "./Circle";
 import { DragType } from "util/dnd";
-import classes from "./BetaChainCircle.scss";
+import classes from "./BetaPrototypeCircle.scss";
 import commonClasses from "./common.scss";
 
 interface Props {
   className?: string;
-  move: BetaOverlayMove;
+  bodyPart: BodyPart;
+  position: OverlayPosition;
   onDrop?: (item: DndDragItem, dropResult: DndDropResult) => void;
-  onDoubleClick?: (move: BetaOverlayMove) => void;
 }
 
 /**
  * A circle representing a single beta move in a chain
  */
-const BetaChainCircle: React.FC<Props> = ({
+const BetaPrototypeCircle: React.FC<Props> = ({
   className,
-  move,
+  bodyPart,
+  position,
   onDrop,
-  onDoubleClick,
 }) => {
   const [{ isDragging }, drag] = useDrag<
     DndDragItem,
@@ -29,7 +29,7 @@ const BetaChainCircle: React.FC<Props> = ({
     { isDragging: boolean }
   >(() => ({
     type: DragType.BetaMoveSvg,
-    item: { kind: "move", move },
+    item: { kind: "newMove", bodyPart },
     collect: (monitor) => ({
       isDragging: Boolean(monitor.isDragging()),
     }),
@@ -46,18 +46,17 @@ const BetaChainCircle: React.FC<Props> = ({
       ref={drag}
       // The last move in the chain gets styled differently
       className={clsx(
-        classes.betaMove,
+        classes.betaPrototype,
         isDragging && commonClasses.dragging,
-        classes[move.bodyPart],
+        classes[bodyPart],
         className
       )}
-      position={move.position}
-      innerLabel={(move.order + 1).toString()}
-      onDoubleClick={onDoubleClick && (() => onDoubleClick(move))}
+      position={position}
+      outerLabel={bodyPart}
     />
   );
 };
 
-BetaChainCircle.defaultProps = {} as Partial<Props>;
+BetaPrototypeCircle.defaultProps = {} as Partial<Props>;
 
-export default BetaChainCircle;
+export default BetaPrototypeCircle;
