@@ -8,7 +8,9 @@ class BoulderImage(models.Model):
     up one or more problem
     """
 
-    path = models.TextField(unique=True)
+    image = models.ImageField(unique=True, upload_to="boulders")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
 class Hold(models.Model):
@@ -27,6 +29,8 @@ class Hold(models.Model):
     position_y = models.FloatField(
         help_text="Top-to-bottom position of the hold within the image, 0-1"
     )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
 class Problem(models.Model):
@@ -40,6 +44,8 @@ class Problem(models.Model):
     image = models.ForeignKey(
         BoulderImage, related_name="problems", on_delete=models.CASCADE
     )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
 class BodyPart(models.TextChoices):
@@ -60,6 +66,8 @@ class Beta(models.Model):
     problem = models.ForeignKey(
         Problem, related_name="betas", on_delete=models.CASCADE
     )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
 class BetaMove(models.Model):
@@ -100,4 +108,6 @@ class BetaMove(models.Model):
         choices=BodyPart.choices,
         help_text="Body part in question",
     )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     # TODO add annotation, e.g. "flag", "drop knee", etc.

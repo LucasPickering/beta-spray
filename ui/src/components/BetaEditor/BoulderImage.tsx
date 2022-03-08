@@ -15,7 +15,7 @@ const BoulderImage: React.FC<Props> = ({ dataKey, onLoad }) => {
   const data = useFragment(
     graphql`
       fragment BoulderImage_image on BoulderImageNode {
-        path
+        imageUrl
       }
     `,
     dataKey
@@ -23,7 +23,7 @@ const BoulderImage: React.FC<Props> = ({ dataKey, onLoad }) => {
 
   return (
     <img
-      src={data.path}
+      src={data.imageUrl}
       alt="Boulder"
       onLoad={onLoad}
       style={{ height: "100%" }}

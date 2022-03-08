@@ -1,4 +1,6 @@
 import graphene
+import os.path
+import uuid
 from graphene import relay
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
@@ -52,8 +54,13 @@ class BoulderImageNode(NodeType):
     class Meta:
         model = BoulderImage
         interfaces = (relay.Node,)
-        fields = ("path", "holds", "problems")
+        fields = ("holds", "problems", "created_at")
         filter_fields = []
+
+    image_url = graphene.String(required=True)
+
+    def resolve_image_url(self, info):
+        return self.image.url
 
 
 class HoldNode(NodeType):
@@ -106,6 +113,25 @@ class Query(graphene.ObjectType):
 
 
 # ========== MUTATIONS ==========
+
+
+class CreateBoulderImageMutation(relay.ClientIDMutation):
+    class Input:
+        image_file = graphene.String(required=True)
+
+    image = graphene.Field(BoulderImageNode, required=True)
+
+    @classmethod
+    def mutate_and_get_payload(cls, root, info, image_file):
+        # TODO handle file missing
+        # TODO validate file is an image
+        file = info.context.FILES.get(image_file)
+        root, ext = os.path.splitext(file.name)
+        # Replace file name with a UUID
+        file.name = f"{uuid.uuid4()}{ext}"
+        image_object = BoulderImage.objects.create(image=file)
+
+        return cls(image=image_object)
 
 
 class CreateBetaMutation(relay.ClientIDMutation):
@@ -218,6 +244,7 @@ class DeleteBetaMoveMutation(relay.ClientIDMutation):
 
 
 class Mutation(graphene.ObjectType):
+    create_image = CreateBoulderImageMutation.Field()
     create_beta = CreateBetaMutation.Field()
     delete_beta = DeleteBetaMutation.Field()
     create_beta_move = CreateBetaMoveMutation.Field()

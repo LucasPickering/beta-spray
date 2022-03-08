@@ -3,25 +3,42 @@ import {
   Network,
   RecordSource,
   Store,
-  RequestParameters,
-  Variables,
   FetchFunction,
 } from "relay-runtime";
 
 const fetchQuery: FetchFunction = (
-  operation: RequestParameters,
-  variables: Variables
+  operation,
+  variables,
+  cacheConfig,
+  uploadables
 ) => {
-  return fetch("/api/graphql", {
+  const request: RequestInit = {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
+    headers: {},
+  };
+
+  if (uploadables) {
+    const formData = new FormData();
+    formData.append("query", operation.text ?? "");
+    formData.append("variables", JSON.stringify(variables));
+
+    Object.keys(uploadables).forEach((key) => {
+      if (Object.prototype.hasOwnProperty.call(uploadables, key)) {
+        formData.append(key, uploadables[key]);
+      }
+    });
+
+    request.body = formData;
+  } else {
+    (request.headers as Record<string, string>)["Content-Type"] =
+      "application/json";
+    request.body = JSON.stringify({
       query: operation.text,
       variables,
-    }),
-  }).then((response) => {
+    });
+  }
+
+  return fetch("/api/graphql", request).then((response) => {
     return response.json();
   });
 };
