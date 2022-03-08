@@ -4,6 +4,8 @@ import { BetaDetailsMove_betaMoveNode$key } from "./__generated__/BetaDetailsMov
 import classes from "./BetaDetailsMove.scss";
 import { useDrag, useDrop, XYCoord } from "react-dnd";
 import { DragType } from "util/dnd";
+import commonClasses from "./EditorOverlay/common.scss";
+import clsx from "clsx";
 
 interface Props {
   dataKey: BetaDetailsMove_betaMoveNode$key;
@@ -54,61 +56,71 @@ const BetaDetailsMove: React.FC<Props> = ({
     },
   }));
 
-  const [{ isOver }, drop] = useDrop<DragItem>(() => ({
-    accept: DragType.BetaMoveList,
-    collect(monitor) {
-      return {
-        isOver: Boolean(monitor.isOver()),
-      };
-    },
-    hover(item, monitor) {
-      if (!ref.current || !onReorder) {
-        return;
-      }
+  const [{ isOver }, drop] = useDrop<DragItem, DragItem, { isOver: boolean }>(
+    () => ({
+      accept: DragType.BetaMoveList,
+      collect(monitor) {
+        return {
+          isOver: Boolean(monitor.isOver()),
+        };
+      },
+      hover(item, monitor) {
+        if (!ref.current || !onReorder) {
+          return;
+        }
 
-      const dragOrder = item.order;
-      const hoverOrder = betaMove.order;
+        const dragOrder = item.order;
+        const hoverOrder = betaMove.order;
 
-      // Don't replace items with themselves
-      if (dragOrder === hoverOrder) {
-        return;
-      }
+        // Don't replace items with themselves
+        if (dragOrder === hoverOrder) {
+          return;
+        }
 
-      // Determine rectangle on screen
-      const hoverBoundingRect = ref.current.getBoundingClientRect();
+        // Determine rectangle on screen
+        const hoverBoundingRect = ref.current.getBoundingClientRect();
 
-      // Get vertical middle
-      const hoverMiddleY =
-        (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+        // Get vertical middle
+        const hoverMiddleY =
+          (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
 
-      // Determine mouse position
-      const clientOffset = monitor.getClientOffset();
+        // Determine mouse position
+        const clientOffset = monitor.getClientOffset();
 
-      // Get pixels to the top
-      const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
+        // Get pixels to the top
+        const hoverClientY =
+          (clientOffset as XYCoord).y - hoverBoundingRect.top;
 
-      // Only perform the move when the mouse has crossed half of the items height
-      // When dragging downwards, only move when the cursor is below 50%
-      // When dragging upwards, only move when the cursor is above 50%
+        // Only perform the move when the mouse has crossed half of the items height
+        // When dragging downwards, only move when the cursor is below 50%
+        // When dragging upwards, only move when the cursor is above 50%
 
-      // Dragging downwards
-      if (dragOrder < hoverOrder && hoverClientY < hoverMiddleY) {
-        return;
-      }
+        // Dragging downwards
+        if (dragOrder < hoverOrder && hoverClientY < hoverMiddleY) {
+          return;
+        }
 
-      // Dragging upwards
-      if (dragOrder > hoverOrder && hoverClientY > hoverMiddleY) {
-        return;
-      }
+        // Dragging upwards
+        if (dragOrder > hoverOrder && hoverClientY > hoverMiddleY) {
+          return;
+        }
 
-      onReorder(hoverOrder);
-    },
-  }));
+        onReorder(hoverOrder);
+      },
+    })
+  );
 
+  drag(drop(ref));
   return (
-    <li ref={drag(drop(ref))} className={classes.betaDetailsMove}>
+    <li
+      ref={ref}
+      className={clsx(
+        classes.betaDetailsMove,
+        isOver && commonClasses.dropHover
+      )}
+    >
       <span>
-        {betaMove.order} - {betaMove.bodyPart}
+        {betaMove.order + 1} - {betaMove.bodyPart}
       </span>
 
       <button onClick={onDelete && (() => onDelete())}>x</button>

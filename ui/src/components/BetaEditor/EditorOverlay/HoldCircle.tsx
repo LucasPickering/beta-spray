@@ -5,6 +5,7 @@ import { DndDragItem, DndDropResult, OverlayPosition } from "./types";
 import { DragType } from "util/dnd";
 import Circle from "./Circle";
 import classes from "./HoldCircle.scss";
+import commonClasses from "./common.scss";
 
 interface Props {
   className?: string;
@@ -30,9 +31,12 @@ const HoldCircle: React.FC<Props> = ({ className, holdId, position }) => {
   return (
     <Circle
       ref={drop}
-      className={clsx(classes.holdCircle, className)}
+      className={clsx(
+        classes.holdCircle,
+        isOver && commonClasses.dropHover,
+        className
+      )}
       position={position}
-      opacity={isOver ? 0.5 : 1.0}
     />
   );
 };

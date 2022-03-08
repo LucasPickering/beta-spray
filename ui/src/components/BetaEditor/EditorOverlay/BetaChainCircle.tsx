@@ -3,8 +3,9 @@ import React from "react";
 import { useDrag } from "react-dnd";
 import { BetaOverlayMove, DndDragItem, DndDropResult } from "./types";
 import Circle from "./Circle";
-import classes from "./BetaChainCircle.scss";
 import { DragType } from "util/dnd";
+import classes from "./BetaChainCircle.scss";
+import commonClasses from "./common.scss";
 
 interface Props {
   className?: string;
@@ -50,11 +51,11 @@ const BetaChainCircle: React.FC<Props> = ({
         className={clsx(
           classes.betaMove,
           !move.next && classes.lastBetaMove,
+          isDragging && commonClasses.dragging,
           classes[move.bodyPart],
           className
         )}
         position={{ x: 0, y: 0 }}
-        opacity={isDragging ? 0.5 : 1.0}
         onDoubleClick={onDoubleClick && (() => onDoubleClick(move))}
       />
       <text

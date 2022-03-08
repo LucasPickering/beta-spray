@@ -1,11 +1,13 @@
+@import "palette.scss";
+
 .LEFT_HAND {
   &.betaChainLine {
-    stroke: lightblue;
+    stroke: $left-hand-secondary;
   }
 }
 
 .RIGHT_HAND {
   &.betaChainLine {
-    stroke: lightcoral;
+    stroke: $right-hand-secondary;
   }
 }

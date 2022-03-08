@@ -1,9 +1,10 @@
 import clsx from "clsx";
 import React from "react";
 import { BetaOverlayMove, DndDragItem, DndDropResult } from "./types";
-import classes from "./BetaChainLine.scss";
 import { DragType } from "util/dnd";
 import { useDrag } from "react-dnd";
+import classes from "./BetaChainLine.scss";
+import commonClasses from "./common.scss";
 
 interface Props {
   className?: string;
@@ -47,6 +48,7 @@ const BetaChainCircle: React.FC<Props> = ({
       className={clsx(
         classes.betaChainLine,
         classes[startMove.bodyPart],
+        isDragging && commonClasses.dragging,
         className
       )}
       x1={startMove.position.x}

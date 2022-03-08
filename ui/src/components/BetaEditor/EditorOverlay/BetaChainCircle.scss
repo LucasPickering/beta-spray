@@ -1,18 +1,20 @@
+@import "palette.scss";
+
 .LEFT_HAND {
   &.betaMove {
-    fill: lightblue;
+    fill: $left-hand-secondary;
   }
   &.lastBetaMove {
-    fill: blue;
+    fill: $left-hand-primary;
   }
 }
 
 .RIGHT_HAND {
   &.betaMove {
-    fill: lightcoral;
+    fill: $right-hand-secondary;
   }
   &.lastBetaMove {
-    fill: red;
+    fill: $right-hand-primary;
   }
 }
 

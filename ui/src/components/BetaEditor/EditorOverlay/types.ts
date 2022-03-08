@@ -1,4 +1,4 @@
-import { BodyPart as BodyPartApi } from "components/BetaEditor/__generated__/BetaDetails_betaNode.graphql";
+import { BodyPart as BodyPartApi } from "./__generated__/BetaOverlay_betaNode.graphql";
 
 /**
  * The position of an object in the rendered overlay. Values are [0,100] for X
@@ -19,6 +19,11 @@ export interface APIPosition {
 }
 
 /**
+ * An alias for the BodyPart enum from the API. Makes imports a bit simpler.
+ */
+export type BodyPart = BodyPartApi;
+
+/**
  * One move rendered onto the beta overlay.
  */
 export interface BetaOverlayMove {
@@ -29,11 +34,6 @@ export interface BetaOverlayMove {
   order: number;
   position: OverlayPosition;
 }
-
-/**
- * An alias for the BodyPart enum from the API. Makes imports a bit simpler.
- */
-export type BodyPart = BodyPartApi;
 
 export type DndDragItem =
   // Dragging a move around
