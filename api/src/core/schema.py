@@ -134,6 +134,106 @@ class CreateBoulderImageMutation(relay.ClientIDMutation):
         return cls(image=image_object)
 
 
+class CreateHoldMutation(relay.ClientIDMutation):
+    """Add a hold to an image"""
+
+    class Input:
+        image_id = graphene.ID(required=True)
+        position_x = graphene.Float(required=True)
+        position_y = graphene.Float(required=True)
+
+    hold = graphene.Field(HoldNode, required=True)
+
+    @classmethod
+    def mutate_and_get_payload(
+        cls, root, info, image_id, position_x, position_y
+    ):
+        # Convert global ID to a PK
+        image_id = BoulderImageNode.get_pk_from_global_id(info, image_id)
+        hold = Hold.objects.create(
+            image_id=image_id, position_x=position_x, position_y=position_y
+        )
+        return cls(hold=hold)
+
+
+class DeleteHoldMutation(relay.ClientIDMutation):
+    """Delete a hold from an image"""
+
+    class Input:
+        hold_id = graphene.ID(required=True)
+
+    hold = graphene.Field(HoldNode, required=True)
+
+    @classmethod
+    def mutate_and_get_payload(cls, root, info, hold_id):
+        hold = relay.Node.get_node_from_global_id(
+            info, hold_id, only_type=HoldNode
+        )
+        Hold.objects.filter(id=hold.id).delete()
+        return cls(hold=hold)
+
+
+class CreateProblemMutation(relay.ClientIDMutation):
+    """Create a new problem for a specific image"""
+
+    class Input:
+        image_id = graphene.ID(required=True)
+
+    problem = graphene.Field(ProblemNode, required=True)
+
+    @classmethod
+    def mutate_and_get_payload(cls, root, info, image_id):
+        # Convert global ID to a PK
+        image_id = BoulderImageNode.get_pk_from_global_id(info, image_id)
+        problem = Problem.objects.create(image_id=image_id)
+        return cls(problem=problem)
+
+
+class CreateProblemHoldMutation(relay.ClientIDMutation):
+    """Add a hold to a problem"""
+
+    class Input:
+        problem_id = graphene.ID(required=True)
+        hold_id = graphene.ID(required=True)
+
+    problem = graphene.Field(ProblemNode, required=True)
+    hold = graphene.Field(HoldNode, required=True)
+
+    @classmethod
+    def mutate_and_get_payload(
+        cls,
+        root,
+        info,
+        problem_id,
+        hold_id,
+    ):
+        # Convert global ID to a PK
+        # TODO validate hold and problem belong to same image
+        problem = relay.Node.get_node_from_global_id(
+            info, problem_id, only_type=ProblemNode
+        )
+        hold = relay.Node.get_node_from_global_id(
+            info, hold_id, only_type=HoldNode
+        )
+        hold.problems.create(problem=problem)
+        return cls(problem=problem, hold=hold)
+
+
+class DeleteProblemMutation(relay.ClientIDMutation):
+    class Input:
+        problem_id = graphene.ID(required=True)
+
+    problem = graphene.Field(ProblemNode, required=True)
+
+    @classmethod
+    def mutate_and_get_payload(cls, root, info, problem_id):
+        problem = relay.Node.get_node_from_global_id(
+            info, problem_id, only_type=ProblemNode
+        )
+        Problem.objects.filter(id=problem.id).delete()
+        return cls(problem=problem)
+
+
 class CreateBetaMutation(relay.ClientIDMutation):
     class Input:
         problem_id = graphene.ID(required=True)
@@ -202,6 +302,7 @@ class CreateBetaMoveMutation(relay.ClientIDMutation):
         beta_id = BetaNode.get_pk_from_global_id(info, beta_id)
         hold_id = hold_id and HoldNode.get_pk_from_global_id(info, hold_id)
 
+        # TODO validate that hold and beta belong to the same problem
         # TODO handle if new order value is too high
         beta_move = BetaMove.objects.add_to_beta(
             beta_id=beta_id, order=order, body_part=body_part, hold_id=hold_id
@@ -245,6 +346,11 @@ class DeleteBetaMoveMutation(relay.ClientIDMutation):
 
 class Mutation(graphene.ObjectType):
     create_image = CreateBoulderImageMutation.Field()
+    create_hold = CreateHoldMutation.Field()
+    delete_hold = DeleteHoldMutation.Field()
+    create_problem = CreateProblemMutation.Field()
+    create_problem_hold = CreateProblemHoldMutation.Field()
+    delete_problem = DeleteProblemMutation.Field()
     create_beta = CreateBetaMutation.Field()
     delete_beta = DeleteBetaMutation.Field()
     create_beta_move = CreateBetaMoveMutation.Field()

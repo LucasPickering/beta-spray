@@ -2,6 +2,9 @@ from django.db.models import F, QuerySet, Max
 from django.db.models.functions import Coalesce
 from django.forms import ValidationError
 
+# TODO move all this automatic order-sliding logic into model triggers, so we
+# can catch everything
+
 
 class BetaMoveQuerySet(QuerySet):
     def add_to_beta(self, beta_id, order, body_part, hold_id=None):
