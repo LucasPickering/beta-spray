@@ -3,7 +3,7 @@ import React, { useContext } from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
 import { toOverlayPosition } from "util/func";
-import HoldCircle from "./HoldCircle";
+import HoldMarker from "./HoldMarker";
 import { HoldOverlay_holdConnection$key } from "./__generated__/HoldOverlay_holdConnection.graphql";
 
 interface Props {
@@ -36,7 +36,7 @@ const HoldOverlay: React.FC<Props> = ({ dataKey }) => {
       {holdConnection.edges.map(({ node }) => {
         const position = toOverlayPosition(node, aspectRatio);
         return (
-          <HoldCircle key={node.id} holdId={node.id} position={position} />
+          <HoldMarker key={node.id} holdId={node.id} position={position} />
         );
       })}
     </>

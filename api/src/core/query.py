@@ -1,4 +1,5 @@
 from django.db.models import F, QuerySet, Max
+from django.db.models.functions import Coalesce
 from django.forms import ValidationError
 
 
@@ -16,8 +17,8 @@ class BetaMoveQuerySet(QuerySet):
             # If order isn't given, just do max+1
             order = (
                 self.filter(beta_id=beta_id)
-                .aggregate(max_order=Max("order") + 1)
-                .get("max_order", 0)
+                .annotate(next_order=Coalesce(Max("order") + 1, 0))
+                .values("next_order")
             )
 
         beta_move = self.create(

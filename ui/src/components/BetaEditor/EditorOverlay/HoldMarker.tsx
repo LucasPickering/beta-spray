@@ -4,7 +4,7 @@ import { useDrop } from "react-dnd";
 import { DndDragItem, DndDropResult, OverlayPosition } from "./types";
 import { DragType } from "util/dnd";
 import Circle from "./Circle";
-import classes from "./HoldCircle.scss";
+import classes from "./HoldMarker.scss";
 import commonClasses from "./common.scss";
 
 interface Props {
@@ -13,7 +13,7 @@ interface Props {
   position: OverlayPosition;
 }
 
-const HoldCircle: React.FC<Props> = ({ className, holdId, position }) => {
+const HoldMarker: React.FC<Props> = ({ className, holdId, position }) => {
   const [{ isOver }, drop] = useDrop<
     DndDragItem,
     DndDropResult,
@@ -32,7 +32,7 @@ const HoldCircle: React.FC<Props> = ({ className, holdId, position }) => {
     <Circle
       ref={drop}
       className={clsx(
-        classes.holdCircle,
+        classes.holdMarker,
         isOver && commonClasses.dropHover,
         className
       )}
@@ -41,6 +41,6 @@ const HoldCircle: React.FC<Props> = ({ className, holdId, position }) => {
   );
 };
 
-HoldCircle.defaultProps = {} as Partial<Props>;
+HoldMarker.defaultProps = {} as Partial<Props>;
 
-export default HoldCircle;
+export default HoldMarker;

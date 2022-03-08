@@ -153,6 +153,7 @@ const BetaOverlay: React.FC<Props> = ({ dataKey }) => {
             prototypePosition={{ x: 10, y: 85 / aspectRatio + i * 5 }}
             moves={movesForBodyPart}
             onDrop={(item, result) => {
+              console.log(item, result);
               // Called when a move is dragged onto some target
               // For now, the only thing we can drag onto is a hold
 

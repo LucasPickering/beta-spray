@@ -2,6 +2,7 @@ import React from "react";
 import { DragType } from "util/dnd";
 import { OverlayPosition } from "./types";
 import classes from "./Circle.scss";
+import Positioned from "./Positioned";
 
 interface Props extends React.SVGProps<SVGCircleElement> {
   className?: string;
@@ -13,10 +14,7 @@ interface Props extends React.SVGProps<SVGCircleElement> {
 
 const Circle = React.forwardRef<SVGCircleElement, Props>(
   ({ className, position, innerLabel, outerLabel, ...rest }, ref) => (
-    <g
-      transform={`translate(${position.x},${position.y})`}
-      transform-origin={`${position.x} ${position.y}`}
-    >
+    <Positioned position={position}>
       <circle ref={ref} className={className} r={2} {...rest} />
 
       {innerLabel && (
@@ -34,7 +32,7 @@ const Circle = React.forwardRef<SVGCircleElement, Props>(
           {outerLabel}
         </text>
       )}
-    </g>
+    </Positioned>
   )
 );
 
