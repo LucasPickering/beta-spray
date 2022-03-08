@@ -43,10 +43,6 @@ const BetaChainCircle: React.FC<Props> = ({
     },
   }));
 
-  if (move.kind === "new") {
-    return null; // TODO
-  }
-
   return (
     <Circle
       ref={drag}

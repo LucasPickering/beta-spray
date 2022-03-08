@@ -19,28 +19,16 @@ export interface APIPosition {
 }
 
 /**
- * One move rendered onto the beta overlay. There are a few types of moves,
- * depending on whether the move has been persisted to the API yet or is still
- * under construction.
- *
- * TODO this needs a bit more fleshing out, in most cases we're only rendering
- * saved moves so we don't need the ADT everywhere
+ * One move rendered onto the beta overlay.
  */
-export type BetaOverlayMove = (
-  | {
-      kind: "saved";
-      id: string; // API ID for the backing BetaMoveNode
-    }
-  // New moves don't have a position yet because they track the cursor/finger
-  | { kind: "new" }
-) & {
-  // Common fields, for all variants
+export interface BetaOverlayMove {
+  id: string;
   prev?: BetaOverlayMove;
   next?: BetaOverlayMove;
   bodyPart: BodyPart;
   order: number;
   position: OverlayPosition;
-};
+}
 
 /**
  * An alias for the BodyPart enum from the API. Makes imports a bit simpler.

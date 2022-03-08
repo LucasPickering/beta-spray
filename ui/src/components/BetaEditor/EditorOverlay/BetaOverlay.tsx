@@ -65,7 +65,6 @@ const BetaOverlay: React.FC<Props> = ({ dataKey }) => {
 
     const moves = acc.get(node.bodyPart) ?? [];
     moves.push({
-      kind: "saved",
       id: node.id,
       bodyPart: node.bodyPart,
       order: node.order,
