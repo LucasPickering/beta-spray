@@ -1,7 +1,21 @@
-.betaMove {
-  fill: lightblue;
+.LEFT_HAND {
+  &.betaMove {
+    fill: lightblue;
+  }
+  &.lastBetaMove {
+    fill: blue;
+  }
 }
 
-.lastBetaMove {
-  fill: blue;
+.RIGHT_HAND {
+  &.betaMove {
+    fill: lightcoral;
+  }
+  &.lastBetaMove {
+    fill: red;
+  }
+}
+
+.text {
+  font-size: 3px;
 }

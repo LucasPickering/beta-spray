@@ -1,3 +1,11 @@
-.betaChainLine {
-  stroke: lightblue;
+.LEFT_HAND {
+  &.betaChainLine {
+    stroke: lightblue;
+  }
+}
+
+.RIGHT_HAND {
+  &.betaChainLine {
+    stroke: lightcoral;
+  }
 }

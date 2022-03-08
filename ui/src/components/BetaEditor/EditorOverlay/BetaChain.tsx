@@ -22,10 +22,11 @@ const BetaChain: React.FC<Props> = ({
   deleteBetaMove,
 }) => (
   <>
-    {moves.map((move) => (
-      <React.Fragment key={move.id}>
-        {/* Draw a line from the last move to this one */}
-        {move.prev && (
+    {/* Draw a line from the last move to this one. Draw these *first* so they
+    go on the bottom */}
+    {moves.map(
+      (move) =>
+        move.prev && (
           <BetaChainLine
             startMove={move.prev}
             endMove={move}
@@ -33,8 +34,10 @@ const BetaChain: React.FC<Props> = ({
               createBetaMove({ holdId, order: move.order });
             }}
           />
-        )}
-
+        )
+    )}
+    {moves.map((move) => (
+      <React.Fragment key={move.id}>
         <BetaChainCircle
           move={move}
           onDrop={({ holdId }) => {

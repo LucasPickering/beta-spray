@@ -44,18 +44,34 @@ const BetaChainCircle: React.FC<Props> = ({
   }));
 
   return (
-    <Circle
-      ref={drag}
-      // The last move in the chain gets styled differently
-      className={clsx(
-        classes.betaMove,
-        !move.next && classes.lastBetaMove,
-        className
+    <g transform={`translate(${move.position.x},${move.position.y})`}>
+      <Circle
+        ref={drag}
+        // The last move in the chain gets styled differently
+        className={clsx(
+          classes.betaMove,
+          !move.next && classes.lastBetaMove,
+          classes[move.bodyPart],
+          className
+        )}
+        position={{ x: 0, y: 0 }}
+        opacity={isDragging ? 0.5 : 1.0}
+        onDoubleClick={onDoubleClick}
+      />
+      <text
+        className={classes.text}
+        textAnchor="middle"
+        dominantBaseline="middle"
+      >
+        {move.order + 1}
+      </text>
+      {/* First move in the chain gets a body part label */}
+      {!move.prev && (
+        <text className={classes.text} x={2} y={2}>
+          {move.bodyPart}
+        </text>
       )}
-      position={move.position}
-      opacity={isDragging ? 0.5 : 1.0}
-      onDoubleClick={onDoubleClick}
-    />
+    </g>
   );
 };
 

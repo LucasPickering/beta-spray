@@ -52,27 +52,33 @@ const BetaOverlay: React.FC<Props> = ({ dataKey }) => {
 
   const { aspectRatio } = useContext(OverlayContext);
 
-  // Group the moves by body part so we can draw chains. We assume the API
-  // response is ordered by `order`, so these should naturally be as well.
-  const movesByBodyPart = beta.moves.edges.reduce<
-    Map<BodyPart, Array<BetaOverlayMove>>
-  >((acc, { node }) => {
-    // TODO use position for non-hold moves
+  const moves = beta.moves.edges.reduce<BetaOverlayMove[]>((acc, { node }) => {
+    // TODO render holdless moves
     if (!node.hold) {
       console.warn("skipping move (no associated hold)", node);
       return acc;
     }
 
-    const moves = acc.get(node.bodyPart) ?? [];
-    moves.push({
+    acc.push({
       id: node.id,
       bodyPart: node.bodyPart,
       order: node.order,
       position: toOverlayPosition(node.hold, aspectRatio),
     });
-    acc.set(node.bodyPart, moves);
     return acc;
-  }, new Map());
+  }, []);
+
+  // Group the moves by body part so we can draw chains. We assume the API
+  // response is ordered by `order`, so these should naturally be as well.
+  const movesByBodyPart = moves.reduce<Map<BodyPart, BetaOverlayMove[]>>(
+    (acc, move) => {
+      const movesForBodyPart = acc.get(move.bodyPart) ?? [];
+      movesForBodyPart.push(move);
+      acc.set(move.bodyPart, movesForBodyPart);
+      return acc;
+    },
+    new Map()
+  );
 
   // Within each chain, link prev<==>current<==>next, so each move knows about
   // its neighbors
@@ -140,10 +146,10 @@ const BetaOverlay: React.FC<Props> = ({ dataKey }) => {
   // Render one "chain" of moves per body part
   return (
     <>
-      {Array.from(movesByBodyPart.entries(), ([bodyPart, moves]) => (
+      {Array.from(movesByBodyPart.entries(), ([bodyPart, movesForBodyPart]) => (
         <BetaChain
           key={bodyPart}
-          moves={moves}
+          moves={movesForBodyPart}
           createBetaMove={({ holdId, order }) =>
             createBetaMove({
               variables: {
@@ -177,6 +183,29 @@ const BetaOverlay: React.FC<Props> = ({ dataKey }) => {
           }
         />
       ))}
+      {/* {moves.map((move, i) => {
+        if (i === 0) {
+          return null;
+        }
+
+        const prevMove = moves[i - 1];
+
+        if (prevMove.bodyPart === move.bodyPart) {
+          return null;
+        }
+
+        return (
+          <line
+            key={move.id}
+            x1={prevMove.position.x}
+            y1={prevMove.position.y}
+            x2={move.position.x}
+            y2={move.position.y}
+            stroke="red"
+            strokeWidth={0.5}
+          />
+        );
+      })} */}
     </>
   );
 };
