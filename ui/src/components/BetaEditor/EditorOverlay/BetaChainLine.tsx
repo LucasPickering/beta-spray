@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import React from "react";
-import { BetaOverlayMove } from "./types";
+import { BetaOverlayMove, DndDragItem, DndDropResult } from "./types";
 import classes from "./BetaChainLine.scss";
 import { DragType } from "util/dnd";
 import { useDrag } from "react-dnd";
@@ -9,8 +9,7 @@ interface Props {
   className?: string;
   startMove: BetaOverlayMove;
   endMove: BetaOverlayMove;
-  // TODO type alias
-  onDrop?: (input: { holdId: string }) => void;
+  onDrop?: (item: DndDragItem, dropResult: DndDropResult) => void;
 }
 
 /**
@@ -24,12 +23,12 @@ const BetaChainCircle: React.FC<Props> = ({
 }) => {
   // TODO type alias
   const [{ isDragging }, drag] = useDrag<
-    undefined,
-    // TODO type alias
-    { holdId: string },
+    DndDragItem,
+    DndDropResult,
     { isDragging: boolean }
   >(() => ({
     type: DragType.BetaMoveSvg,
+    item: { kind: "line", startMove },
     collect: (monitor) => ({
       isDragging: Boolean(monitor.isDragging()),
     }),
@@ -37,7 +36,7 @@ const BetaChainCircle: React.FC<Props> = ({
       const result = monitor.getDropResult();
       // TODO don't create new move if we didn't actually move
       if (result && onDrop) {
-        onDrop(result);
+        onDrop(item, result);
       }
     },
   }));

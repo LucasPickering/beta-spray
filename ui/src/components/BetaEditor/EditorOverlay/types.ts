@@ -34,3 +34,15 @@ export interface BetaOverlayMove {
  * An alias for the BodyPart enum from the API. Makes imports a bit simpler.
  */
 export type BodyPart = BodyPartApi;
+
+export type DndDragItem =
+  // Dragging a move around
+  | { kind: "move"; move: BetaOverlayMove }
+  // Dragging a line between two moves (to insert a move)
+  | { kind: "line"; startMove: BetaOverlayMove };
+
+/**
+ * The result type for dropping a beta move (as part of a drag-and-drop action).
+ * The move could land one a few different types of objects.
+ */
+export type DndDropResult = { kind: "hold"; holdId: string };

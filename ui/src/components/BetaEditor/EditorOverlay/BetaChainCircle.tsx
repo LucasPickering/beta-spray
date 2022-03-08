@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import React from "react";
 import { useDrag } from "react-dnd";
-import { BetaOverlayMove } from "./types";
+import { BetaOverlayMove, DndDragItem, DndDropResult } from "./types";
 import Circle from "./Circle";
 import classes from "./BetaChainCircle.scss";
 import { DragType } from "util/dnd";
@@ -9,9 +9,8 @@ import { DragType } from "util/dnd";
 interface Props {
   className?: string;
   move: BetaOverlayMove;
-  // TODO type alias
-  onDrop?: (input: { holdId: string }) => void;
-  onDoubleClick?: () => void;
+  onDrop?: (item: DndDragItem, dropResult: DndDropResult) => void;
+  onDoubleClick?: (move: BetaOverlayMove) => void;
 }
 
 /**
@@ -25,12 +24,12 @@ const BetaChainCircle: React.FC<Props> = ({
 }) => {
   // TODO type alias
   const [{ isDragging }, drag] = useDrag<
-    undefined,
-    // TODO type alias
-    { holdId: string },
+    DndDragItem,
+    DndDropResult,
     { isDragging: boolean }
   >(() => ({
     type: DragType.BetaMoveSvg,
+    item: { kind: "move", move },
     collect: (monitor) => ({
       isDragging: Boolean(monitor.isDragging()),
     }),
@@ -38,7 +37,7 @@ const BetaChainCircle: React.FC<Props> = ({
       const result = monitor.getDropResult();
       // TODO don't create new move if we didn't actually move
       if (result && onDrop) {
-        onDrop(result);
+        onDrop(item, result);
       }
     },
   }));
@@ -56,7 +55,7 @@ const BetaChainCircle: React.FC<Props> = ({
         )}
         position={{ x: 0, y: 0 }}
         opacity={isDragging ? 0.5 : 1.0}
-        onDoubleClick={onDoubleClick}
+        onDoubleClick={onDoubleClick && (() => onDoubleClick(move))}
       />
       <text
         className={classes.text}

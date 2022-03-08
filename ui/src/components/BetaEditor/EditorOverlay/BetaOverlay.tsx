@@ -150,62 +150,62 @@ const BetaOverlay: React.FC<Props> = ({ dataKey }) => {
         <BetaChain
           key={bodyPart}
           moves={movesForBodyPart}
-          createBetaMove={({ holdId, order }) =>
-            createBetaMove({
-              variables: {
-                input: {
-                  betaId: beta.id,
-                  bodyPart: bodyPart,
-                  order,
-                  holdId,
-                },
-              },
-            })
-          }
-          updateBetaMove={({ betaMoveId, holdId }) =>
-            updateBetaMove({
-              variables: {
-                input: {
-                  betaMoveId,
-                  holdId,
-                },
-              },
-            })
-          }
-          deleteBetaMove={({ betaMoveId }) =>
+          onDrop={(item, result) => {
+            // Called when a move is dragged onto some target
+            if (result.kind === "hold") {
+              // Dragging a move onto a hold - either add a new move (if this
+              // is the last in the chain) or move this one to a different hold
+              if (item.kind === "move") {
+                // TODO figure out how to update the last move without creating
+                // a new one
+                if (item.move.next) {
+                  updateBetaMove({
+                    variables: {
+                      input: {
+                        betaMoveId: item.move.id,
+                        holdId: result.holdId,
+                      },
+                    },
+                  });
+                } else {
+                  createBetaMove({
+                    variables: {
+                      input: {
+                        betaId: beta.id,
+                        bodyPart,
+                        holdId: result.holdId,
+                      },
+                    },
+                  });
+                }
+              }
+
+              // Dragged a line to a hold - insert a move in the middle
+              if (item.kind === "line") {
+                createBetaMove({
+                  variables: {
+                    input: {
+                      betaId: beta.id,
+                      bodyPart,
+                      order: item.startMove.order + 1,
+                      holdId: result.holdId,
+                    },
+                  },
+                });
+              }
+            }
+          }}
+          onDoubleClick={(move) =>
             deleteBetaMove({
               variables: {
                 input: {
-                  betaMoveId,
+                  betaMoveId: move.id,
                 },
               },
             })
           }
         />
       ))}
-      {/* {moves.map((move, i) => {
-        if (i === 0) {
-          return null;
-        }
-
-        const prevMove = moves[i - 1];
-
-        if (prevMove.bodyPart === move.bodyPart) {
-          return null;
-        }
-
-        return (
-          <line
-            key={move.id}
-            x1={prevMove.position.x}
-            y1={prevMove.position.y}
-            x2={move.position.x}
-            y2={move.position.y}
-            stroke="red"
-            strokeWidth={0.5}
-          />
-        );
-      })} */}
     </>
   );
 };
