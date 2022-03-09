@@ -1,38 +1,39 @@
 import React from "react";
 import { graphql, useFragment, useMutation } from "react-relay";
-import { BetaList_betaConnection$key } from "./__generated__/BetaList_betaConnection.graphql";
+import { BetaList_problemNode$key } from "./__generated__/BetaList_problemNode.graphql";
 import { BetaList_createBetaMutation } from "./__generated__/BetaList_createBetaMutation.graphql";
 
 interface Props {
-  betaConnectionKey: BetaList_betaConnection$key;
-  problemId: string;
+  problemKey: BetaList_problemNode$key;
   selectedBeta: string | undefined;
   setSelectedBeta: (betaId: string) => void;
 }
 
 /**
- * Selection list of betas
+ * List all the betas for a problem
  */
 const BetaList: React.FC<Props> = ({
-  betaConnectionKey,
-  problemId,
+  problemKey,
   selectedBeta,
   setSelectedBeta,
 }) => {
-  const betaConnection = useFragment(
+  const problem = useFragment(
     graphql`
-      fragment BetaList_betaConnection on BetaNodeConnection {
-        __id
-        edges {
-          node {
-            id
+      fragment BetaList_problemNode on ProblemNode {
+        id
+        betas {
+          __id
+          edges {
+            node {
+              id
+            }
           }
         }
       }
     `,
-    betaConnectionKey
+    problemKey
   );
-  const connections = [betaConnection.__id];
+  const connections = [problem.betas.__id];
 
   // TODO handle loading states
   const [createBeta] = useMutation<BetaList_createBetaMutation>(graphql`
@@ -53,7 +54,7 @@ const BetaList: React.FC<Props> = ({
   return (
     <div>
       <h2>Beta</h2>
-      {betaConnection.edges.map(({ node }, i) => {
+      {problem.betas.edges.map(({ node }, i) => {
         const id = `beta-${node.id}`;
         return (
           <div key={node.id}>
@@ -73,7 +74,9 @@ const BetaList: React.FC<Props> = ({
 
       <button
         onClick={() =>
-          createBeta({ variables: { input: { problemId }, connections } })
+          createBeta({
+            variables: { input: { problemId: problem.id }, connections },
+          })
         }
       >
         New Beta

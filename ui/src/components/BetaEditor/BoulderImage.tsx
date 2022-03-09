@@ -1,29 +1,29 @@
 import React from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
-import { BoulderImage_image$key } from "./__generated__/BoulderImage_image.graphql";
+import { BoulderImage_imageNode$key } from "./__generated__/BoulderImage_imageNode.graphql";
 
 interface Props {
-  dataKey: BoulderImage_image$key;
+  imageKey: BoulderImage_imageNode$key;
   onLoad: JSX.IntrinsicElements["img"]["onLoad"];
 }
 
 /**
  * Boulder background image
  */
-const BoulderImage: React.FC<Props> = ({ dataKey, onLoad }) => {
-  const data = useFragment(
+const BoulderImage: React.FC<Props> = ({ imageKey, onLoad }) => {
+  const image = useFragment(
     graphql`
-      fragment BoulderImage_image on BoulderImageNode {
+      fragment BoulderImage_imageNode on BoulderImageNode {
         imageUrl
       }
     `,
-    dataKey
+    imageKey
   );
 
   return (
     <img
-      src={data.imageUrl}
+      src={image.imageUrl}
       alt="Boulder"
       onLoad={onLoad}
       style={{ height: "100%" }}

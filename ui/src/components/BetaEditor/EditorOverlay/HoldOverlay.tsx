@@ -5,38 +5,52 @@ import { useOverlayUtils } from "util/useOverlayUtils";
 import HoldMarker from "./HoldMarker";
 import { HoldOverlay_createHoldMutation } from "./__generated__/HoldOverlay_createHoldMutation.graphql";
 import { HoldOverlay_deleteHoldMutation } from "./__generated__/HoldOverlay_deleteHoldMutation.graphql";
-import { HoldOverlay_holdConnection$key } from "./__generated__/HoldOverlay_holdConnection.graphql";
+import { HoldOverlay_imageNode$key } from "./__generated__/HoldOverlay_imageNode.graphql";
+import { HoldOverlay_problemNode$key } from "./__generated__/HoldOverlay_problemNode.graphql";
 
 interface Props {
-  holdConnectionKey: HoldOverlay_holdConnection$key;
-  imageId: string;
+  imageKey: HoldOverlay_imageNode$key;
+  problemKey: HoldOverlay_problemNode$key | null;
   editing: boolean;
 }
 
 /**
  * Visualization of holds onto the boulder image
  */
-const HoldOverlay: React.FC<Props> = ({
-  holdConnectionKey,
-  imageId,
-  editing,
-}) => {
-  const holdConnection = useFragment(
+const HoldOverlay: React.FC<Props> = ({ imageKey, problemKey, editing }) => {
+  const image = useFragment(
     graphql`
-      fragment HoldOverlay_holdConnection on HoldNodeConnection {
-        __id
-        edges {
-          node {
-            id
-            positionX
-            positionY
+      fragment HoldOverlay_imageNode on BoulderImageNode {
+        id
+        holds {
+          __id
+          edges {
+            node {
+              id
+              positionX
+              positionY
+            }
           }
         }
       }
     `,
-    holdConnectionKey
+    imageKey
   );
-  const connections = [holdConnection.__id];
+  const problem = useFragment(
+    graphql`
+      fragment HoldOverlay_problemNode on ProblemNode {
+        id
+        holds {
+          __id
+        }
+      }
+    `,
+    problemKey
+  );
+  const connections = [image.holds.__id];
+  if (problem) {
+    connections.push(problem.holds.__id);
+  }
 
   const { toOverlayPosition, toAPIPosition, getMouseCoords } =
     useOverlayUtils();
@@ -87,7 +101,7 @@ const HoldOverlay: React.FC<Props> = ({
             createHold({
               variables: {
                 input: {
-                  imageId,
+                  imageId: image.id,
                   ...apiPos,
                 },
                 connections,
@@ -97,7 +111,7 @@ const HoldOverlay: React.FC<Props> = ({
         />
       )}
 
-      {holdConnection.edges.map(({ node }) => {
+      {image.holds.edges.map(({ node }) => {
         const position = toOverlayPosition(node);
         return (
           <HoldMarker

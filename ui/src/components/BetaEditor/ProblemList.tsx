@@ -1,38 +1,39 @@
 import React from "react";
 import { graphql, useFragment, useMutation } from "react-relay";
 import { ProblemList_createProblemMutation } from "./__generated__/ProblemList_createProblemMutation.graphql";
-import { ProblemList_problemConnection$key } from "./__generated__/ProblemList_problemConnection.graphql";
+import { ProblemList_imageNode$key } from "./__generated__/ProblemList_imageNode.graphql";
 
 interface Props {
-  problemConnectionKey: ProblemList_problemConnection$key;
-  imageId: string;
+  imageKey: ProblemList_imageNode$key;
   selectedProblem: string | undefined;
   setSelectedProblem: (problemId: string) => void;
 }
 
 /**
- * Selection list of problems
+ * List all problems for a boulder image
  */
 const ProblemList: React.FC<Props> = ({
-  problemConnectionKey,
-  imageId,
+  imageKey,
   selectedProblem,
   setSelectedProblem,
 }) => {
-  const problemConnection = useFragment(
+  const image = useFragment(
     graphql`
-      fragment ProblemList_problemConnection on ProblemNodeConnection {
-        __id
-        edges {
-          node {
-            id
+      fragment ProblemList_imageNode on BoulderImageNode {
+        id
+        problems {
+          __id
+          edges {
+            node {
+              id
+            }
           }
         }
       }
     `,
-    problemConnectionKey
+    imageKey
   );
-  const connections = [problemConnection.__id];
+  const connections = [image.problems.__id];
 
   // TODO handle loading states
   const [createProblem] =
@@ -57,7 +58,7 @@ const ProblemList: React.FC<Props> = ({
   return (
     <div>
       <h3>Problems</h3>
-      {problemConnection.edges.map(({ node }, i) => (
+      {image.problems.edges.map(({ node }, i) => (
         <div key={node.id}>
           <label htmlFor={`problem-${node.id}`}>
             <input
@@ -74,7 +75,9 @@ const ProblemList: React.FC<Props> = ({
 
       <button
         onClick={() =>
-          createProblem({ variables: { input: { imageId }, connections } })
+          createProblem({
+            variables: { input: { imageId: image.id }, connections },
+          })
         }
       >
         New Problem

@@ -36,25 +36,15 @@ const BetaEditor: React.FC<Props> = ({
     graphql`
       query BetaEditorQuery($imageId: ID!, $problemId: ID!, $betaId: ID!) {
         image(id: $imageId) {
-          id
-          ...BoulderImage_image
-          problems {
-            ...ProblemList_problemConnection
-          }
-          holds {
-            ...HoldOverlay_holdConnection
-          }
+          ...BoulderImage_imageNode
+          ...ProblemList_imageNode
+          ...HoldOverlay_imageNode
         }
 
         # TODO split this into a separate query
         problem(id: $problemId) {
-          id
-          holds {
-            ...HoldOverlay_holdConnection
-          }
-          betas {
-            ...BetaList_betaConnection
-          }
+          ...BetaList_problemNode
+          ...HoldOverlay_problemNode
         }
 
         # TODO split this into a separate query
@@ -77,8 +67,6 @@ const BetaEditor: React.FC<Props> = ({
     return <NotFound />;
   }
 
-  // TODO centralize all mutations in here
-
   return (
     <div className={classes.betaEditor}>
       {/* The boulder image and decorations */}
@@ -90,7 +78,7 @@ const BetaEditor: React.FC<Props> = ({
         }}
       >
         <BoulderImage
-          dataKey={data.image}
+          imageKey={data.image}
           onLoad={(e) => {
             const el = e.currentTarget;
             setAspectRatio(el.width / el.height);
@@ -103,10 +91,8 @@ const BetaEditor: React.FC<Props> = ({
             <HoldOverlay
               // If a problem is selected+loaded, render its holds, otherwise
               // render all the holds for the image
-              holdConnectionKey={
-                data.problem ? data.problem.holds : data.image.holds
-              }
-              imageId={data.image.id}
+              imageKey={data.image}
+              problemKey={data.problem}
               editing={editingHolds}
             />
             {data.beta && <BetaOverlay dataKey={data.beta} />}
@@ -121,15 +107,13 @@ const BetaEditor: React.FC<Props> = ({
             {editingHolds ? "Done" : "Edit Holds"}
           </button>
           <ProblemList
-            problemConnectionKey={data.image.problems}
-            imageId={data.image.id}
+            imageKey={data.image}
             selectedProblem={selectedProblem}
             setSelectedProblem={setSelectedProblem}
           />
           {data.problem && (
             <BetaList
-              betaConnectionKey={data.problem.betas}
-              problemId={data.problem.id}
+              problemKey={data.problem}
               selectedBeta={selectedBeta}
               setSelectedBeta={setSelectedBeta}
             />
