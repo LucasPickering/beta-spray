@@ -88,6 +88,21 @@ class CreateProblemMutation(relay.ClientIDMutation):
         return cls(problem=problem)
 
 
+class DeleteProblemMutation(relay.ClientIDMutation):
+    class Input:
+        problem_id = graphene.ID(required=True)
+
+    problem = graphene.Field(ProblemNode, required=True)
+
+    @classmethod
+    def mutate_and_get_payload(cls, root, info, problem_id):
+        problem = relay.Node.get_node_from_global_id(
+            info, problem_id, only_type=ProblemNode
+        )
+        Problem.objects.filter(id=problem.id).delete()
+        return cls(problem=problem)
+
+
 class CreateProblemHoldMutation(relay.ClientIDMutation):
     """Add a hold to a problem"""
 
@@ -114,23 +129,38 @@ class CreateProblemHoldMutation(relay.ClientIDMutation):
         hold = relay.Node.get_node_from_global_id(
             info, hold_id, only_type=HoldNode
         )
-        hold.problems.create(problem=problem)
+        hold.problems.add(problem)
         return cls(problem=problem, hold=hold)
 
 
-class DeleteProblemMutation(relay.ClientIDMutation):
+class DeleteProblemHoldMutation(relay.ClientIDMutation):
+    """Remove a hold from a problem"""
+
     class Input:
         problem_id = graphene.ID(required=True)
+        hold_id = graphene.ID(required=True)
 
     problem = graphene.Field(ProblemNode, required=True)
+    hold = graphene.Field(HoldNode, required=True)
 
     @classmethod
-    def mutate_and_get_payload(cls, root, info, problem_id):
+    def mutate_and_get_payload(
+        cls,
+        root,
+        info,
+        problem_id,
+        hold_id,
+    ):
+        # Convert global ID to a PK
+        # TODO validate hold and problem belong to same image
         problem = relay.Node.get_node_from_global_id(
             info, problem_id, only_type=ProblemNode
         )
-        Problem.objects.filter(id=problem.id).delete()
-        return cls(problem=problem)
+        hold = relay.Node.get_node_from_global_id(
+            info, hold_id, only_type=HoldNode
+        )
+        hold.problems.remove(problem)
+        return cls(problem=problem, hold=hold)
 
 
 class CreateBetaMutation(relay.ClientIDMutation):
@@ -248,8 +278,9 @@ class Mutation(graphene.ObjectType):
     create_hold = CreateHoldMutation.Field()
     delete_hold = DeleteHoldMutation.Field()
     create_problem = CreateProblemMutation.Field()
-    create_problem_hold = CreateProblemHoldMutation.Field()
     delete_problem = DeleteProblemMutation.Field()
+    create_problem_hold = CreateProblemHoldMutation.Field()
+    delete_problem_hold = DeleteProblemHoldMutation.Field()
     create_beta = CreateBetaMutation.Field()
     delete_beta = DeleteBetaMutation.Field()
     create_beta_move = CreateBetaMoveMutation.Field()

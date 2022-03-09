@@ -1,10 +1,13 @@
 import React from "react";
 import { useFragment, useMutation } from "react-relay";
 import { graphql } from "relay-runtime";
+import { assertIsDefined } from "util/func";
 import { useOverlayUtils } from "util/useOverlayUtils";
 import HoldOverlay from "./HoldOverlay";
 import { HoldEditor_createHoldMutation } from "./__generated__/HoldEditor_createHoldMutation.graphql";
+import { HoldEditor_createProblemHoldMutation } from "./__generated__/HoldEditor_createProblemHoldMutation.graphql";
 import { HoldEditor_deleteHoldMutation } from "./__generated__/HoldEditor_deleteHoldMutation.graphql";
+import { HoldEditor_deleteProblemHoldMutation } from "./__generated__/HoldEditor_deleteProblemHoldMutation.graphql";
 import { HoldEditor_imageNode$key } from "./__generated__/HoldEditor_imageNode.graphql";
 import { HoldEditor_problemNode$key } from "./__generated__/HoldEditor_problemNode.graphql";
 
@@ -38,17 +41,16 @@ const HoldEditor: React.FC<Props> = ({ imageKey, problemKey, editing }) => {
         holds {
           __id
           ...HoldOverlay_holdConnection
+          edges {
+            node {
+              id
+            }
+          }
         }
       }
     `,
     problemKey
   );
-
-  // We'll update each of these connections when adding/deleting a hold
-  const connections = [image.holds.__id];
-  if (problem) {
-    connections.push(problem.holds.__id);
-  }
 
   const { toAPIPosition, getMouseCoords } = useOverlayUtils();
 
@@ -80,7 +82,41 @@ const HoldEditor: React.FC<Props> = ({ imageKey, problemKey, editing }) => {
     }
   `);
 
+  const [createProblemHold] =
+    useMutation<HoldEditor_createProblemHoldMutation>(graphql`
+      mutation HoldEditor_createProblemHoldMutation(
+        $input: CreateProblemHoldMutationInput!
+        $connections: [ID!]!
+      ) {
+        createProblemHold(input: $input) {
+          hold
+            @appendNode(
+              connections: $connections
+              edgeTypeName: "HoldNodeEdge"
+            ) {
+            ...HoldMarker_holdNode
+          }
+        }
+      }
+    `);
+
+  const [deleteProblemHold] =
+    useMutation<HoldEditor_deleteProblemHoldMutation>(graphql`
+      mutation HoldEditor_deleteProblemHoldMutation(
+        $input: DeleteProblemHoldMutationInput!
+        $connections: [ID!]!
+      ) {
+        deleteProblemHold(input: $input) {
+          hold {
+            id @deleteEdge(connections: $connections)
+          }
+        }
+      }
+    `);
+
   // TODO support drag+dropping nodes
+
+  const problemHoldIds = problem?.holds.edges.map(({ node }) => node.id);
 
   return (
     <>
@@ -98,7 +134,8 @@ const HoldEditor: React.FC<Props> = ({ imageKey, problemKey, editing }) => {
                   imageId: image.id,
                   ...apiPos,
                 },
-                connections,
+                // *Don't* add to the problem, just to the image
+                connections: [image.holds.__id],
               },
             });
           }}
@@ -107,15 +144,47 @@ const HoldEditor: React.FC<Props> = ({ imageKey, problemKey, editing }) => {
 
       <HoldOverlay
         // If a problem is selected+loaded, render its holds, otherwise
-        // render all the holds for the image
-        holdConnectionKey={problem ? problem.holds : image.holds}
+        // render all the holds for the image. *But*, if we're editing, always
+        // render all holds, so that we can show which holds are/aren't in the
+        // problem.
+        holdConnectionKey={problem && !editing ? problem.holds : image.holds}
+        highlightedHolds={editing ? problemHoldIds : undefined}
+        onClick={
+          editing && problem
+            ? (holdId) => {
+                // problem is defined => problemHoldIds is defined
+                assertIsDefined(problemHoldIds);
+                if (problemHoldIds && problemHoldIds.includes(holdId)) {
+                  // Hold is already in the problem, remove it
+                  deleteProblemHold({
+                    variables: {
+                      input: { problemId: problem.id, holdId },
+                      connections: [problem.holds.__id],
+                    },
+                  });
+                } else {
+                  // Hold is not yet in the problem, add it
+                  createProblemHold({
+                    variables: {
+                      input: { problemId: problem.id, holdId },
+                      // No need to update the image-level hold connection here
+                      connections: [problem.holds.__id],
+                    },
+                  });
+                }
+              }
+            : undefined
+        }
         onDoubleClick={
           editing
             ? (holdId) => {
                 deleteHold({
                   variables: {
                     input: { holdId },
-                    connections,
+                    // Delete from everywhere possible
+                    connections: [image.holds.__id].concat(
+                      problem ? [problem.holds.__id] : []
+                    ),
                   },
                 });
               }

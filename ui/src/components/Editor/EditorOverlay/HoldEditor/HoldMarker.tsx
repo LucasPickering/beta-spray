@@ -13,10 +13,19 @@ import { HoldMarker_holdNode$key } from "./__generated__/HoldMarker_holdNode.gra
 interface Props {
   className?: string;
   holdKey: HoldMarker_holdNode$key;
+  highlight?: boolean;
+  // TODO type alias?
+  onClick?: (holdId: string) => void;
   onDoubleClick?: (holdId: string) => void;
 }
 
-const HoldMarker: React.FC<Props> = ({ className, holdKey, onDoubleClick }) => {
+const HoldMarker: React.FC<Props> = ({
+  className,
+  holdKey,
+  highlight = false,
+  onClick,
+  onDoubleClick,
+}) => {
   const hold = useFragment(
     graphql`
       fragment HoldMarker_holdNode on HoldNode {
@@ -49,10 +58,12 @@ const HoldMarker: React.FC<Props> = ({ className, holdKey, onDoubleClick }) => {
       ref={drop}
       className={clsx(
         classes.holdMarker,
+        highlight && classes.highlight,
         isOver && commonClasses.dropHover,
         className
       )}
       position={position}
+      onClick={onClick && (() => onClick(hold.id))}
       onDoubleClick={onDoubleClick && (() => onDoubleClick(hold.id))}
     />
   );
