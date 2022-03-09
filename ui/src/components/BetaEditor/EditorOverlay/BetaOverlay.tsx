@@ -54,7 +54,6 @@ const BetaOverlay: React.FC<Props> = ({ dataKey }) => {
   const moves = beta.moves.edges.reduce<BetaOverlayMove[]>((acc, { node }) => {
     // TODO render holdless moves
     if (!node.hold) {
-      console.warn("skipping move (no associated hold)", node);
       return acc;
     }
 
@@ -151,7 +150,7 @@ const BetaOverlay: React.FC<Props> = ({ dataKey }) => {
             bodyPart={bodyPart}
             prototypePosition={toOverlayPosition({
               positionX: 0.1,
-              positionY: 0.85 + i * 0.05,
+              positionY: 0.85 + i * 0.04,
             })}
             moves={movesForBodyPart}
             onDrop={(item, result) => {

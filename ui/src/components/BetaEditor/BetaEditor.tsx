@@ -48,6 +48,7 @@ const BetaEditor: React.FC<Props> = ({
 
         # TODO split this into a separate query
         problem(id: $problemId) {
+          id
           holds {
             ...HoldOverlay_holdConnection
           }
@@ -75,6 +76,8 @@ const BetaEditor: React.FC<Props> = ({
   if (!data.image) {
     return <NotFound />;
   }
+
+  // TODO centralize all mutations in here
 
   return (
     <div className={classes.betaEditor}>
@@ -118,13 +121,15 @@ const BetaEditor: React.FC<Props> = ({
             {editingHolds ? "Done" : "Edit Holds"}
           </button>
           <ProblemList
-            dataKey={data.image.problems}
+            problemConnectionKey={data.image.problems}
+            imageId={data.image.id}
             selectedProblem={selectedProblem}
             setSelectedProblem={setSelectedProblem}
           />
           {data.problem && (
             <BetaList
-              dataKey={data.problem.betas}
+              betaConnectionKey={data.problem.betas}
+              problemId={data.problem.id}
               selectedBeta={selectedBeta}
               setSelectedBeta={setSelectedBeta}
             />

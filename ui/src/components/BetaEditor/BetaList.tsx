@@ -1,9 +1,11 @@
 import React from "react";
-import { graphql, useFragment } from "react-relay";
+import { graphql, useFragment, useMutation } from "react-relay";
 import { BetaList_betaConnection$key } from "./__generated__/BetaList_betaConnection.graphql";
+import { BetaList_createBetaMutation } from "./__generated__/BetaList_createBetaMutation.graphql";
 
 interface Props {
-  dataKey: BetaList_betaConnection$key;
+  betaConnectionKey: BetaList_betaConnection$key;
+  problemId: string;
   selectedBeta: string | undefined;
   setSelectedBeta: (betaId: string) => void;
 }
@@ -12,13 +14,15 @@ interface Props {
  * Selection list of betas
  */
 const BetaList: React.FC<Props> = ({
-  dataKey,
+  betaConnectionKey,
+  problemId,
   selectedBeta,
   setSelectedBeta,
 }) => {
-  const data = useFragment(
+  const betaConnection = useFragment(
     graphql`
       fragment BetaList_betaConnection on BetaNodeConnection {
+        __id
         edges {
           node {
             id
@@ -26,12 +30,30 @@ const BetaList: React.FC<Props> = ({
         }
       }
     `,
-    dataKey
+    betaConnectionKey
   );
+  const connections = [betaConnection.__id];
+
+  // TODO handle loading states
+  const [createBeta] = useMutation<BetaList_createBetaMutation>(graphql`
+    mutation BetaList_createBetaMutation(
+      $input: CreateBetaMutationInput!
+      $connections: [ID!]!
+    ) {
+      createBeta(input: $input) {
+        beta
+          @appendNode(connections: $connections, edgeTypeName: "BetaNodeEdge") {
+          # TODO fragment
+          id
+        }
+      }
+    }
+  `);
 
   return (
     <div>
-      {data.edges.map(({ node }, i) => {
+      <h2>Beta</h2>
+      {betaConnection.edges.map(({ node }, i) => {
         const id = `beta-${node.id}`;
         return (
           <div key={node.id}>
@@ -48,6 +70,14 @@ const BetaList: React.FC<Props> = ({
           </div>
         );
       })}
+
+      <button
+        onClick={() =>
+          createBeta({ variables: { input: { problemId }, connections } })
+        }
+      >
+        New Beta
+      </button>
     </div>
   );
 };
