@@ -1,4 +1,4 @@
-from django.db.models import F, QuerySet, Max
+from django.db.models import F, QuerySet, Max, Value
 from django.db.models.functions import Coalesce
 from django.forms import ValidationError
 
@@ -20,6 +20,11 @@ class BetaMoveQuerySet(QuerySet):
             # If order isn't given, just do max+1
             order = (
                 self.filter(beta_id=beta_id)
+                # This is needed to prevent django adding a GROUP BY that breaks
+                # the query
+                # https://stackoverflow.com/a/64902200/1907353
+                .annotate(dummy_group_by=Value(1))
+                .values("dummy_group_by")
                 .annotate(next_order=Coalesce(Max("order") + 1, 0))
                 .values("next_order")
             )
