@@ -1,14 +1,13 @@
-import React, { useContext } from "react";
+import React from "react";
 import { useFragment, useMutation } from "react-relay";
 import { graphql } from "relay-runtime";
 import { BetaOverlay_betaNode$key } from "./__generated__/BetaOverlay_betaNode.graphql";
-import OverlayContext from "context/OverlayContext";
 import { BetaOverlayMove, BodyPart, toBodyPart } from "./types";
 import { BetaOverlay_createBetaMoveMutation } from "./__generated__/BetaOverlay_createBetaMoveMutation.graphql";
 import BetaChain from "./BetaChain";
-import { toOverlayPosition } from "util/func";
 import { BetaOverlay_updateBetaMoveMutation } from "./__generated__/BetaOverlay_updateBetaMoveMutation.graphql";
 import { BetaOverlay_deleteBetaMoveMutation } from "./__generated__/BetaOverlay_deleteBetaMoveMutation.graphql";
+import { useOverlayUtils } from "util/useOverlayUtils";
 
 interface Props {
   dataKey: BetaOverlay_betaNode$key;
@@ -50,7 +49,7 @@ const BetaOverlay: React.FC<Props> = ({ dataKey }) => {
     dataKey
   );
 
-  const { aspectRatio } = useContext(OverlayContext);
+  const { toOverlayPosition } = useOverlayUtils();
 
   const moves = beta.moves.edges.reduce<BetaOverlayMove[]>((acc, { node }) => {
     // TODO render holdless moves
@@ -63,7 +62,7 @@ const BetaOverlay: React.FC<Props> = ({ dataKey }) => {
       id: node.id,
       bodyPart: toBodyPart(node.bodyPart),
       order: node.order,
-      position: toOverlayPosition(node.hold, aspectRatio),
+      position: toOverlayPosition(node.hold),
     });
     return acc;
   }, []);
@@ -150,10 +149,12 @@ const BetaOverlay: React.FC<Props> = ({ dataKey }) => {
           <BetaChain
             key={bodyPart}
             bodyPart={bodyPart}
-            prototypePosition={{ x: 10, y: 85 / aspectRatio + i * 5 }}
+            prototypePosition={toOverlayPosition({
+              positionX: 0.1,
+              positionY: 0.85 + i * 0.05,
+            })}
             moves={movesForBodyPart}
             onDrop={(item, result) => {
-              console.log(item, result);
               // Called when a move is dragged onto some target
               // For now, the only thing we can drag onto is a hold
 

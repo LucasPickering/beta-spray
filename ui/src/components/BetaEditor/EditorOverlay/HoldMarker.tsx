@@ -11,9 +11,15 @@ interface Props {
   className?: string;
   holdId: string;
   position: OverlayPosition;
+  onDoubleClick?: () => void;
 }
 
-const HoldMarker: React.FC<Props> = ({ className, holdId, position }) => {
+const HoldMarker: React.FC<Props> = ({
+  className,
+  holdId,
+  position,
+  onDoubleClick,
+}) => {
   const [{ isOver }, drop] = useDrop<
     DndDragItem,
     DndDropResult,
@@ -37,6 +43,7 @@ const HoldMarker: React.FC<Props> = ({ className, holdId, position }) => {
         className
       )}
       position={position}
+      onDoubleClick={onDoubleClick}
     />
   );
 };

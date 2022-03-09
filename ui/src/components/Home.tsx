@@ -22,6 +22,7 @@ const Home: React.FC = () => {
     {}
   );
 
+  // TODO move to another component
   const [uploadImage] = useMutation<Home_createImageMutation>(graphql`
     mutation Home_createImageMutation(
       $input: CreateBoulderImageMutationInput!
@@ -33,6 +34,7 @@ const Home: React.FC = () => {
             connections: $connections
             edgeTypeName: "BoulderImageNodeEdge"
           ) {
+          # TODO fragment
           id
           createdAt
         }
@@ -58,16 +60,15 @@ const Home: React.FC = () => {
         accept="image/png, image/jpeg"
         onChange={(e) => {
           if (e.target.files) {
-            console.log(e.target.files);
             uploadImage({
               variables: {
                 input: {
-                  imageFile: "ass",
+                  imageFile: "boulderImage",
                 },
                 connections: data.images ? [data.images.__id] : [],
               },
               uploadables: {
-                ass: e.target.files[0],
+                boulderImage: e.target.files[0],
               },
             });
           }

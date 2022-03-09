@@ -36,6 +36,7 @@ const BetaEditor: React.FC<Props> = ({
     graphql`
       query BetaEditorQuery($imageId: ID!, $problemId: ID!, $betaId: ID!) {
         image(id: $imageId) {
+          id
           ...BoulderImage_image
           problems {
             ...ProblemList_problemConnection
@@ -68,6 +69,7 @@ const BetaEditor: React.FC<Props> = ({
   // Aspect ratio is needed in order to scale the SVG to the raster image.
   // Populated when the boulder image loads.
   const [aspectRatio, setAspectRatio] = useState<number | undefined>();
+  const [editingHolds, setEditingHolds] = useState<boolean>(false);
 
   // uh oh, stinkyyyy
   if (!data.image) {
@@ -98,7 +100,11 @@ const BetaEditor: React.FC<Props> = ({
             <HoldOverlay
               // If a problem is selected+loaded, render its holds, otherwise
               // render all the holds for the image
-              dataKey={data.problem ? data.problem.holds : data.image.holds}
+              holdConnectionKey={
+                data.problem ? data.problem.holds : data.image.holds
+              }
+              imageId={data.image.id}
+              editing={editingHolds}
             />
             {data.beta && <BetaOverlay dataKey={data.beta} />}
           </EditorOverlay>
@@ -108,6 +114,9 @@ const BetaEditor: React.FC<Props> = ({
       {/* Other stuff */}
       <DndProvider backend={HTML5Backend} context={{}}>
         <div>
+          <button onClick={() => setEditingHolds((old) => !old)}>
+            {editingHolds ? "Done" : "Edit Holds"}
+          </button>
           <ProblemList
             dataKey={data.image.problems}
             selectedProblem={selectedProblem}

@@ -1,8 +1,3 @@
-import {
-  APIPosition,
-  OverlayPosition,
-} from "components/BetaEditor/EditorOverlay/types";
-
 /**
  * Assert the given value is defined. Useful as a type guard when you know
  * something is defined but the typechecker doesn't.
@@ -25,18 +20,4 @@ export function assertDataKind<T extends { kind: string }, K extends T["kind"]>(
   if (d.kind !== kind) {
     throw new Error(`Expected data to be of kind ${kind}, but got: ${d.kind}`);
   }
-}
-
-/**
- * Convert an API position (the format that we get from the API) to a position
- * renderable within an SVG.
- */
-export function toOverlayPosition(
-  apiPosition: APIPosition,
-  aspectRatio: number
-): OverlayPosition {
-  return {
-    x: apiPosition.positionX * 100,
-    y: (apiPosition.positionY * 100) / aspectRatio,
-  };
 }
