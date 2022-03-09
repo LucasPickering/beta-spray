@@ -41,7 +41,7 @@ const HoldOverlay: React.FC<Props> = ({
         <HoldMarker
           key={node.id}
           holdKey={node}
-          highlight={highlightedHolds && highlightedHolds.includes(node.id)}
+          unhighlight={highlightedHolds && !highlightedHolds.includes(node.id)}
           onClick={onClick}
           onDoubleClick={onDoubleClick}
         />

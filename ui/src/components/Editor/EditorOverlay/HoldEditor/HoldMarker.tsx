@@ -13,7 +13,7 @@ import { HoldMarker_holdNode$key } from "./__generated__/HoldMarker_holdNode.gra
 interface Props {
   className?: string;
   holdKey: HoldMarker_holdNode$key;
-  highlight?: boolean;
+  unhighlight?: boolean;
   // TODO type alias?
   onClick?: (holdId: string) => void;
   onDoubleClick?: (holdId: string) => void;
@@ -22,7 +22,7 @@ interface Props {
 const HoldMarker: React.FC<Props> = ({
   className,
   holdKey,
-  highlight = false,
+  unhighlight,
   onClick,
   onDoubleClick,
 }) => {
@@ -58,7 +58,7 @@ const HoldMarker: React.FC<Props> = ({
       ref={drop}
       className={clsx(
         classes.holdMarker,
-        highlight && classes.highlight,
+        unhighlight && classes.unhighlight,
         isOver && commonClasses.dropHover,
         className
       )}
