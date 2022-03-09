@@ -62,6 +62,7 @@ const BetaDetails: React.FC<Props> = ({ dataKey }) => {
 
   return (
     <div>
+      <h3>Moves</h3>
       <ol className={classes.betaDetailsList}>
         {moves.map((node, oldIndex) => (
           <BetaDetailsMove

@@ -2,6 +2,7 @@ import React from "react";
 import { graphql, useFragment, useMutation } from "react-relay";
 import { BetaList_problemNode$key } from "./__generated__/BetaList_problemNode.graphql";
 import { BetaList_createBetaMutation } from "./__generated__/BetaList_createBetaMutation.graphql";
+import { BetaList_deleteBetaMutation } from "./__generated__/BetaList_deleteBetaMutation.graphql";
 
 interface Props {
   problemKey: BetaList_problemNode$key;
@@ -52,6 +53,20 @@ const BetaList: React.FC<Props> = ({
     }
   `);
 
+  // TODO handle loading states
+  const [deleteBeta] = useMutation<BetaList_deleteBetaMutation>(graphql`
+    mutation BetaList_deleteBetaMutation(
+      $input: DeleteBetaMutationInput!
+      $connections: [ID!]!
+    ) {
+      deleteBeta(input: $input) {
+        beta {
+          id @deleteEdge(connections: $connections) @deleteRecord
+        }
+      }
+    }
+  `);
+
   return (
     <div>
       <h2>Beta</h2>
@@ -69,6 +84,16 @@ const BetaList: React.FC<Props> = ({
               />
               {node.name}
             </label>
+
+            <button
+              onClick={() =>
+                deleteBeta({
+                  variables: { input: { betaId: node.id }, connections },
+                })
+              }
+            >
+              x
+            </button>
           </div>
         );
       })}
