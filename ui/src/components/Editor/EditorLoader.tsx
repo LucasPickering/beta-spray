@@ -3,11 +3,11 @@ import { useQueryLoader } from "react-relay";
 import { useNavigate, useParams } from "react-router-dom";
 import { assertIsDefined } from "util/func";
 import Loading from "../Loading";
-import type { BetaEditorQuery as BetaEditorQueryType } from "./__generated__/BetaEditorQuery.graphql";
-import BetaEditorQuery from "./__generated__/BetaEditorQuery.graphql";
-import BetaEditor from "./BetaEditor";
+import type { EditorQuery as EditorQueryType } from "./__generated__/EditorQuery.graphql";
+import EditorQuery from "./__generated__/EditorQuery.graphql";
+import Editor from "./Editor";
 
-const BetaEditorLoader: React.FC = () => {
+const EditorLoader: React.FC = () => {
   const { imageId, problemId, betaId } = useParams();
   assertIsDefined(imageId); // Only undefined if routing isn't hooked up right
 
@@ -19,7 +19,7 @@ const BetaEditorLoader: React.FC = () => {
   );
   const [selectedBeta, setSelectedBeta] = useState<string | undefined>(betaId);
   const [imageQueryRef, loadImageQuery] =
-    useQueryLoader<BetaEditorQueryType>(BetaEditorQuery);
+    useQueryLoader<EditorQueryType>(EditorQuery);
 
   // Load image data
   useEffect(() => {
@@ -33,7 +33,7 @@ const BetaEditorLoader: React.FC = () => {
   return (
     <Suspense fallback={<Loading />}>
       {imageQueryRef && (
-        <BetaEditor
+        <Editor
           queryRef={imageQueryRef}
           selectedProblem={selectedProblem}
           selectedBeta={selectedBeta}
@@ -54,4 +54,4 @@ const BetaEditorLoader: React.FC = () => {
   );
 };
 
-export default BetaEditorLoader;
+export default EditorLoader;

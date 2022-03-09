@@ -66,7 +66,7 @@ class HoldNode(NodeType):
         model = Hold
         interfaces = (relay.Node,)
         fields = ("image", "position_x", "position_y")
-        filter_fields = ["problems__id"]
+        filter_fields = []
 
 
 class ProblemNode(NodeType):

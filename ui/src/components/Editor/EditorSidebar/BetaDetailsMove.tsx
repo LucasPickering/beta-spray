@@ -4,7 +4,6 @@ import { BetaDetailsMove_betaMoveNode$key } from "./__generated__/BetaDetailsMov
 import classes from "./BetaDetailsMove.scss";
 import { useDrag, useDrop, XYCoord } from "react-dnd";
 import { DragType } from "util/dnd";
-import commonClasses from "./EditorOverlay/common.scss";
 import clsx from "clsx";
 
 interface Props {
@@ -38,11 +37,7 @@ const BetaDetailsMove: React.FC<Props> = ({
 
   const ref = useRef<HTMLLIElement | null>(null);
 
-  const [{ isDragging }, drag] = useDrag<
-    DragItem,
-    DragItem,
-    { isDragging: boolean }
-  >(() => ({
+  const [, drag] = useDrag<DragItem, DragItem, { isDragging: boolean }>(() => ({
     type: DragType.BetaMoveList,
     collect(monitor) {
       return {
@@ -112,13 +107,7 @@ const BetaDetailsMove: React.FC<Props> = ({
 
   drag(drop(ref));
   return (
-    <li
-      ref={ref}
-      className={clsx(
-        classes.betaDetailsMove,
-        isOver && commonClasses.dropHover
-      )}
-    >
+    <li ref={ref} className={clsx(classes.betaDetailsMove)}>
       <span>
         {betaMove.order + 1} - {betaMove.bodyPart}
       </span>

@@ -5,7 +5,7 @@ import {
   DndDragItem,
   DndDropResult,
   OverlayPosition,
-} from "./types";
+} from "../types";
 import BetaChainCircle from "./BetaChainCircle";
 import BetaChainLine from "./BetaChainLine";
 import BetaPrototypeCircle from "./BetaPrototypeCircle";

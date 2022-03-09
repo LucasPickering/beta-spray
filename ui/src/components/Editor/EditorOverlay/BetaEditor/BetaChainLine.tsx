@@ -1,40 +1,41 @@
 import clsx from "clsx";
 import React from "react";
-import { useDrag } from "react-dnd";
-import { BodyPart, DndDragItem, DndDropResult, OverlayPosition } from "./types";
-import Circle from "./Circle";
+import { BetaOverlayMove, DndDragItem, DndDropResult } from "../types";
 import { DragType } from "util/dnd";
-import classes from "./BetaPrototypeCircle.scss";
-import commonClasses from "./common.scss";
+import { useDrag } from "react-dnd";
+import classes from "./BetaChainLine.scss";
+import commonClasses from "../common.scss";
 
 interface Props {
   className?: string;
-  bodyPart: BodyPart;
-  position: OverlayPosition;
+  startMove: BetaOverlayMove;
+  endMove: BetaOverlayMove;
   onDrop?: (item: DndDragItem, dropResult: DndDropResult) => void;
 }
 
 /**
  * A circle representing a single beta move in a chain
  */
-const BetaPrototypeCircle: React.FC<Props> = ({
+const BetaChainCircle: React.FC<Props> = ({
   className,
-  bodyPart,
-  position,
+  startMove,
+  endMove,
   onDrop,
 }) => {
+  // TODO type alias
   const [{ isDragging }, drag] = useDrag<
     DndDragItem,
     DndDropResult,
     { isDragging: boolean }
   >(() => ({
     type: DragType.BetaMoveSvg,
-    item: { kind: "newMove", bodyPart },
+    item: { kind: "line", startMove },
     collect: (monitor) => ({
       isDragging: Boolean(monitor.isDragging()),
     }),
     end: (item, monitor) => {
       const result = monitor.getDropResult();
+      // TODO don't create new move if we didn't actually move
       if (result && onDrop) {
         onDrop(item, result);
       }
@@ -42,22 +43,23 @@ const BetaPrototypeCircle: React.FC<Props> = ({
   }));
 
   return (
-    <Circle
+    <line
       ref={drag}
-      // The last move in the chain gets styled differently
       className={clsx(
-        classes.betaPrototype,
+        classes.betaChainLine,
         commonClasses.draggable,
         isDragging && commonClasses.dragging,
-        classes[bodyPart],
+        classes[startMove.bodyPart],
         className
       )}
-      position={position}
-      outerLabel={bodyPart}
+      x1={startMove.position.x}
+      y1={startMove.position.y}
+      x2={endMove.position.x}
+      y2={endMove.position.y}
     />
   );
 };
 
-BetaPrototypeCircle.defaultProps = {} as Partial<Props>;
+BetaChainCircle.defaultProps = {} as Partial<Props>;
 
-export default BetaPrototypeCircle;
+export default BetaChainCircle;

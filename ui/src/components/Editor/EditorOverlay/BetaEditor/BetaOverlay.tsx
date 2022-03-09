@@ -2,7 +2,7 @@ import React from "react";
 import { useFragment, useMutation } from "react-relay";
 import { graphql } from "relay-runtime";
 import { BetaOverlay_betaNode$key } from "./__generated__/BetaOverlay_betaNode.graphql";
-import { BetaOverlayMove, BodyPart, toBodyPart } from "./types";
+import { BetaOverlayMove, BodyPart, toBodyPart } from "../types";
 import { BetaOverlay_createBetaMoveMutation } from "./__generated__/BetaOverlay_createBetaMoveMutation.graphql";
 import BetaChain from "./BetaChain";
 import { BetaOverlay_updateBetaMoveMutation } from "./__generated__/BetaOverlay_updateBetaMoveMutation.graphql";

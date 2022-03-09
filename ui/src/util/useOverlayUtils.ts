@@ -1,7 +1,7 @@
 import {
   APIPosition,
   OverlayPosition,
-} from "components/BetaEditor/EditorOverlay/types";
+} from "components/Editor/EditorOverlay/types";
 import OverlayContext from "context/OverlayContext";
 import { useContext, useMemo } from "react";
 import { assertIsDefined } from "./func";

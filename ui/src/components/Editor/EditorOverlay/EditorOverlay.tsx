@@ -8,7 +8,9 @@ interface Props {
 }
 
 /**
- * Visualization of holds & beta onto the boulder image
+ * Visualization of holds & beta onto the boulder image. This is just a wrapper,
+ * children are passed in by the parent so that props can be drilled more
+ * easily.
  */
 const EditorOverlay: React.FC<Props> = ({ aspectRatio, children }) => {
   const ref = useRef<SVGSVGElement | null>(null);

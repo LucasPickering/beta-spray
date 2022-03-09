@@ -2,20 +2,19 @@ import React, { useState } from "react";
 import { PreloadedQuery, usePreloadedQuery } from "react-relay";
 import { graphql } from "relay-runtime";
 import NotFound from "../NotFound";
-import BetaDetails from "./BetaDetails";
-import BetaList from "./BetaList";
-import BetaOverlay from "./EditorOverlay/BetaOverlay";
+import BetaDetails from "./EditorSidebar/BetaDetails";
+import BetaList from "./EditorSidebar/BetaList";
+import ProblemList from "./EditorSidebar/ProblemList";
+import BetaOverlay from "./EditorOverlay/BetaEditor/BetaOverlay";
 import BoulderImage from "./BoulderImage";
-import HoldOverlay from "./EditorOverlay/HoldOverlay";
 import EditorOverlay from "./EditorOverlay/EditorOverlay";
-import ProblemList from "./ProblemList";
-import { BetaEditorQuery } from "./__generated__/BetaEditorQuery.graphql";
-import classes from "./BetaEditor.scss";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
+import classes from "./Editor.scss";
+import EditorSidebar from "./EditorSidebar/EditorSidebar";
+import { EditorQuery } from "./__generated__/EditorQuery.graphql";
+import HoldEditor from "./EditorOverlay/HoldEditor/HoldEditor";
 
 interface Props {
-  queryRef: PreloadedQuery<BetaEditorQuery>;
+  queryRef: PreloadedQuery<EditorQuery>;
   selectedProblem: string | undefined;
   selectedBeta: string | undefined;
   setSelectedProblem: (problemId: string) => void;
@@ -25,26 +24,26 @@ interface Props {
 /**
  * Main app component, for viewing+editing boulders/problems/betas
  */
-const BetaEditor: React.FC<Props> = ({
+const Editor: React.FC<Props> = ({
   queryRef,
   selectedProblem,
   selectedBeta,
   setSelectedProblem,
   setSelectedBeta,
 }) => {
-  const data = usePreloadedQuery<BetaEditorQuery>(
+  const data = usePreloadedQuery<EditorQuery>(
     graphql`
-      query BetaEditorQuery($imageId: ID!, $problemId: ID!, $betaId: ID!) {
+      query EditorQuery($imageId: ID!, $problemId: ID!, $betaId: ID!) {
         image(id: $imageId) {
           ...BoulderImage_imageNode
           ...ProblemList_imageNode
-          ...HoldOverlay_imageNode
+          ...HoldEditor_imageNode
         }
 
         # TODO split this into a separate query
         problem(id: $problemId) {
           ...BetaList_problemNode
-          ...HoldOverlay_problemNode
+          ...HoldEditor_problemNode
         }
 
         # TODO split this into a separate query
@@ -68,7 +67,7 @@ const BetaEditor: React.FC<Props> = ({
   }
 
   return (
-    <div className={classes.betaEditor}>
+    <div className={classes.editor}>
       {/* The boulder image and decorations */}
       <div
         style={{
@@ -88,9 +87,7 @@ const BetaEditor: React.FC<Props> = ({
         {/* Don't render overlay until image loads */}
         {aspectRatio && (
           <EditorOverlay aspectRatio={aspectRatio}>
-            <HoldOverlay
-              // If a problem is selected+loaded, render its holds, otherwise
-              // render all the holds for the image
+            <HoldEditor
               imageKey={data.image}
               problemKey={data.problem}
               editing={editingHolds}
@@ -101,28 +98,26 @@ const BetaEditor: React.FC<Props> = ({
       </div>
 
       {/* Other stuff */}
-      <DndProvider backend={HTML5Backend} context={{}}>
-        <div>
-          <button onClick={() => setEditingHolds((old) => !old)}>
-            {editingHolds ? "Done" : "Edit Holds"}
-          </button>
-          <ProblemList
-            imageKey={data.image}
-            selectedProblem={selectedProblem}
-            setSelectedProblem={setSelectedProblem}
+      <EditorSidebar>
+        <button onClick={() => setEditingHolds((old) => !old)}>
+          {editingHolds ? "Done" : "Edit Holds"}
+        </button>
+        <ProblemList
+          imageKey={data.image}
+          selectedProblem={selectedProblem}
+          setSelectedProblem={setSelectedProblem}
+        />
+        {data.problem && (
+          <BetaList
+            problemKey={data.problem}
+            selectedBeta={selectedBeta}
+            setSelectedBeta={setSelectedBeta}
           />
-          {data.problem && (
-            <BetaList
-              problemKey={data.problem}
-              selectedBeta={selectedBeta}
-              setSelectedBeta={setSelectedBeta}
-            />
-          )}
-          {data.beta && <BetaDetails dataKey={data.beta} />}
-        </div>
-      </DndProvider>
+        )}
+        {data.beta && <BetaDetails dataKey={data.beta} />}
+      </EditorSidebar>
     </div>
   );
 };
 
-export default BetaEditor;
+export default Editor;

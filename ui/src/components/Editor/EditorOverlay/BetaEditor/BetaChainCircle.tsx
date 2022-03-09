@@ -1,16 +1,17 @@
 import clsx from "clsx";
 import React from "react";
-import { BetaOverlayMove, DndDragItem, DndDropResult } from "./types";
-import { DragType } from "util/dnd";
 import { useDrag } from "react-dnd";
-import classes from "./BetaChainLine.scss";
-import commonClasses from "./common.scss";
+import { BetaOverlayMove, DndDragItem, DndDropResult } from "../types";
+import Circle from "../Circle";
+import { DragType } from "util/dnd";
+import classes from "./BetaChainCircle.scss";
+import commonClasses from "../common.scss";
 
 interface Props {
   className?: string;
-  startMove: BetaOverlayMove;
-  endMove: BetaOverlayMove;
+  move: BetaOverlayMove;
   onDrop?: (item: DndDragItem, dropResult: DndDropResult) => void;
+  onDoubleClick?: (move: BetaOverlayMove) => void;
 }
 
 /**
@@ -18,24 +19,22 @@ interface Props {
  */
 const BetaChainCircle: React.FC<Props> = ({
   className,
-  startMove,
-  endMove,
+  move,
   onDrop,
+  onDoubleClick,
 }) => {
-  // TODO type alias
   const [{ isDragging }, drag] = useDrag<
     DndDragItem,
     DndDropResult,
     { isDragging: boolean }
   >(() => ({
     type: DragType.BetaMoveSvg,
-    item: { kind: "line", startMove },
+    item: { kind: "move", move },
     collect: (monitor) => ({
       isDragging: Boolean(monitor.isDragging()),
     }),
     end: (item, monitor) => {
       const result = monitor.getDropResult();
-      // TODO don't create new move if we didn't actually move
       if (result && onDrop) {
         onDrop(item, result);
       }
@@ -43,19 +42,19 @@ const BetaChainCircle: React.FC<Props> = ({
   }));
 
   return (
-    <line
+    <Circle
       ref={drag}
+      // The last move in the chain gets styled differently
       className={clsx(
-        classes.betaChainLine,
+        classes.betaMove,
         commonClasses.draggable,
         isDragging && commonClasses.dragging,
-        classes[startMove.bodyPart],
+        classes[move.bodyPart],
         className
       )}
-      x1={startMove.position.x}
-      y1={startMove.position.y}
-      x2={endMove.position.x}
-      y2={endMove.position.y}
+      position={move.position}
+      innerLabel={(move.order + 1).toString()}
+      onDoubleClick={onDoubleClick && (() => onDoubleClick(move))}
     />
   );
 };
