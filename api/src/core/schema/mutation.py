@@ -3,7 +3,15 @@ import os.path
 import uuid
 from graphene import relay
 
-from core.models import Beta, BetaMove, BoulderImage, Hold, Problem
+from core.models import (
+    Beta,
+    BetaMove,
+    BoulderImage,
+    Hold,
+    HoldAnnotationSource,
+    Problem,
+    ProblemHold,
+)
 from .query import (
     BoulderImageNode,
     HoldNode,
@@ -50,7 +58,10 @@ class CreateHoldMutation(relay.ClientIDMutation):
         # Convert global ID to a PK
         image_id = BoulderImageNode.get_pk_from_global_id(info, image_id)
         hold = Hold.objects.create(
-            image_id=image_id, position_x=position_x, position_y=position_y
+            image_id=image_id,
+            position_x=position_x,
+            position_y=position_y,
+            source=HoldAnnotationSource.USER,
         )
         return cls(hold=hold)
 
@@ -76,15 +87,16 @@ class CreateProblemMutation(relay.ClientIDMutation):
     """Create a new problem for a specific image"""
 
     class Input:
+        name = graphene.String(required=True)
         image_id = graphene.ID(required=True)
 
     problem = graphene.Field(ProblemNode, required=True)
 
     @classmethod
-    def mutate_and_get_payload(cls, root, info, image_id):
+    def mutate_and_get_payload(cls, root, info, name, image_id):
         # Convert global ID to a PK
         image_id = BoulderImageNode.get_pk_from_global_id(info, image_id)
-        problem = Problem.objects.create(image_id=image_id)
+        problem = Problem.objects.create(name=name, image_id=image_id)
         return cls(problem=problem)
 
 
@@ -129,7 +141,11 @@ class CreateProblemHoldMutation(relay.ClientIDMutation):
         hold = relay.Node.get_node_from_global_id(
             info, hold_id, only_type=HoldNode
         )
-        hold.problems.add(problem)
+        ProblemHold.objects.create(
+            problem=problem,
+            hold=hold,
+            source=HoldAnnotationSource.USER,
+        )
         return cls(problem=problem, hold=hold)
 
 
@@ -165,16 +181,17 @@ class DeleteProblemHoldMutation(relay.ClientIDMutation):
 
 class CreateBetaMutation(relay.ClientIDMutation):
     class Input:
+        name = graphene.String(required=True)
         problem_id = graphene.ID(required=True)
 
     beta = graphene.Field(BetaNode, required=True)
 
     @classmethod
-    def mutate_and_get_payload(cls, root, info, problem_id):
+    def mutate_and_get_payload(cls, root, info, name, problem_id):
         # Convert global ID to a PK
         # TODO spit out a useful error for bad ID here
         problem_id = ProblemNode.get_pk_from_global_id(info, problem_id)
-        beta = Beta.objects.create(problem_id=problem_id)
+        beta = Beta.objects.create(name=name, problem_id=problem_id)
         return cls(beta=beta)
 
 

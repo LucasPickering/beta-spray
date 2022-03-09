@@ -2,6 +2,25 @@ from core.query import BetaMoveQuerySet
 from django.db import models
 
 
+class BodyPart(models.TextChoices):
+    """A body part that someone could put on a hold"""
+
+    # we could easily expand this later to include knees, spleen, etc.
+    LEFT_HAND = "LH"
+    RIGHT_HAND = "RH"
+    LEFT_FOOT = "LF"
+    RIGHT_FOOT = "RF"
+
+
+class HoldAnnotationSource(models.TextChoices):
+    """
+    The source of a hold annotation on an image, or of a hold within a problem
+    """
+
+    USER = "user"  # User added attribution manually
+    AUTO = "auto"  # ML model added attribution
+
+
 class BoulderImage(models.Model):
     """
     A user-uploaded image of a rock wall, which should contain holds that make
@@ -29,6 +48,11 @@ class Hold(models.Model):
     position_y = models.FloatField(
         help_text="Top-to-bottom position of the hold within the image, 0-1"
     )
+    source = models.CharField(
+        max_length=4,
+        choices=HoldAnnotationSource.choices,
+        help_text="Source of this image-hold attribution (auto or manual)",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -38,7 +62,10 @@ class Problem(models.Model):
     A problem is made up of a collection of holds
     """
 
-    holds = models.ManyToManyField(Hold, related_name="problems", blank=True)
+    name = models.CharField(max_length=30)
+    holds = models.ManyToManyField(
+        Hold, related_name="problems", through="ProblemHold", blank=True
+    )
     # Technically we could get this by going through holds, but having an extra
     # FK makes it a lot easier
     image = models.ForeignKey(
@@ -48,14 +75,20 @@ class Problem(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 
-class BodyPart(models.TextChoices):
-    """A body part that someone could put on a hold"""
+class ProblemHold(models.Model):
+    """
+    m2m through table for problem-hold
+    """
 
-    # we could easily expand this later to include knees, spleen, etc.
-    LEFT_HAND = "LH"
-    RIGHT_HAND = "RH"
-    LEFT_FOOT = "LF"
-    RIGHT_FOOT = "RF"
+    problem = models.ForeignKey(Problem, on_delete=models.CASCADE)
+    hold = models.ForeignKey(Hold, on_delete=models.CASCADE)
+    source = models.CharField(
+        max_length=4,
+        choices=HoldAnnotationSource.choices,
+        help_text="Source of this problem-hold attribution (auto or manual)",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 
 class Beta(models.Model):
@@ -63,6 +96,7 @@ class Beta(models.Model):
     A prescribed series of moves to solve a problem.
     """
 
+    name = models.CharField(max_length=30)
     problem = models.ForeignKey(
         Problem, related_name="betas", on_delete=models.CASCADE
     )

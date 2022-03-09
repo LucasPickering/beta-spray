@@ -1,4 +1,4 @@
-import { BodyPart as BodyPartApi } from "./__generated__/BetaOverlay_betaNode.graphql";
+import { BodyPart as BodyPartApi } from "./BetaEditor/__generated__/BetaOverlay_betaNode.graphql";
 
 /**
  * The position of an object in the rendered overlay. Values are [0,100] for X

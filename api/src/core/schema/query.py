@@ -73,7 +73,15 @@ class ProblemNode(NodeType):
     class Meta:
         model = Problem
         interfaces = (relay.Node,)
-        fields = ("holds", "image", "betas")
+        fields = ("name", "holds", "image", "betas")
+        filter_fields = []
+
+
+class BetaNode(NodeType):
+    class Meta:
+        model = Beta
+        interfaces = (relay.Node,)
+        fields = ("name", "problem", "moves")
         filter_fields = []
 
 
@@ -93,14 +101,6 @@ class BetaMoveNode(NodeType):
     @classmethod
     def get_queryset(cls, queryset, info):
         return queryset.order_by("order")
-
-
-class BetaNode(NodeType):
-    class Meta:
-        model = Beta
-        interfaces = (relay.Node,)
-        fields = ("problem", "moves")
-        filter_fields = []
 
 
 class Query(graphene.ObjectType):

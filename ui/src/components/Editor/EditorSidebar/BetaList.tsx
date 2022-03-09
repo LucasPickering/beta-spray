@@ -26,6 +26,7 @@ const BetaList: React.FC<Props> = ({
           edges {
             node {
               id
+              name
             }
           }
         }
@@ -44,8 +45,8 @@ const BetaList: React.FC<Props> = ({
       createBeta(input: $input) {
         beta
           @appendNode(connections: $connections, edgeTypeName: "BetaNodeEdge") {
-          # TODO fragment
           id
+          name
         }
       }
     }
@@ -54,7 +55,7 @@ const BetaList: React.FC<Props> = ({
   return (
     <div>
       <h2>Beta</h2>
-      {problem.betas.edges.map(({ node }, i) => {
+      {problem.betas.edges.map(({ node }) => {
         const id = `beta-${node.id}`;
         return (
           <div key={node.id}>
@@ -66,7 +67,7 @@ const BetaList: React.FC<Props> = ({
                 checked={selectedBeta === node.id}
                 onChange={() => setSelectedBeta(node.id)}
               />
-              Beta {i + 1}
+              {node.name}
             </label>
           </div>
         );
@@ -75,7 +76,13 @@ const BetaList: React.FC<Props> = ({
       <button
         onClick={() =>
           createBeta({
-            variables: { input: { problemId: problem.id }, connections },
+            variables: {
+              input: {
+                problemId: problem.id,
+                name: `Beta ${problem.betas.edges.length + 1}`,
+              },
+              connections,
+            },
           })
         }
       >

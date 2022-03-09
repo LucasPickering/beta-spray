@@ -1,155 +1,474 @@
 [
-    {
-        "model": "core.boulderimage",
-        "pk": 1,
-        "fields": {
-            "path": "/api/static/boulder1.jpg"
-        }
-    },
-    {
-        "model": "core.hold",
-        "pk": 1,
-        "fields": {
-            "image": 1,
-            "position_x": 0.7901524032825322,
-            "position_y": 0.171875
-        }
-    },
-    {
-        "model": "core.hold",
-        "pk": 2,
-        "fields": {
-            "image": 1,
-            "position_x": 0.7397420867526378,
-            "position_y": 0.79375
-        }
-    },
-    {
-        "model": "core.hold",
-        "pk": 3,
-        "fields": {
-            "image": 1,
-            "position_x": 0.7889800703399765,
-            "position_y": 0.03828125
-        }
-    },
-    {
-        "model": "core.hold",
-        "pk": 4,
-        "fields": {
-            "image": 1,
-            "position_x": 0.7960140679953107,
-            "position_y": 0.775
-        }
-    },
-    {
-        "model": "core.hold",
-        "pk": 5,
-        "fields": {
-            "image": 1,
-            "position_x": 0.8007033997655334,
-            "position_y": 0.53203125
-        }
-    },
-    {
-        "model": "core.hold",
-        "pk": 6,
-        "fields": {
-            "image": 1,
-            "position_x": 0.6154747948417351,
-            "position_y": 0.52578125
-        }
-    },
-    {
-        "model": "core.hold",
-        "pk": 7,
-        "fields": {
-            "image": 1,
-            "position_x": 0.7116060961313013,
-            "position_y": 0.6375
-        }
-    },
-    {
-        "model": "core.hold",
-        "pk": 8,
-        "fields": {
-            "image": 1,
-            "position_x": 0.8558030480656507,
-            "position_y": 0.5109375
-        }
-    },
-    {
-        "model": "core.hold",
-        "pk": 9,
-        "fields": {
-            "image": 1,
-            "position_x": 0.6635404454865181,
-            "position_y": 0.12265625
-        }
-    },
-    {
-        "model": "core.hold",
-        "pk": 10,
-        "fields": {
-            "image": 1,
-            "position_x": 0.7022274325908558,
-            "position_y": 0.41953125
-        }
-    },
-    {
-        "model": "core.hold",
-        "pk": 11,
-        "fields": {
-            "image": 1,
-            "position_x": 0.7913247362250879,
-            "position_y": 0.30625
-        }
-    },
-    {
-        "model": "core.problem",
-        "pk": 1,
-        "fields": {
-            "image": 1,
-            "holds": [
-                1,
-                2,
-                3,
-                4,
-                5,
-                6,
-                7,
-                8,
-                9,
-                10,
-                11
-            ]
-        }
-    },
-    {
-        "model": "core.betamove",
-        "pk": 1,
-        "fields": {
-            "beta": 1,
-            "hold": 2,
-            "order": 0,
-            "body_part": "RH"
-        }
-    },
-    {
-        "model": "core.betamove",
-        "pk": 2,
-        "fields": {
-            "beta": 1,
-            "hold": 2,
-            "order": 1,
-            "body_part": "LH"
-        }
-    },
-    {
-        "model": "core.beta",
-        "pk": 1,
-        "fields": {
-            "problem": 1
-        }
+{
+    "model": "core.boulderimage",
+    "pk": 1,
+    "fields": {
+        "image": "boulders/96e0db9a-ac15-478f-9eee-87481f119b9a.jpg",
+        "created_at": "2022-03-09T21:23:28.537Z",
+        "updated_at": "2022-03-09T21:23:28.537Z"
     }
+},
+{
+    "model": "core.hold",
+    "pk": 1,
+    "fields": {
+        "image": 1,
+        "position_x": 0.7918458557128907,
+        "position_y": 0.30839893276133434,
+        "source": "user",
+        "created_at": "2022-03-09T21:23:43.862Z",
+        "updated_at": "2022-03-09T21:23:43.862Z"
+    }
+},
+{
+    "model": "core.hold",
+    "pk": 2,
+    "fields": {
+        "image": 1,
+        "position_x": 0.789875259399414,
+        "position_y": 0.17585300376567434,
+        "source": "user",
+        "created_at": "2022-03-09T21:23:44.741Z",
+        "updated_at": "2022-03-09T21:23:44.741Z"
+    }
+},
+{
+    "model": "core.hold",
+    "pk": 3,
+    "fields": {
+        "image": 1,
+        "position_x": 0.9613175201416015,
+        "position_y": 0.12204723727449458,
+        "source": "user",
+        "created_at": "2022-03-09T21:23:45.736Z",
+        "updated_at": "2022-03-09T21:23:45.736Z"
+    }
+},
+{
+    "model": "core.hold",
+    "pk": 4,
+    "fields": {
+        "image": 1,
+        "position_x": 0.7918458557128907,
+        "position_y": 0.04068241136632067,
+        "source": "user",
+        "created_at": "2022-03-09T21:23:46.580Z",
+        "updated_at": "2022-03-09T21:23:46.580Z"
+    }
+},
+{
+    "model": "core.hold",
+    "pk": 5,
+    "fields": {
+        "image": 1,
+        "position_x": 0.6637568664550781,
+        "position_y": 0.1246719038537208,
+        "source": "user",
+        "created_at": "2022-03-09T21:23:47.517Z",
+        "updated_at": "2022-03-09T21:23:47.517Z"
+    }
+},
+{
+    "model": "core.hold",
+    "pk": 6,
+    "fields": {
+        "image": 1,
+        "position_x": 0.49822647094726563,
+        "position_y": 0.10104986018322885,
+        "source": "user",
+        "created_at": "2022-03-09T21:23:48.549Z",
+        "updated_at": "2022-03-09T21:23:48.549Z"
+    }
+},
+{
+    "model": "core.hold",
+    "pk": 7,
+    "fields": {
+        "image": 1,
+        "position_x": 0.5435502624511719,
+        "position_y": 0.23490811611743684,
+        "source": "user",
+        "created_at": "2022-03-09T21:23:49.265Z",
+        "updated_at": "2022-03-09T21:23:49.265Z"
+    }
+},
+{
+    "model": "core.hold",
+    "pk": 8,
+    "fields": {
+        "image": 1,
+        "position_x": 0.48049106597900393,
+        "position_y": 0.41338579916446766,
+        "source": "user",
+        "created_at": "2022-03-09T21:23:50.207Z",
+        "updated_at": "2022-03-09T21:23:50.207Z"
+    }
+},
+{
+    "model": "core.hold",
+    "pk": 9,
+    "fields": {
+        "image": 1,
+        "position_x": 0.4016670608520508,
+        "position_y": 0.2493438077074416,
+        "source": "user",
+        "created_at": "2022-03-09T21:23:51.565Z",
+        "updated_at": "2022-03-09T21:23:51.565Z"
+    }
+},
+{
+    "model": "core.hold",
+    "pk": 10,
+    "fields": {
+        "image": 1,
+        "position_x": 0.4923146438598633,
+        "position_y": 0.507873999250696,
+        "source": "user",
+        "created_at": "2022-03-09T21:23:53.020Z",
+        "updated_at": "2022-03-09T21:23:53.020Z"
+    }
+},
+{
+    "model": "core.hold",
+    "pk": 11,
+    "fields": {
+        "image": 1,
+        "position_x": 0.6204036712646485,
+        "position_y": 0.5314960492722531,
+        "source": "user",
+        "created_at": "2022-03-09T21:23:53.960Z",
+        "updated_at": "2022-03-09T21:23:53.960Z"
+    }
+},
+{
+    "model": "core.hold",
+    "pk": 12,
+    "fields": {
+        "image": 1,
+        "position_x": 0.7957871246337891,
+        "position_y": 0.5341207158514795,
+        "source": "user",
+        "created_at": "2022-03-09T21:23:54.793Z",
+        "updated_at": "2022-03-09T21:23:54.793Z"
+    }
+},
+{
+    "model": "core.hold",
+    "pk": 13,
+    "fields": {
+        "image": 1,
+        "position_x": 0.8588462829589844,
+        "position_y": 0.5144356656987616,
+        "source": "user",
+        "created_at": "2022-03-09T21:23:55.686Z",
+        "updated_at": "2022-03-09T21:23:55.686Z"
+    }
+},
+{
+    "model": "core.hold",
+    "pk": 14,
+    "fields": {
+        "image": 1,
+        "position_x": 0.9455526733398437,
+        "position_y": 0.43044618273795915,
+        "source": "user",
+        "created_at": "2022-03-09T21:23:56.800Z",
+        "updated_at": "2022-03-09T21:23:56.800Z"
+    }
+},
+{
+    "model": "core.hold",
+    "pk": 15,
+    "fields": {
+        "image": 1,
+        "position_x": 0.7011982727050782,
+        "position_y": 0.42257215759602,
+        "source": "user",
+        "created_at": "2022-03-09T21:23:57.827Z",
+        "updated_at": "2022-03-09T21:23:57.827Z"
+    }
+},
+{
+    "model": "core.hold",
+    "pk": 16,
+    "fields": {
+        "image": 1,
+        "position_x": 0.9534351348876953,
+        "position_y": 0.5275589985948927,
+        "source": "user",
+        "created_at": "2022-03-09T21:23:59.092Z",
+        "updated_at": "2022-03-09T21:23:59.093Z"
+    }
+},
+{
+    "model": "core.hold",
+    "pk": 17,
+    "fields": {
+        "image": 1,
+        "position_x": 0.9140231323242187,
+        "position_y": 0.6181101988122819,
+        "source": "user",
+        "created_at": "2022-03-09T21:24:00.224Z",
+        "updated_at": "2022-03-09T21:24:00.225Z"
+    }
+},
+{
+    "model": "core.hold",
+    "pk": 18,
+    "fields": {
+        "image": 1,
+        "position_x": 0.8549050903320312,
+        "position_y": 0.6391075822546127,
+        "source": "user",
+        "created_at": "2022-03-09T21:24:01.463Z",
+        "updated_at": "2022-03-09T21:24:01.463Z"
+    }
+},
+{
+    "model": "core.hold",
+    "pk": 19,
+    "fields": {
+        "image": 1,
+        "position_x": 0.7130218505859375,
+        "position_y": 0.6391075822546127,
+        "source": "user",
+        "created_at": "2022-03-09T21:24:02.542Z",
+        "updated_at": "2022-03-09T21:24:02.542Z"
+    }
+},
+{
+    "model": "core.hold",
+    "pk": 20,
+    "fields": {
+        "image": 1,
+        "position_x": 0.6893746948242188,
+        "position_y": 0.7217847319258021,
+        "source": "user",
+        "created_at": "2022-03-09T21:24:03.350Z",
+        "updated_at": "2022-03-09T21:24:03.350Z"
+    }
+},
+{
+    "model": "core.hold",
+    "pk": 21,
+    "fields": {
+        "image": 1,
+        "position_x": 0.7425808715820312,
+        "position_y": 0.7926508819904734,
+        "source": "user",
+        "created_at": "2022-03-09T21:24:04.571Z",
+        "updated_at": "2022-03-09T21:24:04.571Z"
+    }
+},
+{
+    "model": "core.hold",
+    "pk": 22,
+    "fields": {
+        "image": 1,
+        "position_x": 0.7997283172607422,
+        "position_y": 0.7755904984169818,
+        "source": "user",
+        "created_at": "2022-03-09T21:24:05.448Z",
+        "updated_at": "2022-03-09T21:24:05.448Z"
+    }
+},
+{
+    "model": "core.hold",
+    "pk": 23,
+    "fields": {
+        "image": 1,
+        "position_x": 0.8430815124511719,
+        "position_y": 0.7860891647338868,
+        "source": "user",
+        "created_at": "2022-03-09T21:24:06.583Z",
+        "updated_at": "2022-03-09T21:24:06.583Z"
+    }
+},
+{
+    "model": "core.hold",
+    "pk": 24,
+    "fields": {
+        "image": 1,
+        "position_x": 0.9159937286376953,
+        "position_y": 0.9107611320982588,
+        "source": "user",
+        "created_at": "2022-03-09T21:24:07.935Z",
+        "updated_at": "2022-03-09T21:24:07.935Z"
+    }
+},
+{
+    "model": "core.hold",
+    "pk": 25,
+    "fields": {
+        "image": 1,
+        "position_x": 0.9849646759033203,
+        "position_y": 0.9488188483055603,
+        "source": "user",
+        "created_at": "2022-03-09T21:24:09.097Z",
+        "updated_at": "2022-03-09T21:24:09.097Z"
+    }
+},
+{
+    "model": "core.hold",
+    "pk": 26,
+    "fields": {
+        "image": 1,
+        "position_x": 0.7484926605224609,
+        "position_y": 0.8569553147985581,
+        "source": "user",
+        "created_at": "2022-03-09T21:24:10.395Z",
+        "updated_at": "2022-03-09T21:24:10.395Z"
+    }
+},
+{
+    "model": "core.problem",
+    "pk": 1,
+    "fields": {
+        "name": "Problem 1",
+        "image": 1,
+        "created_at": "2022-03-09T21:25:48.506Z",
+        "updated_at": "2022-03-09T21:25:48.506Z"
+    }
+},
+{
+    "model": "core.problemhold",
+    "pk": 1,
+    "fields": {
+        "problem": 1,
+        "hold": 1,
+        "source": "user",
+        "created_at": "2022-03-09T21:26:39.569Z",
+        "updated_at": "2022-03-09T21:26:39.569Z"
+    }
+},
+{
+    "model": "core.problemhold",
+    "pk": 2,
+    "fields": {
+        "problem": 1,
+        "hold": 2,
+        "source": "user",
+        "created_at": "2022-03-09T21:26:40.563Z",
+        "updated_at": "2022-03-09T21:26:40.563Z"
+    }
+},
+{
+    "model": "core.problemhold",
+    "pk": 3,
+    "fields": {
+        "problem": 1,
+        "hold": 5,
+        "source": "user",
+        "created_at": "2022-03-09T21:26:41.396Z",
+        "updated_at": "2022-03-09T21:26:41.397Z"
+    }
+},
+{
+    "model": "core.problemhold",
+    "pk": 4,
+    "fields": {
+        "problem": 1,
+        "hold": 4,
+        "source": "user",
+        "created_at": "2022-03-09T21:26:42.603Z",
+        "updated_at": "2022-03-09T21:26:42.603Z"
+    }
+},
+{
+    "model": "core.problemhold",
+    "pk": 5,
+    "fields": {
+        "problem": 1,
+        "hold": 15,
+        "source": "user",
+        "created_at": "2022-03-09T21:26:43.925Z",
+        "updated_at": "2022-03-09T21:26:43.925Z"
+    }
+},
+{
+    "model": "core.problemhold",
+    "pk": 6,
+    "fields": {
+        "problem": 1,
+        "hold": 13,
+        "source": "user",
+        "created_at": "2022-03-09T21:26:45.978Z",
+        "updated_at": "2022-03-09T21:26:45.978Z"
+    }
+},
+{
+    "model": "core.problemhold",
+    "pk": 7,
+    "fields": {
+        "problem": 1,
+        "hold": 12,
+        "source": "user",
+        "created_at": "2022-03-09T21:26:46.658Z",
+        "updated_at": "2022-03-09T21:26:46.658Z"
+    }
+},
+{
+    "model": "core.problemhold",
+    "pk": 8,
+    "fields": {
+        "problem": 1,
+        "hold": 19,
+        "source": "user",
+        "created_at": "2022-03-09T21:26:48.430Z",
+        "updated_at": "2022-03-09T21:26:48.430Z"
+    }
+},
+{
+    "model": "core.problemhold",
+    "pk": 9,
+    "fields": {
+        "problem": 1,
+        "hold": 22,
+        "source": "user",
+        "created_at": "2022-03-09T21:26:50.371Z",
+        "updated_at": "2022-03-09T21:26:50.371Z"
+    }
+},
+{
+    "model": "core.problemhold",
+    "pk": 10,
+    "fields": {
+        "problem": 1,
+        "hold": 21,
+        "source": "user",
+        "created_at": "2022-03-09T21:26:51.161Z",
+        "updated_at": "2022-03-09T21:26:51.162Z"
+    }
+},
+{
+    "model": "core.problemhold",
+    "pk": 11,
+    "fields": {
+        "problem": 1,
+        "hold": 11,
+        "source": "user",
+        "created_at": "2022-03-09T21:26:56.057Z",
+        "updated_at": "2022-03-09T21:26:56.057Z"
+    }
+},
+{
+    "model": "core.beta",
+    "pk": 1,
+    "fields": {
+        "name": "Beta 1",
+        "problem": 1,
+        "created_at": "2022-03-09T21:26:32.053Z",
+        "updated_at": "2022-03-09T21:26:32.053Z"
+    }
+},
+{
+    "model": "core.beta",
+    "pk": 2,
+    "fields": {
+        "name": "Beta 2",
+        "problem": 1,
+        "created_at": "2022-03-09T21:26:34.851Z",
+        "updated_at": "2022-03-09T21:26:34.851Z"
+    }
+}
 ]

@@ -26,6 +26,7 @@ const ProblemList: React.FC<Props> = ({
           edges {
             node {
               id
+              name
             }
           }
         }
@@ -48,8 +49,8 @@ const ProblemList: React.FC<Props> = ({
               connections: $connections
               edgeTypeName: "ProblemNodeEdge"
             ) {
-            # TODO fragment
             id
+            name
           }
         }
       }
@@ -58,7 +59,7 @@ const ProblemList: React.FC<Props> = ({
   return (
     <div>
       <h3>Problems</h3>
-      {image.problems.edges.map(({ node }, i) => (
+      {image.problems.edges.map(({ node }) => (
         <div key={node.id}>
           <label htmlFor={`problem-${node.id}`}>
             <input
@@ -68,7 +69,7 @@ const ProblemList: React.FC<Props> = ({
               checked={selectedProblem === node.id}
               onChange={() => setSelectedProblem(node.id)}
             />
-            Problem {i + 1}
+            {node.name}
           </label>
         </div>
       ))}
@@ -76,7 +77,13 @@ const ProblemList: React.FC<Props> = ({
       <button
         onClick={() =>
           createProblem({
-            variables: { input: { imageId: image.id }, connections },
+            variables: {
+              input: {
+                imageId: image.id,
+                name: `Problem ${image.problems.edges.length + 1}`,
+              },
+              connections,
+            },
           })
         }
       >
