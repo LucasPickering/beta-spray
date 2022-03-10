@@ -12,7 +12,7 @@ import classes from "./Editor.scss";
 import EditorSidebar from "./EditorSidebar/EditorSidebar";
 import { EditorQuery } from "./__generated__/EditorQuery.graphql";
 import HoldEditor from "./EditorOverlay/HoldEditor/HoldEditor";
-import { Button } from "@chakra-ui/react";
+import { Button, useBoolean } from "@chakra-ui/react";
 import HoldMarkers from "./EditorOverlay/HoldEditor/HoldMarkers";
 
 interface Props {
@@ -68,7 +68,7 @@ const Editor: React.FC<Props> = ({
   // Populated when the boulder image loads.
   const [aspectRatio, setAspectRatio] = useState<number | undefined>();
   // Toggle hold editor overlay
-  const [editingHolds, setEditingHolds] = useState<boolean>(false);
+  const [editingHolds, setEditingHolds] = useBoolean(false);
   // Allows overlay to detect when a hold is clicked
   const [selectedHold, setSelectedHold] = useState<string>();
 
@@ -120,7 +120,7 @@ const Editor: React.FC<Props> = ({
 
       {/* Other stuff */}
       <EditorSidebar>
-        <Button onClick={() => setEditingHolds((old) => !old)}>
+        <Button onClick={() => setEditingHolds.toggle()}>
           {editingHolds ? "Done" : "Edit Holds"}
         </Button>
         <ProblemList
