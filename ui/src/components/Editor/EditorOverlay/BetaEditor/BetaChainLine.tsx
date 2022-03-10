@@ -16,7 +16,7 @@ interface Props {
 /**
  * A circle representing a single beta move in a chain
  */
-const BetaChainCircle: React.FC<Props> = ({
+const BetaChainLine: React.FC<Props> = ({
   className,
   startMove,
   endMove,
@@ -60,6 +60,6 @@ const BetaChainCircle: React.FC<Props> = ({
   );
 };
 
-BetaChainCircle.defaultProps = {} as Partial<Props>;
+BetaChainLine.defaultProps = {} as Partial<Props>;
 
-export default BetaChainCircle;
+export default BetaChainLine;

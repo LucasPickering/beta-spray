@@ -8,6 +8,7 @@ import {
   DrawerOverlay,
   IconButton,
   Show,
+  Stack,
   useDisclosure,
 } from "@chakra-ui/react";
 import { HiMenu } from "react-icons/hi";
@@ -32,16 +33,18 @@ const EditorSidebar: React.FC = ({ children }) => {
           position="absolute"
           top={4}
           right={4}
-          size="lg"
           onClick={onOpen}
         />
         <Drawer placement="right" isOpen={isOpen} onClose={onClose}>
           <DrawerOverlay />
+
           <DrawerContent>
             <DrawerCloseButton />
             <DrawerHeader>Edit Beta</DrawerHeader>
 
-            <DrawerBody>{children}</DrawerBody>
+            <DrawerBody>
+              <Stack direction="column">{children}</Stack>
+            </DrawerBody>
           </DrawerContent>
         </Drawer>
       </Show>

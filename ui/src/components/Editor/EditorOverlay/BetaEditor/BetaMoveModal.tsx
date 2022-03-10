@@ -1,5 +1,5 @@
 import React from "react";
-import { BodyPart } from "../types";
+import { BodyPart, formatBodyPart } from "../types";
 import {
   Button,
   Modal,
@@ -35,7 +35,7 @@ const BetaMoveModal: React.FC<Props> = ({
           <Stack direction="column">
             {Object.values(BodyPart).map((bodyPart) => (
               <Button key={bodyPart} onClick={() => onSelectBodyPart(bodyPart)}>
-                {bodyPart}
+                {formatBodyPart(bodyPart)}
               </Button>
             ))}
           </Stack>

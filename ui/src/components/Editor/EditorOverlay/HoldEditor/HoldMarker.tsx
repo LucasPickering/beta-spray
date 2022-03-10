@@ -60,6 +60,7 @@ const HoldMarker: React.FC<Props> = ({
         classes.holdMarker,
         unhighlight && classes.unhighlight,
         isOver && commonClasses.dropHover,
+        onClick && classes.interact,
         className
       )}
       position={position}

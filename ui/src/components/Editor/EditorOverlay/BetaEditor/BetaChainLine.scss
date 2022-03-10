@@ -1,13 +1,19 @@
 @import "palette.scss";
 
-.LEFT_HAND {
-  &.betaChainLine {
+.betaChainLine {
+  &.LEFT_HAND {
     stroke: $left-hand-secondary;
   }
-}
 
-.RIGHT_HAND {
-  &.betaChainLine {
+  &.RIGHT_HAND {
     stroke: $right-hand-secondary;
+  }
+
+  &.LEFT_FOOT {
+    stroke: $left-foot-secondary;
+  }
+
+  &.RIGHT_FOOT {
+    stroke: $right-foot-secondary;
   }
 }

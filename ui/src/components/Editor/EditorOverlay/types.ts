@@ -64,3 +64,16 @@ export function toBodyPart(bodyPart: BodyPartApi): BodyPart {
 
   return BodyPart[bodyPart];
 }
+
+export function formatBodyPart(bodyPart: BodyPart): string {
+  switch (bodyPart) {
+    case BodyPart.LEFT_HAND:
+      return "Left Hand";
+    case BodyPart.RIGHT_HAND:
+      return "Right Hand";
+    case BodyPart.LEFT_FOOT:
+      return "Left Foot";
+    case BodyPart.RIGHT_FOOT:
+      return "Right Foot";
+  }
+}

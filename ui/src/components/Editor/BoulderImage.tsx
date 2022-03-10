@@ -26,7 +26,10 @@ const BoulderImage: React.FC<Props> = ({ imageKey, onLoad }) => {
       src={image.imageUrl}
       alt="Boulder"
       onLoad={onLoad}
-      style={{ height: "100%" }}
+      style={{
+        maxHeight: "100vh",
+        maxWidth: "100vw",
+      }}
     />
   );
 };

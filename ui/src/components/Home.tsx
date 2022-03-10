@@ -1,6 +1,7 @@
+import { Box, Link, ListItem, UnorderedList } from "@chakra-ui/react";
 import React from "react";
 import { graphql, useLazyLoadQuery, useMutation } from "react-relay";
-import { Link } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import { HomeQuery } from "./__generated__/HomeQuery.graphql";
 import { Home_createImageMutation } from "./__generated__/Home_createImageMutation.graphql";
 
@@ -43,17 +44,17 @@ const Home: React.FC = () => {
   `);
 
   return (
-    <div>
+    <Box margin={4}>
       {data.images && (
-        <ul>
+        <UnorderedList>
           {data.images.edges.map(({ node }) => (
-            <li key={node.id}>
-              <Link to={`/images/${node.id}`}>
-                Uploaded at {node.createdAt}
+            <ListItem key={node.id}>
+              <Link as={RouterLink} to={`/images/${node.id}`}>
+                Uploaded at {new Date(node.createdAt).toUTCString()}
               </Link>
-            </li>
+            </ListItem>
           ))}
-        </ul>
+        </UnorderedList>
       )}
       <input
         type="file"
@@ -74,7 +75,7 @@ const Home: React.FC = () => {
           }
         }}
       />
-    </div>
+    </Box>
   );
 };
 

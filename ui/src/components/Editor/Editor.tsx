@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { PreloadedQuery, usePreloadedQuery } from "react-relay";
 import { graphql } from "relay-runtime";
+import { Link as RouterLink } from "react-router-dom";
 import NotFound from "../NotFound";
 import BetaDetails from "./EditorSidebar/BetaDetails";
 import BetaList from "./EditorSidebar/BetaList";
@@ -8,11 +9,10 @@ import ProblemList from "./EditorSidebar/ProblemList";
 import BetaEditor from "./EditorOverlay/BetaEditor/BetaEditor";
 import BoulderImage from "./BoulderImage";
 import EditorOverlay from "./EditorOverlay/EditorOverlay";
-import classes from "./Editor.scss";
 import EditorSidebar from "./EditorSidebar/EditorSidebar";
 import { EditorQuery } from "./__generated__/EditorQuery.graphql";
 import HoldEditor from "./EditorOverlay/HoldEditor/HoldEditor";
-import { Button, useBoolean } from "@chakra-ui/react";
+import { Box, Button, Flex, useBoolean } from "@chakra-ui/react";
 import HoldMarkers from "./EditorOverlay/HoldEditor/HoldMarkers";
 
 interface Props {
@@ -28,6 +28,8 @@ interface Props {
  * mainly just a shell for managing state that crosses between the editor
  * overlay (the controls that appear over the image, which is SVG) and the
  * sidebar (everything else, standard HTML).
+ *
+ * TODO defer more logic into children (maybe use context?)
  */
 const Editor: React.FC<Props> = ({
   queryRef,
@@ -78,15 +80,9 @@ const Editor: React.FC<Props> = ({
   }
 
   return (
-    <div className={classes.editor}>
+    <Flex>
       {/* The boulder image and decorations */}
-      <div
-        style={{
-          position: "relative",
-          display: "inline-block",
-          height: "100vh",
-        }}
-      >
+      <Box position="relative" maxWidth="100vw" maxHeight="100vh">
         <BoulderImage
           imageKey={data.image}
           onLoad={(e) => {
@@ -107,7 +103,7 @@ const Editor: React.FC<Props> = ({
               />
             )}
 
-            {data.beta && (
+            {data.beta && !editingHolds && (
               <BetaEditor
                 dataKey={data.beta}
                 selectedHold={selectedHold}
@@ -116,11 +112,14 @@ const Editor: React.FC<Props> = ({
             )}
           </EditorOverlay>
         )}
-      </div>
+      </Box>
 
       {/* Other stuff */}
       <EditorSidebar>
-        <Button onClick={() => setEditingHolds.toggle()}>
+        <Button width="100%" as={RouterLink} to="/">
+          Home
+        </Button>
+        <Button width="100%" onClick={() => setEditingHolds.toggle()}>
           {editingHolds ? "Done" : "Edit Holds"}
         </Button>
         <ProblemList
@@ -137,7 +136,7 @@ const Editor: React.FC<Props> = ({
         )}
         {data.beta && <BetaDetails dataKey={data.beta} />}
       </EditorSidebar>
-    </div>
+    </Flex>
   );
 };
 

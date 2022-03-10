@@ -7,6 +7,7 @@ import { DragType } from "util/dnd";
 import clsx from "clsx";
 import { HiX } from "react-icons/hi";
 import { IconButton } from "@chakra-ui/react";
+import { formatBodyPart, toBodyPart } from "../EditorOverlay/types";
 
 interface Props {
   dataKey: BetaDetailsMove_betaMoveNode$key;
@@ -111,7 +112,7 @@ const BetaDetailsMove: React.FC<Props> = ({
   return (
     <li ref={ref} className={clsx(classes.betaDetailsMove)}>
       <span>
-        {betaMove.order + 1} - {betaMove.bodyPart}
+        {betaMove.order + 1} - {formatBodyPart(toBodyPart(betaMove.bodyPart))}
       </span>
 
       <IconButton
