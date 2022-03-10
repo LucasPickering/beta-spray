@@ -1,3 +1,4 @@
+import { Box } from "@chakra-ui/react";
 import React from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
@@ -8,7 +9,7 @@ import { HTML5Backend } from "react-dnd-html5-backend";
  */
 const EditorSidebar: React.FC = ({ children }) => (
   <DndProvider backend={HTML5Backend} context={{}}>
-    <div>{children}</div>
+    <Box padding={4}>{children}</Box>
   </DndProvider>
 );
 

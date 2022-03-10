@@ -12,6 +12,7 @@ import classes from "./Editor.scss";
 import EditorSidebar from "./EditorSidebar/EditorSidebar";
 import { EditorQuery } from "./__generated__/EditorQuery.graphql";
 import HoldEditor from "./EditorOverlay/HoldEditor/HoldEditor";
+import { Button } from "@chakra-ui/react";
 
 interface Props {
   queryRef: PreloadedQuery<EditorQuery>;
@@ -99,9 +100,9 @@ const Editor: React.FC<Props> = ({
 
       {/* Other stuff */}
       <EditorSidebar>
-        <button onClick={() => setEditingHolds((old) => !old)}>
+        <Button onClick={() => setEditingHolds((old) => !old)}>
           {editingHolds ? "Done" : "Edit Holds"}
-        </button>
+        </Button>
         <ProblemList
           imageKey={data.image}
           selectedProblem={selectedProblem}

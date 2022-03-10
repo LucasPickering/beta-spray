@@ -3,6 +3,7 @@ import { graphql, useFragment, useMutation } from "react-relay";
 import { BetaList_problemNode$key } from "./__generated__/BetaList_problemNode.graphql";
 import { BetaList_createBetaMutation } from "./__generated__/BetaList_createBetaMutation.graphql";
 import { BetaList_deleteBetaMutation } from "./__generated__/BetaList_deleteBetaMutation.graphql";
+import RadioList from "./RadioList";
 
 interface Props {
   problemKey: BetaList_problemNode$key;
@@ -68,52 +69,28 @@ const BetaList: React.FC<Props> = ({
   `);
 
   return (
-    <div>
-      <h2>Beta</h2>
-      {problem.betas.edges.map(({ node }) => {
-        const id = `beta-${node.id}`;
-        return (
-          <div key={node.id}>
-            <label htmlFor={id}>
-              <input
-                type="radio"
-                id={id}
-                value={selectedBeta}
-                checked={selectedBeta === node.id}
-                onChange={() => setSelectedBeta(node.id)}
-              />
-              {node.name}
-            </label>
-
-            <button
-              onClick={() =>
-                deleteBeta({
-                  variables: { input: { betaId: node.id }, connections },
-                })
-              }
-            >
-              x
-            </button>
-          </div>
-        );
-      })}
-
-      <button
-        onClick={() =>
-          createBeta({
-            variables: {
-              input: {
-                problemId: problem.id,
-                name: `Beta ${problem.betas.edges.length + 1}`,
-              },
-              connections,
+    <RadioList
+      title="Beta"
+      items={problem.betas.edges.map(({ node }) => node)}
+      selectedId={selectedBeta}
+      setSelectedId={setSelectedBeta}
+      onCreateNew={() =>
+        createBeta({
+          variables: {
+            input: {
+              problemId: problem.id,
+              name: `Beta ${problem.betas.edges.length + 1}`,
             },
-          })
-        }
-      >
-        New Beta
-      </button>
-    </div>
+            connections,
+          },
+        })
+      }
+      onDelete={(id) =>
+        deleteBeta({
+          variables: { input: { betaId: id }, connections },
+        })
+      }
+    />
   );
 };
 

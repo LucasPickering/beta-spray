@@ -1,5 +1,6 @@
 import React from "react";
 import { graphql, useFragment, useMutation } from "react-relay";
+import RadioList from "./RadioList";
 import { ProblemList_createProblemMutation } from "./__generated__/ProblemList_createProblemMutation.graphql";
 import { ProblemList_deleteProblemMutation } from "./__generated__/ProblemList_deleteProblemMutation.graphql";
 import { ProblemList_imageNode$key } from "./__generated__/ProblemList_imageNode.graphql";
@@ -73,52 +74,28 @@ const ProblemList: React.FC<Props> = ({
     `);
 
   return (
-    <div>
-      <h3>Problems</h3>
-      {image.problems.edges.map(({ node }) => {
-        const id = `problem-${node.id}`;
-        return (
-          <div key={node.id}>
-            <label htmlFor={id}>
-              <input
-                type="radio"
-                id={id}
-                value={selectedProblem}
-                checked={selectedProblem === node.id}
-                onChange={() => setSelectedProblem(node.id)}
-              />
-              {node.name}
-            </label>
-
-            <button
-              onClick={() =>
-                deleteProblem({
-                  variables: { input: { problemId: node.id }, connections },
-                })
-              }
-            >
-              x
-            </button>
-          </div>
-        );
-      })}
-
-      <button
-        onClick={() =>
-          createProblem({
-            variables: {
-              input: {
-                imageId: image.id,
-                name: `Problem ${image.problems.edges.length + 1}`,
-              },
-              connections,
+    <RadioList
+      title="Problems"
+      items={image.problems.edges.map(({ node }) => node)}
+      selectedId={selectedProblem}
+      setSelectedId={setSelectedProblem}
+      onCreateNew={() =>
+        createProblem({
+          variables: {
+            input: {
+              imageId: image.id,
+              name: `Problem ${image.problems.edges.length + 1}`,
             },
-          })
-        }
-      >
-        New Problem
-      </button>
-    </div>
+            connections,
+          },
+        })
+      }
+      onDelete={(id) =>
+        deleteProblem({
+          variables: { input: { problemId: id }, connections },
+        })
+      }
+    />
   );
 };
 
