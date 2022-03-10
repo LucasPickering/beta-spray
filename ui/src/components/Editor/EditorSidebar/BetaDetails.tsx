@@ -7,6 +7,7 @@ import {
 } from "./__generated__/BetaDetails_betaNode.graphql";
 import { BetaDetails_deleteBetaMoveMutation } from "./__generated__/BetaDetails_deleteBetaMoveMutation.graphql";
 import classes from "./BetaDetails.scss";
+import { Heading } from "@chakra-ui/react";
 
 interface Props {
   dataKey: BetaDetails_betaNode$key;
@@ -53,7 +54,7 @@ const BetaDetails: React.FC<Props> = ({ dataKey }) => {
           betaMove {
             beta {
               # Refetch to update UI
-              ...BetaOverlay_betaNode
+              ...BetaEditor_betaNode
             }
           }
         }
@@ -62,7 +63,9 @@ const BetaDetails: React.FC<Props> = ({ dataKey }) => {
 
   return (
     <div>
-      <h3>Moves</h3>
+      <Heading size="md" as="h3">
+        Moves
+      </Heading>
       <ol className={classes.betaDetailsList}>
         {moves.map((node, oldIndex) => (
           <BetaDetailsMove

@@ -14,14 +14,12 @@ import { HoldEditor_problemNode$key } from "./__generated__/HoldEditor_problemNo
 interface Props {
   imageKey: HoldEditor_imageNode$key;
   problemKey: HoldEditor_problemNode$key | null;
-  editing: boolean;
 }
 
 /**
- * A smart component for viewing holds, editing holds in an image, or editing
- * holds in a problem.
+ * A smart component for editing holds in an image or problem.
  */
-const HoldEditor: React.FC<Props> = ({ imageKey, problemKey, editing }) => {
+const HoldEditor: React.FC<Props> = ({ imageKey, problemKey }) => {
   const image = useFragment(
     graphql`
       fragment HoldEditor_imageNode on BoulderImageNode {
@@ -121,36 +119,32 @@ const HoldEditor: React.FC<Props> = ({ imageKey, problemKey, editing }) => {
   return (
     <>
       {/* Invisible layer to capture clicks for new holds */}
-      {editing && (
-        <rect
-          width="100%"
-          height="100%"
-          opacity={0}
-          onClick={(e) => {
-            const apiPos = toAPIPosition(getMouseCoords(e));
-            createHold({
-              variables: {
-                input: {
-                  imageId: image.id,
-                  ...apiPos,
-                },
-                // *Don't* add to the problem, just to the image
-                connections: [image.holds.__id],
+      <rect
+        width="100%"
+        height="100%"
+        opacity={0}
+        onClick={(e) => {
+          const apiPos = toAPIPosition(getMouseCoords(e));
+          createHold({
+            variables: {
+              input: {
+                imageId: image.id,
+                ...apiPos,
               },
-            });
-          }}
-        />
-      )}
+              // *Don't* add to the problem, just to the image
+              connections: [image.holds.__id],
+            },
+          });
+        }}
+      />
 
       <HoldOverlay
-        // If a problem is selected+loaded, render its holds, otherwise
-        // render all the holds for the image. *But*, if we're editing, always
-        // render all holds, so that we can show which holds are/aren't in the
-        // problem.
-        holdConnectionKey={problem && !editing ? problem.holds : image.holds}
-        highlightedHolds={editing ? problemHoldIds : undefined}
+        // Always render all holds, but if we're editing a specific problem,
+        // highlight those holds
+        holdConnectionKey={image.holds}
+        highlightedHolds={problemHoldIds}
         onClick={
-          editing && problem
+          problem
             ? (holdId) => {
                 // problem is defined => problemHoldIds is defined
                 assertIsDefined(problemHoldIds);
@@ -175,21 +169,17 @@ const HoldEditor: React.FC<Props> = ({ imageKey, problemKey, editing }) => {
               }
             : undefined
         }
-        onDoubleClick={
-          editing
-            ? (holdId) => {
-                deleteHold({
-                  variables: {
-                    input: { holdId },
-                    // Delete from everywhere possible
-                    connections: [image.holds.__id].concat(
-                      problem ? [problem.holds.__id] : []
-                    ),
-                  },
-                });
-              }
-            : undefined
-        }
+        onDoubleClick={(holdId) => {
+          deleteHold({
+            variables: {
+              input: { holdId },
+              // Delete from everywhere possible
+              connections: [image.holds.__id].concat(
+                problem ? [problem.holds.__id] : []
+              ),
+            },
+          });
+        }}
       />
     </>
   );

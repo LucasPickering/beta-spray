@@ -7,6 +7,7 @@ import {
   Radio,
   RadioGroup,
   Stack,
+  Heading,
 } from "@chakra-ui/react";
 
 interface Props {
@@ -30,9 +31,9 @@ const BetaList: React.FC<Props> = ({
   onDelete,
 }) => (
   <Box>
-    <Text fontSize="md" as="h2">
+    <Heading size="md" as="h3">
       {title}
-    </Text>
+    </Heading>
 
     <RadioGroup value={selectedId} onChange={setSelectedId}>
       <Stack direction="column">

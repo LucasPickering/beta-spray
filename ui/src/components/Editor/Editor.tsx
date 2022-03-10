@@ -5,7 +5,7 @@ import NotFound from "../NotFound";
 import BetaDetails from "./EditorSidebar/BetaDetails";
 import BetaList from "./EditorSidebar/BetaList";
 import ProblemList from "./EditorSidebar/ProblemList";
-import BetaOverlay from "./EditorOverlay/BetaEditor/BetaOverlay";
+import BetaEditor from "./EditorOverlay/BetaEditor/BetaEditor";
 import BoulderImage from "./BoulderImage";
 import EditorOverlay from "./EditorOverlay/EditorOverlay";
 import classes from "./Editor.scss";
@@ -13,6 +13,7 @@ import EditorSidebar from "./EditorSidebar/EditorSidebar";
 import { EditorQuery } from "./__generated__/EditorQuery.graphql";
 import HoldEditor from "./EditorOverlay/HoldEditor/HoldEditor";
 import { Button } from "@chakra-ui/react";
+import HoldMarkers from "./EditorOverlay/HoldEditor/HoldMarkers";
 
 interface Props {
   queryRef: PreloadedQuery<EditorQuery>;
@@ -23,7 +24,10 @@ interface Props {
 }
 
 /**
- * Main app component, for viewing+editing boulders/problems/betas
+ * Main app component, for viewing+editing boulders/problems/betas. This is
+ * mainly just a shell for managing state that crosses between the editor
+ * overlay (the controls that appear over the image, which is SVG) and the
+ * sidebar (everything else, standard HTML).
  */
 const Editor: React.FC<Props> = ({
   queryRef,
@@ -39,6 +43,9 @@ const Editor: React.FC<Props> = ({
           ...BoulderImage_imageNode
           ...ProblemList_imageNode
           ...HoldEditor_imageNode
+          holds {
+            ...HoldMarkers_holdConnection
+          }
         }
 
         # TODO split this into a separate query
@@ -50,7 +57,7 @@ const Editor: React.FC<Props> = ({
         # TODO split this into a separate query
         beta(id: $betaId) {
           ...BetaDetails_betaNode
-          ...BetaOverlay_betaNode
+          ...BetaEditor_betaNode
         }
       }
     `,
@@ -60,7 +67,10 @@ const Editor: React.FC<Props> = ({
   // Aspect ratio is needed in order to scale the SVG to the raster image.
   // Populated when the boulder image loads.
   const [aspectRatio, setAspectRatio] = useState<number | undefined>();
+  // Toggle hold editor overlay
   const [editingHolds, setEditingHolds] = useState<boolean>(false);
+  // Allows overlay to detect when a hold is clicked
+  const [selectedHold, setSelectedHold] = useState<string>();
 
   // uh oh, stinkyyyy
   if (!data.image) {
@@ -88,12 +98,22 @@ const Editor: React.FC<Props> = ({
         {/* Don't render overlay until image loads */}
         {aspectRatio && (
           <EditorOverlay aspectRatio={aspectRatio}>
-            <HoldEditor
-              imageKey={data.image}
-              problemKey={data.problem}
-              editing={editingHolds}
-            />
-            {data.beta && <BetaOverlay dataKey={data.beta} />}
+            {editingHolds ? (
+              <HoldEditor imageKey={data.image} problemKey={data.problem} />
+            ) : (
+              <HoldMarkers
+                holdConnectionKey={data.image.holds}
+                onClick={setSelectedHold}
+              />
+            )}
+
+            {data.beta && (
+              <BetaEditor
+                dataKey={data.beta}
+                selectedHold={selectedHold}
+                setSelectedHold={setSelectedHold}
+              />
+            )}
           </EditorOverlay>
         )}
       </div>
