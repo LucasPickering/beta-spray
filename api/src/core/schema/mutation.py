@@ -66,6 +66,31 @@ class CreateHoldMutation(relay.ClientIDMutation):
         return cls(hold=hold)
 
 
+class UpdateHoldMutation(relay.ClientIDMutation):
+    """Modify an existing hold"""
+
+    class Input:
+        hold_id = graphene.ID(required=True)
+        position_x = graphene.Float()
+        position_y = graphene.Float()
+
+    hold = graphene.Field(HoldNode, required=True)
+
+    @classmethod
+    def mutate_and_get_payload(
+        cls, root, info, hold_id, position_x, position_y
+    ):
+        hold = relay.Node.get_node_from_global_id(
+            info, hold_id, only_type=HoldNode
+        )
+        if position_x is not None:
+            hold.position_x = position_x
+        if position_y is not None:
+            hold.position_y = position_y
+        hold.save()
+        return cls(hold=hold)
+
+
 class DeleteHoldMutation(relay.ClientIDMutation):
     """Delete a hold from an image"""
 
@@ -293,6 +318,7 @@ class DeleteBetaMoveMutation(relay.ClientIDMutation):
 class Mutation(graphene.ObjectType):
     create_image = CreateBoulderImageMutation.Field()
     create_hold = CreateHoldMutation.Field()
+    update_hold = UpdateHoldMutation.Field()
     delete_hold = DeleteHoldMutation.Field()
     create_problem = CreateProblemMutation.Field()
     delete_problem = DeleteProblemMutation.Field()
