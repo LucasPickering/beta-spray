@@ -5,7 +5,8 @@ import classes from "./BetaDetailsMove.scss";
 import { useDrag, useDrop, XYCoord } from "react-dnd";
 import { DragType } from "util/dnd";
 import clsx from "clsx";
-import { Button } from "@chakra-ui/react";
+import { HiX } from "react-icons/hi";
+import { IconButton } from "@chakra-ui/react";
 
 interface Props {
   dataKey: BetaDetailsMove_betaMoveNode$key;
@@ -113,7 +114,11 @@ const BetaDetailsMove: React.FC<Props> = ({
         {betaMove.order + 1} - {betaMove.bodyPart}
       </span>
 
-      <Button onClick={onDelete && (() => onDelete())}>x</Button>
+      <IconButton
+        aria-label={`delete move #${betaMove.order + 1}`}
+        icon={<HiX />}
+        onClick={onDelete}
+      />
     </li>
   );
 };

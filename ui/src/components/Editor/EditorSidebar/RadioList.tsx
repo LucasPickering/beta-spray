@@ -1,14 +1,14 @@
 import React from "react";
 import {
   Box,
-  Text,
-  Button,
   Flex,
   Radio,
   RadioGroup,
   Stack,
   Heading,
+  IconButton,
 } from "@chakra-ui/react";
+import { HiPlus, HiX } from "react-icons/hi";
 
 interface Props {
   title: string;
@@ -30,7 +30,7 @@ const BetaList: React.FC<Props> = ({
   onCreateNew,
   onDelete,
 }) => (
-  <Box>
+  <Box my={8}>
     <Heading size="md" as="h3">
       {title}
     </Heading>
@@ -40,13 +40,23 @@ const BetaList: React.FC<Props> = ({
         {items.map(({ name, id }) => (
           <Flex key={id} justifyContent="space-between">
             <Radio value={id}>{name}</Radio>
-            <Button onClick={() => onDelete(id)}>x</Button>
+            <IconButton
+              aria-label={`delete ${name}`}
+              icon={<HiX />}
+              onClick={() => onDelete(id)}
+            />
           </Flex>
         ))}
       </Stack>
     </RadioGroup>
 
-    <Button onClick={() => onCreateNew()}>New</Button>
+    <IconButton
+      aria-label={`New ${title}`}
+      icon={<HiPlus />}
+      width="100%"
+      marginTop={2}
+      onClick={() => onCreateNew()}
+    />
   </Box>
 );
 
