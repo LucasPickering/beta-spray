@@ -4,7 +4,6 @@
 
 ## Polish
 
-- Hover move list highlights corresponding move (and vice versa)
 - Disambiguation when hold has multiple moves
 - Loading states
 

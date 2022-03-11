@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useFragment, useMutation } from "react-relay";
 import { graphql } from "relay-runtime";
 import { BetaEditor_betaNode$key } from "./__generated__/BetaEditor_betaNode.graphql";
@@ -9,21 +9,16 @@ import { BetaEditor_updateBetaMoveMutation } from "./__generated__/BetaEditor_up
 import { BetaEditor_deleteBetaMoveMutation } from "./__generated__/BetaEditor_deleteBetaMoveMutation.graphql";
 import { useOverlayUtils } from "util/useOverlayUtils";
 import BetaMoveModal from "./BetaMoveModal";
+import EditorContext from "context/EditorContext";
 
 interface Props {
   dataKey: BetaEditor_betaNode$key;
-  selectedHold: string | undefined;
-  setSelectedHold: (holdId: string | undefined) => void;
 }
 
 /**
  * SVG overlay component for viewing and editing beta
  */
-const BetaEditor: React.FC<Props> = ({
-  dataKey,
-  selectedHold,
-  setSelectedHold,
-}) => {
+const BetaEditor: React.FC<Props> = ({ dataKey }) => {
   const beta = useFragment(
     graphql`
       fragment BetaEditor_betaNode on BetaNode {
@@ -55,6 +50,9 @@ const BetaEditor: React.FC<Props> = ({
     `,
     dataKey
   );
+
+  const { selectedHold, setSelectedHold, setHighlightedMove } =
+    useContext(EditorContext);
 
   const { toOverlayPosition } = useOverlayUtils();
 
@@ -205,6 +203,11 @@ const BetaEditor: React.FC<Props> = ({
                 },
               },
             })
+          }
+          onMouseEnter={(move) => setHighlightedMove(move.id)}
+          onMouseLeave={(move) =>
+            // Only clear the highlight if we "own" it
+            setHighlightedMove((old) => (move.id === old ? undefined : old))
           }
         />
       ))}

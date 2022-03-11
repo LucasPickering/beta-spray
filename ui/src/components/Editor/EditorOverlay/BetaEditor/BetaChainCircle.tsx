@@ -2,7 +2,7 @@ import clsx from "clsx";
 import React from "react";
 import { BetaOverlayMove, formatOrder } from "../types";
 import Circle from "../Circle";
-import { DragItem, DropResult, useDrag } from "util/dnd";
+import { DropHandler, useDrag } from "util/dnd";
 import commonClasses from "../common.scss";
 import { useTheme } from "@chakra-ui/react";
 
@@ -10,11 +10,10 @@ interface Props {
   className?: string;
   move: BetaOverlayMove;
   isLast: boolean;
-  onDrop?: (
-    item: DragItem<"betaMoveSvg">,
-    dropResult: DropResult<"betaMoveSvg">
-  ) => void;
+  onDrop?: DropHandler<"betaMoveSvg">;
   onDoubleClick?: (move: BetaOverlayMove) => void;
+  onMouseEnter?: (move: BetaOverlayMove) => void;
+  onMouseLeave?: (move: BetaOverlayMove) => void;
 }
 
 /**
@@ -26,6 +25,8 @@ const BetaChainCircle: React.FC<Props> = ({
   isLast,
   onDrop,
   onDoubleClick,
+  onMouseEnter,
+  onMouseLeave,
 }) => {
   const theme = useTheme();
   const [{ isDragging }, drag] = useDrag<
@@ -54,10 +55,12 @@ const BetaChainCircle: React.FC<Props> = ({
         isDragging && commonClasses.dragging,
         className
       )}
-      fill={theme.colors[`bodyPart_${move.bodyPart}`]}
+      fill={theme.colors[move.bodyPart]}
       position={move.position}
       innerLabel={formatOrder(move.order)}
       onDoubleClick={onDoubleClick && (() => onDoubleClick(move))}
+      onMouseEnter={onMouseEnter && (() => onMouseEnter(move))}
+      onMouseLeave={onMouseLeave && (() => onMouseLeave(move))}
     />
   );
 };

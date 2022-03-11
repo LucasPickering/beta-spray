@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useContext, useRef } from "react";
 import { graphql, useFragment } from "react-relay";
 import { BetaDetailsMove_betaMoveNode$key } from "./__generated__/BetaDetailsMove_betaMoveNode.graphql";
 import { XYCoord } from "react-dnd";
@@ -9,16 +9,14 @@ import {
   formatOrder,
   toBodyPart,
 } from "../EditorOverlay/types";
-import { DragItem, DropResult, useDrag, useDrop } from "util/dnd";
+import { DragItem, DropHandler, useDrag, useDrop } from "util/dnd";
+import EditorContext from "context/EditorContext";
 
 interface Props {
   dataKey: BetaDetailsMove_betaMoveNode$key;
   index: number;
   onReorder?: (dragItem: DragItem<"betaMoveList">) => void;
-  onDrop?: (
-    item: DragItem<"betaMoveList">,
-    dropResult: DropResult<"betaMoveList">
-  ) => void;
+  onDrop?: DropHandler<"betaMoveList">;
   onDelete?: () => void;
 }
 
@@ -39,6 +37,8 @@ const BetaDetailsMove: React.FC<Props> = ({
     `,
     dataKey
   );
+
+  const { highlightedMove, setHighlightedMove } = useContext(EditorContext);
 
   const ref = useRef<HTMLLIElement | null>(null);
 
@@ -114,6 +114,8 @@ const BetaDetailsMove: React.FC<Props> = ({
     },
   });
 
+  const isHighlighted = highlightedMove === betaMove.id;
+
   drag(drop(ref));
   return (
     <ListItem
@@ -122,9 +124,22 @@ const BetaDetailsMove: React.FC<Props> = ({
       alignItems="center"
       cursor="move"
       userSelect="none"
+      onMouseEnter={() => setHighlightedMove(betaMove.id)}
+      onMouseLeave={() =>
+        // Only clear the highlight if we "own" it
+        setHighlightedMove((old) => (betaMove.id === old ? undefined : old))
+      }
     >
       <HiMenuAlt4 />
-      <Text marginLeft={2} color={`bodyPart_${betaMove.bodyPart}`}>
+      <Text
+        marginLeft={2}
+        // TODO better styles here
+        {...(isHighlighted
+          ? {
+              backgroundColor: betaMove.bodyPart,
+            }
+          : { color: betaMove.bodyPart })}
+      >
         {formatOrder(betaMove.order)}{" "}
         {formatBodyPart(toBodyPart(betaMove.bodyPart))}
       </Text>

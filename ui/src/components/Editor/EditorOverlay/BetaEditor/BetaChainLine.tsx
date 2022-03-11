@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import React from "react";
 import { BetaOverlayMove } from "../types";
-import { DragItem, DropResult, useDrag } from "util/dnd";
+import { DropHandler, useDrag } from "util/dnd";
 import commonClasses from "../common.scss";
 import { useTheme } from "@chakra-ui/react";
 
@@ -9,10 +9,7 @@ interface Props {
   className?: string;
   startMove: BetaOverlayMove;
   endMove: BetaOverlayMove;
-  onDrop?: (
-    item: DragItem<"betaMoveSvg">,
-    dropResult: DropResult<"betaMoveSvg">
-  ) => void;
+  onDrop?: DropHandler<"betaMoveSvg">;
 }
 
 /**
@@ -51,7 +48,7 @@ const BetaChainLine: React.FC<Props> = ({
         isDragging && commonClasses.dragging,
         className
       )}
-      stroke={theme.colors[`bodyPart_${startMove.bodyPart}`]}
+      stroke={theme.colors[startMove.bodyPart]}
       x1={startMove.position.x}
       y1={startMove.position.y}
       x2={endMove.position.x}

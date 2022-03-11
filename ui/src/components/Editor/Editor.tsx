@@ -16,6 +16,7 @@ import { Box, Button, Flex, useBoolean } from "@chakra-ui/react";
 import HoldMarkers from "./EditorOverlay/HoldEditor/HoldMarkers";
 import { DndProvider } from "react-dnd";
 import MouseBackEnd from "react-dnd-mouse-backend";
+import EditorContext from "context/EditorContext";
 
 interface Props {
   queryRef: PreloadedQuery<EditorQuery>;
@@ -78,6 +79,8 @@ const Editor: React.FC<Props> = ({
   const [editingHolds, setEditingHolds] = useBoolean(false);
   // Allows overlay to detect when a hold is clicked
   const [selectedHold, setSelectedHold] = useState<string>();
+  // Link hovering between move list and overlay
+  const [highlightedMove, setHighlightedMove] = useState<string | undefined>();
 
   // uh oh, stinkyyyy
   if (!data.image) {
@@ -86,67 +89,72 @@ const Editor: React.FC<Props> = ({
 
   return (
     <DndProvider backend={MouseBackEnd}>
-      <Flex justifyContent="center">
-        {/* The boulder image and decorations */}
-        <Box position="relative" maxWidth="100vw" maxHeight="100vh">
-          <BoulderImage
-            imageKey={data.image}
-            onLoad={(e) => {
-              const el = e.currentTarget;
-              setAspectRatio(el.width / el.height);
-            }}
-          />
-
-          {/* Don't render overlay until image loads */}
-          {aspectRatio && (
-            <EditorOverlay aspectRatio={aspectRatio}>
-              {editingHolds ? (
-                <HoldEditor imageKey={data.image} problemKey={data.problem} />
-              ) : (
-                <HoldMarkers
-                  // If filtered to a problem, show those holds, otherwise show
-                  //  all holds for the image
-                  holdConnectionKey={
-                    data.problem ? data.problem.holds : data.image.holds
-                  }
-                  onClick={setSelectedHold}
-                />
-              )}
-
-              {data.beta && !editingHolds && (
-                <BetaEditor
-                  dataKey={data.beta}
-                  selectedHold={selectedHold}
-                  setSelectedHold={setSelectedHold}
-                />
-              )}
-            </EditorOverlay>
-          )}
-        </Box>
-
-        {/* Other stuff */}
-        <EditorSidebar>
-          <Button width="100%" as={RouterLink} to="/">
-            Home
-          </Button>
-          <Button width="100%" onClick={() => setEditingHolds.toggle()}>
-            {editingHolds ? "Done" : "Edit Holds"}
-          </Button>
-          <ProblemList
-            imageKey={data.image}
-            selectedProblem={selectedProblem}
-            setSelectedProblem={setSelectedProblem}
-          />
-          {data.problem && (
-            <BetaList
-              problemKey={data.problem}
-              selectedBeta={selectedBeta}
-              setSelectedBeta={setSelectedBeta}
+      <EditorContext.Provider
+        value={{
+          selectedHold,
+          setSelectedHold,
+          highlightedMove,
+          setHighlightedMove,
+        }}
+      >
+        <Flex justifyContent="center">
+          {/* The boulder image and decorations */}
+          <Box position="relative" maxWidth="100vw" maxHeight="100vh">
+            <BoulderImage
+              imageKey={data.image}
+              onLoad={(e) => {
+                const el = e.currentTarget;
+                setAspectRatio(el.width / el.height);
+              }}
             />
-          )}
-          {data.beta && <BetaDetails dataKey={data.beta} />}
-        </EditorSidebar>
-      </Flex>
+
+            {/* Don't render overlay until image loads */}
+            {aspectRatio !== undefined && (
+              <EditorOverlay aspectRatio={aspectRatio}>
+                {editingHolds ? (
+                  <HoldEditor imageKey={data.image} problemKey={data.problem} />
+                ) : (
+                  <HoldMarkers
+                    // If filtered to a problem, show those holds, otherwise show
+                    //  all holds for the image
+                    holdConnectionKey={
+                      data.problem ? data.problem.holds : data.image.holds
+                    }
+                    onClick={setSelectedHold}
+                  />
+                )}
+
+                {data.beta && !editingHolds && (
+                  <BetaEditor dataKey={data.beta} />
+                )}
+              </EditorOverlay>
+            )}
+          </Box>
+
+          {/* Other stuff */}
+          <EditorSidebar>
+            <Button width="100%" as={RouterLink} to="/">
+              Home
+            </Button>
+            <Button width="100%" onClick={() => setEditingHolds.toggle()}>
+              {editingHolds ? "Done" : "Edit Holds"}
+            </Button>
+            <ProblemList
+              imageKey={data.image}
+              selectedProblem={selectedProblem}
+              setSelectedProblem={setSelectedProblem}
+            />
+            {data.problem && (
+              <BetaList
+                problemKey={data.problem}
+                selectedBeta={selectedBeta}
+                setSelectedBeta={setSelectedBeta}
+              />
+            )}
+            {data.beta && <BetaDetails dataKey={data.beta} />}
+          </EditorSidebar>
+        </Flex>
+      </EditorContext.Provider>
     </DndProvider>
   );
 };

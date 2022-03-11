@@ -36,7 +36,7 @@ const BetaMoveModal: React.FC<Props> = ({
             {Object.values(BodyPart).map((bodyPart) => (
               <Button
                 key={bodyPart}
-                backgroundColor={`bodyPart_${bodyPart}`}
+                backgroundColor={bodyPart}
                 onClick={() => onSelectBodyPart(bodyPart)}
               >
                 {formatBodyPart(bodyPart)}
