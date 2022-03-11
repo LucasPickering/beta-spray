@@ -3,8 +3,8 @@ import React from "react";
 import { BetaOverlayMove, formatOrder } from "../types";
 import Circle from "../Circle";
 import { DragItem, DropResult, useDrag } from "util/dnd";
-import classes from "./BetaChainCircle.scss";
 import commonClasses from "../common.scss";
+import { useTheme } from "@chakra-ui/react";
 
 interface Props {
   className?: string;
@@ -27,6 +27,7 @@ const BetaChainCircle: React.FC<Props> = ({
   onDrop,
   onDoubleClick,
 }) => {
+  const theme = useTheme();
   const [{ isDragging }, drag] = useDrag<
     "betaMoveSvg",
     { isDragging: boolean }
@@ -49,12 +50,11 @@ const BetaChainCircle: React.FC<Props> = ({
       ref={drag}
       // The last move in the chain gets styled differently
       className={clsx(
-        classes.betaMove,
         commonClasses.draggable,
         isDragging && commonClasses.dragging,
-        classes[move.bodyPart],
         className
       )}
+      fill={theme.colors[`bodyPart_${move.bodyPart}`]}
       position={move.position}
       innerLabel={formatOrder(move.order)}
       onDoubleClick={onDoubleClick && (() => onDoubleClick(move))}

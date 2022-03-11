@@ -124,7 +124,7 @@ const BetaDetailsMove: React.FC<Props> = ({
       userSelect="none"
     >
       <HiMenuAlt4 />
-      <Text marginLeft={2}>
+      <Text marginLeft={2} color={`bodyPart_${betaMove.bodyPart}`}>
         {formatOrder(betaMove.order)}{" "}
         {formatBodyPart(toBodyPart(betaMove.bodyPart))}
       </Text>

@@ -1,7 +1,7 @@
 import React from "react";
 import { OverlayPosition } from "./types";
-import classes from "./Circle.scss";
 import Positioned from "./Positioned";
+import styled from "@emotion/styled";
 
 interface Props extends React.SVGProps<SVGCircleElement> {
   className?: string;
@@ -10,25 +10,27 @@ interface Props extends React.SVGProps<SVGCircleElement> {
   outerLabel?: string;
 }
 
+const Text = styled.text`
+  font-size: 3px;
+  user-select: none;
+  pointer-events: none;
+`;
+
 const Circle = React.forwardRef<SVGCircleElement, Props>(
   ({ className, position, innerLabel, outerLabel, ...rest }, ref) => (
     <Positioned position={position}>
       <circle ref={ref} className={className} r={2} {...rest} />
 
       {innerLabel && (
-        <text
-          className={classes.text}
-          textAnchor="middle"
-          dominantBaseline="middle"
-        >
+        <Text textAnchor="middle" dominantBaseline="middle">
           {innerLabel}
-        </text>
+        </Text>
       )}
 
       {outerLabel && (
-        <text className={classes.text} x={2} y={2}>
+        <Text x={2} y={2}>
           {outerLabel}
-        </text>
+        </Text>
       )}
     </Positioned>
   )

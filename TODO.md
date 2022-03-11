@@ -1,13 +1,10 @@
 ## Features
 
 - Help text
-- Home link
-- Drag and drop move list
 
 ## Polish
 
 - Hover move list highlights corresponding move (and vice versa)
-- Horizontal centering
 - Disambiguation when hold has multiple moves
 - Loading states
 
