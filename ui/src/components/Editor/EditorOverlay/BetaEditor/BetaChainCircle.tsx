@@ -1,10 +1,11 @@
 import clsx from "clsx";
-import React from "react";
+import React, { useContext } from "react";
 import { BetaOverlayMove, formatOrder } from "../types";
 import Circle from "../Circle";
 import { DropHandler, useDrag } from "util/dnd";
 import commonClasses from "../common.scss";
 import { useTheme } from "@chakra-ui/react";
+import EditorContext from "context/EditorContext";
 
 interface Props {
   className?: string;
@@ -45,6 +46,8 @@ const BetaChainCircle: React.FC<Props> = ({
       }
     },
   });
+  const { highlightedMove } = useContext(EditorContext);
+  const isHighlighted = highlightedMove === move.id;
 
   return (
     <Circle
@@ -55,7 +58,8 @@ const BetaChainCircle: React.FC<Props> = ({
         isDragging && commonClasses.dragging,
         className
       )}
-      fill={theme.colors[move.bodyPart]}
+      // TODO hover styles for responsiveness
+      fill={isHighlighted ? "white" : theme.colors[move.bodyPart]}
       position={move.position}
       innerLabel={formatOrder(move.order)}
       onDoubleClick={onDoubleClick && (() => onDoubleClick(move))}

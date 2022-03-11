@@ -7,7 +7,6 @@ import { HoldMarkers_holdConnection$key } from "./__generated__/HoldMarkers_hold
 interface Props {
   holdConnectionKey: HoldMarkers_holdConnection$key;
   highlightedHolds?: string[];
-  // TODO type alias?
   onClick?: (holdId: string) => void;
   onDoubleClick?: (holdId: string) => void;
 }

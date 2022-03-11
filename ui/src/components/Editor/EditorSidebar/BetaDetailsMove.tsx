@@ -133,7 +133,7 @@ const BetaDetailsMove: React.FC<Props> = ({
       <HiMenuAlt4 />
       <Text
         marginLeft={2}
-        // TODO better styles here
+        // TODO hover styles for responsiveness
         {...(isHighlighted
           ? {
               backgroundColor: betaMove.bodyPart,

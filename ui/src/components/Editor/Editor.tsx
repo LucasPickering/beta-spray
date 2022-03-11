@@ -31,8 +31,6 @@ interface Props {
  * mainly just a shell for managing state that crosses between the editor
  * overlay (the controls that appear over the image, which is SVG) and the
  * sidebar (everything else, standard HTML).
- *
- * TODO defer more logic into children (maybe use context?)
  */
 const Editor: React.FC<Props> = ({
   queryRef,

@@ -1,19 +1,19 @@
 import clsx from "clsx";
 import React, { useRef } from "react";
 import { DropHandler, useDrag, useDrop } from "util/dnd";
-import Circle from "../Circle";
 import classes from "./HoldMarker.scss";
 import commonClasses from "../common.scss";
 import { graphql, useFragment } from "react-relay";
 import { useOverlayUtils } from "util/useOverlayUtils";
 import { HoldMarker_holdNode$key } from "./__generated__/HoldMarker_holdNode.graphql";
+import Positioned from "../Positioned";
+import { IconX } from "components/icons";
 
 interface Props {
   className?: string;
   holdKey: HoldMarker_holdNode$key;
   draggable?: boolean;
   unhighlight?: boolean;
-  // TODO type alias?
   onClick?: (holdId: string) => void;
   onDoubleClick?: (holdId: string) => void;
   onDrop?: DropHandler<"holdSvg">;
@@ -69,8 +69,7 @@ const HoldMarker: React.FC<Props> = ({
 
   drag(drop(ref));
   return (
-    <Circle
-      ref={ref}
+    <Positioned
       className={clsx(
         classes.holdMarker,
         unhighlight && classes.unhighlight,
@@ -81,9 +80,14 @@ const HoldMarker: React.FC<Props> = ({
         className
       )}
       position={position}
-      onClick={onClick && (() => onClick(hold.id))}
-      onDoubleClick={onDoubleClick && (() => onDoubleClick(hold.id))}
-    />
+    >
+      {/* Invisible hitbox, for easier clicking */}
+      <circle ref={ref} r={2} opacity={0} />
+      <IconX
+        onClick={onClick && (() => onClick(hold.id))}
+        onDoubleClick={onDoubleClick && (() => onDoubleClick(hold.id))}
+      />
+    </Positioned>
   );
 };
 
