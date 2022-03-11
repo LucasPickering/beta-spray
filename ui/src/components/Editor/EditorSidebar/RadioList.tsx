@@ -43,6 +43,7 @@ const BetaList: React.FC<Props> = ({
             <IconButton
               aria-label={`delete ${name}`}
               icon={<HiX />}
+              size="sm"
               onClick={() => onDelete(id)}
             />
           </Flex>
@@ -54,6 +55,7 @@ const BetaList: React.FC<Props> = ({
       aria-label={`New ${title}`}
       icon={<HiPlus />}
       width="100%"
+      size="sm"
       marginTop={2}
       onClick={() => onCreateNew()}
     />

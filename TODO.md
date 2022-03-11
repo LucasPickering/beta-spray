@@ -1,6 +1,5 @@
 ## Features
 
-- Drag holds on editor
 - Help text
 - Home link
 - Drag and drop move list

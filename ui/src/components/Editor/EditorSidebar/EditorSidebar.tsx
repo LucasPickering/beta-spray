@@ -13,8 +13,6 @@ import {
 } from "@chakra-ui/react";
 import { HiMenu } from "react-icons/hi";
 import React from "react";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
 
 /**
  * Wrapper for the sidebar next to the editor. Children should be provided by
@@ -25,7 +23,7 @@ const EditorSidebar: React.FC = ({ children }) => {
   const { isOpen, onOpen, onClose } = useDisclosure({ defaultIsOpen: true });
 
   return (
-    <DndProvider backend={HTML5Backend} context={{}}>
+    <>
       <Show below="md">
         <IconButton
           aria-label="Open drawer"
@@ -51,7 +49,7 @@ const EditorSidebar: React.FC = ({ children }) => {
       <Show above="md">
         <Box padding={4}>{children}</Box>
       </Show>
-    </DndProvider>
+    </>
   );
 };
 

@@ -6,8 +6,7 @@ import {
   BetaDetails_betaNode$key,
 } from "./__generated__/BetaDetails_betaNode.graphql";
 import { BetaDetails_deleteBetaMoveMutation } from "./__generated__/BetaDetails_deleteBetaMoveMutation.graphql";
-import classes from "./BetaDetails.scss";
-import { Heading } from "@chakra-ui/react";
+import { Heading, OrderedList } from "@chakra-ui/react";
 
 interface Props {
   dataKey: BetaDetails_betaNode$key;
@@ -66,7 +65,7 @@ const BetaDetails: React.FC<Props> = ({ dataKey }) => {
       <Heading size="md" as="h3">
         Moves
       </Heading>
-      <ol className={classes.betaDetailsList}>
+      <OrderedList spacing={2} margin={0}>
         {moves.map((node, oldIndex) => (
           <BetaDetailsMove
             key={node.id}
@@ -107,7 +106,7 @@ const BetaDetails: React.FC<Props> = ({ dataKey }) => {
             }
           />
         ))}
-      </ol>
+      </OrderedList>
     </div>
   );
 };

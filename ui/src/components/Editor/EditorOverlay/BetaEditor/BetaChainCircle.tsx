@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import React from "react";
-import { BetaOverlayMove } from "../types";
+import { BetaOverlayMove, formatOrder } from "../types";
 import Circle from "../Circle";
 import { DragItem, DropResult, useDrag } from "util/dnd";
 import classes from "./BetaChainCircle.scss";
@@ -54,7 +54,7 @@ const BetaChainCircle: React.FC<Props> = ({
         className
       )}
       position={move.position}
-      innerLabel={(move.order + 1).toString()}
+      innerLabel={formatOrder(move.order)}
       onDoubleClick={onDoubleClick && (() => onDoubleClick(move))}
     />
   );

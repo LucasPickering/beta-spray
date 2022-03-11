@@ -65,3 +65,7 @@ export function formatBodyPart(bodyPart: BodyPart): string {
       return "Right Foot";
   }
 }
+
+export function formatOrder(order: number): string {
+  return (order + 1).toString();
+}

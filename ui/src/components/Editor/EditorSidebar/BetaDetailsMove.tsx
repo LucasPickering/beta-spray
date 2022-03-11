@@ -1,12 +1,14 @@
 import React, { useRef } from "react";
 import { graphql, useFragment } from "react-relay";
 import { BetaDetailsMove_betaMoveNode$key } from "./__generated__/BetaDetailsMove_betaMoveNode.graphql";
-import classes from "./BetaDetailsMove.scss";
 import { XYCoord } from "react-dnd";
-import clsx from "clsx";
-import { HiX } from "react-icons/hi";
-import { IconButton } from "@chakra-ui/react";
-import { formatBodyPart, toBodyPart } from "../EditorOverlay/types";
+import { HiMenuAlt4, HiX } from "react-icons/hi";
+import { IconButton, ListItem, Text } from "@chakra-ui/react";
+import {
+  formatBodyPart,
+  formatOrder,
+  toBodyPart,
+} from "../EditorOverlay/types";
 import { useDrag, useDrop } from "util/dnd";
 
 interface Props {
@@ -37,6 +39,7 @@ const BetaDetailsMove: React.FC<Props> = ({
 
   const [, drag] = useDrag<"betaMoveList", { isDragging: boolean }>({
     type: "betaMoveList",
+    item: { betaMoveId: betaMove.id, order: betaMove.order },
     collect(monitor) {
       return {
         isDragging: Boolean(monitor.isDragging()),
@@ -102,17 +105,27 @@ const BetaDetailsMove: React.FC<Props> = ({
 
   drag(drop(ref));
   return (
-    <li ref={ref} className={clsx(classes.betaDetailsMove)}>
-      <span>
-        {betaMove.order + 1} - {formatBodyPart(toBodyPart(betaMove.bodyPart))}
-      </span>
+    <ListItem
+      ref={ref}
+      display="flex"
+      alignItems="center"
+      cursor="move"
+      userSelect="none"
+    >
+      <HiMenuAlt4 />
+      <Text marginLeft={2}>
+        {formatOrder(betaMove.order)}{" "}
+        {formatBodyPart(toBodyPart(betaMove.bodyPart))}
+      </Text>
 
       <IconButton
-        aria-label={`delete move #${betaMove.order + 1}`}
+        aria-label={`delete move ${formatOrder(betaMove.order)}`}
         icon={<HiX />}
+        size="sm"
+        marginLeft="auto"
         onClick={onDelete}
       />
-    </li>
+    </ListItem>
   );
 };
 
