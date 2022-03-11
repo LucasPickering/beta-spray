@@ -14,7 +14,6 @@ import {
 } from "react-dnd";
 import {
   BetaOverlayMove,
-  BodyPart,
   OverlayPosition,
 } from "components/Editor/EditorOverlay/types";
 
@@ -31,9 +30,7 @@ export type DragType =
   | {
       kind: "betaMoveSvg";
       item: // Dragging a move around
-      | { kind: "move"; move: BetaOverlayMove }
-        // Dragging the move "prototype"
-        | { kind: "newMove"; bodyPart: BodyPart }
+      | { kind: "move"; move: BetaOverlayMove; isLast: boolean }
         // Dragging a line between two moves (to insert a move)
         | { kind: "line"; startMove: BetaOverlayMove };
       drop: { kind: "hold"; holdId: string };

@@ -29,10 +29,11 @@ const BetaChain: React.FC<Props> = ({ moves, onDrop, onDoubleClick }) => (
           />
         )
     )}
-    {moves.map((move) => (
+    {moves.map((move, i) => (
       <BetaChainCircle
         key={move.id}
         move={move}
+        isLast={i === moves.length - 1}
         onDrop={onDrop}
         onDoubleClick={onDoubleClick}
       />

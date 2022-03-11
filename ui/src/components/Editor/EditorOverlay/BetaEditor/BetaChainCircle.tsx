@@ -9,6 +9,7 @@ import commonClasses from "../common.scss";
 interface Props {
   className?: string;
   move: BetaOverlayMove;
+  isLast: boolean;
   onDrop?: (
     item: DragItem<"betaMoveSvg">,
     dropResult: DropResult<"betaMoveSvg">
@@ -22,6 +23,7 @@ interface Props {
 const BetaChainCircle: React.FC<Props> = ({
   className,
   move,
+  isLast,
   onDrop,
   onDoubleClick,
 }) => {
@@ -30,7 +32,7 @@ const BetaChainCircle: React.FC<Props> = ({
     { isDragging: boolean }
   >({
     type: "betaMoveSvg",
-    item: { kind: "move", move },
+    item: { kind: "move", move, isLast },
     collect: (monitor) => ({
       isDragging: Boolean(monitor.isDragging()),
     }),

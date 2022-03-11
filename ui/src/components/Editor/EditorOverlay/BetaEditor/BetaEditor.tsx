@@ -149,38 +149,38 @@ const BetaEditor: React.FC<Props> = ({
   // Render one "chain" of moves per body part
   return (
     <>
-      {Array.from(movesByBodyPart.entries(), ([bodyPart, movesForBodyPart]) => (
+      {Array.from(movesByBodyPart.entries(), ([bodyPart, moveChain]) => (
         <BetaChain
           key={bodyPart}
-          moves={movesForBodyPart}
+          moves={moveChain}
           onDrop={(item, result) => {
             // Called when a move is dragged onto some target
             // For now, the only thing we can drag onto is a hold
 
             switch (item.kind) {
-              // Create a new move at the end of the chain
-              case "newMove":
-                createBetaMove({
-                  variables: {
-                    input: {
-                      betaId: beta.id,
-                      bodyPart,
-                      holdId: result.holdId,
-                    },
-                  },
-                });
-                break;
-
-              // Reposition an existing move
               case "move":
-                updateBetaMove({
-                  variables: {
-                    input: {
-                      betaMoveId: item.move.id,
-                      holdId: result.holdId,
+                // Dragging the last move in a chain adds a new move
+                if (item.isLast) {
+                  createBetaMove({
+                    variables: {
+                      input: {
+                        betaId: beta.id,
+                        bodyPart,
+                        holdId: result.holdId,
+                      },
                     },
-                  },
-                });
+                  });
+                } else {
+                  // Dragging an intermediate move just moves it to another spot
+                  updateBetaMove({
+                    variables: {
+                      input: {
+                        betaMoveId: item.move.id,
+                        holdId: result.holdId,
+                      },
+                    },
+                  });
+                }
                 break;
 
               // Insert a new move into the middle of the chain
