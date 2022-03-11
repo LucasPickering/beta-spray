@@ -4,12 +4,13 @@ import {
 } from "components/Editor/EditorOverlay/types";
 import OverlayContext from "context/OverlayContext";
 import { useContext, useMemo } from "react";
+import { XYCoord } from "react-dnd";
 import { assertIsDefined } from "./func";
 
 export function useOverlayUtils(): {
   toOverlayPosition: (apiPosition: APIPosition) => OverlayPosition;
   toAPIPosition: (overlayPosition: OverlayPosition) => APIPosition;
-  getMouseCoords: (event: React.MouseEvent) => OverlayPosition;
+  getMouseCoords: (mousePos: XYCoord) => OverlayPosition;
 } {
   const { aspectRatio, svgRef } = useContext(OverlayContext);
   return useMemo(
@@ -26,15 +27,15 @@ export function useOverlayUtils(): {
           positionY: (overlayPosition.y / 100) * aspectRatio,
         };
       },
-      getMouseCoords(event) {
+      getMouseCoords(mousePos) {
         // Map DOM coords to SVG coords
         // https://www.sitepoint.com/how-to-translate-from-dom-to-svg-coordinates-and-back-again/
         const svg = svgRef.current;
         assertIsDefined(svg);
 
         const point = svg.createSVGPoint();
-        point.x = event.clientX;
-        point.y = event.clientY;
+        point.x = mousePos.x;
+        point.y = mousePos.y;
 
         const ctm = svg.getScreenCTM();
         assertIsDefined(ctm);

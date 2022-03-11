@@ -3,11 +3,14 @@
 - Drag holds on editor
 - Help text
 - Home link
+- Drag and drop move list
 
 ## Polish
 
-- Fix image scaling on narrow windows
+- Hover move list highlights corresponding move (and vice versa)
 - Horizontal centering
+- Disambiguation when hold has multiple moves
+- Loading states
 
 ## Tech
 

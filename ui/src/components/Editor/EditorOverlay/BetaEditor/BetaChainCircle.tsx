@@ -1,16 +1,18 @@
 import clsx from "clsx";
 import React from "react";
-import { useDrag } from "react-dnd";
-import { BetaOverlayMove, DndDragItem, DndDropResult } from "../types";
+import { BetaOverlayMove } from "../types";
 import Circle from "../Circle";
-import { DragType } from "util/dnd";
+import { DragItem, DropResult, useDrag } from "util/dnd";
 import classes from "./BetaChainCircle.scss";
 import commonClasses from "../common.scss";
 
 interface Props {
   className?: string;
   move: BetaOverlayMove;
-  onDrop?: (item: DndDragItem, dropResult: DndDropResult) => void;
+  onDrop?: (
+    item: DragItem<"betaMoveSvg">,
+    dropResult: DropResult<"betaMoveSvg">
+  ) => void;
   onDoubleClick?: (move: BetaOverlayMove) => void;
 }
 
@@ -24,11 +26,10 @@ const BetaChainCircle: React.FC<Props> = ({
   onDoubleClick,
 }) => {
   const [{ isDragging }, drag] = useDrag<
-    DndDragItem,
-    DndDropResult,
+    "betaMoveSvg",
     { isDragging: boolean }
-  >(() => ({
-    type: DragType.BetaMoveSvg,
+  >({
+    type: "betaMoveSvg",
     item: { kind: "move", move },
     collect: (monitor) => ({
       isDragging: Boolean(monitor.isDragging()),
@@ -39,7 +40,7 @@ const BetaChainCircle: React.FC<Props> = ({
         onDrop(item, result);
       }
     },
-  }));
+  });
 
   return (
     <Circle

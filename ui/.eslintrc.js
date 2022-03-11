@@ -49,6 +49,16 @@ module.exports = {
       { ignoreParameters: true },
     ],
     "@typescript-eslint/camelcase": "off",
+    "no-restricted-syntax": [
+      "error",
+      {
+        // Prefer our useDrag/useDrop wrappers over the stock ones
+        selector:
+          "ImportDeclaration[source.value=react-dnd] > ImportSpecifier[imported.name=/useDrag|useDrop/]",
+        message:
+          "Use the local useDrag/useDrop wrapper instead of the one from react-dnd",
+      },
+    ],
   },
   overrides: [
     {

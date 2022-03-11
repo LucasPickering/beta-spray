@@ -4,12 +4,13 @@ import { graphql } from "relay-runtime";
 import HoldMarker from "./HoldMarker";
 import { HoldOverlay_holdConnection$key } from "./__generated__/HoldOverlay_holdConnection.graphql";
 
-interface Props {
+interface Props
+  extends Pick<
+    React.ComponentProps<typeof HoldMarker>,
+    "onClick" | "onDoubleClick" | "onDrop"
+  > {
   holdConnectionKey: HoldOverlay_holdConnection$key;
   highlightedHolds?: string[];
-  // TODO type alias?
-  onClick?: (holdId: string) => void;
-  onDoubleClick?: (holdId: string) => void;
 }
 
 /**
@@ -20,6 +21,7 @@ const HoldOverlay: React.FC<Props> = ({
   highlightedHolds,
   onClick,
   onDoubleClick,
+  onDrop,
 }) => {
   const holdConnection = useFragment(
     graphql`
@@ -44,6 +46,7 @@ const HoldOverlay: React.FC<Props> = ({
           unhighlight={highlightedHolds && !highlightedHolds.includes(node.id)}
           onClick={onClick}
           onDoubleClick={onDoubleClick}
+          onDrop={onDrop}
         />
       ))}
     </>

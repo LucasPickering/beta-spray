@@ -54,6 +54,9 @@ const Editor: React.FC<Props> = ({
         problem(id: $problemId) {
           ...BetaList_problemNode
           ...HoldEditor_problemNode
+          holds {
+            ...HoldMarkers_holdConnection
+          }
         }
 
         # TODO split this into a separate query
@@ -80,7 +83,7 @@ const Editor: React.FC<Props> = ({
   }
 
   return (
-    <Flex>
+    <Flex justifyContent="center">
       {/* The boulder image and decorations */}
       <Box position="relative" maxWidth="100vw" maxHeight="100vh">
         <BoulderImage
@@ -98,7 +101,11 @@ const Editor: React.FC<Props> = ({
               <HoldEditor imageKey={data.image} problemKey={data.problem} />
             ) : (
               <HoldMarkers
-                holdConnectionKey={data.image.holds}
+                // If filtered to a problem, show those holds, otherwise show
+                //  all holds for the image
+                holdConnectionKey={
+                  data.problem ? data.problem.holds : data.image.holds
+                }
                 onClick={setSelectedHold}
               />
             )}

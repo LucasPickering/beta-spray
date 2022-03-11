@@ -3,6 +3,7 @@ import { useFragment, useMutation } from "react-relay";
 import { graphql } from "relay-runtime";
 import { assertIsDefined } from "util/func";
 import { useOverlayUtils } from "util/useOverlayUtils";
+import HoldEditorDropZone from "./HoldEditorDropZone";
 import HoldOverlay from "./HoldOverlay";
 import { HoldEditor_createHoldMutation } from "./__generated__/HoldEditor_createHoldMutation.graphql";
 import { HoldEditor_createProblemHoldMutation } from "./__generated__/HoldEditor_createProblemHoldMutation.graphql";
@@ -10,6 +11,7 @@ import { HoldEditor_deleteHoldMutation } from "./__generated__/HoldEditor_delete
 import { HoldEditor_deleteProblemHoldMutation } from "./__generated__/HoldEditor_deleteProblemHoldMutation.graphql";
 import { HoldEditor_imageNode$key } from "./__generated__/HoldEditor_imageNode.graphql";
 import { HoldEditor_problemNode$key } from "./__generated__/HoldEditor_problemNode.graphql";
+import { HoldEditor_updateHoldMutation } from "./__generated__/HoldEditor_updateHoldMutation.graphql";
 
 interface Props {
   imageKey: HoldEditor_imageNode$key;
@@ -67,6 +69,17 @@ const HoldEditor: React.FC<Props> = ({ imageKey, problemKey }) => {
     }
   `);
 
+  const [updateHold] = useMutation<HoldEditor_updateHoldMutation>(graphql`
+    mutation HoldEditor_updateHoldMutation($input: UpdateHoldMutationInput!) {
+      updateHold(input: $input) {
+        hold {
+          id # So relay knows how to update this node locally
+          ...HoldMarker_holdNode
+        }
+      }
+    }
+  `);
+
   const [deleteHold] = useMutation<HoldEditor_deleteHoldMutation>(graphql`
     mutation HoldEditor_deleteHoldMutation(
       $input: DeleteHoldMutationInput!
@@ -112,19 +125,16 @@ const HoldEditor: React.FC<Props> = ({ imageKey, problemKey }) => {
       }
     `);
 
-  // TODO support drag+dropping nodes
-
   const problemHoldIds = problem?.holds.edges.map(({ node }) => node.id);
 
   return (
     <>
       {/* Invisible layer to capture clicks for new holds */}
-      <rect
-        width="100%"
-        height="100%"
-        opacity={0}
+      <HoldEditorDropZone
         onClick={(e) => {
-          const apiPos = toAPIPosition(getMouseCoords(e));
+          const apiPos = toAPIPosition(
+            getMouseCoords({ x: e.clientX, y: e.clientY })
+          );
           createHold({
             variables: {
               input: {
@@ -143,6 +153,7 @@ const HoldEditor: React.FC<Props> = ({ imageKey, problemKey }) => {
         // highlight those holds
         holdConnectionKey={image.holds}
         highlightedHolds={problemHoldIds}
+        // Single click = add new hold
         onClick={
           problem
             ? (holdId) => {
@@ -169,6 +180,7 @@ const HoldEditor: React.FC<Props> = ({ imageKey, problemKey }) => {
               }
             : undefined
         }
+        // Double click = delete
         onDoubleClick={(holdId) => {
           deleteHold({
             variables: {
@@ -177,6 +189,15 @@ const HoldEditor: React.FC<Props> = ({ imageKey, problemKey }) => {
               connections: [image.holds.__id].concat(
                 problem ? [problem.holds.__id] : []
               ),
+            },
+          });
+        }}
+        // Darg and drop = move hold
+        onDrop={(item, result) => {
+          const apiPos = toAPIPosition(result.position);
+          updateHold({
+            variables: {
+              input: { holdId: item.holdId, ...apiPos },
             },
           });
         }}

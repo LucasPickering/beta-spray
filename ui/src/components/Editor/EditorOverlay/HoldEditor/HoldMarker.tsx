@@ -1,8 +1,6 @@
 import clsx from "clsx";
-import React from "react";
-import { useDrop } from "react-dnd";
-import { DndDragItem, DndDropResult } from "../types";
-import { DragType } from "util/dnd";
+import React, { useRef } from "react";
+import { DropHandler, useDrag, useDrop } from "util/dnd";
 import Circle from "../Circle";
 import classes from "./HoldMarker.scss";
 import commonClasses from "../common.scss";
@@ -13,18 +11,21 @@ import { HoldMarker_holdNode$key } from "./__generated__/HoldMarker_holdNode.gra
 interface Props {
   className?: string;
   holdKey: HoldMarker_holdNode$key;
+  draggable?: boolean;
   unhighlight?: boolean;
   // TODO type alias?
   onClick?: (holdId: string) => void;
   onDoubleClick?: (holdId: string) => void;
+  onDrop?: DropHandler<"holdSvg">;
 }
 
 const HoldMarker: React.FC<Props> = ({
   className,
   holdKey,
-  unhighlight,
+  unhighlight = false,
   onClick,
   onDoubleClick,
+  onDrop,
 }) => {
   const hold = useFragment(
     graphql`
@@ -36,29 +37,45 @@ const HoldMarker: React.FC<Props> = ({
     `,
     holdKey
   );
+  const ref = useRef<SVGCircleElement | null>(null);
   const { toOverlayPosition } = useOverlayUtils();
   const position = toOverlayPosition(hold);
 
-  const [{ isOver }, drop] = useDrop<
-    DndDragItem,
-    DndDropResult,
-    { isOver: boolean }
-  >(() => ({
+  // Drag this hold around, while editing holds
+  const [{ isDragging }, drag] = useDrag<"holdSvg", { isDragging: boolean }>({
+    type: "holdSvg",
+    item: { holdId: hold.id },
+    collect: (monitor) => ({
+      isDragging: Boolean(monitor.isDragging()),
+    }),
+    end: (item, monitor) => {
+      const result = monitor.getDropResult();
+      if (result && onDrop) {
+        onDrop(item, result);
+      }
+    },
+  });
+
+  // Drop *moves* onto this hold
+  const [{ isOver }, drop] = useDrop<"betaMoveSvg", { isOver: boolean }>({
     // TODO don't allow drop if move is already on this hold
-    accept: DragType.BetaMoveSvg,
+    accept: "betaMoveSvg",
     collect: (monitor) => ({
       isOver: Boolean(monitor.isOver()),
     }),
     // Tell the dragger which hold they just dropped onto
     drop: () => ({ kind: "hold", holdId: hold.id }),
-  }));
+  });
 
+  drag(drop(ref));
   return (
     <Circle
-      ref={drop}
+      ref={ref}
       className={clsx(
         classes.holdMarker,
         unhighlight && classes.unhighlight,
+        onDrop && commonClasses.draggable,
+        isDragging && commonClasses.dragging,
         isOver && commonClasses.dropHover,
         onClick && classes.interact,
         className

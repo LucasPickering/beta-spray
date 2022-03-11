@@ -1,5 +1,7 @@
 import { BodyPart as BodyPartApi } from "./BetaEditor/__generated__/BetaEditor_betaNode.graphql";
 
+// TODO break this file apart and move shit to more logical locations
+
 /**
  * The position of an object in the rendered overlay. Values are [0,100] for X
  * and [0,height] in Y, where `height` is 100/aspectRatio.
@@ -39,20 +41,6 @@ export interface BetaOverlayMove {
   order: number;
   position: OverlayPosition;
 }
-
-export type DndDragItem =
-  // Dragging a move around
-  | { kind: "move"; move: BetaOverlayMove }
-  // Dragging the move "prototype"
-  | { kind: "newMove"; bodyPart: BodyPart }
-  // Dragging a line between two moves (to insert a move)
-  | { kind: "line"; startMove: BetaOverlayMove };
-
-/**
- * The result type for dropping a beta move (as part of a drag-and-drop action).
- * The move could land one a few different types of objects.
- */
-export type DndDropResult = { kind: "hold"; holdId: string };
 
 /**
  * Convert a body part value from the API type to the local type

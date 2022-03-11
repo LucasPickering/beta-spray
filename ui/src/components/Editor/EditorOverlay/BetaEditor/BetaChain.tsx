@@ -1,11 +1,12 @@
 import React from "react";
-import { BetaOverlayMove, DndDragItem, DndDropResult } from "../types";
+import { DropHandler } from "util/dnd";
+import { BetaOverlayMove } from "../types";
 import BetaChainCircle from "./BetaChainCircle";
 import BetaChainLine from "./BetaChainLine";
 
 interface Props {
   moves: BetaOverlayMove[];
-  onDrop?: (item: DndDragItem, dropResult: DndDropResult) => void;
+  onDrop?: DropHandler<"betaMoveSvg">;
   onDoubleClick?: (move: BetaOverlayMove) => void;
 }
 

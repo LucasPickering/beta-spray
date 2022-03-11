@@ -1,5 +1,4 @@
 import React from "react";
-import { DragType } from "util/dnd";
 import { OverlayPosition } from "./types";
 import classes from "./Circle.scss";
 import Positioned from "./Positioned";
@@ -9,7 +8,6 @@ interface Props extends React.SVGProps<SVGCircleElement> {
   position: OverlayPosition;
   innerLabel?: string;
   outerLabel?: string;
-  dragType?: DragType;
 }
 
 const Circle = React.forwardRef<SVGCircleElement, Props>(
