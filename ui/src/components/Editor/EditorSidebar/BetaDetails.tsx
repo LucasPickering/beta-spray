@@ -7,6 +7,8 @@ import {
 } from "./__generated__/BetaDetails_betaNode.graphql";
 import { BetaDetails_deleteBetaMoveMutation } from "./__generated__/BetaDetails_deleteBetaMoveMutation.graphql";
 import { Heading, OrderedList } from "@chakra-ui/react";
+import { moveArrayElement } from "util/func";
+import { BetaDetails_updateBetaMoveMutation } from "./__generated__/BetaDetails_updateBetaMoveMutation.graphql";
 
 interface Props {
   dataKey: BetaDetails_betaNode$key;
@@ -44,6 +46,23 @@ const BetaDetails: React.FC<Props> = ({ dataKey }) => {
   }, [beta.moves.edges]);
 
   // TODO use loading state
+  const [updateBetaMove] =
+    useMutation<BetaDetails_updateBetaMoveMutation>(graphql`
+      mutation BetaDetails_updateBetaMoveMutation(
+        $input: UpdateBetaMoveMutationInput!
+      ) {
+        updateBetaMove(input: $input) {
+          betaMove {
+            beta {
+              # Refetch to update UI
+              ...BetaEditor_betaNode
+            }
+          }
+        }
+      }
+    `);
+
+  // TODO use loading state
   const [deleteBetaMove] =
     useMutation<BetaDetails_deleteBetaMoveMutation>(graphql`
       mutation BetaDetails_deleteBetaMoveMutation(
@@ -66,36 +85,32 @@ const BetaDetails: React.FC<Props> = ({ dataKey }) => {
         Moves
       </Heading>
       <OrderedList spacing={2} margin={0}>
-        {moves.map((node, oldIndex) => (
+        {moves.map((node, moveIndex) => (
           <BetaDetailsMove
             key={node.id}
             dataKey={node}
-            onReorder={(newIndex) => {
+            index={moveIndex}
+            onReorder={(dragItem) => {
+              // This is called on the *hovered* move, so the passed index is
+              // the one being dragged
               setMoves((oldMoves) =>
-                oldIndex < newIndex
-                  ? // Move *down* the list (to a higher index)
-                    [
-                      // Everything before the old index
-                      ...oldMoves.slice(0, oldIndex),
-                      // Everything between old and new index
-                      ...oldMoves.slice(oldIndex + 1, newIndex + 1),
-                      // New position
-                      oldMoves[oldIndex],
-                      // Everything after the new index
-                      ...oldMoves.slice(newIndex + 1),
-                    ]
-                  : // Move *up* the list (to a lower index)
-                    [
-                      // Everything before the new index
-                      ...oldMoves.slice(0, newIndex),
-                      // New position
-                      oldMoves[oldIndex],
-                      // Everything between new and old index
-                      ...oldMoves.slice(newIndex + 1, oldIndex),
-                      // Everything after old index
-                      ...oldMoves.slice(oldIndex + 1),
-                    ]
+                moveArrayElement(oldMoves, dragItem.index, moveIndex)
               );
+            }}
+            onDrop={(item) => {
+              if (item) {
+                updateBetaMove({
+                  variables: {
+                    input: {
+                      betaMoveId: item.betaMoveId,
+                      // The index field should already be updated to the
+                      // desired new order value. The API should take care of
+                      // sliding the other moves up/down to fit this one in
+                      order: item.index,
+                    },
+                  },
+                });
+              }
             }}
             onDelete={() =>
               deleteBetaMove({

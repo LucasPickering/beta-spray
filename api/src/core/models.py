@@ -1,5 +1,7 @@
 from core.query import BetaMoveQuerySet
 from django.db import models
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 
 
 class BodyPart(models.TextChoices):
@@ -145,3 +147,7 @@ class BetaMove(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     # TODO add annotation, e.g. "flag", "drop knee", etc.
+
+    @receiver(pre_save)
+    def on_pre_save(sender, instance, raw, *args, **kwargs):
+        pass

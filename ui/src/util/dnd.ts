@@ -42,7 +42,10 @@ export type DragType =
       kind: "betaMoveList";
       item: {
         betaMoveId: string;
-        order: number;
+        // This is *not necessarily* the move's order, it's the visible index
+        // in the list. The two can mismatch while dragging, since order isn't
+        // saved until dropping
+        index: number;
       };
       drop: undefined;
     };

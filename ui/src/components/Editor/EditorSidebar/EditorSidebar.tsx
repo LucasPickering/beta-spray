@@ -47,7 +47,9 @@ const EditorSidebar: React.FC = ({ children }) => {
         </Drawer>
       </Show>
       <Show above="md">
-        <Box padding={4}>{children}</Box>
+        <Box padding={4} maxHeight="100vh" overflow="auto">
+          {children}
+        </Box>
       </Show>
     </>
   );

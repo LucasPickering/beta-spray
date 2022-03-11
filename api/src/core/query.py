@@ -1,12 +1,20 @@
-from django.db.models import F, QuerySet, Max, Value
+from enum import Enum
+from django.db.models import F, Q, QuerySet, Max, Value
 from django.db.models.functions import Coalesce
+from django.db import transaction
 from django.forms import ValidationError
 
 # TODO move all this automatic order-sliding logic into model triggers, so we
 # can catch everything
 
 
+class SlideDirection(Enum):
+    DOWN = "down"
+    UP = "up"
+
+
 class BetaMoveQuerySet(QuerySet):
+    @transaction.atomic
     def add_to_beta(self, beta_id, order, body_part, hold_id=None):
         # If the beta ID is invalid, the first query will do nothing, but the
         # second will fail.
@@ -15,7 +23,9 @@ class BetaMoveQuerySet(QuerySet):
             self.validate_order(beta_id=beta_id, order=order)
 
             # Slide down the existing moves to make room for the new one
-            self.slide_moves(beta_id=beta_id, from_order=order, down=True)
+            self.slide_moves(
+                beta_id=beta_id, direction=SlideDirection.DOWN, from_order=order
+            )
         else:
             # If order isn't given, just do max+1
             order = (
@@ -38,21 +48,30 @@ class BetaMoveQuerySet(QuerySet):
 
         return beta_move
 
+    @transaction.atomic
     def update_in_beta(self, beta_move_id, order=None, hold_id=None):
         beta_move = self.get(id=beta_move_id)
 
         if order is not None:
             self.validate_order(beta_id=beta_move.beta_id, order=order)
 
-            # Slide other moves either up or down to make room for this new
-            # order value, and to fill the gap left by the old one
-            self.slide_moves(
-                beta_id=beta_move.beta_id,
-                from_order=beta_move.order,
-                # "Down" means further down the list, i.e. *larger* order values
-                # So slide *down* if the updated move is moving *up*
-                down=order < beta_move.order,
-            )
+            if order > beta_move.order:
+                # We're moving an item *down* the list (larger order values),
+                # which means everything in between must move *up*
+                self.slide_moves(
+                    beta_id=beta_move.beta_id,
+                    direction=SlideDirection.UP,
+                    from_order=beta_move.order + 1,
+                    to_order=order,
+                )
+            else:
+                # We're moving *up*, so everything in between goes *down*
+                self.slide_moves(
+                    beta_id=beta_move.beta_id,
+                    direction=SlideDirection.DOWN,
+                    from_order=order,
+                    to_order=beta_move.order - 1,
+                )
             beta_move.order = order
 
         if hold_id is not None:
@@ -61,6 +80,7 @@ class BetaMoveQuerySet(QuerySet):
         beta_move.save()
         return beta_move
 
+    @transaction.atomic
     def delete_from_beta(self, beta_move_id):
         # TODO DRF for validation
         beta_move = self.get(id=beta_move_id)
@@ -68,22 +88,40 @@ class BetaMoveQuerySet(QuerySet):
         # `object.delete()` wipes out the PK field for some reason ¯\_(ツ)_/¯
         self.filter(id=beta_move.id).delete()
 
-        # Collapse down order values to fill in the gap
+        # Collapse order values to fill in the gap
         self.slide_moves(
-            beta_id=beta_move.beta_id, from_order=beta_move.order, down=False
+            beta_id=beta_move.beta_id,
+            direction=SlideDirection.UP,
+            from_order=beta_move.order,
         )
 
         return beta_move
 
-    def slide_moves(self, beta_id, from_order, down=True):
+    def slide_moves(self, beta_id, direction, from_order, to_order=None):
         """
-        TODO
+        Slide the moves in a beta either up or down one slot, starting from a
+        given order and optionally ending at another order. If `to_order` is
+        not given, this will go to the beginning/end of the list.
+
+        `from_order` and `to_order` are both inclusive.
+
+        In this case, "down" means "increasing order". The metaphor is of a
+        vertical list of increasing orders.
         """
 
-        update_stmt = F("order") + 1 if down else F("order") - 1
-        self.filter(beta_id=beta_id, order__gte=from_order).update(
-            order=update_stmt
-        )
+        if direction == SlideDirection.DOWN:
+            order_expr = F("order") + 1
+        elif direction == SlideDirection.UP:
+            order_expr = F("order") - 1
+        else:
+            raise ValueError(f"Unexpected slide direction: {direction}")
+
+        # Find our window basic on from/to values
+        filter = Q(beta_id=beta_id, order__gte=from_order)
+        if to_order is not None:
+            filter &= Q(order__lte=to_order)
+
+        self.filter(filter).update(order=order_expr)
 
     def validate_order(self, beta_id, order):
         # TODO use DRF for validation

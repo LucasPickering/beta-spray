@@ -9,19 +9,24 @@ import {
   formatOrder,
   toBodyPart,
 } from "../EditorOverlay/types";
-import { useDrag, useDrop } from "util/dnd";
+import { DragItem, DropResult, useDrag, useDrop } from "util/dnd";
 
 interface Props {
   dataKey: BetaDetailsMove_betaMoveNode$key;
-  onReorder?: (newIndex: number) => void;
-  onSaveOrder?: () => void;
+  index: number;
+  onReorder?: (dragItem: DragItem<"betaMoveList">) => void;
+  onDrop?: (
+    item: DragItem<"betaMoveList">,
+    dropResult: DropResult<"betaMoveList">
+  ) => void;
   onDelete?: () => void;
 }
 
 const BetaDetailsMove: React.FC<Props> = ({
   dataKey,
+  index,
   onReorder,
-  onSaveOrder,
+  onDrop,
   onDelete,
 }) => {
   const betaMove = useFragment(
@@ -39,15 +44,16 @@ const BetaDetailsMove: React.FC<Props> = ({
 
   const [, drag] = useDrag<"betaMoveList", { isDragging: boolean }>({
     type: "betaMoveList",
-    item: { betaMoveId: betaMove.id, order: betaMove.order },
+    item: { betaMoveId: betaMove.id, index },
     collect(monitor) {
       return {
         isDragging: Boolean(monitor.isDragging()),
       };
     },
-    end() {
-      if (onSaveOrder) {
-        onSaveOrder();
+    end(item, monitor) {
+      const result = monitor.getDropResult();
+      if (onDrop && result) {
+        onDrop(item, result);
       }
     },
   });
@@ -64,11 +70,11 @@ const BetaDetailsMove: React.FC<Props> = ({
         return;
       }
 
-      const dragOrder = item.order;
-      const hoverOrder = betaMove.order;
+      const dragIndex = item.index;
+      const hoverIndex = index;
 
       // Don't replace items with themselves
-      if (dragOrder === hoverOrder) {
+      if (dragIndex === hoverIndex) {
         return;
       }
 
@@ -90,16 +96,21 @@ const BetaDetailsMove: React.FC<Props> = ({
       // When dragging upwards, only move when the cursor is above 50%
 
       // Dragging downwards
-      if (dragOrder < hoverOrder && hoverClientY < hoverMiddleY) {
+      if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
         return;
       }
 
       // Dragging upwards
-      if (dragOrder > hoverOrder && hoverClientY > hoverMiddleY) {
+      if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
         return;
       }
 
-      onReorder(hoverOrder);
+      onReorder(item);
+      // *Warning:* We mutate the monitor state here. Not ideal, but necessary
+      // to prevent constant swapping. They do it in the example so it must be
+      // ok right
+      // https://github.com/react-dnd/react-dnd/blob/main/packages/examples/src/04-sortable/simple/Card.tsx
+      item.index = hoverIndex;
     },
   });
 
