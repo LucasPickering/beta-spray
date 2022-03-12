@@ -1,0 +1,399 @@
+type Query {
+  images(offset: Int = null, before: String = null, after: String = null, first: Int = null, last: Int = null): BoulderImageNodeConnection
+  image(
+    """The ID of the object"""
+    id: ID!
+  ): BoulderImageNode
+  problem(
+    """The ID of the object"""
+    id: ID!
+  ): ProblemNode
+  beta(
+    """The ID of the object"""
+    id: ID!
+  ): BetaNode
+}
+
+type BoulderImageNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [BoulderImageNodeEdge!]!
+}
+
+"""
+The Relay compliant `PageInfo` type, containing data necessary to paginate this connection.
+"""
+type PageInfo {
+  """When paginating forwards, are there more items?"""
+  hasNextPage: Boolean!
+
+  """When paginating backwards, are there more items?"""
+  hasPreviousPage: Boolean!
+
+  """When paginating backwards, the cursor to continue."""
+  startCursor: String
+
+  """When paginating forwards, the cursor to continue."""
+  endCursor: String
+}
+
+"""A Relay edge containing a `BoulderImageNode` and its cursor."""
+type BoulderImageNodeEdge {
+  """The item at the end of the edge"""
+  node: BoulderImageNode!
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+type BoulderImageNode implements Node {
+  createdAt: DateTime!
+  holds(offset: Int = null, before: String = null, after: String = null, first: Int = null, last: Int = null): HoldNodeConnection!
+  problems(offset: Int = null, before: String = null, after: String = null, first: Int = null, last: Int = null): ProblemNodeConnection!
+
+  """The ID of the object"""
+  id: ID!
+  imageUrl: String!
+}
+
+"""An object with an ID"""
+interface Node {
+  """The ID of the object"""
+  id: ID!
+}
+
+"""
+The `DateTime` scalar type represents a DateTime
+value as specified by
+[iso8601](https://en.wikipedia.org/wiki/ISO_8601).
+"""
+scalar DateTime
+
+type HoldNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [HoldNodeEdge!]!
+}
+
+"""A Relay edge containing a `HoldNode` and its cursor."""
+type HoldNodeEdge {
+  """The item at the end of the edge"""
+  node: HoldNode!
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+type HoldNode implements Node {
+  image: BoulderImageNode!
+
+  """Left-to-right position of the hold within the image, 0-1"""
+  positionX: Float!
+
+  """Top-to-bottom position of the hold within the image, 0-1"""
+  positionY: Float!
+
+  """The ID of the object"""
+  id: ID!
+}
+
+type ProblemNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [ProblemNodeEdge!]!
+}
+
+"""A Relay edge containing a `ProblemNode` and its cursor."""
+type ProblemNodeEdge {
+  """The item at the end of the edge"""
+  node: ProblemNode!
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+type ProblemNode implements Node {
+  name: String!
+  holds(offset: Int = null, before: String = null, after: String = null, first: Int = null, last: Int = null): HoldNodeConnection!
+  image: BoulderImageNode!
+  betas(offset: Int = null, before: String = null, after: String = null, first: Int = null, last: Int = null): BetaNodeConnection!
+
+  """The ID of the object"""
+  id: ID!
+}
+
+type BetaNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [BetaNodeEdge!]!
+}
+
+"""A Relay edge containing a `BetaNode` and its cursor."""
+type BetaNodeEdge {
+  """The item at the end of the edge"""
+  node: BetaNode!
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+type BetaNode implements Node {
+  name: String!
+  problem: ProblemNode!
+  moves(offset: Int = null, before: String = null, after: String = null, first: Int = null, last: Int = null): BetaMoveNodeConnection!
+
+  """The ID of the object"""
+  id: ID!
+}
+
+type BetaMoveNodeConnection {
+  """Pagination data for this connection."""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection."""
+  edges: [BetaMoveNodeEdge!]!
+}
+
+"""A Relay edge containing a `BetaMoveNode` and its cursor."""
+type BetaMoveNodeEdge {
+  """The item at the end of the edge"""
+  node: BetaMoveNode!
+
+  """A cursor for use in pagination"""
+  cursor: String!
+}
+
+type BetaMoveNode implements Node {
+  beta: BetaNode!
+
+  """Optional destination hold for this move"""
+  hold: HoldNode
+
+  """Ordering number of the hold in the beta, with 0 as start"""
+  order: Int!
+
+  """The ID of the object"""
+  id: ID!
+  bodyPart: BodyPart!
+}
+
+"""A body part that someone could put on a hold"""
+enum BodyPart {
+  LEFT_HAND
+  RIGHT_HAND
+  LEFT_FOOT
+  RIGHT_FOOT
+}
+
+type Mutation {
+  createImage(input: CreateBoulderImageMutationInput!): CreateBoulderImageMutationPayload
+
+  """Add a hold to an image"""
+  createHold(input: CreateHoldMutationInput!): CreateHoldMutationPayload
+
+  """Modify an existing hold"""
+  updateHold(input: UpdateHoldMutationInput!): UpdateHoldMutationPayload
+
+  """Delete a hold from an image"""
+  deleteHold(input: DeleteHoldMutationInput!): DeleteHoldMutationPayload
+
+  """Create a new problem for a specific image"""
+  createProblem(input: CreateProblemMutationInput!): CreateProblemMutationPayload
+  deleteProblem(input: DeleteProblemMutationInput!): DeleteProblemMutationPayload
+
+  """Add a hold to a problem"""
+  createProblemHold(input: CreateProblemHoldMutationInput!): CreateProblemHoldMutationPayload
+
+  """Remove a hold from a problem"""
+  deleteProblemHold(input: DeleteProblemHoldMutationInput!): DeleteProblemHoldMutationPayload
+  createBeta(input: CreateBetaMutationInput!): CreateBetaMutationPayload
+  deleteBeta(input: DeleteBetaMutationInput!): DeleteBetaMutationPayload
+
+  """
+  Add a new move to an existing beta. A move can optionally be associated with
+  a hold. Some moves (flagging, smearing, etc.) do not need an associated hold
+  though.
+  
+  If a move already exists for the given order+beta combo, the new move will
+  be given the requested order, and every other move in the beta will "slide
+  down", e.g. if the new move is `order=3`, then the existing move #3 will
+  become #4, #4 will become #5, etc.
+  
+  If no order is given, the move will be appended to the end.
+  """
+  createBetaMove(input: CreateBetaMoveMutationInput!): CreateBetaMoveMutationPayload
+  updateBetaMove(input: UpdateBetaMoveMutationInput!): UpdateBetaMoveMutationPayload
+  deleteBetaMove(input: DeleteBetaMoveMutationInput!): DeleteBetaMoveMutationPayload
+}
+
+type CreateBoulderImageMutationPayload {
+  image: BoulderImageNode!
+  clientMutationId: String
+}
+
+input CreateBoulderImageMutationInput {
+  imageFile: String!
+  clientMutationId: String
+}
+
+"""Add a hold to an image"""
+type CreateHoldMutationPayload {
+  hold: HoldNode!
+  clientMutationId: String
+}
+
+input CreateHoldMutationInput {
+  imageId: ID!
+  positionX: Float!
+  positionY: Float!
+  clientMutationId: String
+}
+
+"""Modify an existing hold"""
+type UpdateHoldMutationPayload {
+  hold: HoldNode!
+  clientMutationId: String
+}
+
+input UpdateHoldMutationInput {
+  holdId: ID!
+  positionX: Float
+  positionY: Float
+  clientMutationId: String
+}
+
+"""Delete a hold from an image"""
+type DeleteHoldMutationPayload {
+  hold: HoldNode!
+  clientMutationId: String
+}
+
+input DeleteHoldMutationInput {
+  holdId: ID!
+  clientMutationId: String
+}
+
+"""Create a new problem for a specific image"""
+type CreateProblemMutationPayload {
+  problem: ProblemNode!
+  clientMutationId: String
+}
+
+input CreateProblemMutationInput {
+  name: String!
+  imageId: ID!
+  clientMutationId: String
+}
+
+type DeleteProblemMutationPayload {
+  problem: ProblemNode!
+  clientMutationId: String
+}
+
+input DeleteProblemMutationInput {
+  problemId: ID!
+  clientMutationId: String
+}
+
+"""Add a hold to a problem"""
+type CreateProblemHoldMutationPayload {
+  problem: ProblemNode!
+  hold: HoldNode!
+  clientMutationId: String
+}
+
+input CreateProblemHoldMutationInput {
+  problemId: ID!
+  holdId: ID!
+  clientMutationId: String
+}
+
+"""Remove a hold from a problem"""
+type DeleteProblemHoldMutationPayload {
+  problem: ProblemNode!
+  hold: HoldNode!
+  clientMutationId: String
+}
+
+input DeleteProblemHoldMutationInput {
+  problemId: ID!
+  holdId: ID!
+  clientMutationId: String
+}
+
+type CreateBetaMutationPayload {
+  beta: BetaNode!
+  clientMutationId: String
+}
+
+input CreateBetaMutationInput {
+  name: String!
+  problemId: ID!
+  clientMutationId: String
+}
+
+type DeleteBetaMutationPayload {
+  beta: BetaNode!
+  clientMutationId: String
+}
+
+input DeleteBetaMutationInput {
+  betaId: ID!
+  clientMutationId: String
+}
+
+"""
+Add a new move to an existing beta. A move can optionally be associated with
+a hold. Some moves (flagging, smearing, etc.) do not need an associated hold
+though.
+
+If a move already exists for the given order+beta combo, the new move will
+be given the requested order, and every other move in the beta will "slide
+down", e.g. if the new move is `order=3`, then the existing move #3 will
+become #4, #4 will become #5, etc.
+
+If no order is given, the move will be appended to the end.
+"""
+type CreateBetaMoveMutationPayload {
+  betaMove: BetaMoveNode!
+  beta: BetaNode!
+  clientMutationId: String
+}
+
+input CreateBetaMoveMutationInput {
+  betaId: ID!
+  bodyPart: BodyPart!
+  order: Int
+  holdId: ID
+  clientMutationId: String
+}
+
+type UpdateBetaMoveMutationPayload {
+  betaMove: BetaMoveNode!
+  clientMutationId: String
+}
+
+input UpdateBetaMoveMutationInput {
+  betaMoveId: ID!
+  order: Int
+  holdId: ID
+  clientMutationId: String
+}
+
+type DeleteBetaMoveMutationPayload {
+  betaMove: BetaMoveNode!
+  clientMutationId: String
+}
+
+input DeleteBetaMoveMutationInput {
+  betaMoveId: ID!
+  clientMutationId: String
+}

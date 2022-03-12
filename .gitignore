@@ -1,9 +1,6 @@
 __pycache__/
 *.pyc
 
-# Auto-generated schema file
-schema.graphql
-
 build/
 node_modules/
 **/__generated__/
