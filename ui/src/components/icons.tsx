@@ -12,6 +12,18 @@ export const IconX = React.forwardRef<
   React.HTMLAttributes<SVGPathElement>
 >((props, ref) => <path d="M-1 -1 l2 2 M-1 1 l2 -2" ref={ref} {...props} />);
 
+export const IconTriangle = React.forwardRef<
+  SVGPolygonElement,
+  React.HTMLAttributes<SVGPolygonElement>
+>((props, ref) => (
+  <polygon
+    points="0,-0.866 -1,0.866 1,0.866"
+    transform="scale(1.3)"
+    ref={ref}
+    {...props}
+  />
+));
+
 // TODO use or remove
 export const IconHand = React.forwardRef<
   SVGPathElement,

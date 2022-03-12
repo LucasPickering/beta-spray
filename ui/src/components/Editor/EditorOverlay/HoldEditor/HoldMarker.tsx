@@ -7,7 +7,7 @@ import { graphql, useFragment } from "react-relay";
 import { useOverlayUtils } from "util/useOverlayUtils";
 import { HoldMarker_holdNode$key } from "./__generated__/HoldMarker_holdNode.graphql";
 import Positioned from "../Positioned";
-import { IconX } from "components/icons";
+import { IconTriangle } from "components/icons";
 
 interface Props {
   className?: string;
@@ -81,12 +81,15 @@ const HoldMarker: React.FC<Props> = ({
       )}
       position={position}
     >
-      <IconX
+      <IconTriangle />
+      {/* Invisible hitbox, for easier clicking. Has to be on top! */}
+      <circle
+        ref={ref}
+        r={2}
+        opacity={0}
         onClick={onClick && (() => onClick(hold.id))}
         onDoubleClick={onDoubleClick && (() => onDoubleClick(hold.id))}
       />
-      {/* Invisible hitbox, for easier clicking. Has to be on top! */}
-      <circle ref={ref} r={2} opacity={0} />
     </Positioned>
   );
 };
