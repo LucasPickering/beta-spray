@@ -12,13 +12,13 @@ import BetaMoveModal from "./BetaMoveModal";
 import EditorContext from "context/EditorContext";
 
 interface Props {
-  dataKey: BetaEditor_betaNode$key;
+  betaKey: BetaEditor_betaNode$key;
 }
 
 /**
  * SVG overlay component for viewing and editing beta
  */
-const BetaEditor: React.FC<Props> = ({ dataKey }) => {
+const BetaEditor: React.FC<Props> = ({ betaKey }) => {
   const beta = useFragment(
     graphql`
       fragment BetaEditor_betaNode on BetaNode {
@@ -48,7 +48,7 @@ const BetaEditor: React.FC<Props> = ({ dataKey }) => {
         }
       }
     `,
-    dataKey
+    betaKey
   );
 
   const { selectedHold, setSelectedHold, setHighlightedMove } =

@@ -81,12 +81,12 @@ const HoldMarker: React.FC<Props> = ({
       )}
       position={position}
     >
-      {/* Invisible hitbox, for easier clicking */}
-      <circle ref={ref} r={2} opacity={0} />
       <IconX
         onClick={onClick && (() => onClick(hold.id))}
         onDoubleClick={onDoubleClick && (() => onDoubleClick(hold.id))}
       />
+      {/* Invisible hitbox, for easier clicking. Has to be on top! */}
+      <circle ref={ref} r={2} opacity={0} />
     </Positioned>
   );
 };

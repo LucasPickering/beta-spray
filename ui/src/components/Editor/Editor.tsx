@@ -123,7 +123,7 @@ const Editor: React.FC<Props> = ({
                 )}
 
                 {data.beta && !editingHolds && (
-                  <BetaEditor dataKey={data.beta} />
+                  <BetaEditor betaKey={data.beta} />
                 )}
               </EditorOverlay>
             )}

@@ -1,7 +1,7 @@
-import { Box, Link, ListItem, UnorderedList } from "@chakra-ui/react";
+import { Box, SimpleGrid } from "@chakra-ui/react";
 import React from "react";
 import { graphql, useLazyLoadQuery, useMutation } from "react-relay";
-import { Link as RouterLink } from "react-router-dom";
+import BoulderImageCard from "./BoulderImageCard";
 import { HomeQuery } from "./__generated__/HomeQuery.graphql";
 import { Home_createImageMutation } from "./__generated__/Home_createImageMutation.graphql";
 
@@ -14,7 +14,7 @@ const Home: React.FC = () => {
           edges {
             node {
               id
-              createdAt
+              ...BoulderImageCard_imageNode
             }
           }
         }
@@ -35,9 +35,8 @@ const Home: React.FC = () => {
             connections: $connections
             edgeTypeName: "BoulderImageNodeEdge"
           ) {
-          # TODO fragment
           id
-          createdAt
+          ...BoulderImageCard_imageNode
         }
       }
     }
@@ -45,17 +44,12 @@ const Home: React.FC = () => {
 
   return (
     <Box margin={4}>
-      {data.images && (
-        <UnorderedList>
-          {data.images.edges.map(({ node }) => (
-            <ListItem key={node.id}>
-              <Link as={RouterLink} to={`/images/${node.id}`}>
-                Uploaded at {new Date(node.createdAt).toUTCString()}
-              </Link>
-            </ListItem>
+      <SimpleGrid columns={[2, 4]}>
+        {data.images &&
+          data.images.edges.map(({ node }) => (
+            <BoulderImageCard key={node.id} imageKey={node} />
           ))}
-        </UnorderedList>
-      )}
+      </SimpleGrid>
       <input
         type="file"
         accept="image/png, image/jpeg"
