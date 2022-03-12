@@ -17,6 +17,10 @@ services:
     command: ./scripts/cmd.sh
     init: true # Fixes slow shutdown
     tty: true # Colorize output
+    environment:
+      - BETA_SPRAY_DB_NAME=beta_spray
+      - BETA_SPRAY_DB_USER=beta_spray
+      - BETA_SPRAY_DB_PASSWORD=beta_spray
     depends_on:
       - db
     ports:

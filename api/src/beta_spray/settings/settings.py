@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -18,16 +19,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = (
-    "django-insecure-w+z=*+&h$9($a%z^ma)y-)07t^$!73iw^u)aajn($ts378b#zz"
-)
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -82,10 +73,10 @@ WSGI_APPLICATION = "beta_spray.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "beta_spray",
-        "USER": "beta_spray",
-        "PASSWORD": "beta_spray",
-        "HOST": "db",
+        "NAME": os.getenv("BETA_SPRAY_DB_NAME", "beta_spray"),
+        "USER": os.getenv("BETA_SPRAY_DB_USER"),
+        "PASSWORD": os.getenv("BETA_SPRAY_DB_PASSWORD"),
+        "HOST": os.getenv("BETA_SPRAY_DB_HOST", "db"),
         "PORT": 5432,
     }
 }
