@@ -1,13 +1,22 @@
 import {
   Box,
+  Button,
   Drawer,
+  Grid,
   IconButton,
   Stack,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { Menu as IconMenu } from "@mui/icons-material";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
+import {
+  Edit as IconEdit,
+  Done as IconDone,
+  Home as IconHome,
+} from "@mui/icons-material";
+import { Link as RouterLink } from "react-router-dom";
+import EditorContext from "context/EditorContext";
 
 /**
  * Wrapper for the sidebar next to the editor. Children should be provided by
@@ -17,22 +26,25 @@ const EditorSidebar: React.FC = ({ children }) => {
   const [isOpen, setIsOpen] = useState<boolean>(true);
   const { breakpoints, spacing } = useTheme();
   const isPermanent = useMediaQuery(breakpoints.up("md"));
+  const { editingHolds, setEditingHolds } = useContext(EditorContext);
 
   return (
     <>
-      {!isPermanent && (
+      {/* Overlay buttons */}
+      <Box sx={{ position: "absolute", top: 4, right: 4 }}>
         <IconButton
-          aria-label="Open drawer"
-          onClick={() => setIsOpen(true)}
-          sx={{
-            position: "absolute",
-            top: 4,
-            right: 4,
-          }}
+          aria-label={editingHolds ? "Done" : "Edit Holds"}
+          onClick={() => setEditingHolds((old) => !old)}
         >
-          <IconMenu />
+          {editingHolds ? <IconDone /> : <IconEdit />}
         </IconButton>
-      )}
+        {!isPermanent && (
+          <IconButton aria-label="Open drawer" onClick={() => setIsOpen(true)}>
+            <IconMenu />
+          </IconButton>
+        )}
+      </Box>
+
       <Drawer
         anchor="right"
         variant={isPermanent ? "permanent" : "temporary"}
@@ -46,6 +58,30 @@ const EditorSidebar: React.FC = ({ children }) => {
       >
         <Box sx={{ padding: spacing(2) }}>
           <Stack direction="column" spacing={2}>
+            <Grid container spacing={1} sx={{ width: "100%" }}>
+              <Grid item xs>
+                <Button
+                  component={RouterLink}
+                  to="/"
+                  startIcon={<IconHome />}
+                  sx={{ width: "100%" }}
+                >
+                  Home
+                </Button>
+              </Grid>
+              {isPermanent && (
+                <Grid item xs>
+                  <Button
+                    startIcon={editingHolds ? <IconDone /> : <IconEdit />}
+                    onClick={() => setEditingHolds((old) => !old)}
+                    sx={{ width: "100%" }}
+                  >
+                    {editingHolds ? "Done" : "Edit"}
+                  </Button>
+                </Grid>
+              )}
+            </Grid>
+
             {children}
           </Stack>
         </Box>

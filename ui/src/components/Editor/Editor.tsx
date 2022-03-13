@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { PreloadedQuery, usePreloadedQuery } from "react-relay";
 import { graphql } from "relay-runtime";
-import { Link as RouterLink } from "react-router-dom";
 import NotFound from "../NotFound";
 import BetaDetails from "./EditorSidebar/BetaDetails";
 import BetaList from "./EditorSidebar/BetaList";
@@ -12,7 +11,7 @@ import EditorOverlay from "./EditorOverlay/EditorOverlay";
 import EditorSidebar from "./EditorSidebar/EditorSidebar";
 import { EditorQuery } from "./__generated__/EditorQuery.graphql";
 import HoldEditor from "./EditorOverlay/HoldEditor/HoldEditor";
-import { Box, Button } from "@mui/material";
+import { Box } from "@mui/material";
 import HoldMarkers from "./EditorOverlay/HoldEditor/HoldMarkers";
 import { DndProvider } from "react-dnd";
 import MouseBackEnd from "react-dnd-mouse-backend";
@@ -89,6 +88,8 @@ const Editor: React.FC<Props> = ({
     <DndProvider backend={MouseBackEnd}>
       <EditorContext.Provider
         value={{
+          editingHolds,
+          setEditingHolds,
           selectedHold,
           setSelectedHold,
           highlightedMove,
@@ -131,23 +132,6 @@ const Editor: React.FC<Props> = ({
 
           {/* Other stuff */}
           <EditorSidebar>
-            <Button
-              component={RouterLink}
-              to="/"
-              sx={{
-                width: "100%",
-              }}
-            >
-              Home
-            </Button>
-            <Button
-              onClick={() => setEditingHolds((old) => !old)}
-              sx={{
-                width: "100%",
-              }}
-            >
-              {editingHolds ? "Done" : "Edit Holds"}
-            </Button>
             <ProblemList
               imageKey={data.image}
               selectedProblem={selectedProblem}
