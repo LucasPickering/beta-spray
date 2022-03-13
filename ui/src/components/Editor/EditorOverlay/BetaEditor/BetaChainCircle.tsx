@@ -1,14 +1,12 @@
-import clsx from "clsx";
 import React, { useContext } from "react";
 import { BetaOverlayMove, formatOrder } from "../types";
 import Circle from "../Circle";
 import { DropHandler, useDrag } from "util/dnd";
-import commonClasses from "../common.scss";
+import { styleDraggable, styleDragging } from "styles/dnd";
 import { useTheme } from "@mui/material";
 import EditorContext from "context/EditorContext";
 
 interface Props {
-  className?: string;
   move: BetaOverlayMove;
   isLast: boolean;
   onDrop?: DropHandler<"betaMoveSvg">;
@@ -21,7 +19,6 @@ interface Props {
  * A circle representing a single beta move in a chain
  */
 const BetaChainCircle: React.FC<Props> = ({
-  className,
   move,
   isLast,
   onDrop,
@@ -53,11 +50,7 @@ const BetaChainCircle: React.FC<Props> = ({
     <Circle
       ref={drag}
       // The last move in the chain gets styled differently
-      className={clsx(
-        commonClasses.draggable,
-        isDragging && commonClasses.dragging,
-        className
-      )}
+      css={[styleDraggable, isDragging && styleDragging]}
       // TODO hover styles for responsiveness
       fill={isHighlighted ? "white" : theme.bodyParts[move.bodyPart]}
       position={move.position}

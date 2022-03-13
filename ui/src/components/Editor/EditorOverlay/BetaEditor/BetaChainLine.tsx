@@ -1,12 +1,10 @@
-import clsx from "clsx";
 import React from "react";
 import { BetaOverlayMove } from "../types";
 import { DropHandler, useDrag } from "util/dnd";
-import commonClasses from "../common.scss";
+import { styleDraggable, styleDragging } from "styles/dnd";
 import { useTheme } from "@mui/material";
 
 interface Props {
-  className?: string;
   startMove: BetaOverlayMove;
   endMove: BetaOverlayMove;
   onDrop?: DropHandler<"betaMoveSvg">;
@@ -15,12 +13,7 @@ interface Props {
 /**
  * A circle representing a single beta move in a chain
  */
-const BetaChainLine: React.FC<Props> = ({
-  className,
-  startMove,
-  endMove,
-  onDrop,
-}) => {
+const BetaChainLine: React.FC<Props> = ({ startMove, endMove, onDrop }) => {
   const theme = useTheme();
   const [{ isDragging }, drag] = useDrag<
     "betaMoveSvg",
@@ -43,11 +36,7 @@ const BetaChainLine: React.FC<Props> = ({
   return (
     <line
       ref={drag}
-      className={clsx(
-        commonClasses.draggable,
-        isDragging && commonClasses.dragging,
-        className
-      )}
+      css={[styleDraggable, isDragging && styleDragging]}
       stroke={theme.bodyParts[startMove.bodyPart]}
       x1={startMove.position.x}
       y1={startMove.position.y}

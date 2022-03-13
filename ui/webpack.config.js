@@ -20,21 +20,6 @@ module.exports = {
         loader: "babel-loader",
       },
       {
-        test: /\.(sass|scss)$/i,
-        use: [
-          "style-loader",
-          {
-            loader: "css-loader",
-            options: {
-              modules: {
-                localIdentName: "[name]_[local]_[hash:base64:5]",
-              },
-            },
-          },
-          "sass-loader",
-        ],
-      },
-      {
         test: /\.js$/,
         enforce: "pre",
         use: ["source-map-loader"],

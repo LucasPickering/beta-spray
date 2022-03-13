@@ -9,8 +9,6 @@
 
 ### Tech
 
-- Material UI
-
 ## Later
 
 ### Features
@@ -22,6 +20,4 @@
 
 ### Tech
 
-- Switch to emotion styling
-  - Remove all .scss files and webpack plugins
 - Split GQL queries

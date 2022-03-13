@@ -1,6 +1,9 @@
 {
   "presets": [
-    "@babel/react",
+    [
+      "@babel/react",
+      { "runtime": "automatic", "importSource": "@emotion/react" }
+    ],
     "@babel/typescript",
     [
       "@babel/env",
@@ -9,7 +12,5 @@
       }
     ]
   ],
-  "plugins": [
-    "relay"
-  ]
+  "plugins": ["@emotion", "relay"]
 }

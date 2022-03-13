@@ -1,16 +1,14 @@
-import clsx from "clsx";
 import React, { useRef } from "react";
 import { DropHandler, useDrag, useDrop } from "util/dnd";
-import classes from "./HoldMarker.scss";
-import commonClasses from "../common.scss";
 import { graphql, useFragment } from "react-relay";
 import { useOverlayUtils } from "util/useOverlayUtils";
 import { HoldMarker_holdNode$key } from "./__generated__/HoldMarker_holdNode.graphql";
 import Positioned from "../Positioned";
 import { IconTriangle } from "components/icons";
+import { css } from "@emotion/react";
+import { styleDraggable, styleDragging, styleDropHover } from "styles/dnd";
 
 interface Props {
-  className?: string;
   holdKey: HoldMarker_holdNode$key;
   draggable?: boolean;
   unhighlight?: boolean;
@@ -19,8 +17,20 @@ interface Props {
   onDrop?: DropHandler<"holdSvg">;
 }
 
+const styleHoldMarker = css({
+  fill: "white",
+  stroke: "white",
+  strokeWidth: 0.3,
+});
+const styleUnhighlight = css({
+  fill: "gray",
+  stroke: "gray",
+});
+const styleClickable = css({
+  cursor: "pointer",
+});
+
 const HoldMarker: React.FC<Props> = ({
-  className,
   holdKey,
   unhighlight = false,
   onClick,
@@ -70,15 +80,14 @@ const HoldMarker: React.FC<Props> = ({
   drag(drop(ref));
   return (
     <Positioned
-      className={clsx(
-        classes.holdMarker,
-        unhighlight && classes.unhighlight,
-        onDrop && commonClasses.draggable,
-        isDragging && commonClasses.dragging,
-        isOver && commonClasses.dropHover,
-        onClick && classes.interact,
-        className
-      )}
+      css={[
+        styleHoldMarker,
+        unhighlight && styleUnhighlight,
+        onClick && styleClickable,
+        onDrop && styleDraggable,
+        isDragging && styleDragging,
+        isOver && styleDropHover,
+      ]}
       position={position}
     >
       <IconTriangle />
