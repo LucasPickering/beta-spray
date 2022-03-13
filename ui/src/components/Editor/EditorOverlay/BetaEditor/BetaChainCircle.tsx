@@ -9,7 +9,7 @@ import EditorContext from "context/EditorContext";
 interface Props {
   move: BetaOverlayMove;
   isLast: boolean;
-  onDrop?: DropHandler<"betaMoveSvg">;
+  onDrop?: DropHandler<"betaMoveOverlay">;
   onDoubleClick?: (move: BetaOverlayMove) => void;
   onMouseEnter?: (move: BetaOverlayMove) => void;
   onMouseLeave?: (move: BetaOverlayMove) => void;
@@ -28,10 +28,10 @@ const BetaChainCircle: React.FC<Props> = ({
 }) => {
   const theme = useTheme();
   const [{ isDragging }, drag] = useDrag<
-    "betaMoveSvg",
+    "betaMoveOverlay",
     { isDragging: boolean }
   >({
-    type: "betaMoveSvg",
+    type: "betaMoveOverlay",
     item: { kind: "move", move, isLast },
     collect: (monitor) => ({
       isDragging: Boolean(monitor.isDragging()),

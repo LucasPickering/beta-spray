@@ -23,12 +23,12 @@ import {
  */
 export type DragType =
   | {
-      kind: "holdSvg";
+      kind: "holdOverlay";
       item: { holdId: string };
       drop: { position: OverlayPosition };
     }
   | {
-      kind: "betaMoveSvg";
+      kind: "betaMoveOverlay";
       item: // Dragging a move around
       | { kind: "move"; move: BetaOverlayMove; isLast: boolean }
         // Dragging a line between two moves (to insert a move)

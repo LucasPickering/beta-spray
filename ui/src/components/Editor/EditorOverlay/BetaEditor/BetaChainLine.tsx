@@ -7,7 +7,7 @@ import { useTheme } from "@mui/material";
 interface Props {
   startMove: BetaOverlayMove;
   endMove: BetaOverlayMove;
-  onDrop?: DropHandler<"betaMoveSvg">;
+  onDrop?: DropHandler<"betaMoveOverlay">;
 }
 
 /**
@@ -16,10 +16,10 @@ interface Props {
 const BetaChainLine: React.FC<Props> = ({ startMove, endMove, onDrop }) => {
   const theme = useTheme();
   const [{ isDragging }, drag] = useDrag<
-    "betaMoveSvg",
+    "betaMoveOverlay",
     { isDragging: boolean }
   >({
-    type: "betaMoveSvg",
+    type: "betaMoveOverlay",
     item: { kind: "line", startMove },
     collect: (monitor) => ({
       isDragging: Boolean(monitor.isDragging()),

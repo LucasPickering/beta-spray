@@ -14,8 +14,8 @@ const HoldEditorDropZone: React.FC<Props> = ({ onClick }) => {
   const { getMouseCoords } = useOverlayUtils();
 
   // Listen for holds being dropped
-  const [, drop] = useDrop<"holdSvg">({
-    accept: "holdSvg",
+  const [, drop] = useDrop<"holdOverlay">({
+    accept: "holdOverlay",
     // Tell the dragger where they airdropped to
     drop(item, monitor) {
       const mousePos = monitor.getClientOffset();

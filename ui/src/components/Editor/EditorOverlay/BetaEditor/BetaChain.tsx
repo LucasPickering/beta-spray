@@ -10,7 +10,7 @@ interface Props
     "onDoubleClick" | "onMouseEnter" | "onMouseLeave"
   > {
   moves: BetaOverlayMove[];
-  onDrop?: DropHandler<"betaMoveSvg">;
+  onDrop?: DropHandler<"betaMoveOverlay">;
 }
 
 /**

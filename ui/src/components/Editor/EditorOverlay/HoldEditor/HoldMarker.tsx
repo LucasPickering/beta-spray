@@ -14,7 +14,7 @@ interface Props {
   unhighlight?: boolean;
   onClick?: (holdId: string) => void;
   onDoubleClick?: (holdId: string) => void;
-  onDrop?: DropHandler<"holdSvg">;
+  onDrop?: DropHandler<"holdOverlay">;
 }
 
 const styleHoldMarker = css({
@@ -52,8 +52,11 @@ const HoldMarker: React.FC<Props> = ({
   const position = toOverlayPosition(hold);
 
   // Drag this hold around, while editing holds
-  const [{ isDragging }, drag] = useDrag<"holdSvg", { isDragging: boolean }>({
-    type: "holdSvg",
+  const [{ isDragging }, drag] = useDrag<
+    "holdOverlay",
+    { isDragging: boolean }
+  >({
+    type: "holdOverlay",
     item: { holdId: hold.id },
     collect: (monitor) => ({
       isDragging: Boolean(monitor.isDragging()),
@@ -67,9 +70,9 @@ const HoldMarker: React.FC<Props> = ({
   });
 
   // Drop *moves* onto this hold
-  const [{ isOver }, drop] = useDrop<"betaMoveSvg", { isOver: boolean }>({
+  const [{ isOver }, drop] = useDrop<"betaMoveOverlay", { isOver: boolean }>({
     // TODO don't allow drop if move is already on this hold
-    accept: "betaMoveSvg",
+    accept: "betaMoveOverlay",
     collect: (monitor) => ({
       isOver: Boolean(monitor.isOver()),
     }),
