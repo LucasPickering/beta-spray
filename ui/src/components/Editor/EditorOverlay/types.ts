@@ -35,8 +35,6 @@ export enum BodyPart {
  */
 export interface BetaOverlayMove {
   id: string;
-  prev?: BetaOverlayMove;
-  next?: BetaOverlayMove;
   bodyPart: BodyPart;
   order: number;
   position: OverlayPosition;

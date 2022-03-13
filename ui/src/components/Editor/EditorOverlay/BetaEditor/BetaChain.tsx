@@ -21,17 +21,17 @@ const BetaChain: React.FC<Props> = ({ moves, onDrop, ...rest }) => (
   <>
     {/* Draw a line from the last move to this one. Draw these *first* so they
     go on the bottom */}
-    {moves.map(
-      (move) =>
-        move.prev && (
-          <BetaChainLine
-            key={move.id}
-            startMove={move.prev}
-            endMove={move}
-            onDrop={onDrop}
-          />
-        )
-    )}
+    {moves.map((move, i) => {
+      const prev = moves[i - 1];
+      return prev ? (
+        <BetaChainLine
+          key={move.id}
+          startMove={prev}
+          endMove={move}
+          onDrop={onDrop}
+        />
+      ) : null;
+    })}
     {moves.map((move, i) => (
       <BetaChainCircle
         key={move.id}

@@ -10,6 +10,8 @@ import { BetaEditor_deleteBetaMoveMutation } from "./__generated__/BetaEditor_de
 import { useOverlayUtils } from "util/useOverlayUtils";
 import BetaMoveModal from "./BetaMoveModal";
 import EditorContext from "context/EditorContext";
+import { assertIsDefined } from "util/func";
+import BodyState from "./BodyState";
 
 interface Props {
   betaKey: BetaEditor_betaNode$key;
@@ -51,25 +53,24 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
     betaKey
   );
 
-  const { selectedHold, setSelectedHold, setHighlightedMove } =
+  const { selectedHold, setSelectedHold, highlightedMove, setHighlightedMove } =
     useContext(EditorContext);
 
   const { toOverlayPosition } = useOverlayUtils();
 
-  const moves = beta.moves.edges.reduce<BetaOverlayMove[]>((acc, { node }) => {
+  // Map moves to a shorthand form that we can use in the AI. These should
+  // always be sorted by order from the API, and remain that way
+  const moves: BetaOverlayMove[] = beta.moves.edges.map(({ node }) => {
     // TODO render holdless moves
-    if (!node.hold) {
-      return acc;
-    }
+    assertIsDefined(node.hold);
 
-    acc.push({
+    return {
       id: node.id,
       bodyPart: toBodyPart(node.bodyPart),
       order: node.order,
       position: toOverlayPosition(node.hold),
-    });
-    return acc;
-  }, []);
+    };
+  });
 
   // Group the moves by body part so we can draw chains. We assume the API
   // response is ordered by `order`, so these should naturally be as well.
@@ -82,15 +83,6 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
   for (const move of moves) {
     const movesForBodyPart = movesByBodyPart.get(move.bodyPart) ?? [];
     movesForBodyPart.push(move);
-  }
-
-  // Within each chain, link prev<==>current<==>next, so each move knows about
-  // its neighbors
-  for (const moves of movesByBodyPart.values()) {
-    moves.forEach((move, i) => {
-      move.prev = moves[i - 1];
-      move.next = moves[i + 1];
-    });
   }
 
   // TODO use loading state
@@ -147,6 +139,11 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
   // Render one "chain" of moves per body part
   return (
     <>
+      {/* If user is hovering a move, show what the body looks like at that point */}
+      {highlightedMove && (
+        <BodyState moves={moves} highlightedMove={highlightedMove} />
+      )}
+
       {Array.from(movesByBodyPart.entries(), ([bodyPart, moveChain]) => (
         <BetaChain
           key={bodyPart}
