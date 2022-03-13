@@ -17,25 +17,18 @@ jobs:
       - name: Build Docker Image
         run: docker-compose build api
 
-      - name: Install Dependencies
-        run: docker-compose run api poetry install
-
-      - name: Install Dependencies
-        run: docker-compose run api poetry install
-
-      - name: Lint
-        run: docker-compose run api flake8
-
-      # Make sure there are no uncommited changes to API schema
-      - name: Check Schema
+      - name: Do Everything
         run: >
           docker-compose run api bash -c '
+            poetry install
+
+            flake8
+
             ./m.sh graphql_schema
             git diff --exit code
-          '
 
-      - name: Test
-        run: docker-compose run api ./m.sh test
+            ./m.sh test
+          '
 
   # This runs natively cause it's faster
   check-ui:

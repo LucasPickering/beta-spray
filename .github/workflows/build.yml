@@ -16,7 +16,7 @@ jobs:
         component: [api, ui]
         include:
           - component: api
-            directory: ./api
+            context: ./api
             dockerfile: ./api/prd.Dockerfile
           - component: ui
             context: ./
@@ -42,4 +42,4 @@ jobs:
           file: ${{ matrix.dockerfile }}
           tags: ghcr.io/lucaspickering/beta-spray-${{ matrix.component }}:latest
           pull: true
-          push: github.ref == 'refs/heads/master'
+          push: ${{ github.ref == 'refs/heads/master' }}
