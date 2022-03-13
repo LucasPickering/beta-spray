@@ -3,7 +3,7 @@ import React from "react";
 import { BetaOverlayMove } from "../types";
 import { DropHandler, useDrag } from "util/dnd";
 import commonClasses from "../common.scss";
-import { useTheme } from "@chakra-ui/react";
+import { useTheme } from "@mui/material";
 
 interface Props {
   className?: string;
@@ -48,7 +48,7 @@ const BetaChainLine: React.FC<Props> = ({
         isDragging && commonClasses.dragging,
         className
       )}
-      stroke={theme.colors[startMove.bodyPart]}
+      stroke={theme.bodyParts[startMove.bodyPart]}
       x1={startMove.position.x}
       y1={startMove.position.y}
       x2={endMove.position.x}

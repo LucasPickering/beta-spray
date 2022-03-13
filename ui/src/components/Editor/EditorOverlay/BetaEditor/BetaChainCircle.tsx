@@ -4,7 +4,7 @@ import { BetaOverlayMove, formatOrder } from "../types";
 import Circle from "../Circle";
 import { DropHandler, useDrag } from "util/dnd";
 import commonClasses from "../common.scss";
-import { useTheme } from "@chakra-ui/react";
+import { useTheme } from "@mui/material";
 import EditorContext from "context/EditorContext";
 
 interface Props {
@@ -59,7 +59,7 @@ const BetaChainCircle: React.FC<Props> = ({
         className
       )}
       // TODO hover styles for responsiveness
-      fill={isHighlighted ? "white" : theme.colors[move.bodyPart]}
+      fill={isHighlighted ? "white" : theme.bodyParts[move.bodyPart]}
       position={move.position}
       innerLabel={formatOrder(move.order)}
       onDoubleClick={onDoubleClick && (() => onDoubleClick(move))}

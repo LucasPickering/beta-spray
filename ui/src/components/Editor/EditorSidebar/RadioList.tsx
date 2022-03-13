@@ -1,14 +1,16 @@
 import React from "react";
 import {
-  Box,
-  Flex,
   Radio,
   RadioGroup,
   Stack,
-  Heading,
   IconButton,
-} from "@chakra-ui/react";
-import { HiPlus, HiX } from "react-icons/hi";
+  FormControl,
+  FormLabel,
+  Box,
+  FormControlLabel,
+  Button,
+} from "@mui/material";
+import { Add as IconAdd, Close as IconClose } from "@mui/icons-material";
 
 interface Props {
   title: string;
@@ -29,37 +31,54 @@ const BetaList: React.FC<Props> = ({
   setSelectedId,
   onCreateNew,
   onDelete,
-}) => (
-  <Box my={8}>
-    <Heading size="md" as="h3">
-      {title}
-    </Heading>
+}) => {
+  const id = `${title}-select`;
+  return (
+    <FormControl>
+      <FormLabel id={id}>{title}</FormLabel>
 
-    <RadioGroup value={selectedId} onChange={setSelectedId}>
-      <Stack direction="column">
-        {items.map(({ name, id }) => (
-          <Flex key={id} justifyContent="space-between">
-            <Radio value={id}>{name}</Radio>
-            <IconButton
-              aria-label={`delete ${name}`}
-              icon={<HiX />}
-              size="sm"
-              onClick={() => onDelete(id)}
-            />
-          </Flex>
-        ))}
-      </Stack>
-    </RadioGroup>
+      <RadioGroup
+        aria-labelledby={id}
+        value={selectedId}
+        onChange={(e) => setSelectedId(e.target.value)}
+      >
+        <Stack direction="column">
+          {items.map(({ name, id: itemId }) => (
+            <Box
+              key={id}
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
+              <FormControlLabel
+                value={itemId}
+                control={<Radio />}
+                label={name}
+              />
+              <IconButton
+                aria-label={`delete ${name}`}
+                size="small"
+                onClick={() => onDelete(id)}
+              >
+                <IconClose />
+              </IconButton>
+            </Box>
+          ))}
+        </Stack>
+      </RadioGroup>
 
-    <IconButton
-      aria-label={`New ${title}`}
-      icon={<HiPlus />}
-      width="100%"
-      size="sm"
-      marginTop={2}
-      onClick={() => onCreateNew()}
-    />
-  </Box>
-);
+      <Button
+        size="small"
+        variant="outlined"
+        startIcon={<IconAdd />}
+        onClick={() => onCreateNew()}
+        sx={{ width: "100%" }}
+      >
+        Add
+      </Button>
+    </FormControl>
+  );
+};
 
 export default BetaList;

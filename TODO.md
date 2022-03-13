@@ -3,12 +3,13 @@
 ### Features
 
 - Help text
+- Disambiguation when hold has multiple moves
 
 ### Polish
 
-- Disambiguation when hold has multiple moves
-
 ### Tech
+
+- Material UI
 
 ## Later
 

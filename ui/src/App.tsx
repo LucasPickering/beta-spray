@@ -1,19 +1,22 @@
 import React, { Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { RelayEnvironmentProvider } from "react-relay";
-import { ChakraProvider } from "@chakra-ui/react";
 import EditorLoader from "components/Editor/EditorLoader";
 import Loading from "components/Loading";
 import NotFound from "components/NotFound";
 import Home from "components/Home";
 import environment from "util/environment";
 import theme from "util/theme";
+import { ThemeProvider } from "@mui/material/styles";
+import { CssBaseline } from "@mui/material";
 
 const App: React.FC = () => {
   return (
     <RelayEnvironmentProvider environment={environment}>
       <BrowserRouter>
-        <ChakraProvider theme={theme}>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+
           <Suspense fallback={<Loading />}>
             <Routes>
               <Route path="" element={<Home />} />
@@ -26,7 +29,7 @@ const App: React.FC = () => {
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
-        </ChakraProvider>
+        </ThemeProvider>
       </BrowserRouter>
     </RelayEnvironmentProvider>
   );

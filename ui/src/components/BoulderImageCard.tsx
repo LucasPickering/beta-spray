@@ -1,4 +1,10 @@
-import { Box, Link } from "@chakra-ui/react";
+import {
+  Card,
+  CardActionArea,
+  CardContent,
+  CardMedia,
+  Typography,
+} from "@mui/material";
 import dayjs from "dayjs";
 import React from "react";
 import { graphql, useFragment } from "react-relay";
@@ -22,17 +28,22 @@ const BoulderImageCard: React.FC<Props> = ({ imageKey }) => {
   );
 
   return (
-    <Link as={RouterLink} to={`/images/${image.id}`}>
-      <Box margin={4}>
-        <img
-          src={image.imageUrl}
+    <Card>
+      <CardActionArea component={RouterLink} to={`/images/${image.id}`}>
+        <CardMedia
+          component="img"
+          image={image.imageUrl}
           alt="boulder"
-          style={{ width: 400, height: 120, objectFit: "cover" }}
+          sx={{
+            objectFit: "cover",
+            height: 200,
+          }}
         />
-
-        {dayjs(image.createdAt).format("LLL")}
-      </Box>
-    </Link>
+        <CardContent>
+          <Typography>{dayjs(image.createdAt).format("LLL")}</Typography>
+        </CardContent>
+      </CardActionArea>
+    </Card>
   );
 };
 

@@ -6,7 +6,7 @@ import {
   BetaDetails_betaNode$key,
 } from "./__generated__/BetaDetails_betaNode.graphql";
 import { BetaDetails_deleteBetaMoveMutation } from "./__generated__/BetaDetails_deleteBetaMoveMutation.graphql";
-import { Heading, OrderedList } from "@chakra-ui/react";
+import { FormLabel, List } from "@mui/material";
 import { moveArrayElement } from "util/func";
 import { BetaDetails_updateBetaMoveMutation } from "./__generated__/BetaDetails_updateBetaMoveMutation.graphql";
 
@@ -81,10 +81,8 @@ const BetaDetails: React.FC<Props> = ({ dataKey }) => {
 
   return (
     <div>
-      <Heading size="md" as="h3">
-        Moves
-      </Heading>
-      <OrderedList spacing={2} margin={0}>
+      <FormLabel component="span">Moves</FormLabel>
+      <List component="ol">
         {moves.map((node, moveIndex) => (
           <BetaDetailsMove
             key={node.id}
@@ -121,7 +119,7 @@ const BetaDetails: React.FC<Props> = ({ dataKey }) => {
             }
           />
         ))}
-      </OrderedList>
+      </List>
     </div>
   );
 };

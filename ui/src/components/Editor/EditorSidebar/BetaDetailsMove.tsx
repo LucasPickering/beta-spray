@@ -2,8 +2,18 @@ import React, { useContext, useRef } from "react";
 import { graphql, useFragment } from "react-relay";
 import { BetaDetailsMove_betaMoveNode$key } from "./__generated__/BetaDetailsMove_betaMoveNode.graphql";
 import { XYCoord } from "react-dnd";
-import { HiMenuAlt4, HiX } from "react-icons/hi";
-import { IconButton, ListItem, Text } from "@chakra-ui/react";
+import {
+  DragHandle as IconDragHandle,
+  Close as IconClose,
+} from "@mui/icons-material";
+import {
+  IconButton,
+  ListItem,
+  ListItemIcon,
+  ListItemSecondaryAction,
+  ListItemText,
+  useTheme,
+} from "@mui/material";
 import {
   formatBodyPart,
   formatOrder,
@@ -39,6 +49,7 @@ const BetaDetailsMove: React.FC<Props> = ({
   );
 
   const { highlightedMove, setHighlightedMove } = useContext(EditorContext);
+  const theme = useTheme();
 
   const ref = useRef<HTMLLIElement | null>(null);
 
@@ -58,6 +69,8 @@ const BetaDetailsMove: React.FC<Props> = ({
     },
   });
 
+  // Use DnD for sortability
+  // https://react-dnd.github.io/react-dnd/examples/sortable/simple
   const [, drop] = useDrop<"betaMoveList", { isOver: boolean }>({
     accept: "betaMoveList",
     collect(monitor) {
@@ -114,43 +127,44 @@ const BetaDetailsMove: React.FC<Props> = ({
     },
   });
 
+  const bodyPart = toBodyPart(betaMove.bodyPart); // simple type conversion
   const isHighlighted = highlightedMove === betaMove.id;
 
   drag(drop(ref));
   return (
     <ListItem
       ref={ref}
-      display="flex"
-      alignItems="center"
-      cursor="move"
-      userSelect="none"
       onMouseEnter={() => setHighlightedMove(betaMove.id)}
       onMouseLeave={() =>
         // Only clear the highlight if we "own" it
         setHighlightedMove((old) => (betaMove.id === old ? undefined : old))
       }
+      sx={[
+        {
+          cursor: "move",
+          userSelect: "none",
+        },
+        isHighlighted && {
+          backgroundColor: theme.palette.action.hover,
+        },
+      ]}
     >
-      <HiMenuAlt4 />
-      <Text
-        marginLeft={2}
-        // TODO hover styles for responsiveness
-        {...(isHighlighted
-          ? {
-              backgroundColor: betaMove.bodyPart,
-            }
-          : { color: betaMove.bodyPart })}
-      >
-        {formatOrder(betaMove.order)}{" "}
-        {formatBodyPart(toBodyPart(betaMove.bodyPart))}
-      </Text>
+      <ListItemIcon>
+        <IconDragHandle />
+      </ListItemIcon>
+      <ListItemText sx={{ color: theme.bodyParts[bodyPart] }}>
+        {formatBodyPart(toBodyPart(bodyPart))}
+      </ListItemText>
 
-      <IconButton
-        aria-label={`delete move ${formatOrder(betaMove.order)}`}
-        icon={<HiX />}
-        size="sm"
-        marginLeft="auto"
-        onClick={onDelete}
-      />
+      <ListItemSecondaryAction>
+        <IconButton
+          aria-label={`delete move ${formatOrder(betaMove.order)}`}
+          size="small"
+          onClick={onDelete}
+        >
+          <IconClose />
+        </IconButton>
+      </ListItemSecondaryAction>
     </ListItem>
   );
 };

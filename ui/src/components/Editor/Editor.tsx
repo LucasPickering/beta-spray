@@ -12,7 +12,7 @@ import EditorOverlay from "./EditorOverlay/EditorOverlay";
 import EditorSidebar from "./EditorSidebar/EditorSidebar";
 import { EditorQuery } from "./__generated__/EditorQuery.graphql";
 import HoldEditor from "./EditorOverlay/HoldEditor/HoldEditor";
-import { Box, Button, Flex, useBoolean } from "@chakra-ui/react";
+import { Box, Button } from "@mui/material";
 import HoldMarkers from "./EditorOverlay/HoldEditor/HoldMarkers";
 import { DndProvider } from "react-dnd";
 import MouseBackEnd from "react-dnd-mouse-backend";
@@ -74,7 +74,7 @@ const Editor: React.FC<Props> = ({
   // Populated when the boulder image loads.
   const [aspectRatio, setAspectRatio] = useState<number | undefined>();
   // Toggle hold editor overlay
-  const [editingHolds, setEditingHolds] = useBoolean(false);
+  const [editingHolds, setEditingHolds] = useState<boolean>(false);
   // Allows overlay to detect when a hold is clicked
   const [selectedHold, setSelectedHold] = useState<string>();
   // Link hovering between move list and overlay
@@ -95,7 +95,7 @@ const Editor: React.FC<Props> = ({
           setHighlightedMove,
         }}
       >
-        <Flex justifyContent="center">
+        <Box sx={{ display: "flex", justifyContent: "center" }}>
           {/* The boulder image and decorations */}
           <Box position="relative" maxWidth="100vw" maxHeight="100vh">
             <BoulderImage
@@ -131,10 +131,21 @@ const Editor: React.FC<Props> = ({
 
           {/* Other stuff */}
           <EditorSidebar>
-            <Button width="100%" as={RouterLink} to="/">
+            <Button
+              component={RouterLink}
+              to="/"
+              sx={{
+                width: "100%",
+              }}
+            >
               Home
             </Button>
-            <Button width="100%" onClick={() => setEditingHolds.toggle()}>
+            <Button
+              onClick={() => setEditingHolds((old) => !old)}
+              sx={{
+                width: "100%",
+              }}
+            >
               {editingHolds ? "Done" : "Edit Holds"}
             </Button>
             <ProblemList
@@ -151,7 +162,7 @@ const Editor: React.FC<Props> = ({
             )}
             {data.beta && <BetaDetails dataKey={data.beta} />}
           </EditorSidebar>
-        </Flex>
+        </Box>
       </EditorContext.Provider>
     </DndProvider>
   );

@@ -1,19 +1,34 @@
-import { extendTheme, type ThemeConfig } from "@chakra-ui/react";
+import { createTheme } from "@mui/material/styles";
 import { BodyPart } from "components/Editor/EditorOverlay/types";
 
-const config: ThemeConfig = {
-  // All dark, all the time
-  initialColorMode: "dark",
-  useSystemColorMode: false,
-};
+declare module "@mui/material/styles" {
+  interface Theme {
+    bodyParts: Record<BodyPart, React.CSSProperties["color"]>;
+  }
 
-const theme = extendTheme({
-  config,
-  colors: {
+  interface ThemeOptions {
+    bodyParts: Record<BodyPart, React.CSSProperties["color"]>;
+  }
+}
+
+const theme = createTheme({
+  palette: {
+    mode: "dark",
+  },
+  bodyParts: {
     [BodyPart.LEFT_HAND]: "yellow",
     [BodyPart.RIGHT_HAND]: "lightcoral",
     [BodyPart.LEFT_FOOT]: "lightgreen",
     [BodyPart.RIGHT_FOOT]: "lightblue",
+  },
+  components: {
+    MuiIconButton: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          borderRadius: theme.shape.borderRadius,
+        }),
+      },
+    },
   },
 });
 

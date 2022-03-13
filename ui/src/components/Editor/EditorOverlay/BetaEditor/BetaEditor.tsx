@@ -8,7 +8,7 @@ import BetaChain from "./BetaChain";
 import { BetaEditor_updateBetaMoveMutation } from "./__generated__/BetaEditor_updateBetaMoveMutation.graphql";
 import { BetaEditor_deleteBetaMoveMutation } from "./__generated__/BetaEditor_deleteBetaMoveMutation.graphql";
 import { useOverlayUtils } from "util/useOverlayUtils";
-import BetaMoveModal from "./BetaMoveModal";
+import BetaMoveDialog from "./BetaMoveDialog";
 import EditorContext from "context/EditorContext";
 import { assertIsDefined } from "util/func";
 import BodyState from "./BodyState";
@@ -210,7 +210,7 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
       ))}
 
       {/* After clicking an empty hold, show a modal to add a move to it */}
-      <BetaMoveModal
+      <BetaMoveDialog
         isOpen={selectedHold !== undefined}
         onClose={() => setSelectedHold(undefined)}
         onSelectBodyPart={(bodyPart) => {
