@@ -12,7 +12,7 @@ interface Props {
  * A layer to catch clicks and drops on the hold editor.
  */
 const HoldEditorDropZone: React.FC<Props> = ({ onClick }) => {
-  const { getMouseCoords } = useOverlayUtils();
+  const { toSvgPosition } = useOverlayUtils();
 
   // Listen for holds being dropped
   const [, drop] = useDrop<"holdOverlay">({
@@ -21,7 +21,7 @@ const HoldEditorDropZone: React.FC<Props> = ({ onClick }) => {
     drop(item, monitor) {
       const mousePos = monitor.getClientOffset();
       assertIsDefined(mousePos);
-      return { position: getMouseCoords(mousePos) };
+      return { position: toSvgPosition(mousePos) };
     },
   });
 

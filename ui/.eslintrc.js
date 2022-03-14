@@ -35,7 +35,7 @@ module.exports = {
     "react/prop-types": "off",
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "error",
-    "react/display-name": "off",
+    "react/display-name": "error",
     "jsx-a11y/no-autofocus": "off",
     "@typescript-eslint/no-unused-vars": "error",
     "@typescript-eslint/no-explicit-any": ["error", { fixToUnknown: true }],
@@ -54,7 +54,7 @@ module.exports = {
       {
         // Prefer our useDrag/useDrop wrappers over the stock ones
         selector:
-          "ImportDeclaration[source.value=react-dnd] > ImportSpecifier[imported.name=/useDrag|useDrop/]",
+          "ImportDeclaration[source.value=react-dnd] > ImportSpecifier[imported.name=/useDrag|useDrop|useDragLayer/]",
         message:
           "Use the local useDrag/useDrop wrapper instead of the one from react-dnd",
       },

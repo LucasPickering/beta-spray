@@ -10,7 +10,6 @@ interface Props
     "onClick" | "onDoubleClick" | "onDrop"
   > {
   holdConnectionKey: HoldOverlay_holdConnection$key;
-  highlightedHolds?: string[];
 }
 
 /**
@@ -18,7 +17,6 @@ interface Props
  */
 const HoldOverlay: React.FC<Props> = ({
   holdConnectionKey,
-  highlightedHolds,
   onClick,
   onDoubleClick,
   onDrop,
@@ -43,7 +41,6 @@ const HoldOverlay: React.FC<Props> = ({
         <HoldMark
           key={node.id}
           holdKey={node}
-          unhighlight={highlightedHolds && !highlightedHolds.includes(node.id)}
           onClick={onClick}
           onDoubleClick={onDoubleClick}
           onDrop={onDrop}

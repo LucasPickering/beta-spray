@@ -40,7 +40,7 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
     problemKey
   );
 
-  const { toAPIPosition, getMouseCoords } = useOverlayUtils();
+  const { toAPIPosition, toSvgPosition } = useOverlayUtils();
 
   // TODO handle loading states
   const { commit: createHold, state: createState } =
@@ -93,7 +93,7 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
       <HoldEditorDropZone
         onClick={(e) => {
           const apiPos = toAPIPosition(
-            getMouseCoords({ x: e.clientX, y: e.clientY })
+            toSvgPosition({ x: e.clientX, y: e.clientY })
           );
           createHold({
             variables: {

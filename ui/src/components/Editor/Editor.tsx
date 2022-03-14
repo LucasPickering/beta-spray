@@ -16,6 +16,7 @@ import { DndProvider } from "react-dnd";
 import { TouchBackend } from "react-dnd-touch-backend";
 import EditorContext from "context/EditorContext";
 import HelpText from "./EditorOverlay/HelpText";
+import { DragLayer } from "./EditorOverlay/DragLayer";
 
 interface Props {
   queryRef: PreloadedQuery<EditorQuery>;
@@ -107,6 +108,8 @@ const Editor: React.FC<Props> = ({
           // For sidebar overlay positioning
           position="relative"
           maxHeight="calc(100vh - 48px)"
+          // Prevent mystical scroll bar
+          sx={{ overflowY: "hidden" }}
         >
           {/* The boulder image and decorations */}
           <Box position="relative" height="fit-content">
@@ -121,6 +124,10 @@ const Editor: React.FC<Props> = ({
             {/* Don't render overlay until image loads */}
             {aspectRatio !== undefined && (
               <EditorOverlay aspectRatio={aspectRatio}>
+                {/* This has to go before everything else so it doesn't eat
+                    drop events */}
+                <DragLayer mode="svg" />
+
                 {editingHolds ? (
                   <HoldEditor problemKey={data.problem} />
                 ) : (
@@ -149,6 +156,8 @@ const Editor: React.FC<Props> = ({
             />
 
             {data.beta && <BetaDetails dataKey={data.beta} />}
+
+            <DragLayer mode="html" />
           </EditorControls>
         </Box>
       </EditorContext.Provider>

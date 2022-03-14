@@ -46,6 +46,4 @@ const BetaChainLine: React.FC<Props> = ({ startMove, endMove, onDrop }) => {
   );
 };
 
-BetaChainLine.defaultProps = {} as Partial<Props>;
-
 export default BetaChainLine;

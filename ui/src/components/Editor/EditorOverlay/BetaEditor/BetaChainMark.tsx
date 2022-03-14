@@ -82,7 +82,7 @@ const BetaChainMark: React.FC<Props> = ({
         <g
           css={[
             {
-              transform: "translate(0px, 0px)",
+              // Animate movement of highlight
               transition: transitions.create("transform", {
                 duration: transitions.duration.standard,
               }),
@@ -126,7 +126,5 @@ const BetaChainMark: React.FC<Props> = ({
     </ClickAwayListener>
   );
 };
-
-BetaChainMark.defaultProps = {} as Partial<Props>;
 
 export default BetaChainMark;

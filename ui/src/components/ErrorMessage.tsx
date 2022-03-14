@@ -13,6 +13,4 @@ const ErrorMessage: React.FC<Props> = () => (
   </Box>
 );
 
-ErrorMessage.defaultProps = {} as Partial<Props>;
-
 export default ErrorMessage;

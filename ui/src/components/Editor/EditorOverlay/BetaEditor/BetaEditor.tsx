@@ -158,6 +158,13 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
           ) : null;
         })
       )}
+
+      {/* If user is hovering a move, show what the body looks like at that
+          point. We want this above the move lines, but below the move marks */}
+      {highlightedMove && (
+        <BodyState moves={moves} highlightedMove={highlightedMove} />
+      )}
+
       {/* Draw the actual move marks */}
       {Array.from(movesByBodyPart.values(), (moveChain) =>
         moveChain.map((move, i) => (
@@ -190,12 +197,6 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
           setSelectedHold(undefined);
         }}
       />
-
-      {/* If user is hovering a move, show what the body looks like at that
-          point. Make sure this is always on top. */}
-      {highlightedMove && (
-        <BodyState moves={moves} highlightedMove={highlightedMove} />
-      )}
 
       <MutationError message="Error creating move" state={createState} />
       <MutationError message="Error updating move" state={updateState} />

@@ -18,3 +18,5 @@ export const IconTriangle = React.forwardRef<
     {...props}
   />
 ));
+
+IconTriangle.displayName = "IconTriangle";

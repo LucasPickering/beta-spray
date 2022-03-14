@@ -2,24 +2,10 @@ import React, { useContext, useRef } from "react";
 import { graphql, useFragment } from "react-relay";
 import { BetaDetailsMove_betaMoveNode$key } from "./__generated__/BetaDetailsMove_betaMoveNode.graphql";
 import { XYCoord } from "react-dnd";
-import {
-  DragHandle as IconDragHandle,
-  Close as IconClose,
-} from "@mui/icons-material";
-import {
-  IconButton,
-  ListItem,
-  ListItemIcon,
-  ListItemSecondaryAction,
-  ListItemText,
-} from "@mui/material";
-import {
-  formatBodyPart,
-  formatOrder,
-  toBodyPart,
-} from "../EditorOverlay/types";
+import { toBodyPart } from "../EditorOverlay/types";
 import { DragItem, DropHandler, useDrag, useDrop } from "util/dnd";
 import EditorContext from "context/EditorContext";
+import BetaMoveListItem from "./BetaMoveListItem";
 
 interface Props {
   dataKey: BetaDetailsMove_betaMoveNode$key;
@@ -30,6 +16,9 @@ interface Props {
   onDelete?: () => void;
 }
 
+/**
+ * A smart(ish) component to render one move in a list of a beta's moves.
+ */
 const BetaDetailsMove: React.FC<Props> = ({
   dataKey,
   index,
@@ -53,9 +42,17 @@ const BetaDetailsMove: React.FC<Props> = ({
 
   const ref = useRef<SVGSVGElement | null>(null);
 
-  const [, drag] = useDrag<"betaMoveList", { isDragging: boolean }>({
+  const [{ isDragging }, drag] = useDrag<
+    "betaMoveList",
+    { isDragging: boolean }
+  >({
     type: "betaMoveList",
-    item: { betaMoveId: betaMove.id, index },
+    item: {
+      betaMoveId: betaMove.id,
+      index,
+      bodyPart: toBodyPart(betaMove.bodyPart),
+      order: betaMove.order,
+    },
     canDrag() {
       return !disabled;
     },
@@ -135,7 +132,10 @@ const BetaDetailsMove: React.FC<Props> = ({
 
   drag(drop(ref));
   return (
-    <ListItem
+    <BetaMoveListItem
+      ref={ref}
+      bodyPart={bodyPart}
+      order={betaMove.order}
       disabled={disabled}
       onMouseEnter={() => {
         if (!disabled) {
@@ -148,37 +148,18 @@ const BetaDetailsMove: React.FC<Props> = ({
           setHighlightedMove((old) => (betaMove.id === old ? undefined : old));
         }
       }}
+      onDelete={onDelete}
       sx={[
         { userSelect: "none" },
+        // Use opacity because we want the element to remain in the doc flow
+        // and keep produce events
+        isDragging && { opacity: 0 },
         isHighlighted &&
           (({ palette }) => ({
             backgroundColor: palette.action.hover,
           })),
       ]}
-    >
-      {/* Limit the dnd to just the handle icon, to not interfere with scrolling
-      on mobile */}
-      <ListItemIcon>
-        <IconDragHandle ref={ref} sx={[!disabled && { cursor: "move" }]} />
-      </ListItemIcon>
-
-      <ListItemText
-        sx={({ palette }) => ({ color: palette.bodyParts[bodyPart] })}
-      >
-        {formatOrder(betaMove.order)} {formatBodyPart(bodyPart)}
-      </ListItemText>
-
-      <ListItemSecondaryAction>
-        <IconButton
-          aria-label={`delete move ${formatOrder(betaMove.order)}`}
-          size="small"
-          disabled={disabled}
-          onClick={onDelete}
-        >
-          <IconClose />
-        </IconButton>
-      </ListItemSecondaryAction>
-    </ListItem>
+    />
   );
 };
 

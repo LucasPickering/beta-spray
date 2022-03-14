@@ -10,7 +10,7 @@ import { assertIsDefined } from "./func";
 export function useOverlayUtils(): {
   toOverlayPosition: (apiPosition: APIPosition) => OverlayPosition;
   toAPIPosition: (overlayPosition: OverlayPosition) => APIPosition;
-  getMouseCoords: (mousePos: XYCoord) => OverlayPosition;
+  toSvgPosition: (domPosition: XYCoord) => OverlayPosition;
 } {
   const { viewBoxWidth, viewBoxHeight, svgRef } = useContext(OverlayContext);
   return useMemo(
@@ -27,15 +27,15 @@ export function useOverlayUtils(): {
           positionY: overlayPosition.y / viewBoxHeight,
         };
       },
-      getMouseCoords(mousePos) {
+      toSvgPosition(domPosition) {
         // Map DOM coords to SVG coords
         // https://www.sitepoint.com/how-to-translate-from-dom-to-svg-coordinates-and-back-again/
         const svg = svgRef.current;
         assertIsDefined(svg);
 
         const point = svg.createSVGPoint();
-        point.x = mousePos.x;
-        point.y = mousePos.y;
+        point.x = domPosition.x;
+        point.y = domPosition.y;
 
         const ctm = svg.getScreenCTM();
         assertIsDefined(ctm);

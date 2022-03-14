@@ -18,4 +18,6 @@ const Positioned = React.forwardRef<SVGGElement, Props>(
   )
 );
 
+Positioned.displayName = "Positioned";
+
 export default Positioned;

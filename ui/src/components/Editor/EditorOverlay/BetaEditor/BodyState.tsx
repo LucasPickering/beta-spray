@@ -49,6 +49,4 @@ const BodyState: React.FC<Props> = ({ moves, highlightedMove }) => {
   );
 };
 
-BodyState.defaultProps = {} as Partial<Props>;
-
 export default BodyState;

@@ -37,7 +37,9 @@ const EditorLoader: React.FC = () => {
             navigate(
               betaId
                 ? `/problems/${problemId}/beta/${betaId}`
-                : `/problems/${problemId}`
+                : `/problems/${problemId}`,
+              // Navigation doesn't really change the page
+              { replace: true }
             );
           }}
         />
