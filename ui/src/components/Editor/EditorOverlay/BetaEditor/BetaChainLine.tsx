@@ -14,7 +14,7 @@ interface Props {
  * A circle representing a single beta move in a chain
  */
 const BetaChainLine: React.FC<Props> = ({ startMove, endMove, onDrop }) => {
-  const theme = useTheme();
+  const { palette } = useTheme();
   const [{ isDragging }, drag] = useDrag<
     "betaMoveOverlay",
     { isDragging: boolean }
@@ -37,7 +37,7 @@ const BetaChainLine: React.FC<Props> = ({ startMove, endMove, onDrop }) => {
     <line
       ref={drag}
       css={[styleDraggable, isDragging && styleDragging]}
-      stroke={theme.bodyParts[startMove.bodyPart]}
+      stroke={palette.bodyParts[startMove.bodyPart]}
       x1={startMove.position.x}
       y1={startMove.position.y}
       x2={endMove.position.x}

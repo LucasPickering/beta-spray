@@ -1,10 +1,15 @@
 import React, { useContext } from "react";
-import { BetaOverlayMove, formatOrder } from "../types";
-import Circle from "../Circle";
+import {
+  BetaOverlayMove,
+  BodyPart,
+  formatOrder,
+  OverlayPosition,
+} from "../types";
 import { DropHandler, useDrag } from "util/dnd";
 import { styleDraggable, styleDragging } from "styles/dnd";
 import { useTheme } from "@mui/material";
 import EditorContext from "context/EditorContext";
+import Positioned from "../Positioned";
 
 interface Props {
   move: BetaOverlayMove;
@@ -13,6 +18,22 @@ interface Props {
   onDoubleClick?: (move: BetaOverlayMove) => void;
   onMouseEnter?: (move: BetaOverlayMove) => void;
   onMouseLeave?: (move: BetaOverlayMove) => void;
+}
+
+/**
+ * When the move is hovered, we'll offset it a little bit to make it accessible.
+ */
+function getOffsetPosition(bodyPart: BodyPart): OverlayPosition {
+  switch (bodyPart) {
+    case BodyPart.LEFT_HAND:
+      return { x: -1, y: -1 };
+    case BodyPart.RIGHT_HAND:
+      return { x: 1, y: -1 };
+    case BodyPart.LEFT_FOOT:
+      return { x: -1, y: 1 };
+    case BodyPart.RIGHT_FOOT:
+      return { x: 1, y: 1 };
+  }
 }
 
 /**
@@ -26,7 +47,7 @@ const BetaChainCircle: React.FC<Props> = ({
   onMouseEnter,
   onMouseLeave,
 }) => {
-  const theme = useTheme();
+  const { palette, transitions } = useTheme();
   const [{ isDragging }, drag] = useDrag<
     "betaMoveOverlay",
     { isDragging: boolean }
@@ -45,20 +66,52 @@ const BetaChainCircle: React.FC<Props> = ({
   });
   const { highlightedMove } = useContext(EditorContext);
   const isHighlighted = highlightedMove === move.id;
+  const offset = getOffsetPosition(move.bodyPart);
 
   return (
-    <Circle
-      ref={drag}
-      // The last move in the chain gets styled differently
-      css={[styleDraggable, isDragging && styleDragging]}
-      // TODO hover styles for responsiveness
-      fill={isHighlighted ? "white" : theme.bodyParts[move.bodyPart]}
-      position={move.position}
-      innerLabel={formatOrder(move.order)}
-      onDoubleClick={onDoubleClick && (() => onDoubleClick(move))}
-      onMouseEnter={onMouseEnter && (() => onMouseEnter(move))}
-      onMouseLeave={onMouseLeave && (() => onMouseLeave(move))}
-    />
+    <Positioned position={move.position}>
+      {/* This wrapper allows for applying transforms to all children */}
+      <g
+        css={[
+          {
+            transform: "translate(0px, 0px)",
+            transition: transitions.create("transform", {
+              duration: transitions.duration.standard,
+            }),
+          },
+          isHighlighted && {
+            // Slide a bit for disambiguation
+            transform: `translate(${offset.x}px, ${offset.y}px)`,
+          },
+        ]}
+      >
+        <circle
+          ref={drag}
+          css={[
+            { fill: palette.bodyParts[move.bodyPart] },
+            styleDraggable,
+            isDragging && styleDragging,
+            isHighlighted && { fill: "white" },
+          ]}
+          r={2}
+          onDoubleClick={onDoubleClick && (() => onDoubleClick(move))}
+          onMouseEnter={onMouseEnter && (() => onMouseEnter(move))}
+          onMouseLeave={onMouseLeave && (() => onMouseLeave(move))}
+        />
+
+        <text
+          css={{
+            fontSize: 3,
+            userSelect: "none",
+            pointerEvents: "none",
+          }}
+          textAnchor="middle"
+          dominantBaseline="middle"
+        >
+          {formatOrder(move.order)}
+        </text>
+      </g>
+    </Positioned>
   );
 };
 

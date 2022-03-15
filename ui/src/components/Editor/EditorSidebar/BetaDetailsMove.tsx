@@ -12,7 +12,6 @@ import {
   ListItemIcon,
   ListItemSecondaryAction,
   ListItemText,
-  useTheme,
 } from "@mui/material";
 import {
   formatBodyPart,
@@ -49,7 +48,6 @@ const BetaDetailsMove: React.FC<Props> = ({
   );
 
   const { highlightedMove, setHighlightedMove } = useContext(EditorContext);
-  const theme = useTheme();
 
   const ref = useRef<HTMLLIElement | null>(null);
 
@@ -144,15 +142,18 @@ const BetaDetailsMove: React.FC<Props> = ({
           cursor: "move",
           userSelect: "none",
         },
-        isHighlighted && {
-          backgroundColor: theme.palette.action.hover,
-        },
+        isHighlighted &&
+          (({ palette }) => ({
+            backgroundColor: palette.action.hover,
+          })),
       ]}
     >
       <ListItemIcon>
         <IconDragHandle />
       </ListItemIcon>
-      <ListItemText sx={{ color: theme.bodyParts[bodyPart] }}>
+      <ListItemText
+        sx={({ palette }) => ({ color: palette.bodyParts[bodyPart] })}
+      >
         {formatBodyPart(toBodyPart(bodyPart))}
       </ListItemText>
 

@@ -24,7 +24,7 @@ import EditorContext from "context/EditorContext";
  */
 const EditorSidebar: React.FC = ({ children }) => {
   const [isOpen, setIsOpen] = useState<boolean>(true);
-  const { breakpoints, spacing } = useTheme();
+  const { breakpoints } = useTheme();
   const isPermanent = useMediaQuery(breakpoints.up("md"));
   const { editingHolds, setEditingHolds } = useContext(EditorContext);
 
@@ -56,7 +56,7 @@ const EditorSidebar: React.FC = ({ children }) => {
           },
         }}
       >
-        <Box sx={{ padding: spacing(2) }}>
+        <Box sx={({ spacing }) => ({ padding: spacing(2) })}>
           <Stack direction="column" spacing={2}>
             <Grid container spacing={1} sx={{ width: "100%" }}>
               <Grid item xs>

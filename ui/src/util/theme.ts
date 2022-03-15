@@ -2,11 +2,11 @@ import { createTheme } from "@mui/material/styles";
 import { BodyPart } from "components/Editor/EditorOverlay/types";
 
 declare module "@mui/material/styles" {
-  interface Theme {
+  interface Palette {
     bodyParts: Record<BodyPart, React.CSSProperties["color"]>;
   }
 
-  interface ThemeOptions {
+  interface PaletteOptions {
     bodyParts: Record<BodyPart, React.CSSProperties["color"]>;
   }
 }
@@ -14,12 +14,12 @@ declare module "@mui/material/styles" {
 const theme = createTheme({
   palette: {
     mode: "dark",
-  },
-  bodyParts: {
-    [BodyPart.LEFT_HAND]: "yellow",
-    [BodyPart.RIGHT_HAND]: "lightcoral",
-    [BodyPart.LEFT_FOOT]: "lightgreen",
-    [BodyPart.RIGHT_FOOT]: "lightblue",
+    bodyParts: {
+      [BodyPart.LEFT_HAND]: "yellow",
+      [BodyPart.RIGHT_HAND]: "lightcoral",
+      [BodyPart.LEFT_FOOT]: "lightgreen",
+      [BodyPart.RIGHT_FOOT]: "lightblue",
+    },
   },
   components: {
     MuiIconButton: {

@@ -33,8 +33,8 @@ const BetaMoveDialog: React.FC<Props> = ({
               key={bodyPart}
               // TODO support body part as color prop
               onClick={() => onSelectBodyPart(bodyPart)}
-              sx={(theme) => ({
-                backgroundColor: theme.bodyParts[bodyPart],
+              sx={({ palette }) => ({
+                backgroundColor: palette.bodyParts[bodyPart],
               })}
             >
               {formatBodyPart(bodyPart)}
