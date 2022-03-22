@@ -1,9 +1,16 @@
 /**
+ * Check if a value is not null/undefined
+ */
+export function isDefined<T>(value: T): value is NonNullable<T> {
+  return value !== null && value !== undefined;
+}
+
+/**
  * Assert the given value is defined. Useful as a type guard when you know
  * something is defined but the typechecker doesn't.
  */
 export function assertIsDefined<T>(value: T): asserts value is NonNullable<T> {
-  if (value === null || value === undefined) {
+  if (!isDefined(value)) {
     throw new Error(`Expected value to be defined, but was ${value}`);
   }
 }
@@ -55,4 +62,29 @@ export function moveArrayElement<T>(
       ...array.slice(oldIndex + 1),
     ];
   }
+}
+
+/**
+ * Group values into a map based on some key on each value.
+ *
+ * @param values The values to group
+ * @param mapper A function that gets a key from each value
+ * @returns Values, grouped by key
+ */
+export function groupBy<T, K>(
+  values: T[],
+  mapper: (value: T) => K
+): Map<K, T[]> {
+  return values.reduce<Map<K, T[]>>((acc, value) => {
+    const key = mapper(value);
+
+    const group = acc.get(key);
+    if (isDefined(group)) {
+      group.push(value);
+    } else {
+      acc.set(key, [value]);
+    }
+
+    return acc;
+  }, new Map());
 }

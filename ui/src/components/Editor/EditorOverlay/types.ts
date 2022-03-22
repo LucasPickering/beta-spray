@@ -37,7 +37,19 @@ export interface BetaOverlayMove {
   id: string;
   bodyPart: BodyPart;
   order: number;
+
+  /**
+   * Visual position of the move. *Warning:* You should generally use {@link getMovePosition}
+   * instead of accessing this directly, so offset can be applied appropriately.
+   */
   position: OverlayPosition;
+
+  /**
+   * If defined, this represents a *visual-only* offset of the move. This should
+   * be used to translate the move whenever it's rendered. Used for
+   * disambiguation.
+   */
+  offset: OverlayPosition | undefined;
 }
 
 /**
@@ -66,4 +78,32 @@ export function formatBodyPart(bodyPart: BodyPart): string {
 
 export function formatOrder(order: number): string {
   return (order + 1).toString();
+}
+
+/**
+ * Calculate Euclidean distance between two points
+ */
+export function distanceTo(
+  position1: OverlayPosition,
+  position2: OverlayPosition
+): number {
+  return Math.sqrt(
+    Math.pow(position2.x - position1.x, 2) +
+      Math.pow(position2.y - position1.y, 2)
+  );
+}
+
+/**
+ * Convert a polar coordinate of (radius, angle) to a cartesian one.
+ * @param radius Distance from the origin
+ * @param radians Offset angle, in *radians*
+ */
+export function polarToCartesian(
+  radius: number,
+  radians: number
+): OverlayPosition {
+  return {
+    x: radius * Math.cos(radians),
+    y: radius * Math.sin(radians),
+  };
 }

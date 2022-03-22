@@ -3,7 +3,6 @@
 ### Features
 
 - Help text
-- Disambiguation when hold has multiple moves
 
 ### Polish
 

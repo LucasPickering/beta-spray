@@ -1,15 +1,11 @@
 import React, { useContext } from "react";
-import {
-  BetaOverlayMove,
-  BodyPart,
-  formatOrder,
-  OverlayPosition,
-} from "../types";
+import { BetaOverlayMove, formatOrder } from "../types";
 import { DropHandler, useDrag } from "util/dnd";
 import { styleDraggable, styleDragging } from "styles/dnd";
 import { useTheme } from "@mui/material";
 import EditorContext from "context/EditorContext";
 import Positioned from "../Positioned";
+import { betaMoveCircleRadius } from "../consts";
 
 interface Props {
   move: BetaOverlayMove;
@@ -18,22 +14,6 @@ interface Props {
   onDoubleClick?: (move: BetaOverlayMove) => void;
   onMouseEnter?: (move: BetaOverlayMove) => void;
   onMouseLeave?: (move: BetaOverlayMove) => void;
-}
-
-/**
- * When the move is hovered, we'll offset it a little bit to make it accessible.
- */
-function getOffsetPosition(bodyPart: BodyPart): OverlayPosition {
-  switch (bodyPart) {
-    case BodyPart.LEFT_HAND:
-      return { x: -1, y: -1 };
-    case BodyPart.RIGHT_HAND:
-      return { x: 1, y: -1 };
-    case BodyPart.LEFT_FOOT:
-      return { x: -1, y: 1 };
-    case BodyPart.RIGHT_FOOT:
-      return { x: 1, y: 1 };
-  }
 }
 
 /**
@@ -66,7 +46,6 @@ const BetaChainCircle: React.FC<Props> = ({
   });
   const { highlightedMove } = useContext(EditorContext);
   const isHighlighted = highlightedMove === move.id;
-  const offset = getOffsetPosition(move.bodyPart);
 
   return (
     <Positioned position={move.position}>
@@ -79,9 +58,9 @@ const BetaChainCircle: React.FC<Props> = ({
               duration: transitions.duration.standard,
             }),
           },
-          isHighlighted && {
+          move.offset && {
             // Slide a bit for disambiguation
-            transform: `translate(${offset.x}px, ${offset.y}px)`,
+            transform: `translate(${move.offset.x}px, ${move.offset.y}px)`,
           },
         ]}
       >
@@ -93,7 +72,7 @@ const BetaChainCircle: React.FC<Props> = ({
             isDragging && styleDragging,
             isHighlighted && { fill: "white" },
           ]}
-          r={2}
+          r={betaMoveCircleRadius}
           onDoubleClick={onDoubleClick && (() => onDoubleClick(move))}
           onMouseEnter={onMouseEnter && (() => onMouseEnter(move))}
           onMouseLeave={onMouseLeave && (() => onMouseLeave(move))}
