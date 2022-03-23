@@ -17,18 +17,19 @@ jobs:
       - name: Build Docker Image
         run: docker-compose build api
 
-      - name: Do Everything
-        run: >
-          docker-compose run api bash -c '
-            poetry install
+      - name: Lint
+        run: docker-compose run api poetry run flake8
 
-            flake8
+      - name: Check for GraphQL schema changes
+        run: |-
+          docker-compose run api ./m.sh graphql_schema
+          git diff --exit-code
 
-            ./m.sh graphql_schema
-            git diff --exit code
+      - name: Check for DB schema changes
+        run: docker-compose run api ./m.sh makemigrations --dry-run --check
 
-            ./m.sh test
-          '
+      - name: Run Tests
+        run: docker-compose run api ./m.sh test
 
   # This runs natively cause it's faster
   check-ui:
