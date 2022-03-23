@@ -20,7 +20,7 @@ module.exports = {
         loader: "babel-loader",
       },
       {
-        test: /\.js$/,
+        test: /\.m?js$/,
         enforce: "pre",
         use: ["source-map-loader"],
       },

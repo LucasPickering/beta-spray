@@ -39,7 +39,8 @@ const BetaList: React.FC<Props> = ({
 
       <RadioGroup
         aria-labelledby={id}
-        value={selectedId}
+        // `undefined` makes the group think it's in uncontrolled state
+        value={selectedId ?? null}
         onChange={(e) => setSelectedId(e.target.value)}
       >
         <Stack direction="column">

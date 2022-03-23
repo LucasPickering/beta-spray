@@ -154,7 +154,7 @@ const BetaDetailsMove: React.FC<Props> = ({
       <ListItemText
         sx={({ palette }) => ({ color: palette.bodyParts[bodyPart] })}
       >
-        {formatBodyPart(toBodyPart(bodyPart))}
+        {formatOrder(betaMove.order)} {formatBodyPart(bodyPart)}
       </ListItemText>
 
       <ListItemSecondaryAction>
