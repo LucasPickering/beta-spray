@@ -12,9 +12,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
+      max-parallel: 1
       matrix:
         component: [api, ui]
         include:
+          # API needs to be *first*! The UI prod image relies on the API one for
+          # generating Django static assets
           - component: api
             context: ./api
             dockerfile: ./api/prd.Dockerfile
@@ -35,7 +38,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build & push API image
+      - name: Build & push image
         uses: docker/build-push-action@v2
         with:
           context: ${{ matrix.context }}
