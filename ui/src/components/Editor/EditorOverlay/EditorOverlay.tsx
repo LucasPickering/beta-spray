@@ -17,8 +17,6 @@ const EditorOverlay: React.FC<Props> = ({ aspectRatio, children }) => {
     <OverlayContext.Provider value={{ aspectRatio, svgRef: ref }}>
       <svg
         ref={ref}
-        // TODO figure out a better way to handle coords so we don't need to
-        // pass aspectRatio around
         viewBox={`0 0 100 ${100 / aspectRatio}`}
         width="100%"
         height="100%"

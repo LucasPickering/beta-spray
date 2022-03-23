@@ -26,7 +26,6 @@ const BetaChainLine: React.FC<Props> = ({ startMove, endMove, onDrop }) => {
     }),
     end: (item, monitor) => {
       const result = monitor.getDropResult();
-      // TODO don't create new move if we didn't actually move
       if (result && onDrop) {
         onDrop(item, result);
       }
