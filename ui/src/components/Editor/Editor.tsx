@@ -14,7 +14,7 @@ import HoldEditor from "./EditorOverlay/HoldEditor/HoldEditor";
 import { Box } from "@mui/material";
 import HoldMarkers from "./EditorOverlay/HoldEditor/HoldMarkers";
 import { DndProvider } from "react-dnd";
-import MouseBackEnd from "react-dnd-mouse-backend";
+import { TouchBackend } from "react-dnd-touch-backend";
 import EditorContext from "context/EditorContext";
 
 interface Props {
@@ -85,7 +85,13 @@ const Editor: React.FC<Props> = ({
   }
 
   return (
-    <DndProvider backend={MouseBackEnd}>
+    <DndProvider
+      backend={TouchBackend}
+      options={{
+        enableTouchEvents: true,
+        enableMouseEvents: true,
+      }}
+    >
       <EditorContext.Provider
         value={{
           editingHolds,

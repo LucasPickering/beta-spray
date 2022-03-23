@@ -273,18 +273,17 @@ function getMoves(
     };
   });
 
+  // This can be undefined even if highlightedMove is defined, if we've *just*
+  // deleted the move
+  const highlightedMoveObject = moves.find(
+    (move) => move.id === highlightedMove
+  );
+
   // Calculate offset for each move, based on disambiguation needs. If a move
   // is highlighted and there are any other moves near it, we'll apply a visual
   // offset to each of those moves to spread them apart, so the user can easily
   // access them all.
-  if (isDefined(highlightedMove)) {
-    // We can count of the fact that if a move is highlighted, it should exist
-    // in the list. #defensiveprogramming
-    const highlightedMoveObject = moves.find(
-      (move) => move.id === highlightedMove
-    );
-    assertIsDefined(highlightedMoveObject);
-
+  if (isDefined(highlightedMoveObject)) {
     // Find all moves near the highlighted one
     const nearbyMoves = moves.filter(
       (move) =>
