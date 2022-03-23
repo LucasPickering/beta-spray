@@ -1,0 +1,8 @@
+public_ip: "35.245.92.163"
+hostname: "betaspray.lucaspickering.me"
+static_assets_host: "storage.googleapis.com"
+static_assets_bucket: "beta-spray-static"
+ingress-nginx:
+  controller:
+    service:
+      loadBalancerIP: "35.245.92.163"

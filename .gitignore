@@ -5,6 +5,12 @@ build/
 node_modules/
 **/__generated__/
 
+api/src/static/
 api/src/media/boulders/
 # The chosen boulder
 !api/src/medies/boulders/96e0db9a-ac15-478f-9eee-87481f119b9a.jpg
+
+.terraform/
+*.tgz
+*.tfstate*
+*.tfvars

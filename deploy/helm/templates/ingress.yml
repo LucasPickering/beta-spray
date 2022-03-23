@@ -1,0 +1,52 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-static-assets
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/upstream-vhost: "{{ .Values.static_assets_host }}"
+    nginx.ingress.kubernetes.io/rewrite-target: "/{{ .Values.static_assets_bucket }}$uri"
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      # Anything that doesn't have a . after the last slash (i.e. no file
+      # extension) is considered a SPA route. This is jank, but try_files doesn't
+      # seem to work with GCS so this is the next best option.
+      rewrite ^/$ /index.html;
+      rewrite /[^./]+$ /index.html;
+spec:
+  rules:
+    - http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: google-storage-buckets
+                port:
+                  number: 443
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-api
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+    - http:
+        paths:
+          - pathType: Prefix
+            path: "/api"
+            backend:
+              service:
+                name: api
+                port:
+                  number: 8000
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: google-storage-buckets
+spec:
+  type: ExternalName
+  externalName: "{{ .Values.static_assets_host }}"
