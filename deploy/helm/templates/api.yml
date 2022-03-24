@@ -16,9 +16,7 @@ spec:
     spec:
       containers:
         - name: api
-          # TODO use versioned value here?
-          image: ghcr.io/lucaspickering/beta-spray-api:latest
-          imagePullPolicy: Always # TODO remove
+          image: "ghcr.io/lucaspickering/beta-spray-api:{{ .Values.version_sha }}"
           resources:
             requests:
               memory: "512Mi"

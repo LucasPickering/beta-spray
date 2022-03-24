@@ -9,7 +9,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, "build"),
     publicPath: "/",
-    filename: "[name].bundle.js",
+    filename: "[name].[contenthash].bundle.js",
   },
 
   module: {
@@ -50,7 +50,7 @@ module.exports = {
           priority: -20,
           name: "vendors",
           chunks: "all",
-          filename: "[name].app.bundle.js",
+          filename: "[name].[contenthash].app.bundle.js",
         },
       },
     },

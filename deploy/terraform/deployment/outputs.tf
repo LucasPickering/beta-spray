@@ -1,11 +1,11 @@
 output "region" {
   value       = var.region
-  description = "GCloud Region"
+  description = "GCP Region"
 }
 
 output "project_id" {
   value       = var.project_id
-  description = "GCloud Project ID"
+  description = "GCP Project ID"
 }
 
 output "kubernetes_cluster_name" {
@@ -31,9 +31,4 @@ output "public_ip" {
 output "public_host" {
   value       = cloudflare_record.beta_spray.hostname
   description = "Domain to host the site at"
-}
-
-output "static_assets_bucket_url" {
-  value       = "https://storage.googleapis.com/${google_storage_bucket.static_assets.name}"
-  description = "Cloud Storage bucket for static assets"
 }

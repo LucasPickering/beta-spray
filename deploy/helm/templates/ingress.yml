@@ -6,7 +6,7 @@ metadata:
     kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
     nginx.ingress.kubernetes.io/upstream-vhost: "{{ .Values.static_assets_host }}"
-    nginx.ingress.kubernetes.io/rewrite-target: "/{{ .Values.static_assets_bucket }}$uri"
+    nginx.ingress.kubernetes.io/rewrite-target: "/{{ .Values.static_assets_bucket }}/{{  .Values.version_sha  }}$uri"
     nginx.ingress.kubernetes.io/configuration-snippet: |
       # Anything that doesn't have a . after the last slash (i.e. no file
       # extension) is considered a SPA route. This is jank, but try_files doesn't

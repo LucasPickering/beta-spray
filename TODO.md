@@ -4,18 +4,14 @@
 
 - Fix resource warning from Kube
 - Serving Django assets
-- Auto-building assets in CI
 - Media file uploads
-- Workable release process
 - Documentation
+- Run migrations on startup
+- WSGI
 
 ### Features
 
 - Help text
-
-### Polish
-
-### Tech
 
 ## Later
 
@@ -23,9 +19,11 @@
 
 ### Polish
 
+- Home page CSS
 - DnD animations
 - Loading states
 
 ### Tech
 
+- Chunk splitting
 - Split GQL queries
