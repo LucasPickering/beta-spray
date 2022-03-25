@@ -14,7 +14,9 @@ const fetchQuery: FetchFunction = (
 ) => {
   const request: RequestInit = {
     method: "POST",
-    headers: {},
+    headers: {
+      Accept: "application/json",
+    },
   };
 
   if (uploadables) {

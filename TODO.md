@@ -2,12 +2,12 @@
 
 ### Ops
 
-- Fix resource warning from Kube
-- Serving Django assets
 - Media file uploads
-- Documentation
-- Run migrations on startup
 - WSGI
+- Run migrations on startup
+- Django logging
+- Fix resource warning from Kube
+- Documentation
 
 ### Features
 

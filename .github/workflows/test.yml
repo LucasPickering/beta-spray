@@ -1,5 +1,11 @@
 name: Lint & Test
 
+env:
+  # Keep this in sync with api/Dockerfile,api/prd.Dockerfile
+  PYTHON_VERSION: "3.10"
+  # Keep this in sync with ui/Dockerfile and ui/.nvmrc
+  NODE_VERSION: "16"
+
 on:
   push:
     branches:
@@ -7,48 +13,25 @@ on:
   pull_request:
 
 jobs:
-  # This runs in a docker container
-  check-api:
-    name: "Lint API"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@master
-
-      - name: Build Docker Image
-        run: docker-compose build api
-
-      - name: Lint
-        run: docker-compose run api poetry run flake8
-
-      - name: Check for GraphQL schema changes
-        run: |-
-          docker-compose run api ./m.sh graphql_schema
-          git diff --exit-code
-
-      - name: Check for DB schema changes
-        run: docker-compose run api ./m.sh makemigrations --dry-run --check
-
-      - name: Run Tests
-        run: docker-compose run api ./m.sh test
-
-  # This runs natively cause it's faster
+  # These run natively cause it's faster
   check-ui:
     name: "Lint & Test UI"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
 
-      - name: Cache npm files
-        uses: actions/cache@v2
+      - name: Set up Node
+        uses: actions/setup-node@v2
         with:
-          path: ui/node_modules
-          key: ${{ runner.os }}-npm-${{ hashFiles('ui/package-lock.json') }}
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: ui/package-lock.json
 
-      - name: Install Dependencies
+      - name: Install dependencies
         working-directory: ui/
         run: npm install
 
-      - name: Type Check
+      - name: Type check
         working-directory: ui/
         run: npm run type-check
 
@@ -59,3 +42,51 @@ jobs:
       - name: Test
         working-directory: ui/
         run: npm run test
+
+  check-api:
+    name: "Lint API"
+    runs-on: ubuntu-latest
+    env:
+      DJANGO_SETTINGS_MODULE: beta_spray.settings.settings_dev
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      # TODO cache poetry files
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+
+      - name: Install dependencies
+        working-directory: api/
+        run: poetry install
+
+      - name: Lint
+        working-directory: api/
+        run: poetry run flake8
+
+      - name: Check for GraphQL schema changes
+        working-directory: api/
+        run: |-
+          poetry run ./src/manage.py graphql_schema
+          git diff --exit-code
+
+      - name: Check for DB schema changes
+        working-directory: api/
+        run: poetry run ./src/manage.py makemigrations --dry-run --check
+
+  # This runs in a docker container cause it needs DB access
+  test-api:
+    name: "Test API"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Build Docker Image
+        run: docker-compose build api
+
+      - name: Run Tests
+        run: docker-compose run api ./m.sh test

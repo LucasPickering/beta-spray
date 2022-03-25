@@ -6,9 +6,8 @@ import sys
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault(
-        "DJANGO_SETTINGS_MODULE", "beta_spray.settings.settings_dev"
-    )
+    # Settings *have* to be overrided for either dev or prd
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "")
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

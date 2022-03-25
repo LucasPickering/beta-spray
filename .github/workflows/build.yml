@@ -44,7 +44,12 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Build Django static assets
-        run: docker run -v $PWD/static:/app/src/static ${{ env.API_IMAGE_REPO }}:latest ./m.sh collectstatic
+        # Use dev settings here so we don't need to load secrets
+        run: >
+          docker run
+          -v $PWD/static:/app/src/static
+          -e DJANGO_SETTINGS_MODULE=beta_spray.settings.settings_dev
+          ${{ env.API_IMAGE_REPO }}:latest ./m.sh collectstatic
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3

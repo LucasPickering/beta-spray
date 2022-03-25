@@ -1,6 +1,6 @@
 FROM python:3.10-slim
 
-ENV PYTHONUNBUFFERED=1
+ENV PYTHONUNBUFFERED=1 DJANGO_SETTINGS_MODULE=beta_spray.settings.settings_prd
 WORKDIR /app
 
 RUN apt-get update && \
@@ -19,4 +19,4 @@ RUN poetry install --no-dev
 
 ADD . .
 
-CMD ["./m.sh", "runserver", "0.0.0.0:8000", "--settings", "beta_spray.settings.settings_prd"]
+CMD ["./m.sh", "runserver", "0.0.0.0:8000"]
