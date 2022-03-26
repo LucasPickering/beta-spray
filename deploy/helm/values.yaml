@@ -1,4 +1,9 @@
+# TODO load (almost) all of these from TF
 hostname: "betaspray.lucaspickering.me"
+media_bucket: "beta-spray-media"
+api_service_account_name: "api"
+# The email of the *GCP* service account to associate with
+api_service_account_email: "api-pod@beta-spray.iam.gserviceaccount.com"
 static_assets_host: "storage.googleapis.com"
 static_assets_bucket: "beta-spray-static"
 ingress-nginx:

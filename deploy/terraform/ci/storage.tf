@@ -14,7 +14,9 @@ resource "google_storage_bucket_iam_binding" "static_assets_read" {
 
 # GitHub CI can upload objects
 resource "google_storage_bucket_iam_binding" "static_assets_write" {
-  bucket  = google_storage_bucket.static_assets.name
-  role    = "roles/storage.admin" # TODO downgrade to storage.objectCreator
+  bucket = google_storage_bucket.static_assets.name
+  # Theoterically, objectCreator _should_ be enough but the CI step complains
+  # if it doesn't have delete permission ¯\_(ツ)_/¯
+  role    = "roles/storage.objectAdmin"
   members = ["serviceAccount:${google_service_account.service_account.email}"]
 }

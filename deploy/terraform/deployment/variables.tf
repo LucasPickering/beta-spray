@@ -25,6 +25,21 @@ variable "gke_password" {
   description = "gke password"
 }
 
+variable "kube_namespace" {
+  default     = "default"
+  description = "Kubernetes namespace to deploy into"
+}
+
+variable "kube_api_sa" {
+  default     = "api"
+  description = "Name of the *Kubernetes* service account used by the API pod"
+}
+
+variable "media_bucket" {
+  default     = "beta-spray-media"
+  description = "GCS bucket for API media"
+}
+
 variable "project_id" {
   description = "GCP project id"
 }

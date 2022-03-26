@@ -149,9 +149,8 @@ LOGGING = {
     "handlers": {
         "console": {
             "level": "DEBUG",
-            # "filters": ["require_debug_true"],
             "class": "logging.StreamHandler",
-        }
+        },
     },
     "loggers": {
         "django.request": {
@@ -164,4 +163,15 @@ LOGGING = {
             "handlers": ["console"],
         },
     },
+    "root": {"level": "INFO", "handlers": ["console"]},
 }
+
+
+# Media storage - if GCS bucket is set, use that, otherwise use local
+GS_BUCKET_NAME = os.environ.get("BETA_SPRAY_MEDIA_BUCKET")
+if GS_BUCKET_NAME:
+    # NOTE - For dev, you'll need to pass a creds JSON file into the container
+    # and set an env var GOOGLE_APPLICATION_CREDENTIALS to its path
+    DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
+    # See https://django-storages.readthedocs.io/en/latest/backends/gcloud.html
+    GS_DEFAULT_ACL = "publicRead"  # Use unsigned URLs for public access

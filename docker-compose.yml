@@ -16,7 +16,6 @@ services:
     build: ./api/
     command: ./scripts/cmd_dev.sh
     init: true # Fixes slow shutdown
-    tty: true # Colorize output
     environment:
       - BETA_SPRAY_DB_NAME=beta_spray
       - BETA_SPRAY_DB_USER=beta_spray
@@ -33,7 +32,6 @@ services:
     build: ./ui/
     command: ./scripts/cmd.sh
     init: true # Fixes slow shutdown
-    tty: true # Colorize output
     depends_on:
       - api # Need api to generate schema first
     environment:

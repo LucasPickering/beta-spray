@@ -2,11 +2,10 @@
 
 ### Ops
 
-- Media file uploads
 - WSGI
-- Django logging
 - Fix resource warning from Kube
 - Documentation
+- DB PVC
 
 ### Features
 
@@ -26,3 +25,4 @@
 
 - Chunk splitting
 - Split GQL queries
+- Auto-execute some Kube stuff in TF outputs

@@ -18,6 +18,11 @@ output "kubernetes_cluster_ip" {
   description = "GKE Cluster Host IP"
 }
 
+output "media_bucket" {
+  value       = google_storage_bucket.media.name
+  description = "GCS bucket for media upload"
+}
+
 output "public_ip_name" {
   value       = google_compute_address.public_host_ip.name
   description = "Name assigned to the public IP within GCP"

@@ -14,6 +14,7 @@ spec:
       labels:
         app: api
     spec:
+      serviceAccountName: "{{ .Values.api_service_account_name }}"
       containers:
         - name: api
           image: "ghcr.io/lucaspickering/beta-spray-api:{{ .Values.version_sha }}"
@@ -49,6 +50,8 @@ spec:
                 secretKeyRef:
                   name: api-secret-key
                   key: secret-key
+            - name: BETA_SPRAY_MEDIA_BUCKET
+              value: "{{ .Values.media_bucket }}"
           ports:
             - containerPort: 8000
 ---
@@ -64,3 +67,11 @@ spec:
     - port: 8000
   selector:
     app: api
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: "{{ .Values.api_service_account_name }}"
+  annotations:
+    iam.gke.io/gcp-service-account: "{{ .Values.api_service_account_email }}"
+automountServiceAccountToken: false
