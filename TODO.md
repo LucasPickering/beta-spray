@@ -4,7 +4,6 @@
 
 - Media file uploads
 - WSGI
-- Run migrations on startup
 - Django logging
 - Fix resource warning from Kube
 - Documentation

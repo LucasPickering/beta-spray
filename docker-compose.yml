@@ -14,7 +14,7 @@ services:
 
   api:
     build: ./api/
-    command: ./scripts/cmd.sh
+    command: ./scripts/cmd_dev.sh
     init: true # Fixes slow shutdown
     tty: true # Colorize output
     environment:

@@ -19,4 +19,4 @@ RUN poetry install --no-dev
 
 ADD . .
 
-CMD ["./m.sh", "runserver", "0.0.0.0:8000"]
+CMD ["./scripts/cmd_prd.sh"]
