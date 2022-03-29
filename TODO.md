@@ -4,8 +4,8 @@
 
 - WSGI
 - Fix resource warning from Kube
-- Documentation
 - DB PVC
+- Documentation
 
 ### Features
 
