@@ -28,6 +28,24 @@ services:
       - ./api:/app:rw
       - api_poetry_cache:/root/.cache/poetry
 
+  # Jank way of testing prd image
+  # api:
+  #   image: ghcr.io/lucaspickering/beta-spray-api
+  #   init: true # Fixes slow shutdown
+  #   environment:
+  #     - BETA_SPRAY_DB_NAME=beta_spray
+  #     - BETA_SPRAY_DB_USER=beta_spray
+  #     - BETA_SPRAY_DB_PASSWORD=beta_spray
+  #     - BETA_SPRAY_HOSTNAME=localhost
+  #     - BETA_SPRAY_SECRET_KEY=bad-secret-key
+  #     - BETA_SPRAY_MEDIA_BUCKET=bad-bucket-name
+  #   depends_on:
+  #     - db
+  #   ports:
+  #     - "8000:8000"
+  #   volumes:
+  #     - ./api:/app:rw
+
   ui:
     build: ./ui/
     command: ./scripts/cmd.sh

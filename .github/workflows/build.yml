@@ -38,7 +38,9 @@ jobs:
           # `latest` tag is convenient to have, and also lets us download
           # the cache from a previous build. The sha-versioned tag is the one
           # used in deployments.
-          tags: ${{ env.API_IMAGE_REPO }}:latest,${{ env.API_IMAGE_REPO }}:${{ github.sha }}
+          tags: |
+            ${{ env.API_IMAGE_REPO }}:latest
+            ${{ env.API_IMAGE_REPO }}:${{ github.sha }}
           push: ${{ github.ref == 'refs/heads/master' }}
           cache-from: type=gha
           cache-to: type=gha,mode=max

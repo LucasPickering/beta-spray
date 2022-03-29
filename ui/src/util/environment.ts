@@ -41,6 +41,7 @@ const fetchQuery: FetchFunction = (
   }
 
   return fetch("/api/graphql", request).then((response) => {
+    // TODO don't crash if response isn't JSON
     return response.json();
   });
 };

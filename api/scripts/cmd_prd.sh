@@ -1,6 +1,10 @@
-#!/bin/sh
+#!/bin/bash
+# bash needed to source poetry
 
 set -ex
 
-./m.sh migrate
-./m.sh runserver 0.0.0.0:8000
+source $(poetry env info --path)/bin/activate
+cd src
+
+./manage.py migrate
+gunicorn beta_spray.wsgi -b :8000

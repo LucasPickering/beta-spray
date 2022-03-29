@@ -2,13 +2,13 @@
 
 ## Development
 
-### First Time Setup
-
 Run the stack with:
 
 ```sh
 docker-compose up
 ```
+
+### First Time Setup
 
 #### API
 

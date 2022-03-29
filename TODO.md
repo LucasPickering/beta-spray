@@ -2,7 +2,6 @@
 
 ### Ops
 
-- WSGI
 - Fix resource warning from Kube
 - DB PVC
 - Documentation

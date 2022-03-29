@@ -2,7 +2,8 @@
 # https://discuss.python.org/t/wheels-for-musl-alpine/7084
 FROM python:3.10-slim
 
-ENV PYTHONUNBUFFERED=1 DJANGO_SETTINGS_MODULE=beta_spray.settings.settings_dev
+ENV PYTHONUNBUFFERED=1 \
+    DJANGO_SETTINGS_MODULE=beta_spray.settings.settings_dev
 WORKDIR /app
 
 # Dependencies first, for layer caching

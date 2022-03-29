@@ -1,6 +1,7 @@
 FROM python:3.10-slim
 
-ENV PYTHONUNBUFFERED=1 DJANGO_SETTINGS_MODULE=beta_spray.settings.settings_prd
+ENV PYTHONUNBUFFERED=1 \
+    DJANGO_SETTINGS_MODULE=beta_spray.settings.settings_prd
 WORKDIR /app
 
 RUN apt-get update && \
