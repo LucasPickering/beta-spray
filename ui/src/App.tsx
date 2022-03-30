@@ -9,6 +9,7 @@ import environment from "util/environment";
 import theme from "util/theme";
 import { ThemeProvider } from "@mui/material/styles";
 import { CssBaseline } from "@mui/material";
+import PageLayout from "components/PageLayout";
 
 const App: React.FC = () => {
   return (
@@ -16,19 +17,20 @@ const App: React.FC = () => {
       <BrowserRouter>
         <ThemeProvider theme={theme}>
           <CssBaseline />
-
-          <Suspense fallback={<Loading />}>
-            <Routes>
-              <Route path="" element={<Home />} />
-              <Route path="images/:imageId" element={<EditorLoader />}>
-                {/* These routes are just aliases to pre-select values */}
-                <Route path="problems/:problemId" element={<EditorLoader />}>
-                  <Route path="beta/:betaId" element={<EditorLoader />} />
+          <PageLayout>
+            <Suspense fallback={<Loading />}>
+              <Routes>
+                <Route path="" element={<Home />} />
+                <Route path="images/:imageId" element={<EditorLoader />}>
+                  {/* These routes are just aliases to pre-select values */}
+                  <Route path="problems/:problemId" element={<EditorLoader />}>
+                    <Route path="beta/:betaId" element={<EditorLoader />} />
+                  </Route>
                 </Route>
-              </Route>
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
+          </PageLayout>
         </ThemeProvider>
       </BrowserRouter>
     </RelayEnvironmentProvider>

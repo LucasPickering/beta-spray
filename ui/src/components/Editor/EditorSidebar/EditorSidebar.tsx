@@ -2,7 +2,6 @@ import {
   Box,
   Button,
   Drawer,
-  Grid,
   IconButton,
   Stack,
   useMediaQuery,
@@ -10,12 +9,7 @@ import {
 } from "@mui/material";
 import { Menu as IconMenu } from "@mui/icons-material";
 import React, { useContext, useState } from "react";
-import {
-  Edit as IconEdit,
-  Done as IconDone,
-  Home as IconHome,
-} from "@mui/icons-material";
-import { Link as RouterLink } from "react-router-dom";
+import { Edit as IconEdit, Done as IconDone } from "@mui/icons-material";
 import EditorContext from "context/EditorContext";
 
 /**
@@ -58,29 +52,17 @@ const EditorSidebar: React.FC = ({ children }) => {
       >
         <Box sx={({ spacing }) => ({ padding: spacing(2) })}>
           <Stack direction="column" spacing={2}>
-            <Grid container spacing={1} sx={{ width: "100%" }}>
-              <Grid item xs>
-                <Button
-                  component={RouterLink}
-                  to="/"
-                  startIcon={<IconHome />}
-                  sx={{ width: "100%" }}
-                >
-                  Home
-                </Button>
-              </Grid>
-              {isPermanent && (
-                <Grid item xs>
-                  <Button
-                    startIcon={editingHolds ? <IconDone /> : <IconEdit />}
-                    onClick={() => setEditingHolds((old) => !old)}
-                    sx={{ width: "100%" }}
-                  >
-                    {editingHolds ? "Done" : "Edit"}
-                  </Button>
-                </Grid>
-              )}
-            </Grid>
+            {isPermanent && (
+              <Button
+                startIcon={editingHolds ? <IconDone /> : <IconEdit />}
+                color={editingHolds ? "success" : "primary"}
+                variant="outlined"
+                onClick={() => setEditingHolds((old) => !old)}
+                sx={{ width: "100%" }}
+              >
+                {editingHolds ? "Done" : "Edit"}
+              </Button>
+            )}
 
             {children}
           </Stack>

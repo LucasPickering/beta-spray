@@ -102,7 +102,14 @@ const Editor: React.FC<Props> = ({
           setHighlightedMove,
         }}
       >
-        <Box sx={{ display: "flex", justifyContent: "center" }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            // So absolute children position correctly
+            position: "relative",
+          }}
+        >
           {/* The boulder image and decorations */}
           <Box position="relative" maxWidth="100vw" maxHeight="100vh">
             <BoulderImage
