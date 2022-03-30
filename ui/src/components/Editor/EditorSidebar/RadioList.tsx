@@ -24,7 +24,7 @@ interface Props {
 /**
  * List all the betas for a problem
  */
-const BetaList: React.FC<Props> = ({
+const RadioList: React.FC<Props> = ({
   title,
   items,
   selectedId,
@@ -32,19 +32,19 @@ const BetaList: React.FC<Props> = ({
   onCreateNew,
   onDelete,
 }) => {
-  const id = `${title}-select`;
+  const labelId = `${title}-select`;
   return (
     <FormControl>
-      <FormLabel id={id}>{title}</FormLabel>
+      <FormLabel id={labelId}>{title}</FormLabel>
 
       <RadioGroup
-        aria-labelledby={id}
+        aria-labelledby={labelId}
         // `undefined` makes the group think it's in uncontrolled state
         value={selectedId ?? null}
         onChange={(e) => setSelectedId(e.target.value)}
       >
         <Stack direction="column">
-          {items.map(({ name, id: itemId }) => (
+          {items.map(({ name, id }) => (
             <Box
               key={id}
               sx={{
@@ -52,11 +52,7 @@ const BetaList: React.FC<Props> = ({
                 justifyContent: "space-between",
               }}
             >
-              <FormControlLabel
-                value={itemId}
-                control={<Radio />}
-                label={name}
-              />
+              <FormControlLabel value={id} control={<Radio />} label={name} />
               <IconButton
                 aria-label={`delete ${name}`}
                 size="small"
@@ -82,4 +78,4 @@ const BetaList: React.FC<Props> = ({
   );
 };
 
-export default BetaList;
+export default RadioList;

@@ -52,7 +52,7 @@ const EditorSidebar: React.FC = ({ children }) => {
         onClose={() => setIsOpen(false)}
         PaperProps={{
           sx: {
-            width: 250,
+            width: 280,
           },
         }}
       >

@@ -12,19 +12,19 @@ export function useOverlayUtils(): {
   toAPIPosition: (overlayPosition: OverlayPosition) => APIPosition;
   getMouseCoords: (mousePos: XYCoord) => OverlayPosition;
 } {
-  const { aspectRatio, svgRef } = useContext(OverlayContext);
+  const { viewBoxWidth, viewBoxHeight, svgRef } = useContext(OverlayContext);
   return useMemo(
     () => ({
       toOverlayPosition(apiPosition) {
         return {
-          x: apiPosition.positionX * 100,
-          y: (apiPosition.positionY * 100) / aspectRatio,
+          x: apiPosition.positionX * viewBoxWidth,
+          y: apiPosition.positionY * viewBoxHeight,
         };
       },
       toAPIPosition(overlayPosition) {
         return {
-          positionX: overlayPosition.x / 100,
-          positionY: (overlayPosition.y / 100) * aspectRatio,
+          positionX: overlayPosition.x / viewBoxWidth,
+          positionY: overlayPosition.y / viewBoxHeight,
         };
       },
       getMouseCoords(mousePos) {
@@ -44,6 +44,6 @@ export function useOverlayUtils(): {
         return { x: svgPoint.x, y: svgPoint.y };
       },
     }),
-    [aspectRatio, svgRef]
+    [viewBoxWidth, viewBoxHeight, svgRef]
   );
 }

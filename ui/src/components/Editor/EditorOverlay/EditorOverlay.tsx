@@ -13,11 +13,17 @@ interface Props {
 const EditorOverlay: React.FC<Props> = ({ aspectRatio, children }) => {
   const ref = useRef<SVGSVGElement | null>(null);
 
+  // Make sure 100 is always the *smaller* of the two dimensions, so we get
+  // consistent sizing on SVG elements
+  const [viewBoxWidth, viewBoxHeight] =
+    aspectRatio < 1 ? [100, 100 / aspectRatio] : [100 * aspectRatio, 100];
   return (
-    <OverlayContext.Provider value={{ aspectRatio, svgRef: ref }}>
+    <OverlayContext.Provider
+      value={{ viewBoxWidth, viewBoxHeight, svgRef: ref }}
+    >
       <svg
         ref={ref}
-        viewBox={`0 0 100 ${100 / aspectRatio}`}
+        viewBox={`0 0 ${viewBoxWidth} ${viewBoxHeight}`}
         width="100%"
         height="100%"
         style={{

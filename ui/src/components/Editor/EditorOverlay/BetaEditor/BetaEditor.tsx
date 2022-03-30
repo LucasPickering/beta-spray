@@ -294,7 +294,7 @@ function getMoves(
     // If at least one move is near the highlighted one, we need to disambiguate
     // The highlighted move is guaranteed to be in this list, so if that's the
     // only one, we do nothing
-    if (nearbyMoves.length > 1) {
+    if (nearbyMoves.length > 0) {
       // We want to shift all the nearby moves apart. So break up the unit
       // circle into evenly sized slices, one per move, and shift each one away
       // a fixed distance along its slice angle.

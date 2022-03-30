@@ -1,7 +1,8 @@
 import React from "react";
 
 export interface OverlayContextType {
-  aspectRatio: number;
+  viewBoxWidth: number;
+  viewBoxHeight: number;
   svgRef: React.RefObject<SVGSVGElement | null>;
 }
 

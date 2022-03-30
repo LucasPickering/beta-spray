@@ -4,6 +4,7 @@
 
 ### Polish
 
+- Disambiguation with initial move
 - DnD animations
 - Loading states
 - Error messages
@@ -13,3 +14,9 @@
 - Chunk splitting
 - Split GQL queries
 - Auto-execute some Kube stuff in TF outputs
+
+## Later
+
+### Features
+
+- Randomized problem/beta names

@@ -1,12 +1,12 @@
 import React from "react";
 import { DropHandler } from "util/dnd";
 import { BetaOverlayMove } from "../types";
-import BetaChainCircle from "./BetaChainCircle";
+import BetaChainMark from "./BetaChainMark";
 import BetaChainLine from "./BetaChainLine";
 
 interface Props
   extends Pick<
-    React.ComponentProps<typeof BetaChainCircle>,
+    React.ComponentProps<typeof BetaChainMark>,
     "onDoubleClick" | "onMouseEnter" | "onMouseLeave"
   > {
   moves: BetaOverlayMove[];
@@ -33,7 +33,7 @@ const BetaChain: React.FC<Props> = ({ moves, onDrop, ...rest }) => (
       ) : null;
     })}
     {moves.map((move, i) => (
-      <BetaChainCircle
+      <BetaChainMark
         key={move.id}
         move={move}
         isLast={i === moves.length - 1}
