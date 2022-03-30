@@ -29,6 +29,7 @@ class BoulderImage(models.Model):
     up one or more problem
     """
 
+    name = models.TextField()
     image = models.ImageField(unique=True, upload_to="boulders")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -64,7 +65,7 @@ class Problem(models.Model):
     A problem is made up of a collection of holds
     """
 
-    name = models.CharField(max_length=30)
+    name = models.TextField()
     holds = models.ManyToManyField(
         Hold, related_name="problems", through="ProblemHold", blank=True
     )
@@ -98,7 +99,7 @@ class Beta(models.Model):
     A prescribed series of moves to solve a problem.
     """
 
-    name = models.CharField(max_length=30)
+    name = models.TextField()
     problem = models.ForeignKey(
         Problem, related_name="betas", on_delete=models.CASCADE
     )

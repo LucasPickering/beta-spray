@@ -1,5 +1,6 @@
 import React from "react";
 import { graphql, useFragment, useMutation } from "react-relay";
+import { randomPhrase } from "util/func";
 import RadioList from "./RadioList";
 import { ProblemList_createProblemMutation } from "./__generated__/ProblemList_createProblemMutation.graphql";
 import { ProblemList_deleteProblemMutation } from "./__generated__/ProblemList_deleteProblemMutation.graphql";
@@ -10,6 +11,13 @@ interface Props {
   selectedProblem: string | undefined;
   setSelectedProblem: (problemId: string) => void;
 }
+
+const phraseGroups = [
+  ["Up Up", "Monster", "Slab", "Crack", "Lateral"],
+  ["Up", "And Away", "Sauce", "Joy", "Wolves", "Psoriasis"],
+  // repetition => weighted odds
+  [undefined, undefined, undefined, "2.0", "But Harder"],
+];
 
 /**
  * List all problems for a boulder image
@@ -84,7 +92,11 @@ const ProblemList: React.FC<Props> = ({
           variables: {
             input: {
               imageId: image.id,
-              name: `Problem ${image.problems.edges.length + 1}`,
+              name: randomPhrase(
+                phraseGroups,
+                // Exclude existing names
+                image.problems.edges.map(({ node }) => node.name)
+              ),
             },
             connections,
           },

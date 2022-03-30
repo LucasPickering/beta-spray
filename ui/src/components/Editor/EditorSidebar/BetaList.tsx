@@ -4,12 +4,27 @@ import { BetaList_problemNode$key } from "./__generated__/BetaList_problemNode.g
 import { BetaList_createBetaMutation } from "./__generated__/BetaList_createBetaMutation.graphql";
 import { BetaList_deleteBetaMutation } from "./__generated__/BetaList_deleteBetaMutation.graphql";
 import RadioList from "./RadioList";
+import { randomPhrase } from "util/func";
 
 interface Props {
   problemKey: BetaList_problemNode$key;
   selectedBeta: string | undefined;
   setSelectedBeta: (betaId: string) => void;
 }
+
+const phraseGroups = [
+  ["Simply", "Just", "You", "All you have to do is"],
+  [
+    "Hang On",
+    "Don't Let Go",
+    "Don't Fall",
+    "Send It",
+    "Squeeze Harder",
+    "Be Taller",
+    "Don't Be Short?",
+    "Grow 6 Inches",
+  ],
+];
 
 /**
  * List all the betas for a problem
@@ -79,7 +94,11 @@ const BetaList: React.FC<Props> = ({
           variables: {
             input: {
               problemId: problem.id,
-              name: `Beta ${problem.betas.edges.length + 1}`,
+              name: randomPhrase(
+                phraseGroups,
+                // Exclude existing names
+                problem.betas.edges.map(({ node }) => node.name)
+              ),
             },
             connections,
           },
