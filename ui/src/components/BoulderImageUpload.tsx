@@ -1,5 +1,7 @@
 import React from "react";
 import { graphql, useMutation } from "react-relay";
+import { Button } from "@mui/material";
+import { PhotoCamera as IconPhotoCamera } from "@mui/icons-material";
 import { BoulderImageUpload_createImageMutation } from "./__generated__/BoulderImageUpload_createImageMutation.graphql";
 
 interface Props {
@@ -27,25 +29,37 @@ const BoulderImageUpload: React.FC<Props> = ({ connections }) => {
     `);
 
   return (
-    <input
-      type="file"
-      accept="image/png, image/jpeg"
-      onChange={(e) => {
-        if (e.target.files) {
-          uploadImage({
-            variables: {
-              input: {
-                imageFile: "boulderImage",
+    <label htmlFor="upload-image-input">
+      <input
+        accept="image/*"
+        id="upload-image-input"
+        type="file"
+        css={{ display: "none" }}
+        onChange={(e) => {
+          if (e.target.files) {
+            uploadImage({
+              variables: {
+                input: {
+                  imageFile: "boulderImage",
+                },
+                connections,
               },
-              connections,
-            },
-            uploadables: {
-              boulderImage: e.target.files[0],
-            },
-          });
-        }
-      }}
-    />
+              uploadables: {
+                boulderImage: e.target.files[0],
+              },
+            });
+          }
+        }}
+      />
+      <Button
+        variant="contained"
+        component="span"
+        endIcon={<IconPhotoCamera />}
+        css={{ width: "100%" }}
+      >
+        Upload
+      </Button>
+    </label>
   );
 };
 

@@ -1,5 +1,10 @@
 import React from "react";
+import PageLayout from "./PageLayout";
 
-const NotFound: React.FC = () => <span>Not Found :(</span>;
+const NotFound: React.FC = () => (
+  <PageLayout>
+    <span>Not Found :(</span>
+  </PageLayout>
+);
 
 export default NotFound;

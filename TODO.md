@@ -4,7 +4,6 @@
 
 ### Polish
 
-- Home page CSS
 - DnD animations
 - Loading states
 - Error messages
