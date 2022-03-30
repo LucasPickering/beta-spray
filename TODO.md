@@ -2,7 +2,6 @@
 
 ### Ops
 
-- DB PVC
 - Documentation
 
 ### Features

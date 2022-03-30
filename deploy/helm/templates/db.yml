@@ -1,14 +1,15 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: db
   labels:
     app: db
 spec:
-  replicas: 1
+  serviceName: db
   selector:
     matchLabels:
       app: db
+  replicas: 1
   template:
     metadata:
       labels:
@@ -29,6 +30,7 @@ spec:
           volumeMounts:
             - name: db-data
               mountPath: /var/lib/postgresql/data
+              subPath: data
           env:
             - name: POSTGRES_DB
               valueFrom:
@@ -47,11 +49,15 @@ spec:
                   key: password
           ports:
             - containerPort: 5432
-
-      volumes:
-        - name: db-data
-          # TODO
-          emptyDir: {}
+  # Request GCE persistent disk
+  volumeClaimTemplates:
+    - metadata:
+        name: db-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi
 ---
 apiVersion: v1
 kind: Service
