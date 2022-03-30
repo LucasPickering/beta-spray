@@ -2,3 +2,41 @@ This Terraform builds all the infrastructure needed for a deployment of the app,
 
 - GKE cluster
 - Media GCS bucket
+
+## First Time Setup
+
+Install:
+
+- helm
+- kubectl
+- google-cloud-sdk
+- terraform
+
+Run:
+
+```sh
+gcloud auth application-default login
+# do the login
+cd deploy/terraform/gke
+terraform init
+```
+
+### Kubectl
+
+To point `kubectl` at the GKE cluster:
+
+```sh
+gcloud container clusters get-credentials $(terraform output -raw kubernetes_cluster_name) --region $(terraform output -raw region)
+```
+
+### Helm
+
+First time helm install/upgrade will require:
+
+```sh
+cd deploy
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm dependency build helm/
+```
+
+(this is because helm is trash)
