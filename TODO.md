@@ -1,22 +1,13 @@
-## First Deploy
-
-### Ops
-
-- Documentation
-
 ### Features
 
 - Help text
-
-## Later
-
-### Features
 
 ### Polish
 
 - Home page CSS
 - DnD animations
 - Loading states
+- Error messages
 
 ### Tech
 
