@@ -20,11 +20,13 @@ spec:
           image: "ghcr.io/lucaspickering/beta-spray-api:{{ .Values.version_sha }}"
           resources:
             requests:
+              cpu: "250m"
               memory: "512Mi"
-              cpu: "500m"
+              ephemeral-storage: "1Gi"
             limits:
+              cpu: "250m"
               memory: "512Mi"
-              cpu: "500m"
+              ephemeral-storage: "1Gi"
           env:
             - name: BETA_SPRAY_HOSTNAME
               value: "{{ .Values.hostname }}"
@@ -73,5 +75,6 @@ kind: ServiceAccount
 metadata:
   name: "{{ .Values.api_service_account_name }}"
   annotations:
+    # Link to GCP SA
     iam.gke.io/gcp-service-account: "{{ .Values.api_service_account_email }}"
 automountServiceAccountToken: false

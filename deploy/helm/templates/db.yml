@@ -19,11 +19,13 @@ spec:
           image: postgres:14-alpine
           resources:
             requests:
+              cpu: "250m"
               memory: "512Mi"
-              cpu: "500m"
+              ephemeral-storage: "512Mi"
             limits:
+              cpu: "250m"
               memory: "512Mi"
-              cpu: "500m"
+              ephemeral-storage: "512Mi"
           volumeMounts:
             - name: db-data
               mountPath: /var/lib/postgresql/data

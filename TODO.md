@@ -2,7 +2,6 @@
 
 ### Ops
 
-- Fix resource warning from Kube
 - DB PVC
 - Documentation
 
