@@ -27,15 +27,19 @@ const BetaMoveDialog: React.FC<Props> = ({
       <DialogTitle>Add a Move</DialogTitle>
 
       <DialogContent>
-        <Stack direction="column">
+        <Stack direction="column" spacing={1}>
           {Object.values(BodyPart).map((bodyPart) => (
             <Button
               key={bodyPart}
               // TODO support body part as color prop
               onClick={() => onSelectBodyPart(bodyPart)}
-              sx={({ palette }) => ({
-                backgroundColor: palette.bodyParts[bodyPart],
-              })}
+              sx={({ palette }) => {
+                const backgroundColor = palette.bodyParts[bodyPart];
+                return {
+                  backgroundColor,
+                  color: palette.getContrastText(backgroundColor),
+                };
+              }}
             >
               {formatBodyPart(bodyPart)}
             </Button>

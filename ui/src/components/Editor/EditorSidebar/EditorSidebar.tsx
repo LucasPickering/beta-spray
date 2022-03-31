@@ -60,7 +60,7 @@ const EditorSidebar: React.FC = ({ children }) => {
                 onClick={() => setEditingHolds((old) => !old)}
                 sx={{ width: "100%" }}
               >
-                {editingHolds ? "Done" : "Edit"}
+                {editingHolds ? "Done" : "Edit Holds"}
               </Button>
             )}
 

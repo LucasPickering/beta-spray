@@ -46,6 +46,7 @@ const BetaChainMark: React.FC<Props> = ({
   });
   const { highlightedMove } = useContext(EditorContext);
   const isHighlighted = highlightedMove === move.id;
+  const color = palette.bodyParts[move.bodyPart];
 
   return (
     <Positioned position={move.position}>
@@ -67,7 +68,7 @@ const BetaChainMark: React.FC<Props> = ({
         <circle
           ref={drag}
           css={[
-            { fill: palette.bodyParts[move.bodyPart] },
+            { fill: color },
             styleDraggable,
             isDragging && styleDragging,
             isHighlighted && { fill: "white" },
@@ -83,6 +84,7 @@ const BetaChainMark: React.FC<Props> = ({
             fontSize: 3,
             userSelect: "none",
             pointerEvents: "none",
+            color: palette.getContrastText(color),
           }}
           textAnchor="middle"
           dominantBaseline="middle"

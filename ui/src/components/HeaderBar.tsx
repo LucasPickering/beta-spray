@@ -1,12 +1,14 @@
-import { Link, Toolbar } from "@mui/material";
+import { Link, Toolbar, Typography } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 import React from "react";
 
 const HeaderBar: React.FC = ({ children }) => (
   <Toolbar>
-    <Link component={RouterLink} to="/" variant="h5">
-      Beta Spray
-    </Link>
+    <Typography component="h1" variant="h5">
+      <Link component={RouterLink} to="/">
+        Beta Spray
+      </Link>
+    </Typography>
 
     {children}
   </Toolbar>

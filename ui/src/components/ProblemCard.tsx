@@ -43,8 +43,16 @@ const ProblemCard: React.FC<Props> = ({ problemKey }) => {
           }}
         />
         <CardContent>
-          <Typography>{problem.name}</Typography>
-          <Typography>{dayjs(problem.createdAt).format("LLL")}</Typography>
+          <Typography variant="h6" component="h3">
+            {problem.name}
+          </Typography>
+          <Typography
+            variant="subtitle1"
+            component="span"
+            color="text.secondary"
+          >
+            {dayjs(problem.createdAt).format("LLL")}
+          </Typography>
         </CardContent>
       </CardActionArea>
     </Card>
