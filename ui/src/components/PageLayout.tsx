@@ -3,7 +3,7 @@ import React from "react";
 import HeaderBar from "./HeaderBar";
 
 const PageLayout: React.FC = ({ children }) => (
-  <Box>
+  <Box display="flex" flexDirection="column">
     <AppBar position="static">
       <HeaderBar />
     </AppBar>

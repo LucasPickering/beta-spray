@@ -26,10 +26,8 @@ const BoulderImage: React.FC<Props> = ({ imageKey, onLoad }) => {
       src={image.imageUrl}
       alt="Boulder"
       onLoad={onLoad}
-      style={{
-        maxHeight: "100vh",
-        maxWidth: "100vw",
-      }}
+      // Jank to account for header height
+      css={{ maxWidth: "100vw", maxHeight: "calc(100vh - 48px)" }}
     />
   );
 };

@@ -91,15 +91,13 @@ const Editor: React.FC<Props> = ({
         }}
       >
         <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            // So absolute children position correctly
-            position: "relative",
-          }}
+          display="flex"
+          justifyContent="center"
+          // For sidebar overlay positioning
+          position="relative"
         >
           {/* The boulder image and decorations */}
-          <Box position="relative" maxWidth="100vw" maxHeight="100vh">
+          <Box position="relative">
             <BoulderImage
               imageKey={data.problem.image}
               onLoad={(e) => {
