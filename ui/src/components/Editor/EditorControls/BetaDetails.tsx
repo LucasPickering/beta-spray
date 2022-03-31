@@ -6,7 +6,7 @@ import {
   BetaDetails_betaNode$key,
 } from "./__generated__/BetaDetails_betaNode.graphql";
 import { BetaDetails_deleteBetaMoveMutation } from "./__generated__/BetaDetails_deleteBetaMoveMutation.graphql";
-import { FormLabel, List } from "@mui/material";
+import { FormLabel, List, Typography } from "@mui/material";
 import { moveArrayElement } from "util/func";
 import { BetaDetails_updateBetaMoveMutation } from "./__generated__/BetaDetails_updateBetaMoveMutation.graphql";
 
@@ -82,6 +82,11 @@ const BetaDetails: React.FC<Props> = ({ dataKey }) => {
   return (
     <div>
       <FormLabel component="span">Moves</FormLabel>
+
+      {moves.length === 0 && (
+        <Typography variant="body2">Click a hold to add a move</Typography>
+      )}
+
       <List component="ol">
         {moves.map((node, moveIndex) => (
           <BetaDetailsMove

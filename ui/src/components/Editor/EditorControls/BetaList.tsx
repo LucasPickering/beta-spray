@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { graphql, useFragment, useMutation } from "react-relay";
 import { BetaList_problemNode$key } from "./__generated__/BetaList_problemNode.graphql";
 import { BetaList_createBetaMutation } from "./__generated__/BetaList_createBetaMutation.graphql";
@@ -9,7 +9,7 @@ import { randomPhrase } from "util/func";
 interface Props {
   problemKey: BetaList_problemNode$key;
   selectedBeta: string | undefined;
-  setSelectedBeta: (betaId: string) => void;
+  setSelectedBeta: (betaId: string | undefined) => void;
 }
 
 const phraseGroups = [
@@ -44,6 +44,12 @@ const BetaList: React.FC<Props> = ({
             node {
               id
               name
+              # TODO get length directly from connection
+              moves {
+                edges {
+                  cursor
+                }
+              }
             }
           }
         }
@@ -52,6 +58,13 @@ const BetaList: React.FC<Props> = ({
     problemKey
   );
   const connections = [problem.betas.__id];
+
+  // Auto-select the first beta if nothing else is selected
+  useEffect(() => {
+    if (!selectedBeta && problem.betas.edges.length > 0) {
+      setSelectedBeta(problem.betas.edges[0].node.id);
+    }
+  }, [selectedBeta, setSelectedBeta, problem.betas.edges]);
 
   // TODO handle loading states
   const [createBeta] = useMutation<BetaList_createBetaMutation>(graphql`
@@ -62,14 +75,20 @@ const BetaList: React.FC<Props> = ({
       createBeta(input: $input) {
         beta
           @appendNode(connections: $connections, edgeTypeName: "BetaNodeEdge") {
+          # This should match the fragment above
           id
           name
+          # TODO get length directly from connection
+          moves {
+            edges {
+              cursor
+            }
+          }
         }
       }
     }
   `);
-
-  // TODO handle loading states
+  // TODO un-select current beta if it's deleted
   const [deleteBeta] = useMutation<BetaList_deleteBetaMutation>(graphql`
     mutation BetaList_deleteBetaMutation(
       $input: DeleteBetaMutationInput!
@@ -86,7 +105,11 @@ const BetaList: React.FC<Props> = ({
   return (
     <RadioList
       title="Beta"
-      items={problem.betas.edges.map(({ node }) => node)}
+      items={problem.betas.edges.map(({ node }) => ({
+        id: node.id,
+        name: node.name,
+        subtitle: `${node.moves.edges.length} moves`,
+      }))}
       selectedId={selectedBeta}
       setSelectedId={setSelectedBeta}
       onCreateNew={() =>
@@ -107,8 +130,15 @@ const BetaList: React.FC<Props> = ({
       onDelete={(id) =>
         deleteBeta({
           variables: { input: { betaId: id }, connections },
+          onCompleted: () => {
+            // If the selected beta was deleted, unselect it
+            if (selectedBeta === id) {
+              setSelectedBeta(undefined);
+            }
+          },
         })
       }
+      sx={{ width: 240 }}
     />
   );
 };

@@ -9,12 +9,13 @@ import {
   Box,
   FormControlLabel,
   Button,
+  Typography,
 } from "@mui/material";
 import { Add as IconAdd, Close as IconClose } from "@mui/icons-material";
 
-interface Props {
+interface Props extends React.ComponentProps<typeof FormControl> {
   title: string;
-  items: Array<{ id: string; name: string }>;
+  items: Array<{ id: string; name: string; subtitle?: string }>;
   selectedId: string | undefined;
   setSelectedId: (value: string) => void;
   onCreateNew: () => void;
@@ -31,10 +32,11 @@ const RadioList: React.FC<Props> = ({
   setSelectedId,
   onCreateNew,
   onDelete,
+  ...rest
 }) => {
   const labelId = `${title}-select`;
   return (
-    <FormControl>
+    <FormControl {...rest}>
       <FormLabel id={labelId}>{title}</FormLabel>
 
       <RadioGroup
@@ -44,7 +46,7 @@ const RadioList: React.FC<Props> = ({
         onChange={(e) => setSelectedId(e.target.value)}
       >
         <Stack direction="column">
-          {items.map(({ name, id }) => (
+          {items.map(({ name, id, subtitle }) => (
             <Box
               key={id}
               sx={{
@@ -52,7 +54,20 @@ const RadioList: React.FC<Props> = ({
                 justifyContent: "space-between",
               }}
             >
-              <FormControlLabel value={id} control={<Radio />} label={name} />
+              <FormControlLabel
+                value={id}
+                control={<Radio />}
+                label={
+                  <>
+                    <Typography>{name}</Typography>
+                    {subtitle && (
+                      <Typography variant="subtitle2" color="text.secondary">
+                        {subtitle}
+                      </Typography>
+                    )}
+                  </>
+                }
+              />
               <IconButton
                 aria-label={`delete ${name}`}
                 size="small"

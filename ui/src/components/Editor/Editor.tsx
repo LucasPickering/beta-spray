@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import { PreloadedQuery, usePreloadedQuery } from "react-relay";
 import { graphql } from "relay-runtime";
 import NotFound from "../NotFound";
-import BetaDetails from "./EditorSidebar/BetaDetails";
-import BetaList from "./EditorSidebar/BetaList";
+import BetaDetails from "./EditorControls/BetaDetails";
+import BetaList from "./EditorControls/BetaList";
 import BetaEditor from "./EditorOverlay/BetaEditor/BetaEditor";
 import BoulderImage from "./BoulderImage";
 import EditorOverlay from "./EditorOverlay/EditorOverlay";
-import EditorSidebar from "./EditorSidebar/EditorSidebar";
+import EditorControls from "./EditorControls/EditorControls";
 import { EditorQuery } from "./__generated__/EditorQuery.graphql";
 import HoldEditor from "./EditorOverlay/HoldEditor/HoldEditor";
 import { Box } from "@mui/material";
@@ -19,7 +19,7 @@ import EditorContext from "context/EditorContext";
 interface Props {
   queryRef: PreloadedQuery<EditorQuery>;
   selectedBeta: string | undefined;
-  setSelectedBeta: (betaId: string) => void;
+  setSelectedBeta: (betaId: string | undefined) => void;
 }
 
 /**
@@ -128,7 +128,7 @@ const Editor: React.FC<Props> = ({
           </Box>
 
           {/* Other stuff */}
-          <EditorSidebar>
+          <EditorControls>
             <BetaList
               problemKey={data.problem}
               selectedBeta={selectedBeta}
@@ -136,7 +136,7 @@ const Editor: React.FC<Props> = ({
             />
 
             {data.beta && <BetaDetails dataKey={data.beta} />}
-          </EditorSidebar>
+          </EditorControls>
         </Box>
       </EditorContext.Provider>
     </DndProvider>

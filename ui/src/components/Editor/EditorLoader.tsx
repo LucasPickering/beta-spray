@@ -34,7 +34,11 @@ const EditorLoader: React.FC = () => {
           // Update route when changing selection
           setSelectedBeta={(betaId) => {
             setSelectedBeta(betaId);
-            navigate(`/problems/${problemId}/beta/${betaId}`);
+            navigate(
+              betaId
+                ? `/problems/${problemId}/beta/${betaId}`
+                : `/problems/${problemId}`
+            );
           }}
         />
       )}
