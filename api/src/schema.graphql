@@ -4,6 +4,7 @@ type Query {
     """The ID of the object"""
     id: ID!
   ): BoulderImageNode
+  problems(offset: Int = null, before: String = null, after: String = null, first: Int = null, last: Int = null): ProblemNodeConnection
   problem(
     """The ID of the object"""
     id: ID!
@@ -122,6 +123,7 @@ type ProblemNode implements Node {
   name: String!
   holds(offset: Int = null, before: String = null, after: String = null, first: Int = null, last: Int = null): HoldNodeConnection!
   image: BoulderImageNode!
+  createdAt: DateTime!
   betas(offset: Int = null, before: String = null, after: String = null, first: Int = null, last: Int = null): BetaNodeConnection!
 
   """The ID of the object"""
@@ -148,6 +150,7 @@ type BetaNodeEdge {
 type BetaNode implements Node {
   name: String!
   problem: ProblemNode!
+  createdAt: DateTime!
   moves(offset: Int = null, before: String = null, after: String = null, first: Int = null, last: Int = null): BetaMoveNodeConnection!
 
   """The ID of the object"""
@@ -196,7 +199,10 @@ enum BodyPart {
 type Mutation {
   createImage(input: CreateBoulderImageMutationInput!): CreateBoulderImageMutationPayload
 
-  """Add a hold to an image"""
+  """
+  Add a hold to an image. Optionally, also bind the hold to a pre-existing
+  problem.
+  """
   createHold(input: CreateHoldMutationInput!): CreateHoldMutationPayload
 
   """Modify an existing hold"""
@@ -205,7 +211,10 @@ type Mutation {
   """Delete a hold from an image"""
   deleteHold(input: DeleteHoldMutationInput!): DeleteHoldMutationPayload
 
-  """Create a new problem for a specific image"""
+  """
+  Create a new problem for a specific image. You can either specify an
+  existing image, or attach a new one (but not both).
+  """
   createProblem(input: CreateProblemMutationInput!): CreateProblemMutationPayload
   deleteProblem(input: DeleteProblemMutationInput!): DeleteProblemMutationPayload
 
@@ -244,9 +253,13 @@ input CreateBoulderImageMutationInput {
   clientMutationId: String
 }
 
-"""Add a hold to an image"""
+"""
+Add a hold to an image. Optionally, also bind the hold to a pre-existing
+problem.
+"""
 type CreateHoldMutationPayload {
   hold: HoldNode!
+  problem: ProblemNode
   clientMutationId: String
 }
 
@@ -254,6 +267,7 @@ input CreateHoldMutationInput {
   imageId: ID!
   positionX: Float!
   positionY: Float!
+  problemId: ID
   clientMutationId: String
 }
 
@@ -281,7 +295,10 @@ input DeleteHoldMutationInput {
   clientMutationId: String
 }
 
-"""Create a new problem for a specific image"""
+"""
+Create a new problem for a specific image. You can either specify an
+existing image, or attach a new one (but not both).
+"""
 type CreateProblemMutationPayload {
   problem: ProblemNode!
   clientMutationId: String
@@ -289,7 +306,8 @@ type CreateProblemMutationPayload {
 
 input CreateProblemMutationInput {
   name: String!
-  imageId: ID!
+  imageId: ID
+  imageFile: String
   clientMutationId: String
 }
 

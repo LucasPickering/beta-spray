@@ -1,7 +1,7 @@
 import { Grid } from "@mui/material";
 import React from "react";
 import { graphql, useLazyLoadQuery } from "react-relay";
-import BoulderImageCard from "./BoulderImageCard";
+import ProblemCard from "./ProblemCard";
 import BoulderImageUpload from "./BoulderImageUpload";
 import { HomeQuery } from "./__generated__/HomeQuery.graphql";
 
@@ -9,12 +9,12 @@ const Home: React.FC = () => {
   const data = useLazyLoadQuery<HomeQuery>(
     graphql`
       query HomeQuery {
-        images {
+        problems {
           __id
           edges {
             node {
               id
-              ...BoulderImageCard_imageNode
+              ...ProblemCard_problemNode
             }
           }
         }
@@ -25,16 +25,16 @@ const Home: React.FC = () => {
 
   return (
     <Grid container spacing={2}>
-      {data.images &&
-        data.images.edges.map(({ node }) => (
+      {data.problems &&
+        data.problems.edges.map(({ node }) => (
           <Grid key={node.id} item xs={12} sm={6} md={4}>
-            <BoulderImageCard imageKey={node} />
+            <ProblemCard problemKey={node} />
           </Grid>
         ))}
 
       <Grid item xs={12}>
         <BoulderImageUpload
-          connections={data.images ? [data.images.__id] : []}
+          connections={data.problems ? [data.problems.__id] : []}
         />
       </Grid>
     </Grid>

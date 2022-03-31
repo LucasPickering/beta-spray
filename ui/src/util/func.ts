@@ -133,7 +133,7 @@ export function randomPhrase(
 ): string {
   for (let i = 0; i < retryLimit; i++) {
     const phrase = phraseGroups.map(randomElement).filter(Boolean).join(" ");
-    if (exclude && !exclude.includes(phrase)) {
+    if (!exclude || !exclude.includes(phrase)) {
       return phrase;
     }
   }

@@ -21,11 +21,9 @@ const App: React.FC = () => {
             <Suspense fallback={<Loading />}>
               <Routes>
                 <Route path="" element={<Home />} />
-                <Route path="images/:imageId" element={<EditorLoader />}>
-                  {/* These routes are just aliases to pre-select values */}
-                  <Route path="problems/:problemId" element={<EditorLoader />}>
-                    <Route path="beta/:betaId" element={<EditorLoader />} />
-                  </Route>
+                <Route path="problems/:problemId" element={<EditorLoader />}>
+                  {/* Just an alias to pre-select values */}
+                  <Route path="beta/:betaId" element={<EditorLoader />} />
                 </Route>
                 <Route path="*" element={<NotFound />} />
               </Routes>

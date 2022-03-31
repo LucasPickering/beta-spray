@@ -4,7 +4,6 @@ import { graphql } from "relay-runtime";
 import NotFound from "../NotFound";
 import BetaDetails from "./EditorSidebar/BetaDetails";
 import BetaList from "./EditorSidebar/BetaList";
-import ProblemList from "./EditorSidebar/ProblemList";
 import BetaEditor from "./EditorOverlay/BetaEditor/BetaEditor";
 import BoulderImage from "./BoulderImage";
 import EditorOverlay from "./EditorOverlay/EditorOverlay";
@@ -19,9 +18,7 @@ import EditorContext from "context/EditorContext";
 
 interface Props {
   queryRef: PreloadedQuery<EditorQuery>;
-  selectedProblem: string | undefined;
   selectedBeta: string | undefined;
-  setSelectedProblem: (problemId: string) => void;
   setSelectedBeta: (betaId: string) => void;
 }
 
@@ -33,25 +30,16 @@ interface Props {
  */
 const Editor: React.FC<Props> = ({
   queryRef,
-  selectedProblem,
   selectedBeta,
-  setSelectedProblem,
   setSelectedBeta,
 }) => {
   const data = usePreloadedQuery<EditorQuery>(
     graphql`
-      query EditorQuery($imageId: ID!, $problemId: ID!, $betaId: ID!) {
-        image(id: $imageId) {
-          ...BoulderImage_imageNode
-          ...ProblemList_imageNode
-          ...HoldEditor_imageNode
-          holds {
-            ...HoldMarkers_holdConnection
-          }
-        }
-
-        # TODO split this into a separate query
+      query EditorQuery($problemId: ID!, $betaId: ID!) {
         problem(id: $problemId) {
+          image {
+            ...BoulderImage_imageNode
+          }
           ...BetaList_problemNode
           ...HoldEditor_problemNode
           holds {
@@ -80,7 +68,7 @@ const Editor: React.FC<Props> = ({
   const [highlightedMove, setHighlightedMove] = useState<string | undefined>();
 
   // uh oh, stinkyyyy
-  if (!data.image) {
+  if (!data.problem) {
     return <NotFound />;
   }
 
@@ -113,7 +101,7 @@ const Editor: React.FC<Props> = ({
           {/* The boulder image and decorations */}
           <Box position="relative" maxWidth="100vw" maxHeight="100vh">
             <BoulderImage
-              imageKey={data.image}
+              imageKey={data.problem.image}
               onLoad={(e) => {
                 const el = e.currentTarget;
                 setAspectRatio(el.width / el.height);
@@ -124,14 +112,10 @@ const Editor: React.FC<Props> = ({
             {aspectRatio !== undefined && (
               <EditorOverlay aspectRatio={aspectRatio}>
                 {editingHolds ? (
-                  <HoldEditor imageKey={data.image} problemKey={data.problem} />
+                  <HoldEditor problemKey={data.problem} />
                 ) : (
                   <HoldMarkers
-                    // If filtered to a problem, show those holds, otherwise show
-                    //  all holds for the image
-                    holdConnectionKey={
-                      data.problem ? data.problem.holds : data.image.holds
-                    }
+                    holdConnectionKey={data.problem.holds}
                     onClick={setSelectedHold}
                   />
                 )}
@@ -145,18 +129,12 @@ const Editor: React.FC<Props> = ({
 
           {/* Other stuff */}
           <EditorSidebar>
-            <ProblemList
-              imageKey={data.image}
-              selectedProblem={selectedProblem}
-              setSelectedProblem={setSelectedProblem}
+            <BetaList
+              problemKey={data.problem}
+              selectedBeta={selectedBeta}
+              setSelectedBeta={setSelectedBeta}
             />
-            {data.problem && (
-              <BetaList
-                problemKey={data.problem}
-                selectedBeta={selectedBeta}
-                setSelectedBeta={setSelectedBeta}
-              />
-            )}
+
             {data.beta && <BetaDetails dataKey={data.beta} />}
           </EditorSidebar>
         </Box>

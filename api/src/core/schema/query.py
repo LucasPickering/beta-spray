@@ -73,7 +73,7 @@ class ProblemNode(NodeType):
     class Meta:
         model = Problem
         interfaces = (relay.Node,)
-        fields = ("name", "holds", "image", "betas")
+        fields = ("name", "created_at", "holds", "image", "betas")
         filter_fields = []
 
 
@@ -81,7 +81,7 @@ class BetaNode(NodeType):
     class Meta:
         model = Beta
         interfaces = (relay.Node,)
-        fields = ("name", "problem", "moves")
+        fields = ("name", "created_at", "problem", "moves")
         filter_fields = []
 
 
@@ -106,5 +106,6 @@ class BetaMoveNode(NodeType):
 class Query(graphene.ObjectType):
     images = DjangoFilterConnectionField(BoulderImageNode)
     image = relay.Node.Field(BoulderImageNode)
+    problems = DjangoFilterConnectionField(ProblemNode)
     problem = relay.Node.Field(ProblemNode)
     beta = relay.Node.Field(BetaNode)

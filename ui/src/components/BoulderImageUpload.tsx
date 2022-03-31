@@ -2,27 +2,37 @@ import React from "react";
 import { graphql, useMutation } from "react-relay";
 import { Button } from "@mui/material";
 import { PhotoCamera as IconPhotoCamera } from "@mui/icons-material";
-import { BoulderImageUpload_createImageMutation } from "./__generated__/BoulderImageUpload_createImageMutation.graphql";
+import { BoulderImageUpload_createProblemMutation } from "./__generated__/BoulderImageUpload_createProblemMutation.graphql";
+import { randomPhrase } from "util/func";
 
 interface Props {
   connections: string[];
 }
 
+const problemPhraseGroups = [
+  ["Up Up", "Monster", "Slab", "Crack", "Lateral"],
+  ["Up", "And Away", "Sauce", "Joy", "Wolves", "Psoriasis"],
+  // repetition => weighted odds
+  [undefined, undefined, undefined, "2.0", "But Harder"],
+];
+
 const BoulderImageUpload: React.FC<Props> = ({ connections }) => {
-  const [uploadImage] =
-    useMutation<BoulderImageUpload_createImageMutation>(graphql`
-      mutation BoulderImageUpload_createImageMutation(
-        $input: CreateBoulderImageMutationInput!
+  // For now, we enforce one problem per image, so auto-create the problem now
+  const [createProblem] =
+    useMutation<BoulderImageUpload_createProblemMutation>(graphql`
+      mutation BoulderImageUpload_createProblemMutation(
+        $input: CreateProblemMutationInput!
         $connections: [ID!]!
       ) {
-        createImage(input: $input) {
-          image
+        createProblem(input: $input) {
+          problem
             @appendNode(
               connections: $connections
-              edgeTypeName: "BoulderImageNodeEdge"
+              edgeTypeName: "ProblemNodeEdge"
             ) {
             id
-            ...BoulderImageCard_imageNode
+            name
+            ...ProblemCard_problemNode
           }
         }
       }
@@ -37,9 +47,10 @@ const BoulderImageUpload: React.FC<Props> = ({ connections }) => {
         css={{ display: "none" }}
         onChange={(e) => {
           if (e.target.files) {
-            uploadImage({
+            createProblem({
               variables: {
                 input: {
+                  name: randomPhrase(problemPhraseGroups),
                   imageFile: "boulderImage",
                 },
                 connections,

@@ -22,6 +22,15 @@ from .query import (
 )
 
 
+def get_file(info, file_key):
+    """Get an attached file object for a request"""
+    file = info.context.FILES.get(file_key)
+    root, ext = os.path.splitext(file.name)
+    # Replace file name with a UUID
+    file.name = f"{uuid.uuid4()}{ext}"
+    return file
+
+
 class CreateBoulderImageMutation(relay.ClientIDMutation):
     class Input:
         image_file = graphene.String(required=True)
@@ -32,28 +41,30 @@ class CreateBoulderImageMutation(relay.ClientIDMutation):
     def mutate_and_get_payload(cls, root, info, image_file):
         # TODO handle file missing
         # TODO validate file is an image
-        file = info.context.FILES.get(image_file)
-        root, ext = os.path.splitext(file.name)
-        # Replace file name with a UUID
-        file.name = f"{uuid.uuid4()}{ext}"
-        image_object = BoulderImage.objects.create(image=file)
+        file = get_file(info, image_file)
+        image = BoulderImage.objects.create(image=file)
 
-        return cls(image=image_object)
+        return cls(image=image)
 
 
 class CreateHoldMutation(relay.ClientIDMutation):
-    """Add a hold to an image"""
+    """
+    Add a hold to an image. Optionally, also bind the hold to a pre-existing
+    problem.
+    """
 
     class Input:
         image_id = graphene.ID(required=True)
         position_x = graphene.Float(required=True)
         position_y = graphene.Float(required=True)
+        problem_id = graphene.ID()
 
     hold = graphene.Field(HoldNode, required=True)
+    problem = graphene.Field(ProblemNode)
 
     @classmethod
     def mutate_and_get_payload(
-        cls, root, info, image_id, position_x, position_y
+        cls, root, info, image_id, position_x, position_y, problem_id
     ):
         # Convert global ID to a PK
         image_id = BoulderImageNode.get_pk_from_global_id(info, image_id)
@@ -63,7 +74,21 @@ class CreateHoldMutation(relay.ClientIDMutation):
             position_y=position_y,
             source=HoldAnnotationSource.USER,
         )
-        return cls(hold=hold)
+
+        # TODO validate hold and problem belong to same image
+        if problem_id:
+            problem = relay.Node.get_node_from_global_id(
+                info, problem_id, only_type=ProblemNode
+            )
+            ProblemHold.objects.create(
+                problem=problem,
+                hold=hold,
+                source=HoldAnnotationSource.USER,
+            )
+        else:
+            problem = None
+
+        return cls(hold=hold, problem=problem)
 
 
 class UpdateHoldMutation(relay.ClientIDMutation):
@@ -109,19 +134,35 @@ class DeleteHoldMutation(relay.ClientIDMutation):
 
 
 class CreateProblemMutation(relay.ClientIDMutation):
-    """Create a new problem for a specific image"""
+    """
+    Create a new problem for a specific image. You can either specify an
+    existing image, or attach a new one (but not both).
+    """
 
     class Input:
         name = graphene.String(required=True)
-        image_id = graphene.ID(required=True)
+        image_id = graphene.ID()
+        image_file = graphene.String()
 
     problem = graphene.Field(ProblemNode, required=True)
 
     @classmethod
-    def mutate_and_get_payload(cls, root, info, name, image_id):
+    def mutate_and_get_payload(
+        cls, root, info, name, image_id=None, image_file=None
+    ):
+        # TODO validate exactly one of image_id/image_file given
+
         # Convert global ID to a PK
-        image_id = BoulderImageNode.get_pk_from_global_id(info, image_id)
-        problem = Problem.objects.create(name=name, image_id=image_id)
+        kwargs = {}
+        if image_id:
+            kwargs["image_id"] = BoulderImageNode.get_pk_from_global_id(
+                info, image_id
+            )
+        else:
+            file = get_file(info, image_file)
+            kwargs["image"] = BoulderImage.objects.create(image=file)
+
+        problem = Problem.objects.create(name=name, **kwargs)
         return cls(problem=problem)
 
 
