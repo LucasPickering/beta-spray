@@ -166,6 +166,24 @@ class CreateProblemMutation(relay.ClientIDMutation):
         return cls(problem=problem)
 
 
+class UpdateProblemMutation(relay.ClientIDMutation):
+    class Input:
+        problem_id = graphene.ID(required=True)
+        name = graphene.String()
+
+    problem = graphene.Field(ProblemNode, required=True)
+
+    @classmethod
+    def mutate_and_get_payload(cls, root, info, problem_id, name):
+        problem = relay.Node.get_node_from_global_id(
+            info, problem_id, only_type=ProblemNode
+        )
+        if name is not None:
+            problem.name = name
+        problem.save()
+        return cls(problem=problem)
+
+
 class DeleteProblemMutation(relay.ClientIDMutation):
     class Input:
         problem_id = graphene.ID(required=True)
@@ -362,6 +380,7 @@ class Mutation(graphene.ObjectType):
     update_hold = UpdateHoldMutation.Field()
     delete_hold = DeleteHoldMutation.Field()
     create_problem = CreateProblemMutation.Field()
+    update_problem = UpdateProblemMutation.Field()
     delete_problem = DeleteProblemMutation.Field()
     create_problem_hold = CreateProblemHoldMutation.Field()
     delete_problem_hold = DeleteProblemHoldMutation.Field()

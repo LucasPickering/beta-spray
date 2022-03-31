@@ -4,7 +4,7 @@ import { RelayEnvironmentProvider } from "react-relay";
 import EditorLoader from "components/Editor/EditorLoader";
 import Loading from "components/Loading";
 import NotFound from "components/NotFound";
-import Home from "components/Home";
+import Home from "components/Home/Home";
 import environment from "util/environment";
 import theme from "util/theme";
 import { ThemeProvider } from "@mui/material/styles";

@@ -62,7 +62,7 @@
     "analyze": "NODE_ENV=production WEBPACK_BUNDLE_ANALYZER_MODE=server webpack",
     "lint": "eslint src/**/*.{ts,tsx}",
     "lint:fix": "npm run lint -- --fix",
-    "clean": "rm -rf build/ **/__generated__/",
+    "clean": "rm -rf build/",
     "test": "jest",
     "pretype-check": "npm run relay",
     "type-check": "tsc",

@@ -216,6 +216,7 @@ type Mutation {
   existing image, or attach a new one (but not both).
   """
   createProblem(input: CreateProblemMutationInput!): CreateProblemMutationPayload
+  updateProblem(input: UpdateProblemMutationInput!): UpdateProblemMutationPayload
   deleteProblem(input: DeleteProblemMutationInput!): DeleteProblemMutationPayload
 
   """Add a hold to a problem"""
@@ -308,6 +309,17 @@ input CreateProblemMutationInput {
   name: String!
   imageId: ID
   imageFile: String
+  clientMutationId: String
+}
+
+type UpdateProblemMutationPayload {
+  problem: ProblemNode!
+  clientMutationId: String
+}
+
+input UpdateProblemMutationInput {
+  problemId: ID!
+  name: String
   clientMutationId: String
 }
 
