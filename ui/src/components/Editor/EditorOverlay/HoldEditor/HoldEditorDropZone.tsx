@@ -1,4 +1,5 @@
 import React from "react";
+import { styleAddObject } from "styles/dnd";
 import { useDrop } from "util/dnd";
 import { assertIsDefined } from "util/func";
 import { useOverlayUtils } from "util/useOverlayUtils";
@@ -25,7 +26,14 @@ const HoldEditorDropZone: React.FC<Props> = ({ onClick }) => {
   });
 
   return (
-    <rect ref={drop} width="100%" height="100%" opacity={0} onClick={onClick} />
+    <rect
+      ref={drop}
+      width="100%"
+      height="100%"
+      opacity={0}
+      css={styleAddObject}
+      onClick={onClick}
+    />
   );
 };
 

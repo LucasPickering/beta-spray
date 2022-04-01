@@ -49,7 +49,7 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
       createHold(input: $input) {
         hold
           @appendNode(connections: $connections, edgeTypeName: "HoldNodeEdge") {
-          ...HoldMarker_holdNode
+          ...HoldMark_holdNode
         }
       }
     }
@@ -60,7 +60,7 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
       updateHold(input: $input) {
         hold {
           id # So relay knows how to update this node locally
-          ...HoldMarker_holdNode
+          ...HoldMark_holdNode
         }
       }
     }

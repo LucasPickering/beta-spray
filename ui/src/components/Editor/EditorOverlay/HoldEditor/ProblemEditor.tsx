@@ -1,7 +1,7 @@
 import React from "react";
 import { useFragment, useMutation } from "react-relay";
 import { graphql } from "relay-runtime";
-import HoldMarkers from "./HoldMarkers";
+import HoldMarks from "./HoldMarks";
 import { ProblemEditor_createProblemHoldMutation } from "./__generated__/ProblemEditor_createProblemHoldMutation.graphql";
 import { ProblemEditor_deleteProblemHoldMutation } from "./__generated__/ProblemEditor_deleteProblemHoldMutation.graphql";
 import { ProblemEditor_imageNode$key } from "./__generated__/ProblemEditor_imageNode.graphql";
@@ -23,7 +23,7 @@ const ProblemEditor: React.FC<Props> = ({ imageKey, problemKey }) => {
         id
         holds {
           __id
-          ...HoldMarkers_holdConnection
+          ...HoldMarks_holdConnection
         }
       }
     `,
@@ -35,7 +35,7 @@ const ProblemEditor: React.FC<Props> = ({ imageKey, problemKey }) => {
         id
         holds {
           __id
-          ...HoldMarkers_holdConnection
+          ...HoldMarks_holdConnection
           edges {
             node {
               id
@@ -59,7 +59,7 @@ const ProblemEditor: React.FC<Props> = ({ imageKey, problemKey }) => {
               connections: $connections
               edgeTypeName: "HoldNodeEdge"
             ) {
-            ...HoldMarker_holdNode
+            ...HoldMark_holdNode
           }
         }
       }
@@ -82,7 +82,7 @@ const ProblemEditor: React.FC<Props> = ({ imageKey, problemKey }) => {
   const problemHoldIds = problem?.holds.edges.map(({ node }) => node.id);
 
   return (
-    <HoldMarkers
+    <HoldMarks
       // Render all holds for the image, but highlight this problem
       holdConnectionKey={image.holds}
       highlightedHolds={problemHoldIds}

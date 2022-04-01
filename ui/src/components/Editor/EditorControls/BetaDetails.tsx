@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { graphql, useFragment, useMutation } from "react-relay";
 import BetaDetailsMove from "./BetaDetailsMove";
 import {
@@ -9,6 +9,7 @@ import { BetaDetails_deleteBetaMoveMutation } from "./__generated__/BetaDetails_
 import { FormLabel, List, Typography } from "@mui/material";
 import { moveArrayElement } from "util/func";
 import { BetaDetails_updateBetaMoveMutation } from "./__generated__/BetaDetails_updateBetaMoveMutation.graphql";
+import EditorContext from "context/EditorContext";
 
 interface Props {
   dataKey: BetaDetails_betaNode$key;
@@ -33,6 +34,8 @@ const BetaDetails: React.FC<Props> = ({ dataKey }) => {
     `,
     dataKey
   );
+
+  const { editingHolds } = useContext(EditorContext);
 
   // Track moves in internal state so we can reorder them without constantly
   // saving to the API. We'll reorder on hover, then persist on drop.
@@ -93,6 +96,7 @@ const BetaDetails: React.FC<Props> = ({ dataKey }) => {
             key={node.id}
             dataKey={node}
             index={moveIndex}
+            disabled={editingHolds}
             onReorder={(dragItem) => {
               // This is called on the *hovered* move, so the passed index is
               // the one being dragged

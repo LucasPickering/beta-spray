@@ -2,14 +2,19 @@ import React, { useRef } from "react";
 import { DropHandler, useDrag, useDrop } from "util/dnd";
 import { graphql, useFragment } from "react-relay";
 import { useOverlayUtils } from "util/useOverlayUtils";
-import { HoldMarker_holdNode$key } from "./__generated__/HoldMarker_holdNode.graphql";
+import { HoldMark_holdNode$key } from "./__generated__/HoldMark_holdNode.graphql";
 import Positioned from "../Positioned";
 import { IconTriangle } from "components/icons";
 import { css } from "@emotion/react";
-import { styleDraggable, styleDragging, styleDropHover } from "styles/dnd";
+import {
+  styleAddObject,
+  styleDraggable,
+  styleDragging,
+  styleDropHover,
+} from "styles/dnd";
 
 interface Props {
-  holdKey: HoldMarker_holdNode$key;
+  holdKey: HoldMark_holdNode$key;
   draggable?: boolean;
   unhighlight?: boolean;
   onClick?: (holdId: string) => void;
@@ -17,7 +22,7 @@ interface Props {
   onDrop?: DropHandler<"holdOverlay">;
 }
 
-const styleHoldMarker = css({
+const styleHoldMark = css({
   fill: "white",
   stroke: "white",
   strokeWidth: 0.3,
@@ -26,11 +31,8 @@ const styleUnhighlight = css({
   fill: "gray",
   stroke: "gray",
 });
-const styleClickable = css({
-  cursor: "pointer",
-});
 
-const HoldMarker: React.FC<Props> = ({
+const HoldMark: React.FC<Props> = ({
   holdKey,
   unhighlight = false,
   onClick,
@@ -39,7 +41,7 @@ const HoldMarker: React.FC<Props> = ({
 }) => {
   const hold = useFragment(
     graphql`
-      fragment HoldMarker_holdNode on HoldNode {
+      fragment HoldMark_holdNode on HoldNode {
         id
         positionX
         positionY
@@ -84,9 +86,9 @@ const HoldMarker: React.FC<Props> = ({
   return (
     <Positioned
       css={[
-        styleHoldMarker,
+        styleHoldMark,
         unhighlight && styleUnhighlight,
-        onClick && styleClickable,
+        onClick && styleAddObject,
         onDrop && styleDraggable,
         isDragging && styleDragging,
         isOver && styleDropHover,
@@ -106,6 +108,6 @@ const HoldMarker: React.FC<Props> = ({
   );
 };
 
-HoldMarker.defaultProps = {} as Partial<Props>;
+HoldMark.defaultProps = {} as Partial<Props>;
 
-export default HoldMarker;
+export default HoldMark;

@@ -15,7 +15,7 @@ const EditorPanel: React.FC = ({ children }) => {
         <Button
           startIcon={editingHolds ? <IconDone /> : <IconEdit />}
           color={editingHolds ? "success" : "primary"}
-          variant="outlined"
+          variant={editingHolds ? "contained" : "outlined"}
           onClick={() => setEditingHolds((old) => !old)}
           sx={{ width: "100%" }}
         >

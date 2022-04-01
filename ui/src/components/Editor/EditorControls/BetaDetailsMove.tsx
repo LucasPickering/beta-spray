@@ -24,6 +24,7 @@ import EditorContext from "context/EditorContext";
 interface Props {
   dataKey: BetaDetailsMove_betaMoveNode$key;
   index: number;
+  disabled?: boolean;
   onReorder?: (dragItem: DragItem<"betaMoveList">) => void;
   onDrop?: DropHandler<"betaMoveList">;
   onDelete?: () => void;
@@ -32,6 +33,7 @@ interface Props {
 const BetaDetailsMove: React.FC<Props> = ({
   dataKey,
   index,
+  disabled = false,
   onReorder,
   onDrop,
   onDelete,
@@ -132,16 +134,21 @@ const BetaDetailsMove: React.FC<Props> = ({
   return (
     <ListItem
       ref={ref}
-      onMouseEnter={() => setHighlightedMove(betaMove.id)}
-      onMouseLeave={() =>
-        // Only clear the highlight if we "own" it
-        setHighlightedMove((old) => (betaMove.id === old ? undefined : old))
-      }
+      disabled={disabled}
+      onMouseEnter={() => {
+        if (!disabled) {
+          setHighlightedMove(betaMove.id);
+        }
+      }}
+      onMouseLeave={() => {
+        if (!disabled) {
+          // Only clear the highlight if we "own" it
+          setHighlightedMove((old) => (betaMove.id === old ? undefined : old));
+        }
+      }}
       sx={[
-        {
-          cursor: "move",
-          userSelect: "none",
-        },
+        { userSelect: "none" },
+        !disabled && { cursor: "move" },
         isHighlighted &&
           (({ palette }) => ({
             backgroundColor: palette.action.hover,
@@ -161,6 +168,7 @@ const BetaDetailsMove: React.FC<Props> = ({
         <IconButton
           aria-label={`delete move ${formatOrder(betaMove.order)}`}
           size="small"
+          disabled={disabled}
           onClick={onDelete}
         >
           <IconClose />

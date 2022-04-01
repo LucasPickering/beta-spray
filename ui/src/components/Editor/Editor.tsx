@@ -11,7 +11,7 @@ import EditorControls from "./EditorControls/EditorControls";
 import { EditorQuery } from "./__generated__/EditorQuery.graphql";
 import HoldEditor from "./EditorOverlay/HoldEditor/HoldEditor";
 import { Box } from "@mui/material";
-import HoldMarkers from "./EditorOverlay/HoldEditor/HoldMarkers";
+import HoldMarks from "./EditorOverlay/HoldEditor/HoldMarks";
 import { DndProvider } from "react-dnd";
 import { TouchBackend } from "react-dnd-touch-backend";
 import EditorContext from "context/EditorContext";
@@ -44,7 +44,7 @@ const Editor: React.FC<Props> = ({
           ...BetaList_problemNode
           ...HoldEditor_problemNode
           holds {
-            ...HoldMarkers_holdConnection
+            ...HoldMarks_holdConnection
           }
         }
 
@@ -106,9 +106,10 @@ const Editor: React.FC<Props> = ({
           justifyContent="center"
           // For sidebar overlay positioning
           position="relative"
+          maxHeight="calc(100vh - 48px)"
         >
           {/* The boulder image and decorations */}
-          <Box position="relative">
+          <Box position="relative" height="fit-content">
             <BoulderImage
               imageKey={data.problem.image}
               onLoad={(e) => {
@@ -123,7 +124,7 @@ const Editor: React.FC<Props> = ({
                 {editingHolds ? (
                   <HoldEditor problemKey={data.problem} />
                 ) : (
-                  <HoldMarkers
+                  <HoldMarks
                     holdConnectionKey={data.problem.holds}
                     onClick={setSelectedHold}
                   />

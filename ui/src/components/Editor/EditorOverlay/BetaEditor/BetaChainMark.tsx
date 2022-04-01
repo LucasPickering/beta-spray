@@ -1,7 +1,12 @@
-import React, { useContext } from "react";
+import React, { useContext, useRef } from "react";
 import { BetaOverlayMove, formatOrder } from "../types";
-import { DropHandler, useDrag } from "util/dnd";
-import { styleDraggable, styleDragging } from "styles/dnd";
+import { DropHandler, useDrag, useDrop } from "util/dnd";
+import {
+  styleDraggable,
+  styleDraggableHighlight,
+  styleDragging,
+  styleDropHover,
+} from "styles/dnd";
 import { useTheme } from "@mui/material";
 import EditorContext from "context/EditorContext";
 import Positioned from "../Positioned";
@@ -28,6 +33,8 @@ const BetaChainMark: React.FC<Props> = ({
   onMouseLeave,
 }) => {
   const { palette, transitions } = useTheme();
+  const ref = useRef<SVGCircleElement | null>(null);
+
   const [{ isDragging }, drag] = useDrag<
     "betaMoveOverlay",
     { isDragging: boolean }
@@ -44,10 +51,23 @@ const BetaChainMark: React.FC<Props> = ({
       }
     },
   });
+
+  // Move is a drop target, just aliases to the underlying hold
+  const [{ isOver }, drop] = useDrop<"betaMoveOverlay", { isOver: boolean }>({
+    // TODO don't allow drop if move is already on this hold
+    accept: "betaMoveOverlay",
+    collect: (monitor) => ({
+      isOver: Boolean(monitor.isOver()),
+    }),
+    // Tell the dragger which hold they just dropped onto
+    drop: () => ({ kind: "hold", holdId: move.holdId }),
+  });
+
   const { highlightedMove } = useContext(EditorContext);
   const isHighlighted = highlightedMove === move.id;
   const color = palette.bodyParts[move.bodyPart];
 
+  drag(drop(ref));
   return (
     <Positioned position={move.position}>
       {/* This wrapper allows for applying transforms to all children */}
@@ -63,15 +83,16 @@ const BetaChainMark: React.FC<Props> = ({
             // Slide a bit for disambiguation
             transform: `translate(${move.offset.x}px, ${move.offset.y}px)`,
           },
+          isOver && styleDropHover,
         ]}
       >
         <circle
-          ref={drag}
+          ref={ref}
           css={[
             { fill: color },
             styleDraggable,
             isDragging && styleDragging,
-            isHighlighted && { fill: "white" },
+            isHighlighted && styleDraggableHighlight,
           ]}
           r={betaMoveCircleRadius}
           onDoubleClick={onDoubleClick && (() => onDoubleClick(move))}

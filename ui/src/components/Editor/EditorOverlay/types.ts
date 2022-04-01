@@ -37,6 +37,7 @@ export interface BetaOverlayMove {
   id: string;
   bodyPart: BodyPart;
   order: number;
+  holdId: string;
 
   /**
    * Visual position of the move. *Warning:* You should generally use {@link getMovePosition}

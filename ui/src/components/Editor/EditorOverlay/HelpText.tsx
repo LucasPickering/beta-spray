@@ -28,7 +28,7 @@ function getHelpText(helpMode: Props["helpMode"]): React.ReactChild {
         <>
           <div>Click a hold to add an initial move</div>
           <div>Drag a leading move to add a new move</div>
-          <div>Drag any other move to move it</div>
+          <div>Drag any other move to relocate</div>
           <div>Drag a line to add an intermediate move</div>
           <div>Double click a move to delete</div>
           <div>Reorder moves in the list at right</div>

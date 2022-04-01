@@ -1,10 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { graphql, useFragment, useMutation } from "react-relay";
 import { BetaList_problemNode$key } from "./__generated__/BetaList_problemNode.graphql";
 import { BetaList_createBetaMutation } from "./__generated__/BetaList_createBetaMutation.graphql";
 import { BetaList_deleteBetaMutation } from "./__generated__/BetaList_deleteBetaMutation.graphql";
 import RadioList from "./RadioList";
 import { randomPhrase } from "util/func";
+import EditorContext from "context/EditorContext";
 
 interface Props {
   problemKey: BetaList_problemNode$key;
@@ -58,6 +59,7 @@ const BetaList: React.FC<Props> = ({
     problemKey
   );
   const connections = [problem.betas.__id];
+  const { editingHolds } = useContext(EditorContext);
 
   // Auto-select the first beta if nothing else is selected
   useEffect(() => {
@@ -110,6 +112,7 @@ const BetaList: React.FC<Props> = ({
         name: node.name,
         subtitle: `${node.moves.edges.length} moves`,
       }))}
+      disabled={editingHolds}
       selectedId={selectedBeta}
       setSelectedId={setSelectedBeta}
       onCreateNew={() =>

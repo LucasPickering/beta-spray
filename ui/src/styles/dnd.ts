@@ -1,15 +1,32 @@
 import { css } from "@emotion/react";
 
-export const styleDraggable = css({
-  cursor: "grab",
+// Apply to elements that are draggable and currently highlighted (usually because they're hovered)
+export const styleDraggableHighlight = css({
+  strokeWidth: 1.5,
+  r: 2.5,
 });
 
+// Apply to elements that can be dragged
+export const styleDraggable = css({
+  cursor: "grab",
+  "&:hover": styleDraggableHighlight,
+});
+
+// Apply to elements that are actively being dragged
 export const styleDragging = css({
-  opacity: 0.5,
+  opacity: 0.6,
   cursor: "grabbing",
 });
 
+// Apply to elements that, upon being clicked, will add some resource
+export const styleAddObject = css({
+  // TODO this doesn't seem like the best usage of this cursor, but I can't
+  // think of anything better. Put a bit more thought into this.
+  cursor: "cell",
+});
+
+// Apply to elements that can be dropped onto and are being hovered
 export const styleDropHover = css({
-  opacity: 0.5,
-  color: "red",
+  stroke: "red",
+  fill: "red",
 });

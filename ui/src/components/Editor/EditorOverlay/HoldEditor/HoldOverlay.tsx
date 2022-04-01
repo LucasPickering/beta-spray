@@ -1,12 +1,12 @@
 import React from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
-import HoldMarker from "./HoldMarker";
+import HoldMark from "./HoldMark";
 import { HoldOverlay_holdConnection$key } from "./__generated__/HoldOverlay_holdConnection.graphql";
 
 interface Props
   extends Pick<
-    React.ComponentProps<typeof HoldMarker>,
+    React.ComponentProps<typeof HoldMark>,
     "onClick" | "onDoubleClick" | "onDrop"
   > {
   holdConnectionKey: HoldOverlay_holdConnection$key;
@@ -29,7 +29,7 @@ const HoldOverlay: React.FC<Props> = ({
         edges {
           node {
             id
-            ...HoldMarker_holdNode
+            ...HoldMark_holdNode
           }
         }
       }
@@ -40,7 +40,7 @@ const HoldOverlay: React.FC<Props> = ({
   return (
     <>
       {holdConnection.edges.map(({ node }) => (
-        <HoldMarker
+        <HoldMark
           key={node.id}
           holdKey={node}
           unhighlight={highlightedHolds && !highlightedHolds.includes(node.id)}

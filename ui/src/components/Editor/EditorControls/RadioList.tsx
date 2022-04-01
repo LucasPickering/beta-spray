@@ -16,6 +16,7 @@ import { Add as IconAdd, Close as IconClose } from "@mui/icons-material";
 interface Props extends React.ComponentProps<typeof FormControl> {
   title: string;
   items: Array<{ id: string; name: string; subtitle?: string }>;
+  disabled?: boolean;
   selectedId: string | undefined;
   setSelectedId: (value: string) => void;
   onCreateNew: () => void;
@@ -23,11 +24,13 @@ interface Props extends React.ComponentProps<typeof FormControl> {
 }
 
 /**
- * List all the betas for a problem
+ * A list of items, each with a radio button and a delete button. Also includes
+ * a button to create a new entry at the bottom.
  */
 const RadioList: React.FC<Props> = ({
   title,
   items,
+  disabled = false,
   selectedId,
   setSelectedId,
   onCreateNew,
@@ -56,7 +59,7 @@ const RadioList: React.FC<Props> = ({
             >
               <FormControlLabel
                 value={id}
-                control={<Radio />}
+                control={<Radio disabled={disabled} />}
                 label={
                   <>
                     <Typography>{name}</Typography>
@@ -71,6 +74,7 @@ const RadioList: React.FC<Props> = ({
               <IconButton
                 aria-label={`delete ${name}`}
                 size="small"
+                disabled={disabled}
                 onClick={() => onDelete(id)}
               >
                 <IconClose />
@@ -84,6 +88,7 @@ const RadioList: React.FC<Props> = ({
         size="small"
         variant="outlined"
         startIcon={<IconAdd />}
+        disabled={disabled}
         onClick={() => onCreateNew()}
         sx={{ width: "100%" }}
       >

@@ -1,11 +1,11 @@
 import React from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
-import HoldMarker from "./HoldMarker";
-import { HoldMarkers_holdConnection$key } from "./__generated__/HoldMarkers_holdConnection.graphql";
+import HoldMark from "./HoldMark";
+import { HoldMarks_holdConnection$key } from "./__generated__/HoldMarks_holdConnection.graphql";
 
 interface Props {
-  holdConnectionKey: HoldMarkers_holdConnection$key;
+  holdConnectionKey: HoldMarks_holdConnection$key;
   highlightedHolds?: string[];
   onClick?: (holdId: string) => void;
   onDoubleClick?: (holdId: string) => void;
@@ -14,7 +14,7 @@ interface Props {
 /**
  * A dumb component that just renders holds onto an image.
  */
-const HoldMarkers: React.FC<Props> = ({
+const HoldMarks: React.FC<Props> = ({
   holdConnectionKey,
   highlightedHolds,
   onClick,
@@ -22,11 +22,11 @@ const HoldMarkers: React.FC<Props> = ({
 }) => {
   const holdConnection = useFragment(
     graphql`
-      fragment HoldMarkers_holdConnection on HoldNodeConnection {
+      fragment HoldMarks_holdConnection on HoldNodeConnection {
         edges {
           node {
             id
-            ...HoldMarker_holdNode
+            ...HoldMark_holdNode
           }
         }
       }
@@ -37,7 +37,7 @@ const HoldMarkers: React.FC<Props> = ({
   return (
     <>
       {holdConnection.edges.map(({ node }) => (
-        <HoldMarker
+        <HoldMark
           key={node.id}
           holdKey={node}
           unhighlight={highlightedHolds && !highlightedHolds.includes(node.id)}
@@ -49,4 +49,4 @@ const HoldMarkers: React.FC<Props> = ({
   );
 };
 
-export default HoldMarkers;
+export default HoldMarks;
