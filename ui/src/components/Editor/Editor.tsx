@@ -15,6 +15,7 @@ import HoldMarkers from "./EditorOverlay/HoldEditor/HoldMarkers";
 import { DndProvider } from "react-dnd";
 import { TouchBackend } from "react-dnd-touch-backend";
 import EditorContext from "context/EditorContext";
+import HelpText from "./EditorOverlay/HelpText";
 
 interface Props {
   queryRef: PreloadedQuery<EditorQuery>;
@@ -72,6 +73,16 @@ const Editor: React.FC<Props> = ({
     return <NotFound />;
   }
 
+  const helpMode = (() => {
+    if (editingHolds) {
+      return "editHolds";
+    }
+    if (!selectedBeta) {
+      return "noBeta";
+    }
+    return "editBeta";
+  })();
+
   return (
     <DndProvider
       backend={TouchBackend}
@@ -123,6 +134,9 @@ const Editor: React.FC<Props> = ({
                 )}
               </EditorOverlay>
             )}
+
+            {/* Help text goes below overlay so it doesn't block anything */}
+            {helpMode && <HelpText helpMode={helpMode} />}
           </Box>
 
           {/* Other stuff */}

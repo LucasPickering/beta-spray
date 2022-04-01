@@ -101,6 +101,7 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
         }}
       />
 
+      {/* Overlay goes on top of the drop zones so holds are clickable */}
       <HoldOverlay
         // Always render all holds, but if we're editing a specific problem,
         // highlight those holds

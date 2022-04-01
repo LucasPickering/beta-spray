@@ -1,10 +1,9 @@
 ### Features
 
-- Help text
-
 ### Polish
 
-- Disambiguation with initial move
+- Better disambiguation
+- Make touch events better
 - DnD animations
 - Loading states
 - Error messages
