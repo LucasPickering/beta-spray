@@ -26,12 +26,24 @@ function getHelpText(helpMode: Props["helpMode"]): React.ReactChild {
     case "editBeta":
       return (
         <>
-          <div>Click a hold to add an initial move</div>
-          <div>Drag a leading move to add a new move</div>
-          <div>Drag any other move to relocate</div>
-          <div>Drag a line to add an intermediate move</div>
-          <div>Double click a move to delete</div>
-          <div>Reorder moves in the list at right</div>
+          <div>
+            <strong>Click a hold</strong> to add initial move
+          </div>
+          <div>
+            <strong>Drag a leading move</strong> to add new move
+          </div>
+          <div>
+            <strong>Drag any other move</strong> to relocate
+          </div>
+          <div>
+            <strong>Drag a line</strong> to add an intermediate move
+          </div>
+          <div>
+            <strong>Double click a move</strong> to delete
+          </div>
+          <div>
+            <strong>Reorder moves</strong> in the list at right
+          </div>
         </>
       );
   }
@@ -41,8 +53,7 @@ function getHelpText(helpMode: Props["helpMode"]): React.ReactChild {
  * An overlay to show contextual help on top of the editor.
  */
 const HelpText: React.FC<Props> = ({ helpMode }) => (
-  // TODO handle touch correctly
-  <Tooltip title={getHelpText(helpMode)} disableFocusListener>
+  <Tooltip title={getHelpText(helpMode)}>
     <IconButton
       size="small"
       sx={({ spacing }) => ({

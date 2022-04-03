@@ -1,8 +1,9 @@
 import { Box, Drawer, IconButton, Stack } from "@mui/material";
 import { Menu as IconMenu } from "@mui/icons-material";
 import React, { useContext, useState } from "react";
-import { Edit as IconEdit, Done as IconDone } from "@mui/icons-material";
+import { Done as IconDone } from "@mui/icons-material";
 import EditorContext from "context/EditorContext";
+import EditHoldsButton from "./EditHoldsButton";
 
 /**
  * Drawer container for editor controls. For small screens.
@@ -15,12 +16,15 @@ const EditorDrawer: React.FC = ({ children }) => {
     <>
       {/* Overlay buttons */}
       <Box sx={{ position: "absolute", top: 4, right: 4 }}>
-        <IconButton
-          aria-label={editingHolds ? "Done" : "Edit Holds"}
-          onClick={() => setEditingHolds((old) => !old)}
-        >
-          {editingHolds ? <IconDone /> : <IconEdit />}
-        </IconButton>
+        {/* Add an additional "done editing" button in the overlay for mobile */}
+        {editingHolds && (
+          <IconButton
+            aria-label="Done Editing Holds"
+            onClick={() => setEditingHolds(false)}
+          >
+            <IconDone />
+          </IconButton>
+        )}
         <IconButton aria-label="Open drawer" onClick={() => setIsOpen(true)}>
           <IconMenu />
         </IconButton>
@@ -29,6 +33,8 @@ const EditorDrawer: React.FC = ({ children }) => {
       <Drawer anchor="right" open={isOpen} onClose={() => setIsOpen(false)}>
         <Box sx={({ spacing }) => ({ padding: spacing(2) })}>
           <Stack direction="column" spacing={2}>
+            <EditHoldsButton onEdit={() => setIsOpen(false)} />
+
             {children}
           </Stack>
         </Box>
