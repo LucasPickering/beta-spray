@@ -10,6 +10,7 @@ import theme from "util/theme";
 import { ThemeProvider } from "@mui/material/styles";
 import { CssBaseline } from "@mui/material";
 import PageLayout from "components/PageLayout";
+import ErrorBoundary from "components/ErrorBoundary";
 
 const App: React.FC = () => {
   return (
@@ -19,14 +20,16 @@ const App: React.FC = () => {
           <CssBaseline />
           <PageLayout>
             <Suspense fallback={<Loading />}>
-              <Routes>
-                <Route path="" element={<Home />} />
-                <Route path="problems/:problemId" element={<EditorLoader />}>
-                  {/* Just an alias to pre-select values */}
-                  <Route path="beta/:betaId" element={<EditorLoader />} />
-                </Route>
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+              <ErrorBoundary>
+                <Routes>
+                  <Route path="" element={<Home />} />
+                  <Route path="problems/:problemId" element={<EditorLoader />}>
+                    {/* Just an alias to pre-select values */}
+                    <Route path="beta/:betaId" element={<EditorLoader />} />
+                  </Route>
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </ErrorBoundary>
             </Suspense>
           </PageLayout>
         </ThemeProvider>

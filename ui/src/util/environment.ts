@@ -40,10 +40,12 @@ const fetchQuery: FetchFunction = (
     });
   }
 
-  return fetch("/api/graphql", request).then((response) => {
-    // TODO don't crash if response isn't JSON
-    return response.json();
-  });
+  return (
+    fetch("/api/graphql", request)
+      .then((response) => response.json())
+      // eslint-disable-next-line no-console
+      .catch((error) => console.error("API request error", error))
+  );
 };
 
 const environment = new Environment({
