@@ -165,7 +165,7 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
           <BetaChainMark
             key={move.id}
             move={move}
-            isLast={i === moves.length - 1}
+            isLast={i === moveChain.length - 1}
             onDrop={onDrop}
             onClick={onClick}
             onDoubleClick={onDoubleClick}
