@@ -127,14 +127,9 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
     [deleteBetaMove, setHighlightedMove]
   );
 
-  const onMouseEnter = useCallback(
-    (move: BetaOverlayMove) => setHighlightedMove(move.id),
-    [setHighlightedMove]
-  );
-  const onMouseLeave = useCallback(
+  const onClick = useCallback(
     (move: BetaOverlayMove) =>
-      // Only clear the highlight if we "own" it
-      setHighlightedMove((old) => (move.id === old ? undefined : old)),
+      setHighlightedMove((old) => (old === move.id ? undefined : move.id)),
     [setHighlightedMove]
   );
 
@@ -151,9 +146,8 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
           key={bodyPart}
           moves={moveChain}
           onDrop={onDrop}
+          onClick={onClick}
           onDoubleClick={onDoubleClick}
-          onMouseEnter={onMouseEnter}
-          onMouseLeave={onMouseLeave}
         />
       ))}
 
@@ -298,7 +292,8 @@ function getMoves(
     // If at least one move is near the highlighted one, we need to disambiguate
     // The highlighted move is guaranteed to be in this list, so if that's the
     // only one, we do nothing
-    if (nearbyMoves.length > 1) {
+    // TODO
+    if (nearbyMoves.length > 0) {
       // We want to shift all the nearby moves apart. So break up the unit
       // circle into evenly sized slices, one per move, and shift each one away
       // a fixed distance along its slice angle.

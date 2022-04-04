@@ -16,6 +16,7 @@ interface Props {
   move: BetaOverlayMove;
   isLast: boolean;
   onDrop?: DropHandler<"betaMoveOverlay">;
+  onClick?: (move: BetaOverlayMove) => void;
   onDoubleClick?: (move: BetaOverlayMove) => void;
   onMouseEnter?: (move: BetaOverlayMove) => void;
   onMouseLeave?: (move: BetaOverlayMove) => void;
@@ -28,6 +29,7 @@ const BetaChainMark: React.FC<Props> = ({
   move,
   isLast,
   onDrop,
+  onClick,
   onDoubleClick,
   onMouseEnter,
   onMouseLeave,
@@ -95,6 +97,7 @@ const BetaChainMark: React.FC<Props> = ({
             isHighlighted && styleDraggableHighlight,
           ]}
           r={betaMoveCircleRadius}
+          onClick={onClick && (() => onClick(move))}
           onDoubleClick={onDoubleClick && (() => onDoubleClick(move))}
           onMouseEnter={onMouseEnter && (() => onMouseEnter(move))}
           onMouseLeave={onMouseLeave && (() => onMouseLeave(move))}

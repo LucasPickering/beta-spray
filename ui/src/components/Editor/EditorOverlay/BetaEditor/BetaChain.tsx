@@ -7,7 +7,7 @@ import BetaChainLine from "./BetaChainLine";
 interface Props
   extends Pick<
     React.ComponentProps<typeof BetaChainMark>,
-    "onDoubleClick" | "onMouseEnter" | "onMouseLeave"
+    "onClick" | "onDoubleClick" | "onMouseEnter" | "onMouseLeave"
   > {
   moves: BetaOverlayMove[];
   onDrop?: DropHandler<"betaMoveOverlay">;
