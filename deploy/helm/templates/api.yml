@@ -15,12 +15,15 @@ spec:
         app: api
     spec:
       serviceAccountName: "{{ .Values.api_service_account_name }}"
+      nodeSelector:
+        # Make sure workload-based SA is available
+        iam.gke.io/gke-metadata-server-enabled: "true"
       containers:
         - name: api
           image: "ghcr.io/lucaspickering/beta-spray-api:{{ .Values.version_sha }}"
           resources:
             requests:
-              cpu: 100m
+              cpu: 75m
               memory: 256Mi
               ephemeral-storage: 100Mi
           env:

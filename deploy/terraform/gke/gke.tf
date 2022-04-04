@@ -9,6 +9,11 @@ resource "google_container_cluster" "primary" {
   # enable_autopilot         = false
   remove_default_node_pool = true
   initial_node_count       = 1
+
+  # Allow pods to use workload ID for SA auth
+  workload_identity_config {
+    workload_pool = local.workload_pool
+  }
 }
 
 resource "google_container_node_pool" "primary_nodes" {

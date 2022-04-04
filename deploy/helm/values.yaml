@@ -10,7 +10,7 @@ static_assets_bucket: "beta-spray-static"
 ingress-nginx:
   controller:
     service:
-      loadBalancerIP: "34.148.89.179"
+      loadBalancerIP: "34.139.124.66"
     # Use minimum resources, so autopilot doesn't apply defaults
     resources:
       requests:

@@ -28,7 +28,7 @@ terraform init
 To point `kubectl` at the GKE cluster:
 
 ```sh
-gcloud container clusters get-credentials $(terraform output -raw kube_cluster_name) --region $(terraform output -raw region)
+gcloud container clusters get-credentials $(terraform output -raw kube_cluster_name) --region $(terraform output -raw kube_cluster_zone)
 ```
 
 ### Helm

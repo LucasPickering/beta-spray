@@ -1,5 +1,9 @@
 # Service accounts. Note: some permissions may be configured elsewhere
 
+locals {
+  workload_pool = "${var.project_id}.svc.id.goog"
+}
+
 resource "google_service_account" "api_service_account" {
   account_id   = "api-pod"
   display_name = "API Pod Service Account"
@@ -11,5 +15,5 @@ resource "google_service_account" "api_service_account" {
 resource "google_service_account_iam_binding" "api_storage_sa_workload" {
   service_account_id = google_service_account.api_service_account.name
   role               = "roles/iam.workloadIdentityUser"
-  members            = ["serviceAccount:${var.project_id}.svc.id.goog[${var.kube_namespace}/${var.kube_api_sa}]"]
+  members            = ["serviceAccount:${local.workload_pool}[${var.kube_namespace}/${var.kube_api_sa}]"]
 }
