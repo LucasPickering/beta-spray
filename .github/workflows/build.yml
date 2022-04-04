@@ -105,8 +105,8 @@ jobs:
       - name: Google Cloud auth
         uses: google-github-actions/auth@v0
         with:
-          service_account: ${{ secrets.GOOGLE_SERVICE_ACCOUNT }}
-          workload_identity_provider: ${{ secrets.GOOGLE_WORKLOAD_ID_PROVIDER }}
+          service_account: ${{ secrets.google_service_account }}
+          workload_identity_provider: ${{ secrets.google_workload_id_provider }}
 
       # Unpack both UI and API assets into the directory structure that we'll
       # want in the bucket, so we can upload them all at once

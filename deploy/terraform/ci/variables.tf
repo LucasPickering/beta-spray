@@ -1,3 +1,17 @@
+variable "github_owner" {
+  description = "GitHub repository owner"
+  default     = "LucasPickering"
+}
+
+variable "github_repository" {
+  description = "GitHub repository name"
+  default     = "beta-spray"
+}
+
+variable "github_token" {
+  description = "GitHub Personal Access Token"
+}
+
 variable "project_id" {
   description = "GCP project id"
 }

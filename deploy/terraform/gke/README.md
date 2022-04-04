@@ -5,12 +5,14 @@ This Terraform builds all the infrastructure needed for a deployment of the app,
 
 ## First Time Setup
 
-Install:
+### Prereqs
 
 - helm
 - kubectl
 - google-cloud-sdk
 - terraform
+
+### Setup
 
 Run:
 

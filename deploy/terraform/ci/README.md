@@ -2,10 +2,32 @@ This Terraform generates the infrastructure needed for CI, including:
 
 - OIDC for GitHub to auth with ([see here](https://github.com/google-github-actions/auth#setup))
 - Static assets bucket
+- GitHub Actions secrets to auth with GCP
 
-## CI Setup
+## First Time Setup
 
-After running this Terraform, you'll need to copy some values into GitHub so they can be accessed in the CI. Create the followed repository secrets, with values based on Terraform output:
+### Prereqs
 
-- `GOOGLE_SERVICE_ACCOUNT` - Value of `service_account_email` output
-- `GOOGLE_WORKLOAD_ID_PROVIDER` - Value of `provider_name` output
+- google-cloud-sdk
+- Terraform
+
+### Setup
+
+1. Create a new file `terraform.tfvars`
+2. Set the following fields:
+   1. `project_id`
+   2. `region`
+3. Auth to Google with `gcloud auth login`
+4. Generate a GitHub Personal Access Token
+   1. [Go here](https://github.com/settings/tokens)
+   2. Create a new token with the "workflow" scope
+   3. Add that token to `terraform.tfvars` under the name `github_token`
+5. `terraform init`
+
+Now, you can run Terraform with:
+
+```sh
+terraform apply
+```
+
+If you make any changes, just run the last command to update.
