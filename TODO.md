@@ -5,9 +5,9 @@
 - DnD animations
 - Loading states
 - Error messages
+- Real favicon
 
 ### Tech
 
-- Chunk splitting
 - Split GQL queries
 - Auto-execute some Kube stuff in TF outputs

@@ -59,7 +59,7 @@
     "prebuild": "npm run clean && npm run relay",
     "build": "NODE_ENV=production webpack",
     "check": "npm run type-check && npm run lint",
-    "analyze": "NODE_ENV=production WEBPACK_BUNDLE_ANALYZER_MODE=server webpack",
+    "analyze": "WEBPACK_BUNDLE_ANALYZER_MODE=server npm run build",
     "lint": "eslint src/**/*.{ts,tsx}",
     "lint:fix": "npm run lint -- --fix",
     "clean": "rm -rf build/",

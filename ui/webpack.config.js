@@ -45,12 +45,24 @@ module.exports = {
   optimization: {
     splitChunks: {
       cacheGroups: {
+        // This will effectively double the number of chunks, since each src
+        // chunk will now have an associated one for vendors. The advantage is
+        // that the vendor chunk will change much less often, so caching is
+        // better.
         vendors: {
-          test: /[\\/]node_modules[\\/]/,
+          test: /[/]node_modules[/]/,
           priority: -20,
           name: "vendors",
           chunks: "all",
-          filename: "[name].[contenthash].app.bundle.js",
+          filename: "[name]-[id].[contenthash].bundle.js",
+        },
+        // This chonker gets his own little house
+        vendorsRelay: {
+          test: /[/]node_modules[/](react-relay|relay-runtime)[/]/,
+          priority: -10,
+          name: "vendorsRelay",
+          chunks: "all",
+          filename: "[name]-[id].[contenthash].bundle.js",
         },
       },
     },
