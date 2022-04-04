@@ -25,14 +25,20 @@ variable "gke_password" {
   description = "gke password"
 }
 
+
+variable "kube_api_sa" {
+  default     = "api"
+  description = "Name of the *Kubernetes* service account used by the API pod"
+}
+
 variable "kube_namespace" {
   default     = "default"
   description = "Kubernetes namespace to deploy into"
 }
 
-variable "kube_api_sa" {
-  default     = "api"
-  description = "Name of the *Kubernetes* service account used by the API pod"
+variable "kube_num_nodes" {
+  default     = 1
+  description = "Number of nodes in the cluster"
 }
 
 variable "media_bucket" {
@@ -46,4 +52,8 @@ variable "project_id" {
 
 variable "region" {
   description = "GCP region"
+}
+
+variable "zone" {
+  description = "Zone to deploy GKE to, within the region"
 }

@@ -2,7 +2,8 @@
 
 set -e
 
-VERSION=$(git rev-parse HEAD)
+# Grab the latest *published* master
+VERSION=$(git rev-parse origin/master)
 
 if $(helm list | grep -q beta-spray); then
     SUBCOMMAND=upgrade

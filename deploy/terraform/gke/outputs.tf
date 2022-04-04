@@ -8,14 +8,19 @@ output "project_id" {
   description = "GCP Project ID"
 }
 
-output "kubernetes_cluster_name" {
+output "kube_cluster_name" {
   value       = google_container_cluster.primary.name
   description = "GKE Cluster Name"
 }
 
-output "kubernetes_cluster_ip" {
+output "kube_cluster_ip" {
   value       = google_container_cluster.primary.endpoint
   description = "GKE Cluster Host IP"
+}
+
+output "kube_cluster_zone" {
+  value       = google_container_cluster.primary.location
+  description = "GKE Cluster Region+zone"
 }
 
 output "media_bucket" {

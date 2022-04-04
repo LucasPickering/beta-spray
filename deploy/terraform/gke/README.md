@@ -26,10 +26,12 @@ terraform init
 To point `kubectl` at the GKE cluster:
 
 ```sh
-gcloud container clusters get-credentials $(terraform output -raw kubernetes_cluster_name) --region $(terraform output -raw region)
+gcloud container clusters get-credentials $(terraform output -raw kube_cluster_name) --region $(terraform output -raw region)
 ```
 
 ### Helm
+
+#### First Time Setup
 
 First time helm install/upgrade will require:
 
@@ -40,3 +42,18 @@ helm dependency build helm/
 ```
 
 (this is because helm is trash)
+
+Then generate secrets with:
+
+(TODO generate secrets in TF)
+
+```sh
+./scripts/secrets.sh
+```
+
+#### Release
+
+```sh
+cd deploy
+./scripts/deploy.sh
+```

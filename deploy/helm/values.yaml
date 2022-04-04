@@ -10,35 +10,21 @@ static_assets_bucket: "beta-spray-static"
 ingress-nginx:
   controller:
     service:
-      loadBalancerIP: "35.245.92.163"
+      loadBalancerIP: "34.148.89.179"
     # Use minimum resources, so autopilot doesn't apply defaults
     resources:
       requests:
-        cpu: 250m
-        memory: 512Mi
-        ephemeral-storage: 10Mi
-      limits:
-        cpu: 250m
-        memory: 512Mi
+        cpu: 100m
+        memory: 100Mi
         ephemeral-storage: 10Mi
     admissionWebhooks:
       createSecretJob:
-        resources:
-          requests:
-            cpu: 250m
-            memory: 512Mi
-            ephemeral-storage: 10Mi
-          limits:
-            cpu: 250m
-            memory: 512Mi
-            ephemeral-storage: 10Mi
+        requests:
+          cpu: 100m
+          memory: 100Mi
+          ephemeral-storage: 10Mi
       patchWebhookJob:
-        resources:
-          requests:
-            cpu: 250m
-            memory: 512Mi
-            ephemeral-storage: 10Mi
-          limits:
-            cpu: 250m
-            memory: 512Mi
-            ephemeral-storage: 10Mi
+        requests:
+          cpu: 100m
+          memory: 100Mi
+          ephemeral-storage: 10Mi
