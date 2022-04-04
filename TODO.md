@@ -2,8 +2,6 @@
 
 ### Polish
 
-- Better disambiguation
-- Make touch events better
 - DnD animations
 - Loading states
 - Error messages

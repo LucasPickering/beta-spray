@@ -51,7 +51,7 @@ const BetaDetailsMove: React.FC<Props> = ({
 
   const { highlightedMove, setHighlightedMove } = useContext(EditorContext);
 
-  const ref = useRef<HTMLLIElement | null>(null);
+  const ref = useRef<SVGSVGElement | null>(null);
 
   const [, drag] = useDrag<"betaMoveList", { isDragging: boolean }>({
     type: "betaMoveList",
@@ -136,7 +136,6 @@ const BetaDetailsMove: React.FC<Props> = ({
   drag(drop(ref));
   return (
     <ListItem
-      ref={ref}
       disabled={disabled}
       onMouseEnter={() => {
         if (!disabled) {
@@ -151,16 +150,18 @@ const BetaDetailsMove: React.FC<Props> = ({
       }}
       sx={[
         { userSelect: "none" },
-        !disabled && { cursor: "move" },
         isHighlighted &&
           (({ palette }) => ({
             backgroundColor: palette.action.hover,
           })),
       ]}
     >
+      {/* Limit the dnd to just the handle icon, to not interfere with scrolling
+      on mobile */}
       <ListItemIcon>
-        <IconDragHandle />
+        <IconDragHandle ref={ref} sx={[!disabled && { cursor: "move" }]} />
       </ListItemIcon>
+
       <ListItemText
         sx={({ palette }) => ({ color: palette.bodyParts[bodyPart] })}
       >

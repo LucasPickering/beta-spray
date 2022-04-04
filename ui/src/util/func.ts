@@ -1,4 +1,11 @@
 /**
+ * Do nothing
+ */
+export function noop(): void {
+  // noop!
+}
+
+/**
  * Check if a value is not null/undefined
  */
 export function isDefined<T>(value: T): value is NonNullable<T> {
@@ -87,6 +94,16 @@ export function groupBy<T, K>(
 
     return acc;
   }, new Map());
+}
+
+/**
+ * Get a random float in [min, max)
+ * @param min Min value, inclusive
+ * @param max Max value, exclusive
+ * @returns Random float in [min, max)
+ */
+export function randomFloat(min: number, max: number): number {
+  return min + Math.random() * max;
 }
 
 /**

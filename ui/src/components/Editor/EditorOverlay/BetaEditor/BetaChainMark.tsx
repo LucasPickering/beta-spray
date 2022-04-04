@@ -7,10 +7,11 @@ import {
   styleDragging,
   styleDropHover,
 } from "styles/dnd";
-import { useTheme } from "@mui/material";
+import { ClickAwayListener, useTheme } from "@mui/material";
 import EditorContext from "context/EditorContext";
 import Positioned from "../Positioned";
 import { betaMoveCircleRadius } from "../consts";
+import { noop } from "util/func";
 
 interface Props {
   move: BetaOverlayMove;
@@ -18,6 +19,7 @@ interface Props {
   onDrop?: DropHandler<"betaMoveOverlay">;
   onClick?: (move: BetaOverlayMove) => void;
   onDoubleClick?: (move: BetaOverlayMove) => void;
+  onClickAway?: (move: BetaOverlayMove) => void;
   onMouseEnter?: (move: BetaOverlayMove) => void;
   onMouseLeave?: (move: BetaOverlayMove) => void;
 }
@@ -31,6 +33,7 @@ const BetaChainMark: React.FC<Props> = ({
   onDrop,
   onClick,
   onDoubleClick,
+  onClickAway,
   onMouseEnter,
   onMouseLeave,
 }) => {
@@ -71,52 +74,56 @@ const BetaChainMark: React.FC<Props> = ({
 
   drag(drop(ref));
   return (
-    <Positioned position={move.position}>
-      {/* This wrapper allows for applying transforms to all children */}
-      <g
-        css={[
-          {
-            transform: "translate(0px, 0px)",
-            transition: transitions.create("transform", {
-              duration: transitions.duration.standard,
-            }),
-          },
-          move.offset && {
-            // Slide a bit for disambiguation
-            transform: `translate(${move.offset.x}px, ${move.offset.y}px)`,
-          },
-          isOver && styleDropHover,
-        ]}
-      >
-        <circle
-          ref={ref}
+    <ClickAwayListener
+      onClickAway={onClickAway ? () => onClickAway(move) : noop}
+    >
+      <Positioned position={move.position}>
+        {/* This wrapper allows for applying transforms to all children */}
+        <g
           css={[
-            { fill: color },
-            styleDraggable,
-            isDragging && styleDragging,
-            isHighlighted && styleDraggableHighlight,
+            {
+              transform: "translate(0px, 0px)",
+              transition: transitions.create("transform", {
+                duration: transitions.duration.standard,
+              }),
+            },
+            move.offset && {
+              // Slide a bit for disambiguation
+              transform: `translate(${move.offset.x}px, ${move.offset.y}px)`,
+            },
+            isOver && styleDropHover,
           ]}
-          r={betaMoveCircleRadius}
-          onClick={onClick && (() => onClick(move))}
-          onDoubleClick={onDoubleClick && (() => onDoubleClick(move))}
-          onMouseEnter={onMouseEnter && (() => onMouseEnter(move))}
-          onMouseLeave={onMouseLeave && (() => onMouseLeave(move))}
-        />
-
-        <text
-          css={{
-            fontSize: 3,
-            userSelect: "none",
-            pointerEvents: "none",
-            color: palette.getContrastText(color),
-          }}
-          textAnchor="middle"
-          dominantBaseline="middle"
         >
-          {formatOrder(move.order)}
-        </text>
-      </g>
-    </Positioned>
+          <circle
+            ref={ref}
+            css={[
+              { fill: color },
+              styleDraggable,
+              isDragging && styleDragging,
+              isHighlighted && styleDraggableHighlight,
+            ]}
+            r={betaMoveCircleRadius}
+            onClick={onClick && (() => onClick(move))}
+            onDoubleClick={onDoubleClick && (() => onDoubleClick(move))}
+            onMouseEnter={onMouseEnter && (() => onMouseEnter(move))}
+            onMouseLeave={onMouseLeave && (() => onMouseLeave(move))}
+          />
+
+          <text
+            css={{
+              fontSize: 3,
+              userSelect: "none",
+              pointerEvents: "none",
+              color: palette.getContrastText(color),
+            }}
+            textAnchor="middle"
+            dominantBaseline="middle"
+          >
+            {formatOrder(move.order)}
+          </text>
+        </g>
+      </Positioned>
+    </ClickAwayListener>
   );
 };
 

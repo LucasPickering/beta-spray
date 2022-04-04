@@ -19,7 +19,7 @@ import { BetaEditor_deleteBetaMoveMutation } from "./__generated__/BetaEditor_de
 import { useOverlayUtils } from "util/useOverlayUtils";
 import BetaMoveDialog from "./BetaMoveDialog";
 import EditorContext from "context/EditorContext";
-import { assertIsDefined, groupBy, isDefined } from "util/func";
+import { assertIsDefined, groupBy, isDefined, randomFloat } from "util/func";
 import BodyState from "./BodyState";
 import { DropHandler } from "util/dnd";
 import { disambiguationDistance, maxDisambigutationDistance } from "../consts";
@@ -117,6 +117,11 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
     [beta.id, createBetaMove, updateBetaMove]
   );
 
+  const onClick = useCallback(
+    (move: BetaOverlayMove) =>
+      setHighlightedMove((old) => (old === move.id ? undefined : move.id)),
+    [setHighlightedMove]
+  );
   const onDoubleClick = useCallback(
     (move: BetaOverlayMove) =>
       deleteBetaMove({
@@ -130,10 +135,10 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
       }),
     [deleteBetaMove, setHighlightedMove]
   );
-
-  const onClick = useCallback(
+  const onClickAway = useCallback(
+    // If this move "owns" the highlight, wipe it out when we click away
     (move: BetaOverlayMove) =>
-      setHighlightedMove((old) => (old === move.id ? undefined : move.id)),
+      setHighlightedMove((old) => (old === move.id ? undefined : old)),
     [setHighlightedMove]
   );
 
@@ -169,6 +174,7 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
             onDrop={onDrop}
             onClick={onClick}
             onDoubleClick={onDoubleClick}
+            onClickAway={onClickAway}
           />
         ))
       )}
@@ -313,11 +319,16 @@ function getMoves(
 
     // We want to shift all the nearby moves apart. So break up the unit
     // circle into evenly sized slices, one per move, and shift each one away
-    // a fixed distance along its slice angle.
+    // a fixed distance along its slice angle. Also apply a random offset for
+    // ~~variety~~ (also to get around bugs at the edge of the screen ecks dee)
+    const offset = randomFloat(0.0, 2 * Math.PI);
     const sliceRadians = (2 * Math.PI) / nearbyMoves.length;
 
     nearbyMoves.forEach((move, i) => {
-      move.offset = polarToCartesian(disambiguationDistance, sliceRadians * i);
+      move.offset = polarToCartesian(
+        disambiguationDistance,
+        offset + sliceRadians * i
+      );
     });
   }
 
