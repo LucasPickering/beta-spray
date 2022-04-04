@@ -56,6 +56,9 @@ const BetaDetailsMove: React.FC<Props> = ({
   const [, drag] = useDrag<"betaMoveList", { isDragging: boolean }>({
     type: "betaMoveList",
     item: { betaMoveId: betaMove.id, index },
+    canDrag() {
+      return !disabled;
+    },
     collect(monitor) {
       return {
         isDragging: Boolean(monitor.isDragging()),

@@ -14,7 +14,6 @@ import {
   toBodyPart,
 } from "../types";
 import { BetaEditor_createBetaMoveMutation } from "./__generated__/BetaEditor_createBetaMoveMutation.graphql";
-import BetaChain from "./BetaChain";
 import { BetaEditor_updateBetaMoveMutation } from "./__generated__/BetaEditor_updateBetaMoveMutation.graphql";
 import { BetaEditor_deleteBetaMoveMutation } from "./__generated__/BetaEditor_deleteBetaMoveMutation.graphql";
 import { useOverlayUtils } from "util/useOverlayUtils";
@@ -24,6 +23,8 @@ import { assertIsDefined, groupBy, isDefined } from "util/func";
 import BodyState from "./BodyState";
 import { DropHandler } from "util/dnd";
 import { disambiguationDistance, maxDisambigutationDistance } from "../consts";
+import BetaChainLine from "./BetaChainLine";
+import BetaChainMark from "./BetaChainMark";
 
 interface Props {
   betaKey: BetaEditor_betaNode$key;
@@ -72,27 +73,30 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
 
       switch (item.kind) {
         case "move":
-          // Dragging the last move in a chain adds a new move
-          if (item.isLast) {
-            createBetaMove({
-              variables: {
-                input: {
-                  betaId: beta.id,
-                  bodyPart: item.move.bodyPart,
-                  holdId: result.holdId,
+          // If the landing spot is the same as the move being dragged, do nothing
+          if (item.move.holdId !== result.holdId) {
+            // Dragging the last move in a chain adds a new move
+            if (item.isLast) {
+              createBetaMove({
+                variables: {
+                  input: {
+                    betaId: beta.id,
+                    bodyPart: item.move.bodyPart,
+                    holdId: result.holdId,
+                  },
                 },
-              },
-            });
-          } else {
-            // Dragging an intermediate move just moves it to another spot
-            updateBetaMove({
-              variables: {
-                input: {
-                  betaMoveId: item.move.id,
-                  holdId: result.holdId,
+              });
+            } else {
+              // Dragging an intermediate move just moves it to another spot
+              updateBetaMove({
+                variables: {
+                  input: {
+                    betaMoveId: item.move.id,
+                    holdId: result.holdId,
+                  },
                 },
-              },
-            });
+              });
+            }
           }
           break;
 
@@ -141,15 +145,33 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
         <BodyState moves={moves} highlightedMove={highlightedMove} />
       )}
 
-      {Array.from(movesByBodyPart.entries(), ([bodyPart, moveChain]) => (
-        <BetaChain
-          key={bodyPart}
-          moves={moveChain}
-          onDrop={onDrop}
-          onClick={onClick}
-          onDoubleClick={onDoubleClick}
-        />
-      ))}
+      {/* Draw lines to connect the moves. Do this *first* so they go on bottom */}
+      {Array.from(movesByBodyPart.values(), (moveChain) =>
+        moveChain.map((move, i) => {
+          const prev = moveChain[i - 1];
+          return prev ? (
+            <BetaChainLine
+              key={move.id}
+              startMove={prev}
+              endMove={move}
+              onDrop={onDrop}
+            />
+          ) : null;
+        })
+      )}
+      {/* Draw the actual move marks */}
+      {Array.from(movesByBodyPart.values(), (moveChain) =>
+        moveChain.map((move, i) => (
+          <BetaChainMark
+            key={move.id}
+            move={move}
+            isLast={i === moves.length - 1}
+            onDrop={onDrop}
+            onClick={onClick}
+            onDoubleClick={onDoubleClick}
+          />
+        ))
+      )}
 
       {/* After clicking an empty hold, show a modal to add a move to it */}
       <BetaMoveDialog
@@ -289,23 +311,14 @@ function getMoves(
         maxDisambigutationDistance
     );
 
-    // If at least one move is near the highlighted one, we need to disambiguate
-    // The highlighted move is guaranteed to be in this list, so if that's the
-    // only one, we do nothing
-    // TODO
-    if (nearbyMoves.length > 0) {
-      // We want to shift all the nearby moves apart. So break up the unit
-      // circle into evenly sized slices, one per move, and shift each one away
-      // a fixed distance along its slice angle.
-      const sliceRadians = (2 * Math.PI) / nearbyMoves.length;
+    // We want to shift all the nearby moves apart. So break up the unit
+    // circle into evenly sized slices, one per move, and shift each one away
+    // a fixed distance along its slice angle.
+    const sliceRadians = (2 * Math.PI) / nearbyMoves.length;
 
-      nearbyMoves.forEach((move, i) => {
-        move.offset = polarToCartesian(
-          disambiguationDistance,
-          sliceRadians * i
-        );
-      });
-    }
+    nearbyMoves.forEach((move, i) => {
+      move.offset = polarToCartesian(disambiguationDistance, sliceRadians * i);
+    });
   }
 
   return moves;
