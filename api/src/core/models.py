@@ -30,6 +30,8 @@ class BoulderImage(models.Model):
     """
 
     name = models.TextField()
+    # TODO add a cron to auto-delete old images
+    # https://docs.djangoproject.com/en/4.0/ref/models/fields/#django.db.models.fields.files.FieldFile.delete
     image = models.ImageField(unique=True, upload_to="boulders")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

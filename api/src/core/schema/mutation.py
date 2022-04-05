@@ -24,6 +24,7 @@ from .query import (
 
 def get_file(info, file_key):
     """Get an attached file object for a request"""
+    # TODO validate file type and max size
     file = info.context.FILES.get(file_key)
     root, ext = os.path.splitext(file.name)
     # Replace file name with a UUID
