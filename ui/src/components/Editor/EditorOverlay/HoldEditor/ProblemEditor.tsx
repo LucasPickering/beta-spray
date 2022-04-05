@@ -1,6 +1,8 @@
+import MutationError from "components/MutationError";
 import React from "react";
-import { useFragment, useMutation } from "react-relay";
+import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
+import useMutation from "util/useMutation";
 import HoldMarks from "./HoldMarks";
 import { ProblemEditor_createProblemHoldMutation } from "./__generated__/ProblemEditor_createProblemHoldMutation.graphql";
 import { ProblemEditor_deleteProblemHoldMutation } from "./__generated__/ProblemEditor_deleteProblemHoldMutation.graphql";
@@ -47,7 +49,7 @@ const ProblemEditor: React.FC<Props> = ({ imageKey, problemKey }) => {
     problemKey
   );
 
-  const [createProblemHold] =
+  const { commit: createProblemHold, state: createState } =
     useMutation<ProblemEditor_createProblemHoldMutation>(graphql`
       mutation ProblemEditor_createProblemHoldMutation(
         $input: CreateProblemHoldMutationInput!
@@ -65,7 +67,7 @@ const ProblemEditor: React.FC<Props> = ({ imageKey, problemKey }) => {
       }
     `);
 
-  const [deleteProblemHold] =
+  const { commit: deleteProblemHold, state: deleteState } =
     useMutation<ProblemEditor_deleteProblemHoldMutation>(graphql`
       mutation ProblemEditor_deleteProblemHoldMutation(
         $input: DeleteProblemHoldMutationInput!
@@ -82,31 +84,36 @@ const ProblemEditor: React.FC<Props> = ({ imageKey, problemKey }) => {
   const problemHoldIds = problem?.holds.edges.map(({ node }) => node.id);
 
   return (
-    <HoldMarks
-      // Render all holds for the image, but highlight this problem
-      holdConnectionKey={image.holds}
-      highlightedHolds={problemHoldIds}
-      onClick={(holdId) => {
-        if (problemHoldIds.includes(holdId)) {
-          // Hold is already in the problem, remove it
-          deleteProblemHold({
-            variables: {
-              input: { problemId: problem.id, holdId },
-              connections: [problem.holds.__id],
-            },
-          });
-        } else {
-          // Hold is not yet in the problem, add it
-          createProblemHold({
-            variables: {
-              input: { problemId: problem.id, holdId },
-              // No need to update the image-level hold connection here
-              connections: [problem.holds.__id],
-            },
-          });
-        }
-      }}
-    />
+    <>
+      <HoldMarks
+        // Render all holds for the image, but highlight this problem
+        holdConnectionKey={image.holds}
+        highlightedHolds={problemHoldIds}
+        onClick={(holdId) => {
+          if (problemHoldIds.includes(holdId)) {
+            // Hold is already in the problem, remove it
+            deleteProblemHold({
+              variables: {
+                input: { problemId: problem.id, holdId },
+                connections: [problem.holds.__id],
+              },
+            });
+          } else {
+            // Hold is not yet in the problem, add it
+            createProblemHold({
+              variables: {
+                input: { problemId: problem.id, holdId },
+                // No need to update the image-level hold connection here
+                connections: [problem.holds.__id],
+              },
+            });
+          }
+        }}
+      />
+
+      <MutationError message="Error creating hold" state={createState} />
+      <MutationError message="Error deleting hold" state={deleteState} />
+    </>
   );
 };
 

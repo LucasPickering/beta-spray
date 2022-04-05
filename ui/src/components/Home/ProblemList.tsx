@@ -1,6 +1,6 @@
 import { Grid, Typography } from "@mui/material";
 import React from "react";
-import { graphql, useFragment, useMutation } from "react-relay";
+import { graphql, useFragment } from "react-relay";
 import ProblemCard from "./ProblemCard";
 import BoulderImageUpload from "./BoulderImageUpload";
 import { randomPhrase } from "util/func";
@@ -8,6 +8,8 @@ import { ProblemList_problemConnection$key } from "./__generated__/ProblemList_p
 import { ProblemList_deleteProblemMutation } from "./__generated__/ProblemList_deleteProblemMutation.graphql";
 import { ProblemList_updateProblemMutation } from "./__generated__/ProblemList_updateProblemMutation.graphql";
 import { ProblemList_createProblemMutation } from "./__generated__/ProblemList_createProblemMutation.graphql";
+import useMutation from "util/useMutation";
+import MutationError from "components/MutationError";
 
 interface Props {
   problemConnectionKey: ProblemList_problemConnection$key;
@@ -37,7 +39,7 @@ const ProblemList: React.FC<Props> = ({ problemConnectionKey }) => {
   );
 
   // For now, we enforce one problem per image, so auto-create the problem now
-  const [createProblem] =
+  const { commit: createProblem, state: createState } =
     useMutation<ProblemList_createProblemMutation>(graphql`
       mutation ProblemList_createProblemMutation(
         $input: CreateProblemMutationInput!
@@ -56,7 +58,7 @@ const ProblemList: React.FC<Props> = ({ problemConnectionKey }) => {
       }
     `);
 
-  const [updateProblem] =
+  const { commit: updateProblem, state: updateState } =
     useMutation<ProblemList_updateProblemMutation>(graphql`
       mutation ProblemList_updateProblemMutation(
         $input: UpdateProblemMutationInput!
@@ -70,7 +72,7 @@ const ProblemList: React.FC<Props> = ({ problemConnectionKey }) => {
       }
     `);
 
-  const [deleteProblem] =
+  const { commit: deleteProblem, state: deleteState } =
     useMutation<ProblemList_deleteProblemMutation>(graphql`
       mutation ProblemList_deleteProblemMutation(
         $input: DeleteProblemMutationInput!
@@ -128,6 +130,10 @@ const ProblemList: React.FC<Props> = ({ problemConnectionKey }) => {
           }}
         />
       </Grid>
+
+      <MutationError message="Error uploading problem" state={createState} />
+      <MutationError message="Error updating problem" state={updateState} />
+      <MutationError message="Error deleting problem" state={deleteState} />
     </Grid>
   );
 };

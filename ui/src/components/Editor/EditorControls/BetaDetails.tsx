@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { graphql, useFragment, useMutation } from "react-relay";
+import { graphql, useFragment } from "react-relay";
 import BetaDetailsMove from "./BetaDetailsMove";
 import {
   BetaDetails_betaNode$data,
@@ -10,6 +10,8 @@ import { FormLabel, List, Typography } from "@mui/material";
 import { moveArrayElement } from "util/func";
 import { BetaDetails_updateBetaMoveMutation } from "./__generated__/BetaDetails_updateBetaMoveMutation.graphql";
 import EditorContext from "context/EditorContext";
+import useMutation from "util/useMutation";
+import MutationError from "components/MutationError";
 
 interface Props {
   dataKey: BetaDetails_betaNode$key;
@@ -49,7 +51,7 @@ const BetaDetails: React.FC<Props> = ({ dataKey }) => {
   }, [beta.moves.edges]);
 
   // TODO use loading state
-  const [updateBetaMove] =
+  const { commit: updateBetaMove, state: updateState } =
     useMutation<BetaDetails_updateBetaMoveMutation>(graphql`
       mutation BetaDetails_updateBetaMoveMutation(
         $input: UpdateBetaMoveMutationInput!
@@ -66,7 +68,7 @@ const BetaDetails: React.FC<Props> = ({ dataKey }) => {
     `);
 
   // TODO use loading state
-  const [deleteBetaMove] =
+  const { commit: deleteBetaMove, state: deleteState } =
     useMutation<BetaDetails_deleteBetaMoveMutation>(graphql`
       mutation BetaDetails_deleteBetaMoveMutation(
         $input: DeleteBetaMoveMutationInput!
@@ -129,6 +131,9 @@ const BetaDetails: React.FC<Props> = ({ dataKey }) => {
           />
         ))}
       </List>
+
+      <MutationError message="Error updating move" state={updateState} />
+      <MutationError message="Error deleting move" state={deleteState} />
     </div>
   );
 };
