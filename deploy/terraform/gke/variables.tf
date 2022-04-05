@@ -15,17 +15,6 @@ variable "domain_name" {
   default     = "betaspray"
 }
 
-variable "gke_username" {
-  default     = ""
-  description = "gke username"
-}
-
-variable "gke_password" {
-  default     = ""
-  description = "gke password"
-}
-
-
 variable "kube_api_sa" {
   default     = "api"
   description = "Name of the *Kubernetes* service account used by the API pod"
@@ -44,6 +33,11 @@ variable "kube_num_nodes" {
 variable "media_bucket" {
   default     = "beta-spray-media"
   description = "GCS bucket for API media"
+}
+
+variable "node_machine_type" {
+  default     = "e2-small"
+  description = "GCE machine type for eack GKE node"
 }
 
 variable "project_id" {
