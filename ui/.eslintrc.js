@@ -58,6 +58,12 @@ module.exports = {
         message:
           "Use the local useDrag/useDrop wrapper instead of the one from react-dnd",
       },
+      {
+        selector:
+          "ImportDeclaration[source.value=react-relay] > ImportSpecifier[imported.name=useMutation]",
+        message:
+          "Use the local useMutation wrapper instead of the one from react-relay",
+      },
     ],
   },
   overrides: [

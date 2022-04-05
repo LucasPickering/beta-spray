@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useMemo } from "react";
-import { useFragment, useMutation } from "react-relay";
+import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
 import {
   BetaEditor_betaNode$data,
@@ -25,6 +25,8 @@ import { DropHandler } from "util/dnd";
 import { disambiguationDistance, maxDisambigutationDistance } from "../consts";
 import BetaChainLine from "./BetaChainLine";
 import BetaChainMark from "./BetaChainMark";
+import useMutation from "util/useMutation";
+import MutationError from "components/MutationError";
 
 interface Props {
   betaKey: BetaEditor_betaNode$key;
@@ -56,15 +58,12 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
   );
 
   // TODO use loading state
-  const [createBetaMove] = useMutation<BetaEditor_createBetaMoveMutation>(
-    createBetaMoveMutation
-  );
-  const [updateBetaMove] = useMutation<BetaEditor_updateBetaMoveMutation>(
-    updateBetaMoveMutation
-  );
-  const [deleteBetaMove] = useMutation<BetaEditor_deleteBetaMoveMutation>(
-    deleteBetaMoveMutation
-  );
+  const { commit: createBetaMove, state: createState } =
+    useMutation<BetaEditor_createBetaMoveMutation>(createBetaMoveMutation);
+  const { commit: updateBetaMove, state: updateState } =
+    useMutation<BetaEditor_updateBetaMoveMutation>(updateBetaMoveMutation);
+  const { commit: deleteBetaMove, state: deleteState } =
+    useMutation<BetaEditor_deleteBetaMoveMutation>(deleteBetaMoveMutation);
 
   const onDrop: DropHandler<"betaMoveOverlay"> = useCallback(
     (item, result) => {
@@ -196,6 +195,10 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
           setSelectedHold(undefined);
         }}
       />
+
+      <MutationError message="Error creating move" state={createState} />
+      <MutationError message="Error updating move" state={updateState} />
+      <MutationError message="Error deleting move" state={deleteState} />
     </>
   );
 };

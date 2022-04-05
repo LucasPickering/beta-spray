@@ -1,6 +1,8 @@
+import MutationError from "components/MutationError";
 import React from "react";
-import { useFragment, useMutation } from "react-relay";
+import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
+import useMutation from "util/useMutation";
 import { useOverlayUtils } from "util/useOverlayUtils";
 import HoldEditorDropZone from "./HoldEditorDropZone";
 import HoldOverlay from "./HoldOverlay";
@@ -41,43 +43,49 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
   const { toAPIPosition, getMouseCoords } = useOverlayUtils();
 
   // TODO handle loading states
-  const [createHold] = useMutation<HoldEditor_createHoldMutation>(graphql`
-    mutation HoldEditor_createHoldMutation(
-      $input: CreateHoldMutationInput!
-      $connections: [ID!]!
-    ) {
-      createHold(input: $input) {
-        hold
-          @appendNode(connections: $connections, edgeTypeName: "HoldNodeEdge") {
-          ...HoldMark_holdNode
+  const { commit: createHold, state: createState } =
+    useMutation<HoldEditor_createHoldMutation>(graphql`
+      mutation HoldEditor_createHoldMutation(
+        $input: CreateHoldMutationInput!
+        $connections: [ID!]!
+      ) {
+        createHold(input: $input) {
+          hold
+            @appendNode(
+              connections: $connections
+              edgeTypeName: "HoldNodeEdge"
+            ) {
+            ...HoldMark_holdNode
+          }
         }
       }
-    }
-  `);
+    `);
 
-  const [updateHold] = useMutation<HoldEditor_updateHoldMutation>(graphql`
-    mutation HoldEditor_updateHoldMutation($input: UpdateHoldMutationInput!) {
-      updateHold(input: $input) {
-        hold {
-          id # So relay knows how to update this node locally
-          ...HoldMark_holdNode
+  const { commit: updateHold, state: updateState } =
+    useMutation<HoldEditor_updateHoldMutation>(graphql`
+      mutation HoldEditor_updateHoldMutation($input: UpdateHoldMutationInput!) {
+        updateHold(input: $input) {
+          hold {
+            id # So relay knows how to update this node locally
+            ...HoldMark_holdNode
+          }
         }
       }
-    }
-  `);
+    `);
 
-  const [deleteHold] = useMutation<HoldEditor_deleteHoldMutation>(graphql`
-    mutation HoldEditor_deleteHoldMutation(
-      $input: DeleteHoldMutationInput!
-      $connections: [ID!]!
-    ) {
-      deleteHold(input: $input) {
-        hold {
-          id @deleteEdge(connections: $connections) @deleteRecord
+  const { commit: deleteHold, state: deleteState } =
+    useMutation<HoldEditor_deleteHoldMutation>(graphql`
+      mutation HoldEditor_deleteHoldMutation(
+        $input: DeleteHoldMutationInput!
+        $connections: [ID!]!
+      ) {
+        deleteHold(input: $input) {
+          hold {
+            id @deleteEdge(connections: $connections) @deleteRecord
+          }
         }
       }
-    }
-  `);
+    `);
 
   return (
     <>
@@ -126,6 +134,10 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
           });
         }}
       />
+
+      <MutationError message="Error creating hold" state={createState} />
+      <MutationError message="Error updating hold" state={updateState} />
+      <MutationError message="Error deleting hold" state={deleteState} />
     </>
   );
 };

@@ -1,11 +1,13 @@
 import React, { useContext, useEffect } from "react";
-import { graphql, useFragment, useMutation } from "react-relay";
+import { graphql, useFragment } from "react-relay";
 import { BetaList_problemNode$key } from "./__generated__/BetaList_problemNode.graphql";
 import { BetaList_createBetaMutation } from "./__generated__/BetaList_createBetaMutation.graphql";
 import { BetaList_deleteBetaMutation } from "./__generated__/BetaList_deleteBetaMutation.graphql";
 import RadioList from "./RadioList";
 import { randomPhrase } from "util/func";
 import EditorContext from "context/EditorContext";
+import MutationError from "components/MutationError";
+import useMutation from "util/useMutation";
 
 interface Props {
   problemKey: BetaList_problemNode$key;
@@ -69,80 +71,90 @@ const BetaList: React.FC<Props> = ({
   }, [selectedBeta, setSelectedBeta, problem.betas.edges]);
 
   // TODO handle loading states
-  const [createBeta] = useMutation<BetaList_createBetaMutation>(graphql`
-    mutation BetaList_createBetaMutation(
-      $input: CreateBetaMutationInput!
-      $connections: [ID!]!
-    ) {
-      createBeta(input: $input) {
-        beta
-          @appendNode(connections: $connections, edgeTypeName: "BetaNodeEdge") {
-          # This should match the fragment above
-          id
-          name
-          # TODO get length directly from connection
-          moves {
-            edges {
-              cursor
+  const { commit: createBeta, state: createState } =
+    useMutation<BetaList_createBetaMutation>(graphql`
+      mutation BetaList_createBetaMutation(
+        $input: CreateBetaMutationInput!
+        $connections: [ID!]!
+      ) {
+        createBeta(input: $input) {
+          beta
+            @appendNode(
+              connections: $connections
+              edgeTypeName: "BetaNodeEdge"
+            ) {
+            # This should match the fragment above
+            id
+            name
+            # TODO get length directly from connection
+            moves {
+              edges {
+                cursor
+              }
             }
           }
         }
       }
-    }
-  `);
+    `);
   // TODO un-select current beta if it's deleted
-  const [deleteBeta] = useMutation<BetaList_deleteBetaMutation>(graphql`
-    mutation BetaList_deleteBetaMutation(
-      $input: DeleteBetaMutationInput!
-      $connections: [ID!]!
-    ) {
-      deleteBeta(input: $input) {
-        beta {
-          id @deleteEdge(connections: $connections) @deleteRecord
+  const { commit: deleteBeta, state: deleteState } =
+    useMutation<BetaList_deleteBetaMutation>(graphql`
+      mutation BetaList_deleteBetaMutation(
+        $input: DeleteBetaMutationInput!
+        $connections: [ID!]!
+      ) {
+        deleteBeta(input: $input) {
+          beta {
+            id @deleteEdge(connections: $connections) @deleteRecord
+          }
         }
       }
-    }
-  `);
+    `);
 
   return (
-    <RadioList
-      title="Beta"
-      items={problem.betas.edges.map(({ node }) => ({
-        id: node.id,
-        name: node.name,
-        subtitle: `${node.moves.edges.length} moves`,
-      }))}
-      disabled={editingHolds}
-      selectedId={selectedBeta}
-      setSelectedId={setSelectedBeta}
-      onCreateNew={() =>
-        createBeta({
-          variables: {
-            input: {
-              problemId: problem.id,
-              name: randomPhrase(
-                phraseGroups,
-                // Exclude existing names
-                problem.betas.edges.map(({ node }) => node.name)
-              ),
+    <>
+      <RadioList
+        title="Beta"
+        items={problem.betas.edges.map(({ node }) => ({
+          id: node.id,
+          name: node.name,
+          subtitle: `${node.moves.edges.length} moves`,
+        }))}
+        disabled={editingHolds}
+        selectedId={selectedBeta}
+        setSelectedId={setSelectedBeta}
+        onCreateNew={() =>
+          createBeta({
+            variables: {
+              input: {
+                problemId: problem.id,
+                name: randomPhrase(
+                  phraseGroups,
+                  // Exclude existing names
+                  problem.betas.edges.map(({ node }) => node.name)
+                ),
+              },
+              connections,
             },
-            connections,
-          },
-        })
-      }
-      onDelete={(id) =>
-        deleteBeta({
-          variables: { input: { betaId: id }, connections },
-          onCompleted: () => {
-            // If the selected beta was deleted, unselect it
-            if (selectedBeta === id) {
-              setSelectedBeta(undefined);
-            }
-          },
-        })
-      }
-      sx={{ width: 240 }}
-    />
+          })
+        }
+        onDelete={(id) =>
+          deleteBeta({
+            variables: { input: { betaId: id }, connections },
+            onCompleted: () => {
+              // If the selected beta was deleted, unselect it
+              if (selectedBeta === id) {
+                setSelectedBeta(undefined);
+              }
+            },
+          })
+        }
+        sx={{ width: 240 }}
+      />
+
+      <MutationError message="Error creating beta" state={createState} />
+      <MutationError message="Error deleting beta" state={deleteState} />
+    </>
   );
 };
 

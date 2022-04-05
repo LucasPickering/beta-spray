@@ -4,10 +4,11 @@
 
 - DnD animations
 - Loading states
-- Error messages
 - Real favicon
+- HTML previews
 
 ### Tech
 
 - Split GQL queries
 - Auto-execute some Kube stuff in TF outputs
+- DRF in API
