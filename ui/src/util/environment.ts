@@ -40,12 +40,23 @@ const fetchQuery: FetchFunction = (
     });
   }
 
-  return (
-    fetch("/api/graphql", request)
-      .then((response) => response.json())
+  return fetch("/api/graphql", request)
+    .then((response) => {
+      // An HTTP error indicates something went wrong below GQL on the stack,
+      // so raise that as an exception
+      if (response.status >= 400) {
+        throw response;
+      }
+
+      return response.json();
+    })
+    .catch((error) => {
       // eslint-disable-next-line no-console
-      .catch((error) => console.error("API request error", error))
-  );
+      console.error("API request error", error);
+      // Re-throw so this can be caught by useMutation. ErrorBoundary should
+      // catch for data queries
+      throw error;
+    });
 };
 
 const environment = new Environment({

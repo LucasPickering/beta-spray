@@ -2,7 +2,7 @@ apiVersion: v2
 name: beta-spray
 description: Beta Spray deployment chart
 type: application
-version: "1.0.0"
+version: "1.0.1"
 appVersion: "{{ .Values.version_sha }}"
 dependencies:
   - name: ingress-nginx
