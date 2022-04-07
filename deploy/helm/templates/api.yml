@@ -23,7 +23,7 @@ spec:
           image: "ghcr.io/lucaspickering/beta-spray-api:{{ .Values.version_sha }}"
           resources:
             requests:
-              cpu: 75m
+              cpu: 50m
               memory: 256Mi
               ephemeral-storage: 100Mi
           env:

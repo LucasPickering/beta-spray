@@ -20,7 +20,7 @@ spec:
           image: postgres:14-alpine
           resources:
             requests:
-              cpu: 75m
+              cpu: 50m
               memory: 256Mi
               ephemeral-storage: 100Mi
           volumeMounts:

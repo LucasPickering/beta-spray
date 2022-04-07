@@ -11,20 +11,19 @@ ingress-nginx:
   controller:
     service:
       loadBalancerIP: "34.139.124.66"
-    # Use minimum resources, so autopilot doesn't apply defaults
     resources:
       requests:
-        cpu: 100m
+        cpu: 50m
         memory: 100Mi
         ephemeral-storage: 10Mi
     admissionWebhooks:
       createSecretJob:
         requests:
-          cpu: 100m
+          cpu: 50m
           memory: 100Mi
           ephemeral-storage: 10Mi
       patchWebhookJob:
         requests:
-          cpu: 100m
+          cpu: 50m
           memory: 100Mi
           ephemeral-storage: 10Mi
