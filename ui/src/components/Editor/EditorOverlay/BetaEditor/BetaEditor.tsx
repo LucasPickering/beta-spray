@@ -144,11 +144,6 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
   // Render one "chain" of moves per body part
   return (
     <>
-      {/* If user is hovering a move, show what the body looks like at that point */}
-      {highlightedMove && (
-        <BodyState moves={moves} highlightedMove={highlightedMove} />
-      )}
-
       {/* Draw lines to connect the moves. Do this *first* so they go on bottom */}
       {Array.from(movesByBodyPart.values(), (moveChain) =>
         moveChain.map((move, i) => {
@@ -195,6 +190,12 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
           setSelectedHold(undefined);
         }}
       />
+
+      {/* If user is hovering a move, show what the body looks like at that
+          point. Make sure this is always on top. */}
+      {highlightedMove && (
+        <BodyState moves={moves} highlightedMove={highlightedMove} />
+      )}
 
       <MutationError message="Error creating move" state={createState} />
       <MutationError message="Error updating move" state={updateState} />
