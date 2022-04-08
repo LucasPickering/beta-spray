@@ -44,13 +44,6 @@ spec:
                 port:
                   number: 8000
 ---
-kind: ConfigMap
-apiVersion: v1
-metadata:
-  name: nginx-ingress-controller
-data:
-  proxy-body-size: "16m"
----
 kind: Service
 apiVersion: v1
 metadata:

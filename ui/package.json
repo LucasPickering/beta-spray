@@ -23,6 +23,7 @@
     "@typescript-eslint/parser": "^5.12.1",
     "babel-loader": "^8.2.3",
     "babel-plugin-relay": "^13.1.1",
+    "browser-image-compression": "^1.0.17",
     "dayjs": "^1.10.8",
     "eslint": "^8.10.0",
     "eslint-config-prettier": "^8.4.0",

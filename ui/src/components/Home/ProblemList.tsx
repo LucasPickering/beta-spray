@@ -114,7 +114,7 @@ const ProblemList: React.FC<Props> = ({ problemConnectionKey }) => {
 
       <Grid item xs={12}>
         <BoulderImageUpload
-          onUpload={(files) => {
+          onUpload={(file) => {
             createProblem({
               variables: {
                 input: {
@@ -124,7 +124,7 @@ const ProblemList: React.FC<Props> = ({ problemConnectionKey }) => {
                 connections: [problems.__id],
               },
               uploadables: {
-                boulderImage: files[0],
+                boulderImage: file,
               },
             });
           }}

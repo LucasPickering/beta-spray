@@ -1,5 +1,4 @@
 import graphene
-import os.path
 import uuid
 from graphene import relay
 
@@ -26,9 +25,9 @@ def get_file(info, file_key):
     """Get an attached file object for a request"""
     # TODO validate file type and max size
     file = info.context.FILES.get(file_key)
-    root, ext = os.path.splitext(file.name)
+    extension = file.content_type.split("/")[-1]
     # Replace file name with a UUID
-    file.name = f"{uuid.uuid4()}{ext}"
+    file.name = f"{uuid.uuid4()}.{extension}"
     return file
 
 
