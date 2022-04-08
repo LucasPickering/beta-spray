@@ -76,7 +76,12 @@ const MutationError: React.FC<Props> = ({ state, message }) => {
               {message}
             </AccordionSummary>
             <AccordionDetails>
-              {error && <pre>{JSON.stringify(error, null, 2)}</pre>}
+              {error &&
+                (error.data instanceof Error ? (
+                  error.data.toString()
+                ) : (
+                  <pre>{JSON.stringify(error.data, null, 2)}</pre>
+                ))}
             </AccordionDetails>
           </Accordion>
         </Alert>

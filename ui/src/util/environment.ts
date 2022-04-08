@@ -5,6 +5,7 @@ import {
   Store,
   FetchFunction,
 } from "relay-runtime";
+import { HTTPError } from "./error";
 
 const fetchQuery: FetchFunction = (
   operation,
@@ -45,7 +46,7 @@ const fetchQuery: FetchFunction = (
       // An HTTP error indicates something went wrong below GQL on the stack,
       // so raise that as an exception
       if (response.status >= 400) {
-        throw response;
+        throw new HTTPError(response);
       }
 
       return response.json();
