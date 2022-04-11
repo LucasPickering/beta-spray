@@ -124,8 +124,7 @@ jobs:
           path: ./assets/api-static/
 
       - name: Upload static assets to GCS
-        # TODO pin version after https://github.com/google-github-actions/upload-cloud-storage/issues/241
-        uses: google-github-actions/upload-cloud-storage@main
+        uses: google-github-actions/upload-cloud-storage@v0
         with:
           path: ./assets/
           parent: false # Don't include /assets/ in the bucket
