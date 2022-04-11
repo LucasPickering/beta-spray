@@ -23,7 +23,7 @@ export const DragLayer: React.FC<Props> = ({ mode }) => {
     (monitor) => ({
       itemType: monitor.getItemType(),
       item: monitor.getItem(),
-      currentOffset: monitor.getSourceClientOffset(),
+      currentOffset: monitor.getClientOffset(),
       isDragging: monitor.isDragging(),
     })
   );
