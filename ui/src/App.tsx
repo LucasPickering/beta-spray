@@ -9,6 +9,8 @@ const CoreContent = React.lazy(() => import("components/CoreContent"));
  */
 const App: React.FC = () => {
   return (
+    // *Don't* use the standard loading icon, because we don't want to pull
+    // MUI into this chunk
     <Suspense fallback="Loading...">
       <CoreContent />
     </Suspense>
