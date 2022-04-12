@@ -37,16 +37,22 @@ const BetaMoveListItem = React.forwardRef<SVGSVGElement, Props>(
         {formatOrder(order)} {formatBodyPart(bodyPart)}
       </ListItemText>
 
-      <ListItemSecondaryAction>
-        <IconButton
-          aria-label={`delete move ${formatOrder(order)}`}
-          size="small"
-          disabled={disabled}
-          onClick={onDelete}
-        >
-          <IconClose />
-        </IconButton>
-      </ListItemSecondaryAction>
+      {/* Preview version of the element shouldn't show this button. Note: this
+          actually impacts the DOM layout! When this element isn't present, MUI
+          leaves out an extra container component, which fixes some other
+          styling issues. */}
+      {onDelete && (
+        <ListItemSecondaryAction>
+          <IconButton
+            aria-label={`delete move ${formatOrder(order)}`}
+            size="small"
+            disabled={disabled}
+            onClick={onDelete}
+          >
+            <IconClose />
+          </IconButton>
+        </ListItemSecondaryAction>
+      )}
     </ListItem>
   )
 );

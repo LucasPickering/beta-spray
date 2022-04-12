@@ -1,3 +1,4 @@
+import { Portal } from "@mui/material";
 import React from "react";
 import { DragItemWithKind, DragKind, useDragLayer } from "util/dnd";
 import { useOverlayUtils } from "util/useOverlayUtils";
@@ -19,19 +20,32 @@ interface Props {
 }
 
 export const DragLayer: React.FC<Props> = ({ mode }) => {
-  const { itemType, isDragging, item, currentOffset } = useDragLayer(
-    (monitor) => ({
-      itemType: monitor.getItemType(),
-      item: monitor.getItem(),
-      currentOffset: monitor.getClientOffset(),
-      isDragging: monitor.isDragging(),
-    })
-  );
+  const {
+    itemType,
+    isDragging,
+    item,
+    initialOffset,
+    currentOffset,
+    offsetDifference,
+  } = useDragLayer((monitor) => ({
+    itemType: monitor.getItemType(),
+    item: monitor.getItem(),
+    initialOffset: monitor.getInitialSourceClientOffset(),
+    currentOffset: monitor.getClientOffset(),
+    offsetDifference: monitor.getDifferenceFromInitialOffset(),
+    isDragging: monitor.isDragging(),
+  }));
   // This hook shouldn't do anything in HTML mode
   const { toSvgPosition } = useOverlayUtils();
 
   // These should all be truthy at the same time, but check all 3 to convince TS
-  if (!isDragging || !itemType || !currentOffset) {
+  if (
+    !isDragging ||
+    !itemType ||
+    !initialOffset ||
+    !currentOffset ||
+    !offsetDifference
+  ) {
     return null;
   }
 
@@ -43,16 +57,19 @@ export const DragLayer: React.FC<Props> = ({ mode }) => {
   const itemWithKind = { kind: itemType as DragKind, item } as DragItemWithKind;
 
   if (mode === "html") {
+    const offset = {
+      // TODO explain magic numbers
+      x: initialOffset.x + offsetDifference.x,
+      y: initialOffset.y + offsetDifference.y,
+    };
     return (
-      <div style={layerStyles}>
-        <div
-          style={{
-            transform: `translate(${currentOffset.x}px, ${currentOffset.y}px)`,
-          }}
-        >
-          <DragPreview mode={mode} itemWithKind={itemWithKind} />
+      <Portal>
+        <div style={layerStyles}>
+          <div style={{ transform: `translate(${offset.x}px, ${offset.y}px)` }}>
+            <DragPreview mode={mode} itemWithKind={itemWithKind} />
+          </div>
         </div>
-      </div>
+      </Portal>
     );
   }
 

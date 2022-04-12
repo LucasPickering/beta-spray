@@ -19,44 +19,43 @@ interface Props {
 /**
  * Dumb component representing a beta move.
  */
-const BetaChainMark: React.FC<Props> = React.forwardRef<
-  SVGCircleElement,
-  Props
->(({ bodyPart, order, isDragging, isHighlighted }, ref) => {
-  const { palette } = useTheme();
-  const color = palette.bodyParts[bodyPart];
+const BetaMoveIcon = React.forwardRef<SVGCircleElement, Props>(
+  ({ bodyPart, order, isDragging, isHighlighted }, ref) => {
+    const { palette } = useTheme();
+    const color = palette.bodyParts[bodyPart];
 
-  return (
-    <>
-      <circle
-        ref={ref}
-        css={[
-          { fill: color },
-          styleDraggable,
-          isDragging && styleDragging,
-          isHighlighted && styleDraggableHighlight,
-        ]}
-        r={betaMoveCircleRadius}
-      />
+    return (
+      <>
+        <circle
+          ref={ref}
+          css={[
+            { fill: color },
+            styleDraggable,
+            isDragging && styleDragging,
+            isHighlighted && styleDraggableHighlight,
+          ]}
+          r={betaMoveCircleRadius}
+        />
 
-      {isDefined(order) && (
-        <text
-          css={{
-            fontSize: 3,
-            userSelect: "none",
-            pointerEvents: "none",
-            color: palette.getContrastText(color),
-          }}
-          textAnchor="middle"
-          dominantBaseline="middle"
-        >
-          {formatOrder(order)}
-        </text>
-      )}
-    </>
-  );
-});
+        {isDefined(order) && (
+          <text
+            css={{
+              fontSize: 3,
+              userSelect: "none",
+              pointerEvents: "none",
+              color: palette.getContrastText(color),
+            }}
+            textAnchor="middle"
+            dominantBaseline="middle"
+          >
+            {formatOrder(order)}
+          </text>
+        )}
+      </>
+    );
+  }
+);
 
-BetaChainMark.displayName = "BetaChainMark";
+BetaMoveIcon.displayName = "BetaMoveIcon";
 
-export default BetaChainMark;
+export default BetaMoveIcon;

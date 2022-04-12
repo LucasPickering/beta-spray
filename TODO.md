@@ -3,7 +3,6 @@
 ### Polish
 
 - Editor zoom
-- DnD animations
 - Loading states
 - Real favicon
 - HTML previews

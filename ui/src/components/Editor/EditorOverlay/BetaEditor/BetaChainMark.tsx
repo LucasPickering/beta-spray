@@ -1,17 +1,12 @@
 import React, { useContext, useRef } from "react";
-import { BetaOverlayMove, formatOrder } from "../types";
+import { BetaOverlayMove } from "../types";
 import { DropHandler, useDrag, useDrop } from "util/dnd";
-import {
-  styleDraggable,
-  styleDraggableHighlight,
-  styleDragging,
-  styleDropHover,
-} from "styles/dnd";
+import { styleDropHover } from "styles/dnd";
 import { ClickAwayListener, useTheme } from "@mui/material";
 import EditorContext from "context/EditorContext";
 import Positioned from "../Positioned";
-import { betaMoveCircleRadius } from "../consts";
 import { noop } from "util/func";
+import BetaMoveIcon from "./BetaMoveIcon";
 
 interface Props {
   move: BetaOverlayMove;
@@ -37,8 +32,8 @@ const BetaChainMark: React.FC<Props> = ({
   onMouseEnter,
   onMouseLeave,
 }) => {
-  const { palette, transitions } = useTheme();
-  const ref = useRef<SVGCircleElement | null>(null);
+  const { transitions } = useTheme();
+  const ref = useRef<SVGCircleElement>(null);
 
   const [{ isDragging }, drag] = useDrag<
     "betaMoveOverlay",
@@ -70,7 +65,6 @@ const BetaChainMark: React.FC<Props> = ({
 
   const { highlightedMove } = useContext(EditorContext);
   const isHighlighted = highlightedMove === move.id;
-  const color = palette.bodyParts[move.bodyPart];
 
   drag(drop(ref));
   return (
@@ -93,34 +87,18 @@ const BetaChainMark: React.FC<Props> = ({
             },
             isOver && styleDropHover,
           ]}
+          onClick={onClick && (() => onClick(move))}
+          onDoubleClick={onDoubleClick && (() => onDoubleClick(move))}
+          onMouseEnter={onMouseEnter && (() => onMouseEnter(move))}
+          onMouseLeave={onMouseLeave && (() => onMouseLeave(move))}
         >
-          <circle
+          <BetaMoveIcon
             ref={ref}
-            css={[
-              { fill: color },
-              styleDraggable,
-              isDragging && styleDragging,
-              isHighlighted && styleDraggableHighlight,
-            ]}
-            r={betaMoveCircleRadius}
-            onClick={onClick && (() => onClick(move))}
-            onDoubleClick={onDoubleClick && (() => onDoubleClick(move))}
-            onMouseEnter={onMouseEnter && (() => onMouseEnter(move))}
-            onMouseLeave={onMouseLeave && (() => onMouseLeave(move))}
+            bodyPart={move.bodyPart}
+            order={move.order}
+            isDragging={isDragging}
+            isHighlighted={isHighlighted}
           />
-
-          <text
-            css={{
-              fontSize: 3,
-              userSelect: "none",
-              pointerEvents: "none",
-              color: palette.getContrastText(color),
-            }}
-            textAnchor="middle"
-            dominantBaseline="middle"
-          >
-            {formatOrder(move.order)}
-          </text>
         </g>
       </Positioned>
     </ClickAwayListener>
