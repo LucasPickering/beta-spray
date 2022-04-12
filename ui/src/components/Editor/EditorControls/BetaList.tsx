@@ -96,7 +96,6 @@ const BetaList: React.FC<Props> = ({
         }
       }
     `);
-  // TODO un-select current beta if it's deleted
   const { commit: deleteBeta, state: deleteState } =
     useMutation<BetaList_deleteBetaMutation>(graphql`
       mutation BetaList_deleteBetaMutation(

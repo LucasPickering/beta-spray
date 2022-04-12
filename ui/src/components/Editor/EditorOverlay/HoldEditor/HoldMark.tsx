@@ -54,7 +54,6 @@ const HoldMark: React.FC<Props> = ({
 
   // Drop *moves* onto this hold
   const [{ isOver }, drop] = useDrop<"betaMoveOverlay", { isOver: boolean }>({
-    // TODO don't allow drop if move is already on this hold
     accept: "betaMoveOverlay",
     collect: (monitor) => ({
       isOver: Boolean(monitor.isOver()),

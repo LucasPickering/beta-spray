@@ -20,8 +20,6 @@ export const styleDragging = css({
 
 // Apply to elements that, upon being clicked, will add some resource
 export const styleAddObject = css({
-  // TODO this doesn't seem like the best usage of this cursor, but I can't
-  // think of anything better. Put a bit more thought into this.
   cursor: "cell",
 });
 

@@ -54,7 +54,6 @@ const BetaChainMark: React.FC<Props> = ({
 
   // Move is a drop target, just aliases to the underlying hold
   const [{ isOver }, drop] = useDrop<"betaMoveOverlay", { isOver: boolean }>({
-    // TODO don't allow drop if move is already on this hold
     accept: "betaMoveOverlay",
     collect: (monitor) => ({
       isOver: Boolean(monitor.isOver()),
