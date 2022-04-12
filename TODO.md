@@ -4,7 +4,6 @@
 
 - Editor zoom
 - Loading states
-- Real favicon
 - HTML previews
 
 ### Tech

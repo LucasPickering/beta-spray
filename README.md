@@ -72,3 +72,14 @@ We use Helm. Helm sucks. `¯\_(ツ)_/¯`
 cd deploy/
 ./scripts/deploy.sh
 ```
+
+## Notes
+
+### Generating Favicon
+
+Favicon is defined in `ui/favicon.svg`. To generate an ICO from that, using Imagemagick:
+
+```sh
+cd ui
+convert -density 256x256 -background transparent favicon.svg -define icon:auto-resize -colors 256 public/favicon.ico
+```
