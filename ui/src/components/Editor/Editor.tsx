@@ -17,6 +17,7 @@ import { TouchBackend } from "react-dnd-touch-backend";
 import EditorContext from "context/EditorContext";
 import HelpText from "./EditorOverlay/HelpText";
 import { DragLayer } from "./EditorOverlay/DragLayer";
+import { Helmet } from "react-helmet-async";
 
 interface Props {
   queryRef: PreloadedQuery<EditorQuery>;
@@ -39,7 +40,9 @@ const Editor: React.FC<Props> = ({
     graphql`
       query EditorQuery($problemId: ID!, $betaId: ID!) {
         problem(id: $problemId) {
+          name
           image {
+            imageUrl
             ...BoulderImage_imageNode
           }
           ...BetaList_problemNode
@@ -102,6 +105,11 @@ const Editor: React.FC<Props> = ({
           setHighlightedMove,
         }}
       >
+        <Helmet>
+          <title>{data.problem.name} - Beta Spray</title>
+          <meta property="og:image" content={data.problem.image.imageUrl} />
+        </Helmet>
+
         <Box
           display="flex"
           justifyContent="center"

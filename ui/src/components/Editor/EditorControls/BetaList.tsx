@@ -136,6 +136,12 @@ const BetaList: React.FC<Props> = ({
               },
               connections,
             },
+            // Select the new beta after creation
+            onCompleted: (data) => {
+              if (data.createBeta) {
+                setSelectedBeta(data.createBeta.beta.id);
+              }
+            },
           })
         }
         onDelete={(id) =>

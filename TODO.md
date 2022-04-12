@@ -4,7 +4,6 @@
 
 - Editor zoom
 - Loading states
-- HTML previews
 
 ### Tech
 
