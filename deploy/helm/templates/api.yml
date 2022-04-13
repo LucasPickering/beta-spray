@@ -24,7 +24,7 @@ spec:
           resources:
             requests:
               cpu: 50m
-              memory: 256Mi
+              memory: 200Mi
               ephemeral-storage: 100Mi
           env:
             - name: BETA_SPRAY_HOSTNAME
