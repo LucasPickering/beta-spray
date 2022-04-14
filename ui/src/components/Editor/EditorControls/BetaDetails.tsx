@@ -99,11 +99,11 @@ const BetaDetails: React.FC<Props> = ({ dataKey }) => {
             dataKey={node}
             index={moveIndex}
             disabled={editingHolds}
-            onReorder={(dragItem) => {
+            onReorder={(dragItem, newIndex) => {
               // This is called on the *hovered* move, so the passed index is
               // the one being dragged
               setMoves((oldMoves) =>
-                moveArrayElement(oldMoves, dragItem.index, moveIndex)
+                moveArrayElement(oldMoves, dragItem.index, newIndex)
               );
             }}
             onDrop={(item) => {

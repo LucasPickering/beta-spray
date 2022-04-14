@@ -11,7 +11,7 @@ interface Props {
   dataKey: BetaDetailsMove_betaMoveNode$key;
   index: number;
   disabled?: boolean;
-  onReorder?: (dragItem: DragItem<"betaMoveList">) => void;
+  onReorder?: (dragItem: DragItem<"betaMoveList">, newIndex: number) => void;
   onDrop?: DropHandler<"betaMoveList">;
   onDelete?: () => void;
 }
@@ -61,10 +61,11 @@ const BetaDetailsMove: React.FC<Props> = ({
         isDragging: Boolean(monitor.isDragging()),
       };
     },
-    end(item, monitor) {
-      const result = monitor.getDropResult();
-      if (onDrop && result) {
-        onDrop(item, result);
+    end(item) {
+      if (onDrop) {
+        // Second param is `result` which we don't use in this case, but let's
+        // pass something just for consistency with other DnD use cases
+        onDrop(item, undefined);
       }
     },
   });
@@ -102,28 +103,48 @@ const BetaDetailsMove: React.FC<Props> = ({
       const clientOffset = monitor.getClientOffset();
 
       // Get pixels to the top
-      const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
+      const cursorY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
 
-      // Only perform the move when the mouse has crossed half of the items height
-      // When dragging downwards, only move when the cursor is below 50%
-      // When dragging upwards, only move when the cursor is above 50%
-
-      // Dragging downwards
-      if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-        return;
+      // We want to make sure the dragged item is always immediately before or
+      // after the hovered item, based on its position over the hoveree.
+      // Top half => before
+      // Bottom half => after
+      // For each of those, we need to cover two sub-cases: whether or not the
+      // dragee just crossed over the hoveree. E.g. these 4 cases:
+      // 1. dragIndex=0, hoverIndex=4, top half    => newDragIndex=3
+      // 2. dragIndex=6, hoverIndex=4, top half    => newDragIndex=4
+      // 3. dragIndex=6, hoverIndex=4, bottom half => newDragIndex=5
+      // 4. dragIndex=0, hoverIndex=4, bottom half => newDragIndex=4
+      // In an ideal world, we would only need to cover the crossover cases,
+      // but in reality some drag events gets missed on quick moves, meaning
+      // you can skip over a few items and suddenly you're hovering the top half
+      // of item #4 and the dragged item is still shown as item #0. Cases 1 & 3
+      // above mitigate that issue.
+      let newDragIndex;
+      if (cursorY < hoverMiddleY) {
+        if (dragIndex < hoverIndex) {
+          newDragIndex = hoverIndex - 1;
+        } else {
+          newDragIndex = hoverIndex;
+        }
+      } else {
+        if (dragIndex > hoverIndex) {
+          newDragIndex = hoverIndex + 1;
+        } else {
+          newDragIndex = hoverIndex;
+        }
       }
 
-      // Dragging upwards
-      if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
-        return;
+      // Block unnecessary updates
+      if (newDragIndex !== dragIndex) {
+        // TODO debounce calls here
+        onReorder(item, newDragIndex);
+        // *Warning:* We mutate the monitor state here. Not ideal, but necessary
+        // to prevent constant swapping. They do it in the example so it must be
+        // ok right
+        // https://github.com/react-dnd/react-dnd/blob/main/packages/examples/src/04-sortable/simple/Card.tsx
+        item.index = newDragIndex;
       }
-
-      onReorder(item);
-      // *Warning:* We mutate the monitor state here. Not ideal, but necessary
-      // to prevent constant swapping. They do it in the example so it must be
-      // ok right
-      // https://github.com/react-dnd/react-dnd/blob/main/packages/examples/src/04-sortable/simple/Card.tsx
-      item.index = hoverIndex;
     },
   });
 
