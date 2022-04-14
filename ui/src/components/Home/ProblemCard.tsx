@@ -65,59 +65,74 @@ const ProblemCard: React.FC<Props> = ({ problemKey, onEdit, onDelete }) => {
         />
       </CardActionArea>
 
-      <CardContent>
-        {editing ? (
-          <Input
-            value={problemName}
-            onChange={(e) => setProblemName(e.target.value)}
-            sx={{ display: "block" }}
-          />
-        ) : (
-          <Typography variant="h6" component="h3">
-            {problemName}
+      {/* Form enables name editing functionalities */}
+      <form>
+        <CardContent>
+          {editing ? (
+            <Input
+              autoFocus
+              value={problemName}
+              onChange={(e) => setProblemName(e.target.value)}
+              sx={{ display: "block" }}
+            />
+          ) : (
+            <Typography variant="h6" component="h3">
+              {problemName}
+            </Typography>
+          )}
+          <Typography
+            variant="subtitle1"
+            component="span"
+            color="text.secondary"
+          >
+            {dayjs(problem.createdAt).format("LLL")}
           </Typography>
-        )}
-        <Typography variant="subtitle1" component="span" color="text.secondary">
-          {dayjs(problem.createdAt).format("LLL")}
-        </Typography>
-      </CardContent>
+        </CardContent>
 
-      <CardActions sx={{ justifyContent: "end" }}>
-        {onEdit &&
-          (editing ? (
+        <CardActions sx={{ justifyContent: "end" }}>
+          {onEdit &&
+            (editing ? (
+              <IconButton
+                aria-label="Save Changes"
+                type="submit"
+                color="success"
+                onClick={(e) => {
+                  e.preventDefault(); // Prevent page reload from form
+                  setEditing(false);
+                  onEdit(problem.id, problemName);
+                }}
+              >
+                <IconDone />
+              </IconButton>
+            ) : (
+              <IconButton
+                aria-label="Edit"
+                onClick={(e) => {
+                  e.preventDefault(); // Prevent page reload from form
+                  setEditing(true);
+                }}
+              >
+                <IconEdit />
+              </IconButton>
+            ))}
+          {onDelete && (
             <IconButton
-              aria-label="Save Changes"
-              color="success"
+              color="error"
               onClick={() => {
-                setEditing(false);
-                onEdit(problem.id, problemName);
+                if (
+                  window.confirm(
+                    `Are you sure you want to delete ${problemName}?`
+                  )
+                ) {
+                  onDelete(problem.id);
+                }
               }}
             >
-              <IconDone />
+              <IconDelete />
             </IconButton>
-          ) : (
-            // TODO auto-focus
-            <IconButton aria-label="Edit" onClick={() => setEditing(true)}>
-              <IconEdit />
-            </IconButton>
-          ))}
-        {onDelete && (
-          <IconButton
-            color="error"
-            onClick={() => {
-              if (
-                window.confirm(
-                  `Are you sure you want to delete ${problemName}?`
-                )
-              ) {
-                onDelete(problem.id);
-              }
-            }}
-          >
-            <IconDelete />
-          </IconButton>
-        )}
-      </CardActions>
+          )}
+        </CardActions>
+      </form>
     </Card>
   );
 };
