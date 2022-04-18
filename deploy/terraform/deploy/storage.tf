@@ -2,7 +2,7 @@
 
 resource "google_storage_bucket" "media" {
   name          = var.media_bucket
-  location      = var.region
+  location      = var.gcp_region
   force_destroy = false # Careful SpongeBob!
   # Needed for signed URLs. See GS_DEFAULT_ACL in
   # https://django-storages.readthedocs.io/en/latest/backends/gcloud.html

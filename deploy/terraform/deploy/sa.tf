@@ -1,7 +1,7 @@
 # Service accounts. Note: some permissions may be configured elsewhere
 
 locals {
-  workload_pool = "${var.project_id}.svc.id.goog"
+  workload_pool = "${var.gcp_project_id}.svc.id.goog"
 }
 
 resource "google_service_account" "api_service_account" {

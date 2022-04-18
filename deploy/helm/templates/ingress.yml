@@ -2,11 +2,12 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingress-static-assets
+  namespace: "{{ .Release.Namespace }}"
   annotations:
     kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
-    nginx.ingress.kubernetes.io/upstream-vhost: "{{ .Values.static_assets_host }}"
-    nginx.ingress.kubernetes.io/rewrite-target: "/{{ .Values.static_assets_bucket }}/{{  .Values.version_sha  }}$uri"
+    nginx.ingress.kubernetes.io/upstream-vhost: "{{ .Values.staticAssetsHost }}"
+    nginx.ingress.kubernetes.io/rewrite-target: "/{{ .Values.staticAssetsBucket }}/{{  .Values.versionSha  }}$uri"
     nginx.ingress.kubernetes.io/configuration-snippet: |
       # Anything that doesn't have a . after the last slash (i.e. no file
       # extension) is considered a SPA route. This is jank, but try_files doesn't
@@ -15,7 +16,8 @@ metadata:
       rewrite /[^./]+$ /index.html;
 spec:
   rules:
-    - http:
+    - host: "{{ .Values.hostname }}"
+      http:
         paths:
           - pathType: Prefix
             path: /
@@ -29,12 +31,14 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingress-api
+  namespace: "{{ .Release.Namespace }}"
   annotations:
     kubernetes.io/ingress.class: "nginx"
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
 spec:
   rules:
-    - http:
+    - host: "{{ .Values.hostname }}"
+      http:
         paths:
           - pathType: Prefix
             path: /api/
@@ -48,6 +52,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: google-storage-buckets
+  namespace: "{{ .Release.Namespace }}"
 spec:
   type: ExternalName
-  externalName: "{{ .Values.static_assets_host }}"
+  externalName: "{{ .Values.staticAssetsHost }}"
