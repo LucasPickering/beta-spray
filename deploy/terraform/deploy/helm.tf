@@ -9,17 +9,19 @@ data "terraform_remote_state" "ci" {
 }
 
 resource "helm_release" "beta_spray" {
-  name      = "beta-spray"
-  chart     = "../../helm"
-  namespace = var.kube_namespace
+  name             = "beta-spray"
+  chart            = "../../helm"
+  namespace        = var.kube_namespace
+  create_namespace = true
 
   set {
     name  = "hostname"
     value = var.hostname
   }
   set {
-    name  = "versionSha"
-    value = "ddbe9ae81853e13141ba32978f6f33585d4307b6" # TODO
+    name = "versionSha"
+    # TODO `git rev-parse origin/master`
+    value = "ddbe9ae81853e13141ba32978f6f33585d4307b6"
   }
   set {
     name  = "mediaBucket"
@@ -41,44 +43,22 @@ resource "helm_release" "beta_spray" {
     name  = "staticAssetsBucket"
     value = data.terraform_remote_state.ci.outputs.static_assets_bucket
   }
-}
 
-resource "kubernetes_namespace" "beta_spray" {
-  metadata {
-    name = var.kube_namespace
+  # Secrets
+  set {
+    name  = "apiSecretKey"
+    value = random_password.api_secret_key.result
+  }
+  set {
+    name  = "databasePassword"
+    value = random_password.database_password.result
   }
 }
 
 # TODO encrypt tfstate https://www.terraform.io/language/settings/backends/gcs#encryption_key
 
-resource "kubernetes_secret" "database_creds" {
-  type = "generic"
-  metadata {
-    name      = "database-creds"
-    namespace = var.kube_namespace
-  }
-
-  data = {
-    database = "beta_spray"
-    username = "beta_spray"
-    password = random_password.database_password.result
-  }
-}
-
 resource "random_password" "database_password" {
   length = 24
-}
-
-resource "kubernetes_secret" "api_secret_key" {
-  type = "generic"
-  metadata {
-    name      = "api-secret-key"
-    namespace = var.kube_namespace
-  }
-
-  data = {
-    ("secret-key") = random_password.api_secret_key.result
-  }
 }
 
 resource "random_password" "api_secret_key" {

@@ -16,9 +16,6 @@ spec:
         app: api
     spec:
       serviceAccountName: "{{ .Values.apiServiceAccountName }}"
-      # nodeSelector:
-      #   # Make sure workload-based SA is available
-      #   iam.gke.io/gke-metadata-server-enabled: "true"
       containers:
         - name: api
           image: "ghcr.io/lucaspickering/beta-spray-api:{{ .Values.versionSha }}"

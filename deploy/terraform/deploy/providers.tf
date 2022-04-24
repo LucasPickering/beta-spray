@@ -19,7 +19,3 @@ provider "helm" {
     config_path = pathexpand(var.kube_config_path)
   }
 }
-
-provider "kubernetes" {
-  config_path = pathexpand(var.kube_config_path)
-}
