@@ -25,8 +25,7 @@ spec:
           resources:
             requests:
               cpu: 50m
-              memory: 200Mi
-              ephemeral-storage: 100Mi
+              memory: 150Mi
           env:
             - name: BETA_SPRAY_HOSTNAME
               value: "{{ .Values.hostname }}"
