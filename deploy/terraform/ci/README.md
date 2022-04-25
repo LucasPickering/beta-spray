@@ -15,8 +15,7 @@ This Terraform generates the infrastructure needed for CI, including:
 
 1. Create a new file `terraform.tfvars`
 2. Set the following fields:
-   1. `project_id`
-   2. `region`
+   1. `gcp_project_id`
 3. Auth to Google with `gcloud auth login`
 4. Generate a GitHub Personal Access Token
    1. [Go here](https://github.com/settings/tokens)

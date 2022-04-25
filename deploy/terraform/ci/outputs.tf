@@ -1,10 +1,10 @@
 output "project_id" {
-  value       = var.project_id
+  value       = var.gcp_project_id
   description = "GCP Project ID"
 }
 
 output "region" {
-  value       = var.region
+  value       = var.gcp_region
   description = "GCP Region"
 }
 

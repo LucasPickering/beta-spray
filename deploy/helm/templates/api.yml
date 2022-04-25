@@ -15,7 +15,10 @@ spec:
       labels:
         app: api
     spec:
-      serviceAccountName: "{{ .Values.apiServiceAccountName }}"
+      volumes:
+        - name: api-gcp-key
+          secret:
+            secretName: api-gcp-key
       containers:
         - name: api
           image: "ghcr.io/lucaspickering/beta-spray-api:{{ .Values.versionSha }}"
@@ -51,8 +54,16 @@ spec:
                   key: secret-key
             - name: BETA_SPRAY_MEDIA_BUCKET
               value: "{{ .Values.mediaBucket }}"
+            # https://django-storages.readthedocs.io/en/latest/backends/gcloud.html#authentication
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: "/secrets/api-gcp-key/secret-key"
           ports:
             - containerPort: 8000
+          volumeMounts:
+            # Mount secret as a file, that's how the GCP python lib wants it
+            - name: api-gcp-key
+              mountPath: "/secrets/api-gcp-key"
+              readOnly: true
 ---
 apiVersion: v1
 kind: Service
@@ -67,13 +78,3 @@ spec:
     - port: 8000
   selector:
     app: api
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: "{{ .Values.apiServiceAccountName }}"
-  namespace: "{{ .Release.Namespace }}"
-  annotations:
-    # Link to GCP SA
-    iam.gke.io/gcp-service-account: "{{ .Values.apiServiceAccountEmail }}"
-automountServiceAccountToken: false

@@ -28,14 +28,6 @@ resource "helm_release" "beta_spray" {
     value = google_storage_bucket.media.name
   }
   set {
-    name  = "apiServiceAccountName"
-    value = var.kube_api_sa
-  }
-  set {
-    name  = "apiServiceAccountEmail"
-    value = google_service_account.api_service_account.email
-  }
-  set {
     name  = "staticAssetsHost"
     value = "storage.googleapis.com"
   }
@@ -45,6 +37,10 @@ resource "helm_release" "beta_spray" {
   }
 
   # Secrets
+  set {
+    name  = "apiGcpKey"
+    value = google_service_account_key.api_sa_key.private_key
+  }
   set {
     name  = "apiSecretKey"
     value = random_password.api_secret_key.result

@@ -12,12 +12,14 @@ variable "github_token" {
   description = "GitHub Personal Access Token"
 }
 
-variable "project_id" {
+variable "gcp_project_id" {
   description = "GCP project id"
 }
 
-variable "region" {
+variable "gcp_region" {
+  # East1 gets the free GCS deal
   description = "GCP region"
+  default     = "us-east1"
 }
 
 variable "static_assets_bucket" {

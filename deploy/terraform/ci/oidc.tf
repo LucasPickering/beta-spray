@@ -6,7 +6,7 @@ resource "google_service_account" "service_account" {
 
 module "oidc" {
   source      = "terraform-google-modules/github-actions-runners/google//modules/gh-oidc"
-  project_id  = var.project_id
+  project_id  = var.gcp_project_id
   pool_id     = "github-pool"
   provider_id = "github-provider"
   sa_mapping = {

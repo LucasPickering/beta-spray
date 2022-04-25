@@ -3,11 +3,6 @@ variable "hostname" {
   description = "Address the webapp is hosted at"
 }
 
-variable "kube_api_sa" {
-  default     = "api"
-  description = "Name of the *Kubernetes* service account used by the API pod"
-}
-
 variable "kube_config_path" {
   default     = "~/.kube/config"
   description = "Path to local Kubernetes config file"
@@ -28,5 +23,7 @@ variable "gcp_project_id" {
 }
 
 variable "gcp_region" {
+  # East1 gets the free GCS deal
+  default     = "us-east1"
   description = "GCP region"
 }
