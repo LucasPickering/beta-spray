@@ -1,12 +1,4 @@
-# Import data from CI tf
-data "terraform_remote_state" "ci" {
-  backend = "gcs"
 
-  config = {
-    bucket = "beta-spray-tfstate"
-    prefix = "ci"
-  }
-}
 
 resource "helm_release" "beta_spray" {
   name             = "beta-spray"
@@ -19,9 +11,8 @@ resource "helm_release" "beta_spray" {
     value = var.hostname
   }
   set {
-    name = "versionSha"
-    # TODO `git rev-parse origin/master`
-    value = "ddbe9ae81853e13141ba32978f6f33585d4307b6"
+    name  = "versionSha"
+    value = var.version_sha
   }
   set {
     name  = "mediaBucket"
@@ -48,6 +39,16 @@ resource "helm_release" "beta_spray" {
   set {
     name  = "databasePassword"
     value = random_password.database_password.result
+  }
+}
+
+# Import data from CI tf
+data "terraform_remote_state" "ci" {
+  backend = "gcs"
+
+  config = {
+    bucket = "beta-spray-tfstate"
+    prefix = "ci"
   }
 }
 

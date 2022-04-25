@@ -38,4 +38,5 @@ This works for both initial and subsequent releases:
 
 ```sh
 terraform apply
+# It will ask for a version SHA, use the output of `git rev-parse origin/master`
 ```
