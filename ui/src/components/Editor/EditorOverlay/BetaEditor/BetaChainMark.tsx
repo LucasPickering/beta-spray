@@ -1,8 +1,8 @@
 import React, { useContext, useRef } from "react";
-import { BetaOverlayMove } from "../types";
+import { BetaOverlayMove, getMoveVisualPosition } from "../types";
 import { DropHandler, useDrag, useDrop } from "util/dnd";
 import { styleDropHover } from "styles/dnd";
-import { ClickAwayListener, useTheme } from "@mui/material";
+import { ClickAwayListener } from "@mui/material";
 import EditorContext from "context/EditorContext";
 import Positioned from "../Positioned";
 import { noop } from "util/func";
@@ -32,7 +32,6 @@ const BetaChainMark: React.FC<Props> = ({
   onMouseEnter,
   onMouseLeave,
 }) => {
-  const { transitions } = useTheme();
   const ref = useRef<SVGCircleElement>(null);
 
   const [{ isDragging }, drag] = useDrag<
@@ -70,22 +69,10 @@ const BetaChainMark: React.FC<Props> = ({
     <ClickAwayListener
       onClickAway={onClickAway ? () => onClickAway(move) : noop}
     >
-      <Positioned position={move.position}>
+      <Positioned position={getMoveVisualPosition(move)}>
         {/* This wrapper allows for applying transforms to all children */}
         <g
-          css={[
-            {
-              // Animate movement of highlight
-              transition: transitions.create("transform", {
-                duration: transitions.duration.standard,
-              }),
-            },
-            move.offset && {
-              // Slide a bit for disambiguation
-              transform: `translate(${move.offset.x}px, ${move.offset.y}px)`,
-            },
-            isOver && styleDropHover,
-          ]}
+          css={isOver && styleDropHover}
           onClick={onClick && (() => onClick(move))}
           onDoubleClick={onDoubleClick && (() => onDoubleClick(move))}
           onMouseEnter={onMouseEnter && (() => onMouseEnter(move))}

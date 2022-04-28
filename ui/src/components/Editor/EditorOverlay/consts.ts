@@ -12,4 +12,4 @@ export const maxDisambigutationDistance = 2;
 /**
  * The distance to shift a disambiguated move.
  */
-export const disambiguationDistance = 4;
+export const disambiguationDistance = 2.5;

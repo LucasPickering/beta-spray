@@ -8,7 +8,6 @@ import {
 import {
   APIPosition,
   BetaOverlayMove,
-  distanceTo,
   OverlayPosition,
   polarToCartesian,
   toBodyPart,
@@ -19,10 +18,10 @@ import { BetaEditor_deleteBetaMoveMutation } from "./__generated__/BetaEditor_de
 import { useOverlayUtils } from "util/useOverlayUtils";
 import BetaMoveDialog from "./BetaMoveDialog";
 import EditorContext from "context/EditorContext";
-import { assertIsDefined, groupBy, isDefined, randomFloat } from "util/func";
+import { assertIsDefined, groupBy } from "util/func";
 import BodyState from "./BodyState";
 import { DropHandler } from "util/dnd";
-import { disambiguationDistance, maxDisambigutationDistance } from "../consts";
+import { disambiguationDistance } from "../consts";
 import BetaChainLine from "./BetaChainLine";
 import BetaChainMark from "./BetaChainMark";
 import useMutation from "util/useMutation";
@@ -46,8 +45,8 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
   // Map moves to a shorthand form that we can use in the AI. These should
   // always be sorted by order from the API, and remain that way
   const moves: BetaOverlayMove[] = useMemo(
-    () => getMoves(beta.moves.edges, highlightedMove, toOverlayPosition),
-    [beta.moves.edges, highlightedMove, toOverlayPosition]
+    () => getMoves(beta.moves.edges, toOverlayPosition),
+    [beta.moves.edges, toOverlayPosition]
   );
 
   // Group the moves by body part so we can draw chains. We assume the API
@@ -280,14 +279,12 @@ const deleteBetaMoveMutation = graphql`
  * anti-pattern, but it makes a lot of UI logic a whole lot simpler so who cares.
  *
  * @param edges Moves from the API
- * @param highlightedMove ID of the current move being hovered/highlighted
  * @param toOverlayPosition Function to convert API position to UI positionl
  *  this requires the context of the image aspect ratio
  * @returns UI move objects
  */
 function getMoves(
   edges: BetaEditor_betaNode$data["moves"]["edges"],
-  highlightedMove: string | undefined,
   toOverlayPosition: (apiPosition: APIPosition) => OverlayPosition
 ): BetaOverlayMove[] {
   const moves: BetaOverlayMove[] = edges.map(({ node }) => {
@@ -304,37 +301,22 @@ function getMoves(
     };
   });
 
-  // This can be undefined even if highlightedMove is defined, if we've *just*
-  // deleted the move
-  const highlightedMoveObject = moves.find(
-    (move) => move.id === highlightedMove
-  );
+  // If any holds have multiple moves on them, spread them apart so they don't
+  // stack up on top of each other
+  for (const [, holdMoves] of groupBy(moves, (move) => move.holdId).entries()) {
+    if (holdMoves.length > 1) {
+      // We want to shift all the nearby moves apart. So break up the unit
+      // circle into evenly sized slices, one per move, and shift each one away
+      // a fixed distance along its slice angle.
+      const sliceRadians = (2 * Math.PI) / holdMoves.length;
 
-  // Calculate offset for each move, based on disambiguation needs. If a move
-  // is highlighted and there are any other moves near it, we'll apply a visual
-  // offset to each of those moves to spread them apart, so the user can easily
-  // access them all.
-  if (isDefined(highlightedMoveObject)) {
-    // Find all moves near the highlighted one
-    const nearbyMoves = moves.filter(
-      (move) =>
-        distanceTo(highlightedMoveObject.position, move.position) <
-        maxDisambigutationDistance
-    );
-
-    // We want to shift all the nearby moves apart. So break up the unit
-    // circle into evenly sized slices, one per move, and shift each one away
-    // a fixed distance along its slice angle. Also apply a random offset for
-    // ~~variety~~ (also to get around bugs at the edge of the screen ecks dee)
-    const offset = randomFloat(0.0, 2 * Math.PI);
-    const sliceRadians = (2 * Math.PI) / nearbyMoves.length;
-
-    nearbyMoves.forEach((move, i) => {
-      move.offset = polarToCartesian(
-        disambiguationDistance,
-        offset + sliceRadians * i
-      );
-    });
+      holdMoves.forEach((move, i) => {
+        move.offset = polarToCartesian(
+          disambiguationDistance,
+          sliceRadians * i
+        );
+      });
+    }
   }
 
   return moves;

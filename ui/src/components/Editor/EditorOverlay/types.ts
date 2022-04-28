@@ -108,3 +108,13 @@ export function polarToCartesian(
     y: radius * Math.sin(radians),
   };
 }
+
+/**
+ * Get the position of a move, including its visual offset (if any)
+ */
+export function getMoveVisualPosition(move: BetaOverlayMove): OverlayPosition {
+  return {
+    x: move.position.x + (move.offset?.x ?? 0),
+    y: move.position.y + (move.offset?.y ?? 0),
+  };
+}
