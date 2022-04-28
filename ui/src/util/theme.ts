@@ -14,6 +14,7 @@ declare module "@mui/material/styles" {
 const theme = createTheme({
   palette: {
     mode: "dark",
+    primary: { main: "#add8e6" },
     bodyParts: {
       [BodyPart.LEFT_HAND]: "#ffff00",
       [BodyPart.RIGHT_HAND]: "#f08080",
