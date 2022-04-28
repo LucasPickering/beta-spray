@@ -1,5 +1,4 @@
 import React from "react";
-import { IconTriangle } from "components/icons";
 import { css } from "@emotion/react";
 import {
   styleAddObject,
@@ -16,6 +15,8 @@ interface Props {
 }
 
 const styleHoldMark = css({
+  r: 4,
+  opacity: 0.5,
   fill: "white",
   stroke: "white",
   strokeWidth: 0.3,
@@ -30,7 +31,7 @@ const HoldIcon: React.FC<Props> = ({
   isDragging = false,
   isOver = false,
 }) => (
-  <IconTriangle
+  <circle
     css={[
       styleHoldMark,
       clickable && styleAddObject,

@@ -2,8 +2,7 @@ import { css } from "@emotion/react";
 
 // Apply to elements that are draggable and currently highlighted (usually because they're hovered)
 export const styleDraggableHighlight = css({
-  strokeWidth: 1.5,
-  r: 2.5,
+  transform: "scale(1.5)",
 });
 
 // Apply to elements that can be dragged

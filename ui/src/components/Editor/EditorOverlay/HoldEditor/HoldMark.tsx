@@ -41,6 +41,10 @@ const HoldMark: React.FC<Props> = ({
   >({
     type: "holdOverlay",
     item: { holdId: hold.id },
+    canDrag() {
+      // Don't allow drag when holds aren't editable
+      return Boolean(onDrop);
+    },
     collect: (monitor) => ({
       isDragging: Boolean(monitor.isDragging()),
     }),
