@@ -41,9 +41,11 @@ const Editor: React.FC<Props> = ({
       query EditorQuery($problemId: ID!, $betaId: ID!) {
         problem(id: $problemId) {
           name
-          image {
-            imageUrl
-            ...BoulderImage_imageNode
+          boulder {
+            image {
+              url
+            }
+            ...BoulderImage_boulderNode
           }
           ...BetaList_problemNode
           ...HoldEditor_problemNode
@@ -107,7 +109,7 @@ const Editor: React.FC<Props> = ({
       >
         <Helmet>
           <title>{data.problem.name} - Beta Spray</title>
-          <meta property="og:image" content={data.problem.image.imageUrl} />
+          <meta property="og:image" content={data.problem.boulder.image.url} />
         </Helmet>
 
         <Box
@@ -122,7 +124,7 @@ const Editor: React.FC<Props> = ({
           {/* The boulder image and decorations */}
           <Box position="relative" height="fit-content">
             <BoulderImage
-              imageKey={data.problem.image}
+              boulderKey={data.problem.boulder}
               onLoad={(e) => {
                 const el = e.currentTarget;
                 setAspectRatio(el.width / el.height);

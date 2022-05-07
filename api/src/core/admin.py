@@ -1,10 +1,10 @@
 from django.contrib import admin
 
-from .models import Beta, BetaMove, Hold, BoulderImage, Problem
+from .models import Beta, BetaMove, Hold, Boulder, Problem
 
 
-@admin.register(BoulderImage)
-class BoulderImageAdmin(admin.ModelAdmin):
+@admin.register(Boulder)
+class BoulderAdmin(admin.ModelAdmin):
     exclude = ("id",)
 
 

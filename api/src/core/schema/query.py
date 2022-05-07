@@ -1,10 +1,10 @@
 import graphene
-from graphene import relay
+from graphene import ObjectType, relay
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 import graphql_relay
 
-from core.models import Beta, BetaMove, BodyPart, BoulderImage, Hold, Problem
+from core.models import Beta, BetaMove, BodyPart, Boulder, Hold, Problem
 
 
 # Generate a GQL enum for BodyPart
@@ -48,24 +48,31 @@ class NodeType(DjangoObjectType):
         return _id
 
 
-class BoulderImageNode(NodeType):
+class Image(ObjectType):
+    """
+    An image, e.g. JPG or PNG
+    """
+
+    url = graphene.String(required=True)
+    width = graphene.Int(required=True)
+    height = graphene.Int(required=True)
+
+
+class BoulderNode(NodeType):
     class Meta:
-        model = BoulderImage
+        model = Boulder
         interfaces = (relay.Node,)
         fields = ("holds", "problems", "created_at")
         filter_fields = []
 
-    image_url = graphene.String(required=True)
-
-    def resolve_image_url(self, info):
-        return self.image.url
+    image = graphene.Field(Image, required=True)
 
 
 class HoldNode(NodeType):
     class Meta:
         model = Hold
         interfaces = (relay.Node,)
-        fields = ("image", "position_x", "position_y")
+        fields = ("boulder", "position_x", "position_y")
         filter_fields = []
 
 
@@ -73,7 +80,7 @@ class ProblemNode(NodeType):
     class Meta:
         model = Problem
         interfaces = (relay.Node,)
-        fields = ("name", "created_at", "holds", "image", "betas")
+        fields = ("name", "created_at", "holds", "boulder", "betas")
         filter_fields = []
 
 
@@ -104,8 +111,8 @@ class BetaMoveNode(NodeType):
 
 
 class Query(graphene.ObjectType):
-    images = DjangoFilterConnectionField(BoulderImageNode)
-    image = relay.Node.Field(BoulderImageNode)
+    boulders = DjangoFilterConnectionField(BoulderNode)
+    boulder = relay.Node.Field(BoulderNode)
     problems = DjangoFilterConnectionField(ProblemNode)
     problem = relay.Node.Field(ProblemNode)
     beta = relay.Node.Field(BetaNode)

@@ -67,7 +67,7 @@
     "test": "jest",
     "pretype-check": "npm run relay",
     "type-check": "tsc",
-    "relay": "relay-compiler",
+    "relay": "rm -rf **/__generate__ && npx relay-compiler",
     "relay:watch": "nodemon -x \"npm run relay\" -w src -e \"ts tsx\" -i \"**/__generated/*\""
   },
   "browserslist": {

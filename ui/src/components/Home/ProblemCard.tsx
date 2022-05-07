@@ -34,8 +34,10 @@ const ProblemCard: React.FC<Props> = ({ problemKey, onEdit, onDelete }) => {
         id
         name
         createdAt
-        image {
-          imageUrl
+        boulder {
+          image {
+            url
+          }
         }
       }
     `,
@@ -56,7 +58,7 @@ const ProblemCard: React.FC<Props> = ({ problemKey, onEdit, onDelete }) => {
       <CardActionArea component={RouterLink} to={`/problems/${problem.id}`}>
         <CardMedia
           component="img"
-          image={problem.image.imageUrl}
+          image={problem.boulder.image.url}
           alt="boulder"
           sx={{
             objectFit: "cover",

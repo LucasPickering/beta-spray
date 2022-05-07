@@ -23,7 +23,7 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
     graphql`
       fragment HoldEditor_problemNode on ProblemNode {
         id
-        image {
+        boulder {
           id
         }
         holds {
@@ -98,7 +98,7 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
           createHold({
             variables: {
               input: {
-                imageId: problem.image.id,
+                boulderId: problem.boulder.id,
                 problemId: problem.id,
                 ...apiPos,
               },

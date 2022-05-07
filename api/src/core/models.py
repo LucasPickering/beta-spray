@@ -16,14 +16,14 @@ class BodyPart(models.TextChoices):
 
 class HoldAnnotationSource(models.TextChoices):
     """
-    The source of a hold annotation on an image, or of a hold within a problem
+    The source of a hold annotation on an boulder, or of a hold within a problem
     """
 
     USER = "user"  # User added attribution manually
     AUTO = "auto"  # ML model added attribution
 
 
-class BoulderImage(models.Model):
+class Boulder(models.Model):
     """
     A user-uploaded image of a rock wall, which should contain holds that make
     up one or more problem
@@ -42,8 +42,8 @@ class Hold(models.Model):
     A single hold on a rock wall, which can belong to any number of problems
     """
 
-    image = models.ForeignKey(
-        BoulderImage, related_name="holds", on_delete=models.CASCADE
+    boulder = models.ForeignKey(
+        Boulder, related_name="holds", on_delete=models.CASCADE
     )
     # Positions are *0-1*, not in pixels!! This allows for scaling on the image
     # without messing up these positions
@@ -56,7 +56,7 @@ class Hold(models.Model):
     source = models.CharField(
         max_length=4,
         choices=HoldAnnotationSource.choices,
-        help_text="Source of this image-hold attribution (auto or manual)",
+        help_text="Source of this boulder-hold attribution (auto or manual)",
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -73,8 +73,8 @@ class Problem(models.Model):
     )
     # Technically we could get this by going through holds, but having an extra
     # FK makes it a lot easier
-    image = models.ForeignKey(
-        BoulderImage, related_name="problems", on_delete=models.CASCADE
+    boulder = models.ForeignKey(
+        Boulder, related_name="problems", on_delete=models.CASCADE
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

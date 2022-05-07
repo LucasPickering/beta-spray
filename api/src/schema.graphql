@@ -1,9 +1,9 @@
 type Query {
-  images(offset: Int = null, before: String = null, after: String = null, first: Int = null, last: Int = null): BoulderImageNodeConnection
-  image(
+  boulders(offset: Int = null, before: String = null, after: String = null, first: Int = null, last: Int = null): BoulderNodeConnection
+  boulder(
     """The ID of the object"""
     id: ID!
-  ): BoulderImageNode
+  ): BoulderNode
   problems(offset: Int = null, before: String = null, after: String = null, first: Int = null, last: Int = null): ProblemNodeConnection
   problem(
     """The ID of the object"""
@@ -15,12 +15,12 @@ type Query {
   ): BetaNode
 }
 
-type BoulderImageNodeConnection {
+type BoulderNodeConnection {
   """Pagination data for this connection."""
   pageInfo: PageInfo!
 
   """Contains the nodes in this connection."""
-  edges: [BoulderImageNodeEdge!]!
+  edges: [BoulderNodeEdge!]!
 }
 
 """
@@ -40,23 +40,23 @@ type PageInfo {
   endCursor: String
 }
 
-"""A Relay edge containing a `BoulderImageNode` and its cursor."""
-type BoulderImageNodeEdge {
+"""A Relay edge containing a `BoulderNode` and its cursor."""
+type BoulderNodeEdge {
   """The item at the end of the edge"""
-  node: BoulderImageNode!
+  node: BoulderNode!
 
   """A cursor for use in pagination"""
   cursor: String!
 }
 
-type BoulderImageNode implements Node {
+type BoulderNode implements Node {
   createdAt: DateTime!
   holds(offset: Int = null, before: String = null, after: String = null, first: Int = null, last: Int = null): HoldNodeConnection!
   problems(offset: Int = null, before: String = null, after: String = null, first: Int = null, last: Int = null): ProblemNodeConnection!
 
   """The ID of the object"""
   id: ID!
-  imageUrl: String!
+  image: Image!
 }
 
 """An object with an ID"""
@@ -90,7 +90,7 @@ type HoldNodeEdge {
 }
 
 type HoldNode implements Node {
-  image: BoulderImageNode!
+  boulder: BoulderNode!
 
   """Left-to-right position of the hold within the image, 0-1"""
   positionX: Float!
@@ -122,7 +122,7 @@ type ProblemNodeEdge {
 type ProblemNode implements Node {
   name: String!
   holds(offset: Int = null, before: String = null, after: String = null, first: Int = null, last: Int = null): HoldNodeConnection!
-  image: BoulderImageNode!
+  boulder: BoulderNode!
   createdAt: DateTime!
   betas(offset: Int = null, before: String = null, after: String = null, first: Int = null, last: Int = null): BetaNodeConnection!
 
@@ -196,11 +196,18 @@ enum BodyPart {
   RIGHT_FOOT
 }
 
+"""An image, e.g. JPG or PNG"""
+type Image {
+  url: String!
+  width: Int!
+  height: Int!
+}
+
 type Mutation {
-  createImage(input: CreateBoulderImageMutationInput!): CreateBoulderImageMutationPayload
+  createBoulder(input: CreateBoulderMutationInput!): CreateBoulderMutationPayload
 
   """
-  Add a hold to an image. Optionally, also bind the hold to a pre-existing
+  Add a hold to a boulder. Optionally, also bind the hold to a pre-existing
   problem.
   """
   createHold(input: CreateHoldMutationInput!): CreateHoldMutationPayload
@@ -208,12 +215,12 @@ type Mutation {
   """Modify an existing hold"""
   updateHold(input: UpdateHoldMutationInput!): UpdateHoldMutationPayload
 
-  """Delete a hold from an image"""
+  """Delete a hold from a boulder"""
   deleteHold(input: DeleteHoldMutationInput!): DeleteHoldMutationPayload
 
   """
-  Create a new problem for a specific image. You can either specify an
-  existing image, or attach a new one (but not both).
+  Create a new problem for a specific boulder. You can either specify an
+  existing boulder, or attach a new image to create a boulder (but not both).
   """
   createProblem(input: CreateProblemMutationInput!): CreateProblemMutationPayload
   updateProblem(input: UpdateProblemMutationInput!): UpdateProblemMutationPayload
@@ -244,18 +251,18 @@ type Mutation {
   deleteBetaMove(input: DeleteBetaMoveMutationInput!): DeleteBetaMoveMutationPayload
 }
 
-type CreateBoulderImageMutationPayload {
-  image: BoulderImageNode!
+type CreateBoulderMutationPayload {
+  boulder: BoulderNode!
   clientMutationId: String
 }
 
-input CreateBoulderImageMutationInput {
+input CreateBoulderMutationInput {
   imageFile: String!
   clientMutationId: String
 }
 
 """
-Add a hold to an image. Optionally, also bind the hold to a pre-existing
+Add a hold to a boulder. Optionally, also bind the hold to a pre-existing
 problem.
 """
 type CreateHoldMutationPayload {
@@ -265,7 +272,7 @@ type CreateHoldMutationPayload {
 }
 
 input CreateHoldMutationInput {
-  imageId: ID!
+  boulderId: ID!
   positionX: Float!
   positionY: Float!
   problemId: ID
@@ -285,7 +292,7 @@ input UpdateHoldMutationInput {
   clientMutationId: String
 }
 
-"""Delete a hold from an image"""
+"""Delete a hold from a boulder"""
 type DeleteHoldMutationPayload {
   hold: HoldNode!
   clientMutationId: String
@@ -297,8 +304,8 @@ input DeleteHoldMutationInput {
 }
 
 """
-Create a new problem for a specific image. You can either specify an
-existing image, or attach a new one (but not both).
+Create a new problem for a specific boulder. You can either specify an
+existing boulder, or attach a new image to create a boulder (but not both).
 """
 type CreateProblemMutationPayload {
   problem: ProblemNode!
@@ -307,7 +314,7 @@ type CreateProblemMutationPayload {
 
 input CreateProblemMutationInput {
   name: String!
-  imageId: ID
+  boulderId: ID
   imageFile: String
   clientMutationId: String
 }
