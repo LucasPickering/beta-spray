@@ -5,7 +5,7 @@ import { BetaList_createBetaMutation } from "./__generated__/BetaList_createBeta
 import { BetaList_deleteBetaMutation } from "./__generated__/BetaList_deleteBetaMutation.graphql";
 import RadioList from "./RadioList";
 import { randomPhrase } from "util/func";
-import EditorContext from "context/EditorContext";
+import { EditorContext } from "util/context";
 import MutationError from "components/MutationError";
 import useMutation from "util/useMutation";
 

@@ -1,12 +1,6 @@
 import React from "react";
 import { BodyPart, formatBodyPart } from "../types";
-import {
-  Button,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  Stack,
-} from "@mui/material";
+import { Box, Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
 
 interface Props {
   isOpen: boolean;
@@ -27,10 +21,12 @@ const BetaMoveDialog: React.FC<Props> = ({
       <DialogTitle>Add a Move</DialogTitle>
 
       <DialogContent>
-        <Stack direction="column" spacing={1}>
+        {/* Show buttons in a 2x2 layout to mimic the body layout */}
+        <Box display="grid" gridTemplateColumns="repeat(2, 1fr)" gap={1}>
           {Object.values(BodyPart).map((bodyPart) => (
             <Button
               key={bodyPart}
+              // Colorize button to match body part
               // TODO support body part as color prop
               onClick={() => onSelectBodyPart(bodyPart)}
               sx={({ palette }) => {
@@ -44,7 +40,7 @@ const BetaMoveDialog: React.FC<Props> = ({
               {formatBodyPart(bodyPart)}
             </Button>
           ))}
-        </Stack>
+        </Box>
       </DialogContent>
     </Dialog>
   );

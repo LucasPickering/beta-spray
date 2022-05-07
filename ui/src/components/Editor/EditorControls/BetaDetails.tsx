@@ -9,7 +9,7 @@ import { BetaDetails_deleteBetaMoveMutation } from "./__generated__/BetaDetails_
 import { FormLabel, List, Typography } from "@mui/material";
 import { moveArrayElement } from "util/func";
 import { BetaDetails_updateBetaMoveMutation } from "./__generated__/BetaDetails_updateBetaMoveMutation.graphql";
-import EditorContext from "context/EditorContext";
+import { EditorContext } from "util/context";
 import useMutation from "util/useMutation";
 import MutationError from "components/MutationError";
 

@@ -17,7 +17,7 @@ import {
   BetaOverlayMove,
   BodyPart,
   OverlayPosition,
-} from "components/Editor/EditorOverlay/types";
+} from "components/Editor/EditorSvg/types";
 import { DistributivePick } from "./types";
 
 /**

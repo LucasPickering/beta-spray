@@ -3,6 +3,14 @@ import { BodyPart as BodyPartApi } from "./BetaEditor/__generated__/BetaEditor_b
 // TODO break this file apart and move shit to more logical locations
 
 /**
+ * 2D dimension of a rectangle
+ */
+export interface Dimensions {
+  width: number;
+  height: number;
+}
+
+/**
  * The position of an object in the rendered overlay. Values are [0,100] for X
  * and [0,height] in Y, where `height` is 100/aspectRatio.
  */
@@ -18,6 +26,14 @@ export interface OverlayPosition {
 export interface APIPosition {
   positionX: number;
   positionY: number;
+}
+
+/**
+ * Definition of zoom level and panning offset for the SVG
+ */
+export interface ZoomOffset {
+  zoom: number;
+  offset: OverlayPosition;
 }
 
 /**

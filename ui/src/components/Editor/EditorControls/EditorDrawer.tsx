@@ -2,7 +2,7 @@ import { Box, Drawer, IconButton, Stack } from "@mui/material";
 import { Menu as IconMenu } from "@mui/icons-material";
 import React, { useContext, useState } from "react";
 import { Done as IconDone } from "@mui/icons-material";
-import EditorContext from "context/EditorContext";
+import { EditorContext } from "util/context";
 import EditHoldsButton from "./EditHoldsButton";
 
 /**

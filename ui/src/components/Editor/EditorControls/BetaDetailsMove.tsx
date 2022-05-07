@@ -2,9 +2,9 @@ import React, { useContext, useRef } from "react";
 import { graphql, useFragment } from "react-relay";
 import { BetaDetailsMove_betaMoveNode$key } from "./__generated__/BetaDetailsMove_betaMoveNode.graphql";
 import { XYCoord } from "react-dnd";
-import { toBodyPart } from "../EditorOverlay/types";
+import { toBodyPart } from "../EditorSvg/types";
 import { DragItem, DropHandler, useDrag, useDrop } from "util/dnd";
-import EditorContext from "context/EditorContext";
+import { EditorContext } from "util/context";
 import BetaMoveListItem from "./BetaMoveListItem";
 
 interface Props {

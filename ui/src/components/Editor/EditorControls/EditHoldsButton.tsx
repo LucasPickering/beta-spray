@@ -1,7 +1,7 @@
 import { Button } from "@mui/material";
 import React, { useContext } from "react";
 import { Edit as IconEdit, Done as IconDone } from "@mui/icons-material";
-import EditorContext from "context/EditorContext";
+import { EditorContext } from "util/context";
 
 interface Props {
   onEdit?: () => void;

@@ -1,5 +1,6 @@
 import { Portal } from "@mui/material";
 import React from "react";
+import { XYCoord } from "react-dnd";
 import { DragItemWithKind, DragKind, useDragLayer } from "util/dnd";
 import { useOverlayUtils } from "util/useOverlayUtils";
 import DragPreview from "./DragPreview";
@@ -19,7 +20,7 @@ interface Props {
   mode: "html" | "svg";
 }
 
-export const DragLayer: React.FC<Props> = ({ mode }) => {
+const DragLayer: React.FC<Props> = ({ mode }) => {
   const {
     itemType,
     isDragging,
@@ -35,8 +36,6 @@ export const DragLayer: React.FC<Props> = ({ mode }) => {
     offsetDifference: monitor.getDifferenceFromInitialOffset(),
     isDragging: monitor.isDragging(),
   }));
-  // This hook shouldn't do anything in HTML mode
-  const { toSvgPosition } = useOverlayUtils();
 
   // These should all be truthy at the same time, but check all 3 to convince TS
   if (
@@ -57,26 +56,66 @@ export const DragLayer: React.FC<Props> = ({ mode }) => {
   const itemWithKind = { kind: itemType as DragKind, item } as DragItemWithKind;
 
   if (mode === "html") {
-    const offset = {
-      // TODO explain magic numbers
-      x: initialOffset.x + offsetDifference.x,
-      y: initialOffset.y + offsetDifference.y,
-    };
     return (
-      <Portal>
-        <div style={layerStyles}>
-          <div style={{ transform: `translate(${offset.x}px, ${offset.y}px)` }}>
-            <DragPreview mode={mode} itemWithKind={itemWithKind} />
-          </div>
-        </div>
-      </Portal>
+      <HtmlDragLayer
+        itemWithKind={itemWithKind}
+        initialOffset={initialOffset}
+        currentOffset={currentOffset}
+        offsetDifference={offsetDifference}
+      />
     );
   }
 
-  // We're in SVG mode: translate coords from DOM to SVG, then shift the preview
+  return (
+    <SvgDragLayer
+      itemWithKind={itemWithKind}
+      initialOffset={initialOffset}
+      currentOffset={currentOffset}
+      offsetDifference={offsetDifference}
+    />
+  );
+};
+
+// Use some internal components here so we can break out hook usage
+interface InnerProps {
+  itemWithKind: DragItemWithKind;
+  initialOffset: XYCoord;
+  currentOffset: XYCoord;
+  offsetDifference: XYCoord;
+}
+
+const HtmlDragLayer: React.FC<InnerProps> = ({
+  itemWithKind,
+  initialOffset,
+  offsetDifference,
+}) => {
+  const offset = {
+    x: initialOffset.x + offsetDifference.x,
+    y: initialOffset.y + offsetDifference.y,
+  };
+  return (
+    <Portal>
+      <div style={layerStyles}>
+        <div style={{ transform: `translate(${offset.x}px, ${offset.y}px)` }}>
+          <DragPreview mode="html" itemWithKind={itemWithKind} />
+        </div>
+      </div>
+    </Portal>
+  );
+};
+
+const SvgDragLayer: React.FC<InnerProps> = ({
+  itemWithKind,
+  currentOffset,
+}) => {
+  const { toSvgPosition } = useOverlayUtils();
+
+  // Translate coords from DOM to SVG, then shift the preview
   return (
     <Positioned position={toSvgPosition(currentOffset)}>
-      <DragPreview mode={mode} itemWithKind={itemWithKind} />;
+      <DragPreview mode="svg" itemWithKind={itemWithKind} />;
     </Positioned>
   );
 };
+
+export default DragLayer;

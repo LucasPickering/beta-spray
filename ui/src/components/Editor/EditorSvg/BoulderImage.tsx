@@ -1,17 +1,17 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
+import { SvgContext } from "util/context";
 import { BoulderImage_boulderNode$key } from "./__generated__/BoulderImage_boulderNode.graphql";
 
 interface Props {
   boulderKey: BoulderImage_boulderNode$key;
-  onLoad: JSX.IntrinsicElements["img"]["onLoad"];
 }
 
 /**
  * Boulder background image
  */
-const BoulderImage: React.FC<Props> = ({ boulderKey, onLoad }) => {
+const BoulderImage: React.FC<Props> = ({ boulderKey }) => {
   const boulder = useFragment(
     graphql`
       fragment BoulderImage_boulderNode on BoulderNode {
@@ -22,14 +22,14 @@ const BoulderImage: React.FC<Props> = ({ boulderKey, onLoad }) => {
     `,
     boulderKey
   );
+  const { dimensions } = useContext(SvgContext);
 
   return (
-    <img
-      src={boulder.image.url}
-      alt="Boulder"
-      onLoad={onLoad}
-      // Jank to account for header height
-      css={{ maxWidth: "100vw", maxHeight: "calc(100vh - 48px)" }}
+    <image
+      href={boulder.image.url}
+      // Fill the whole SVG
+      width={dimensions.width}
+      height={dimensions.height}
     />
   );
 };

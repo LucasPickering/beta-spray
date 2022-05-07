@@ -1,5 +1,5 @@
 import React, { Suspense } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Outlet, Route, Routes } from "react-router-dom";
 import { BrowserRouter } from "react-router-dom";
 import { RelayEnvironmentProvider } from "react-relay";
 import { ThemeProvider } from "@mui/material/styles";
@@ -39,23 +39,32 @@ const CoreContent: React.FC = () => {
           <ThemeProvider theme={theme}>
             <CssBaseline />
 
-            <PageLayout>
-              <Suspense fallback={<Loading />}>
-                <ErrorBoundary>
-                  <Routes>
-                    <Route path="" element={<Home />} />
-                    <Route
-                      path="problems/:problemId"
-                      element={<EditorLoader />}
-                    >
-                      {/* Just an alias to pre-select values */}
-                      <Route path="beta/:betaId" element={<EditorLoader />} />
-                    </Route>
+            <Suspense fallback={<Loading />}>
+              <ErrorBoundary>
+                <Routes>
+                  {/* Fullscreen routes */}
+                  <Route
+                    path={"problems/:problemId"}
+                    element={<EditorLoader />}
+                  >
+                    {/* Just an alias to pre-select beta */}
+                    <Route path="beta/:betaId" element={<></>} />
+                  </Route>
+
+                  {/* Main route group */}
+                  <Route
+                    element={
+                      <PageLayout>
+                        <Outlet />
+                      </PageLayout>
+                    }
+                  >
+                    <Route index element={<Home />} />
                     <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </ErrorBoundary>
-              </Suspense>
-            </PageLayout>
+                  </Route>
+                </Routes>
+              </ErrorBoundary>
+            </Suspense>
           </ThemeProvider>
         </BrowserRouter>
       </RelayEnvironmentProvider>

@@ -10,7 +10,7 @@ import {
   ListItemSecondaryAction,
   ListItemText,
 } from "@mui/material";
-import { BodyPart, formatBodyPart, formatOrder } from "../EditorOverlay/types";
+import { BodyPart, formatBodyPart, formatOrder } from "../EditorSvg/types";
 
 interface Props extends React.ComponentProps<typeof ListItem> {
   bodyPart: BodyPart;

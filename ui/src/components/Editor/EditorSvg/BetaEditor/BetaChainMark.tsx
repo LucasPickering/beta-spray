@@ -3,7 +3,7 @@ import { BetaOverlayMove, getMoveVisualPosition } from "../types";
 import { DropHandler, useDrag, useDrop } from "util/dnd";
 import { styleDropHover } from "styles/dnd";
 import { ClickAwayListener } from "@mui/material";
-import EditorContext from "context/EditorContext";
+import { EditorContext } from "util/context";
 import Positioned from "../Positioned";
 import { noop } from "util/func";
 import BetaMoveIcon from "./BetaMoveIcon";

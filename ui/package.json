@@ -63,11 +63,14 @@
     "analyze": "WEBPACK_BUNDLE_ANALYZER_MODE=server npm run build",
     "lint": "eslint src/**/*.{ts,tsx}",
     "lint:fix": "npm run lint -- --fix",
-    "clean": "rm -rf build/",
+    "clean": "npm run clean:build && npm run clean:relay",
+    "clean:build": "rm -rf build/",
+    "clean:relay": "rm -rf **/__generated__",
     "test": "jest",
     "pretype-check": "npm run relay",
     "type-check": "tsc",
-    "relay": "rm -rf **/__generate__ && npx relay-compiler",
+    "prerelay": "npm run clean:relay",
+    "relay": "relay-compiler",
     "relay:watch": "nodemon -x \"npm run relay\" -w src -e \"ts tsx\" -i \"**/__generated/*\""
   },
   "browserslist": {

@@ -7,7 +7,7 @@ const PageLayout: React.FC = ({ children }) => (
     <AppBar position="static">
       <HeaderBar />
     </AppBar>
-    <Box marginX={2}>{children}</Box>
+    <Box margin={2}>{children}</Box>
   </Box>
 );
 

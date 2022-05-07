@@ -1,4 +1,4 @@
-import { moveArrayElement } from "./func";
+import { moveArrayElement } from "../func";
 
 describe("moveArrayElement", () => {
   const array = ["a", "b", "c", "d", "e"];

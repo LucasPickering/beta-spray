@@ -54,14 +54,7 @@ function getHelpText(helpMode: Props["helpMode"]): React.ReactChild {
  */
 const HelpText: React.FC<Props> = ({ helpMode }) => (
   <Tooltip title={getHelpText(helpMode)}>
-    <IconButton
-      size="small"
-      sx={({ spacing }) => ({
-        position: "absolute",
-        top: spacing(1),
-        left: spacing(1),
-      })}
-    >
+    <IconButton size="small">
       <IconHelp />
     </IconButton>
   </Tooltip>

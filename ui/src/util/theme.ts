@@ -1,5 +1,5 @@
 import { createTheme } from "@mui/material/styles";
-import { BodyPart } from "components/Editor/EditorOverlay/types";
+import { BodyPart } from "components/Editor/EditorSvg/types";
 
 declare module "@mui/material/styles" {
   interface Palette {
@@ -14,7 +14,13 @@ declare module "@mui/material/styles" {
 const theme = createTheme({
   palette: {
     mode: "dark",
-    primary: { main: "#add8e6" },
+    background: {
+      default: "#121212",
+      paper: "#202020",
+    },
+    primary: {
+      main: "#add8e6",
+    },
     bodyParts: {
       [BodyPart.LEFT_HAND]: "#ffff00",
       [BodyPart.RIGHT_HAND]: "#f08080",

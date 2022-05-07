@@ -6,7 +6,6 @@ import {
   styleDragging,
 } from "styles/dnd";
 import { useTheme } from "@mui/material";
-import { betaMoveCircleRadius } from "../consts";
 import { isDefined } from "util/func";
 
 interface Props {
@@ -34,7 +33,7 @@ const BetaMoveIcon = React.forwardRef<SVGCircleElement, Props>(
             isDragging && styleDragging,
             isHighlighted && styleDraggableHighlight,
           ]}
-          r={betaMoveCircleRadius}
+          r={2}
         />
 
         {isDefined(order) && (

@@ -17,7 +17,7 @@ import { BetaEditor_updateBetaMoveMutation } from "./__generated__/BetaEditor_up
 import { BetaEditor_deleteBetaMoveMutation } from "./__generated__/BetaEditor_deleteBetaMoveMutation.graphql";
 import { useOverlayUtils } from "util/useOverlayUtils";
 import BetaMoveDialog from "./BetaMoveDialog";
-import EditorContext from "context/EditorContext";
+import { EditorContext } from "util/context";
 import { assertIsDefined, groupBy } from "util/func";
 import BodyState from "./BodyState";
 import { DropHandler } from "util/dnd";
