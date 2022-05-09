@@ -10,7 +10,7 @@ import EditorSvg from "./EditorSvg/EditorSvg";
 import EditorControls from "./EditorControls/EditorControls";
 import { EditorQuery } from "./__generated__/EditorQuery.graphql";
 import HoldEditor from "./EditorSvg/HoldEditor/HoldEditor";
-import { Box, IconButton } from "@mui/material";
+import { Box, IconButton, Stack } from "@mui/material";
 import HoldMarks from "./EditorSvg/HoldEditor/HoldMarks";
 import { DndProvider } from "react-dnd";
 import { TouchBackend } from "react-dnd-touch-backend";
@@ -143,7 +143,9 @@ const Editor: React.FC<Props> = ({
             ) : (
               <HoldMarks
                 holdConnectionKey={data.problem.holds}
-                onClick={setSelectedHold}
+                // Selecting a hold opens the move modal, which shouldn't be
+                // possible if no beta is selected
+                onClick={selectedBeta ? setSelectedHold : undefined}
               />
             )}
 
@@ -151,13 +153,20 @@ const Editor: React.FC<Props> = ({
           </EditorSvg>
 
           {/* Top-left overlay buttons */}
-          <Box position="absolute" top={0} left={0} padding={1}>
-            <IconButton component={Link} to="/">
+          <Stack
+            position="absolute"
+            top={0}
+            left={0}
+            padding={1}
+            direction="row"
+            spacing={1}
+          >
+            <IconButton component={Link} to="/" size="small">
               <IconHome />
             </IconButton>
 
             <HelpText helpMode={helpMode} />
-          </Box>
+          </Stack>
 
           {/* Controls sidebar/drawer */}
           <EditorControls>
