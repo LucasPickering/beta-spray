@@ -21,14 +21,14 @@ interface Props {
 const BetaMoveIcon = React.forwardRef<SVGCircleElement, Props>(
   ({ bodyPart, order, isDragging, isHighlighted }, ref) => {
     const { palette } = useTheme();
-    const color = palette.bodyParts[bodyPart];
+    const color = palette[bodyPart];
 
     return (
       <>
         <circle
           ref={ref}
           css={[
-            { fill: color },
+            { fill: color.main },
             styleDraggable,
             isDragging && styleDragging,
             isHighlighted && styleDraggableHighlight,
@@ -42,7 +42,7 @@ const BetaMoveIcon = React.forwardRef<SVGCircleElement, Props>(
               fontSize: 3,
               userSelect: "none",
               pointerEvents: "none",
-              color: palette.getContrastText(color),
+              color: color.contrastText,
             }}
             textAnchor="middle"
             dominantBaseline="middle"

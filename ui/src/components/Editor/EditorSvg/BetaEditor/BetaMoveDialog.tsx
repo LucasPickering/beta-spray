@@ -26,16 +26,9 @@ const BetaMoveDialog: React.FC<Props> = ({
           {Object.values(BodyPart).map((bodyPart) => (
             <Button
               key={bodyPart}
-              // Colorize button to match body part
-              // TODO support body part as color prop
+              variant="contained"
+              color={bodyPart} // Colorize button to match body part
               onClick={() => onSelectBodyPart(bodyPart)}
-              sx={({ palette }) => {
-                const backgroundColor = palette.bodyParts[bodyPart];
-                return {
-                  backgroundColor,
-                  color: palette.getContrastText(backgroundColor),
-                };
-              }}
             >
               {formatBodyPart(bodyPart)}
             </Button>

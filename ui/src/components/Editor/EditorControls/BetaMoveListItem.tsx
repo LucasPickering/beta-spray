@@ -31,9 +31,7 @@ const BetaMoveListItem = React.forwardRef<SVGSVGElement, Props>(
         <IconDragHandle ref={ref} sx={[!disabled && { cursor: "move" }]} />
       </ListItemIcon>
 
-      <ListItemText
-        sx={({ palette }) => ({ color: palette.bodyParts[bodyPart] })}
-      >
+      <ListItemText sx={({ palette }) => ({ color: palette[bodyPart].main })}>
         {formatOrder(order)} {formatBodyPart(bodyPart)}
       </ListItemText>
 
