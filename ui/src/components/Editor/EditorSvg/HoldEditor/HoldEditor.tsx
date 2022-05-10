@@ -3,7 +3,7 @@ import React from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
 import useMutation from "util/useMutation";
-import useOverlayUtils from "util/useOverlayUtils";
+import { useOverlayUtils } from "util/svg";
 import HoldEditorDropZone from "./HoldEditorDropZone";
 import HoldOverlay from "./HoldOverlay";
 import { HoldEditor_createHoldMutation } from "./__generated__/HoldEditor_createHoldMutation.graphql";

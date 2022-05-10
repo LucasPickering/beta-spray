@@ -1,5 +1,5 @@
 import React from "react";
-import { BetaOverlayMove, BodyPart, OverlayPosition } from "../types";
+import { BetaOverlayMove, BodyPart, OverlayPosition } from "util/svg";
 
 interface Props {
   moves: BetaOverlayMove[];

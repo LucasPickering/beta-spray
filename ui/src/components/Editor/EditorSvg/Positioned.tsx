@@ -1,5 +1,5 @@
 import React from "react";
-import { OverlayPosition } from "./types";
+import { OverlayPosition } from "util/svg";
 
 interface Props extends React.SVGProps<SVGGElement> {
   position: OverlayPosition;

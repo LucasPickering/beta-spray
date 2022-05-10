@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useDrag } from "util/dnd";
-import useOverlayUtils from "util/useOverlayUtils";
+import { useOverlayUtils } from "util/svg";
 import { useZoomPan } from "util/zoom";
 import InvisibleZone from "./InvisibleZone";
-import { OverlayPosition, subtract } from "./types";
+import { OverlayPosition, subtract } from "util/svg";
 
 /**
  * Invisible layer to manage panning. This captures drag actions to pan the

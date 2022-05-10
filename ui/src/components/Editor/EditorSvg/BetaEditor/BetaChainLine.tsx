@@ -1,5 +1,5 @@
 import React from "react";
-import { BetaOverlayMove, getMoveVisualPosition } from "../types";
+import { BetaOverlayMove, getMoveVisualPosition } from "util/svg";
 import { DropHandler, useDrag } from "util/dnd";
 import { styleDraggable, styleDragging } from "styles/dnd";
 import { useTheme } from "@mui/material";

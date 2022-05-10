@@ -2,7 +2,7 @@ import React, { useContext, useRef } from "react";
 import { graphql, useFragment } from "react-relay";
 import { BetaDetailsMove_betaMoveNode$key } from "./__generated__/BetaDetailsMove_betaMoveNode.graphql";
 import { XYCoord } from "react-dnd";
-import { toBodyPart } from "../EditorSvg/types";
+import { toBodyPart } from "util/svg";
 import { DragItem, DropHandler, useDrag, useDrop } from "util/dnd";
 import { EditorContext } from "util/context";
 import BetaMoveListItem from "./BetaMoveListItem";

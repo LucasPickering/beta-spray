@@ -13,11 +13,7 @@ import {
   ConnectDropTarget,
   DragLayerMonitor,
 } from "react-dnd";
-import {
-  BetaOverlayMove,
-  BodyPart,
-  OverlayPosition,
-} from "components/Editor/EditorSvg/types";
+import { BetaOverlayMove, BodyPart, OverlayPosition } from "./svg";
 import { DistributivePick } from "./types";
 
 /**

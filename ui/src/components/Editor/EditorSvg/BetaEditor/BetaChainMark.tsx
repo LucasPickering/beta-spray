@@ -1,5 +1,5 @@
 import React, { useContext, useRef } from "react";
-import { BetaOverlayMove, getMoveVisualPosition } from "../types";
+import { BetaOverlayMove, getMoveVisualPosition } from "util/svg";
 import { DropHandler, useDrag, useDrop } from "util/dnd";
 import { styleDropHover } from "styles/dnd";
 import { ClickAwayListener } from "@mui/material";

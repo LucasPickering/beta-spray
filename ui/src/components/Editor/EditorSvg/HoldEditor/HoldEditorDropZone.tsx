@@ -2,7 +2,7 @@ import React from "react";
 import { styleAddObject } from "styles/dnd";
 import { useDrop } from "util/dnd";
 import { assertIsDefined } from "util/func";
-import useOverlayUtils from "util/useOverlayUtils";
+import { useOverlayUtils } from "util/svg";
 import InvisibleZone from "../InvisibleZone";
 
 interface Props {

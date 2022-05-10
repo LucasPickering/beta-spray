@@ -1,5 +1,5 @@
 import React from "react";
-import { Dimensions } from "components/Editor/EditorSvg/types";
+import { Dimensions } from "./svg";
 
 export interface SvgContextType {
   svgRef: React.RefObject<SVGSVGElement | null>;

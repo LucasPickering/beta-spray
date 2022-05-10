@@ -1,5 +1,5 @@
 import React from "react";
-import { BodyPart, formatBodyPart } from "../types";
+import { BodyPart, formatBodyPart } from "util/svg";
 import { Box, Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
 
 interface Props {

@@ -1,5 +1,5 @@
 import React from "react";
-import { BodyPart, formatOrder } from "../types";
+import { BodyPart, formatOrder } from "util/svg";
 import {
   styleDraggable,
   styleDraggableHighlight,

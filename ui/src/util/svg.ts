@@ -1,6 +1,8 @@
-import { BodyPart as BodyPartApi } from "./BetaEditor/__generated__/BetaEditor_betaNode.graphql";
-
-// TODO break this file apart and move shit to more logical locations
+import { useContext, useMemo } from "react";
+import { XYCoord } from "react-dnd";
+import { SvgContext } from "./context";
+import { assertIsDefined } from "./func";
+import { BodyPart as BodyPartApi } from "../components/Editor/EditorSvg/BetaEditor/__generated__/BetaEditor_betaNode.graphql";
 
 /**
  * 2D dimension of a rectangle
@@ -145,4 +147,48 @@ export function getMoveVisualPosition(move: BetaOverlayMove): OverlayPosition {
     x: move.position.x + (move.offset?.x ?? 0),
     y: move.position.y + (move.offset?.y ?? 0),
   };
+}
+
+/**
+ * Helpful utility functions for working with overlay positions. This is a hook
+ * because some operations require context about the SVG's dimensions in order
+ * to do calculations.
+ */
+export function useOverlayUtils(): {
+  toOverlayPosition(apiPosition: APIPosition): OverlayPosition;
+  toAPIPosition(overlayPosition: OverlayPosition): APIPosition;
+  toSvgPosition(domPosition: XYCoord): OverlayPosition;
+} {
+  const { svgRef, dimensions } = useContext(SvgContext);
+  return useMemo(
+    () => ({
+      toOverlayPosition(apiPosition) {
+        return {
+          x: apiPosition.positionX * dimensions.width,
+          y: apiPosition.positionY * dimensions.height,
+        };
+      },
+      toAPIPosition(overlayPosition) {
+        return {
+          positionX: overlayPosition.x / dimensions.width,
+          positionY: overlayPosition.y / dimensions.height,
+        };
+      },
+      toSvgPosition(domPosition) {
+        // Map DOM coords to SVG
+        // https://www.sitepoint.com/how-to-translate-from-dom-to-svg-coordinates-and-back-again/
+        const svg = svgRef.current;
+        assertIsDefined(svg); // Ref is only null on first render
+
+        const point = svg.createSVGPoint();
+        point.x = domPosition.x;
+        point.y = domPosition.y;
+
+        const ctm = svg.getScreenCTM();
+        assertIsDefined(ctm);
+        return point.matrixTransform(ctm.inverse());
+      },
+    }),
+    [dimensions.width, dimensions.height, svgRef]
+  );
 }

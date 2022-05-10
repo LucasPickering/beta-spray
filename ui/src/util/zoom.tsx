@@ -1,10 +1,9 @@
-import { add, OverlayPosition } from "components/Editor/EditorSvg/types";
 import React, { useContext, useState } from "react";
 import { XYCoord } from "react-dnd";
 import { SvgContext } from "./context";
 import { noop } from "./func";
 import { coerce } from "./math";
-import useOverlayUtils from "./useOverlayUtils";
+import { add, OverlayPosition, useOverlayUtils } from "./svg";
 
 /** Minimum editor zoom level */
 const zoomMinimum = 1.0;

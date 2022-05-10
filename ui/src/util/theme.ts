@@ -1,5 +1,5 @@
 import { createTheme } from "@mui/material/styles";
-import { BodyPart } from "components/Editor/EditorSvg/types";
+import { BodyPart } from "util/svg";
 
 declare module "@mui/material/styles" {
   interface Palette {

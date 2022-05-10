@@ -11,11 +11,11 @@ import {
   OverlayPosition,
   polarToCartesian,
   toBodyPart,
-} from "../types";
+} from "util/svg";
 import { BetaEditor_createBetaMoveMutation } from "./__generated__/BetaEditor_createBetaMoveMutation.graphql";
 import { BetaEditor_updateBetaMoveMutation } from "./__generated__/BetaEditor_updateBetaMoveMutation.graphql";
 import { BetaEditor_deleteBetaMoveMutation } from "./__generated__/BetaEditor_deleteBetaMoveMutation.graphql";
-import useOverlayUtils from "util/useOverlayUtils";
+import { useOverlayUtils } from "util/svg";
 import BetaMoveDialog from "./BetaMoveDialog";
 import { EditorContext } from "util/context";
 import { assertIsDefined, groupBy } from "util/func";
