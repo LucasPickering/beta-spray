@@ -1,17 +1,7 @@
 import { MutationState } from "util/useMutation";
 import React, { useEffect, useState } from "react";
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Alert,
-  Portal,
-  Snackbar,
-} from "@mui/material";
-import {
-  Close as IconClose,
-  ExpandMore as IconExpandMore,
-} from "@mui/icons-material";
+import { Portal } from "@mui/material";
+import ErrorSnackbar from "./common/ErrorSnackbar";
 
 interface Props {
   state: MutationState;
@@ -31,18 +21,11 @@ const MutationError: React.FC<Props> = ({ state, message }) => {
   // the next error occurs. If the underlying hook state resets or the snackbar
   // closes, we maintain the error to prevent rendering bugs.
   const [error, setError] = useState<MutationError | undefined>();
-  // hidden - render nothing
-  // closed - short form visible
-  // open - expanded to show full error
-  const [visibility, setVisibility] = useState<"hidden" | "closed" | "open">(
-    "hidden"
-  );
 
   // Open when an error first occurs, then we'll time out to clear state
   useEffect(() => {
     if (state.status === "error") {
       setError(state.error);
-      setVisibility("closed");
     }
   }, [state]);
 
@@ -50,42 +33,17 @@ const MutationError: React.FC<Props> = ({ state, message }) => {
   // SVG tree, since HTML elements aren't supported in that part of the DOM.
   return (
     <Portal>
-      <Snackbar
-        open={visibility !== "hidden"}
-        // Once the user has expanded the accordion, we don't want to auto-hide
-        // since they're probably reading the error (which may be long)
-        autoHideDuration={visibility !== "open" ? 5000 : null}
-        onClose={() => setVisibility("hidden")}
-      >
-        <Alert severity="error">
-          <Accordion
-            expanded={visibility === "open"}
-            // If already expanded, another click will *close the whole snackbar*.
-            // At that point, we assume the user is done with the error entirely.
-            onChange={(e, isExpanded) =>
-              setVisibility(isExpanded ? "open" : "hidden")
-            }
-            // Match error background
-            sx={{ backgroundColor: "transparent" }}
-          >
-            <AccordionSummary
-              expandIcon={
-                visibility === "open" ? <IconClose /> : <IconExpandMore />
-              }
-            >
-              {message}
-            </AccordionSummary>
-            <AccordionDetails>
-              {error &&
-                (error.data instanceof Error ? (
-                  error.data.toString()
-                ) : (
-                  <pre>{JSON.stringify(error.data, null, 2)}</pre>
-                ))}
-            </AccordionDetails>
-          </Accordion>
-        </Alert>
-      </Snackbar>
+      <ErrorSnackbar
+        summary={message}
+        error={error?.data}
+        renderError={(err) =>
+          err instanceof Error ? (
+            err.toString()
+          ) : (
+            <pre>{JSON.stringify(err, null, 2)}</pre>
+          )
+        }
+      />
     </Portal>
   );
 };
