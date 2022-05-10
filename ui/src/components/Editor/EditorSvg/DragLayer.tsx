@@ -2,7 +2,7 @@ import { Portal } from "@mui/material";
 import React from "react";
 import { XYCoord } from "react-dnd";
 import { DragItemWithKind, DragKind, useDragLayer } from "util/dnd";
-import { useOverlayUtils } from "util/useOverlayUtils";
+import useOverlayUtils from "util/useOverlayUtils";
 import DragPreview from "./DragPreview";
 import Positioned from "./Positioned";
 

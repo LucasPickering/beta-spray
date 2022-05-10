@@ -15,17 +15,20 @@ import {
 import { BetaEditor_createBetaMoveMutation } from "./__generated__/BetaEditor_createBetaMoveMutation.graphql";
 import { BetaEditor_updateBetaMoveMutation } from "./__generated__/BetaEditor_updateBetaMoveMutation.graphql";
 import { BetaEditor_deleteBetaMoveMutation } from "./__generated__/BetaEditor_deleteBetaMoveMutation.graphql";
-import { useOverlayUtils } from "util/useOverlayUtils";
+import useOverlayUtils from "util/useOverlayUtils";
 import BetaMoveDialog from "./BetaMoveDialog";
 import { EditorContext } from "util/context";
 import { assertIsDefined, groupBy } from "util/func";
 import BodyState from "./BodyState";
 import { DropHandler } from "util/dnd";
-import { disambiguationDistance } from "../consts";
+
 import BetaChainLine from "./BetaChainLine";
 import BetaChainMark from "./BetaChainMark";
 import useMutation from "util/useMutation";
 import MutationError from "components/MutationError";
+
+/** The distance to shift a disambiguated move */
+const disambiguationDistance = 2.5;
 
 interface Props {
   betaKey: BetaEditor_betaNode$key;

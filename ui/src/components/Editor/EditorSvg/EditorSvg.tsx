@@ -1,12 +1,9 @@
 import React, { useContext, useRef } from "react";
-import { EditorContext, SvgContext } from "util/context";
-import { zoomMaximum, zoomMinimum, zoomStep } from "./consts";
-import { coerce } from "util/math";
+import { SvgContext } from "util/context";
 import { graphql, useFragment } from "react-relay";
 import { EditorSvg_boulderNode$key } from "./__generated__/EditorSvg_boulderNode.graphql";
 import { useTheme } from "@mui/material";
-import { XYCoord } from "react-dnd";
-import { useOverlayUtils } from "util/useOverlayUtils";
+import { useZoomPan } from "util/zoom";
 
 interface Props {
   boulderKey: EditorSvg_boulderNode$key;
@@ -57,56 +54,16 @@ const EditorSvgInner = React.forwardRef<
   React.PropsWithChildren<{}>
 >(({ children }, ref) => {
   const { palette } = useTheme();
-  const { zoomOffset, setZoomOffset } = useContext(EditorContext);
+  const { zoom, offset, updateZoom } = useZoomPan();
   const { dimensions } = useContext(SvgContext);
-  const { toSvgPosition } = useOverlayUtils();
-
-  /**
-   * Update zoom and offset when the user scrolls/pinches in and out. Focus
-   * point defines which point inside the view box will not move while zooming.
-   */
-  const updateZoom = (focus: XYCoord, zoomDelta: number): void => {
-    // Map the focus coordinates (either cursor or pinch origin) from DOM to
-    // SVG coordinates. We'll use that to figure out the new offset.
-    const mousePos = toSvgPosition(focus);
-
-    setZoomOffset((prev) => {
-      const zoom = coerce(prev.zoom + zoomDelta, zoomMinimum, zoomMaximum);
-      // Adjust offset so that the zoom is focused on the cursor, i.e. the
-      // cursor remains on the same pixel and the rest of the image
-      // scales/shifts around that. The math is a little opaque, but the
-      // gist is that the distance from the top-left to the cursor stays
-      // the same, as a proportion of the overall width. So we scale that
-      // delta from the prev zoom level to the new one.
-      //
-      // Apply bounds so we don't end up shoving the SVG off screen more than
-      // necessary. The upper bound is the difference between SVG width and
-      // view box width (calculated using the *new* zoom value). I.e. the
-      // distance between the right/bottom of the view box and the right/bottom
-      // of the image.
-      const offset = {
-        x: coerce(
-          mousePos.x - (prev.zoom * (mousePos.x - prev.offset.x)) / zoom,
-          0,
-          dimensions.width - dimensions.width / zoom
-        ),
-        y: coerce(
-          mousePos.y - (prev.zoom * (mousePos.y - prev.offset.y)) / zoom,
-          0,
-          dimensions.height - dimensions.height / zoom
-        ),
-      };
-      return { zoom, offset };
-    });
-  };
 
   // SVG view box, which defines the visible window into the SVG. This is how
   // we implement both pan and zoom, by translating and scaling the view box.
   const viewBox = {
-    x: zoomOffset.offset.x,
-    y: zoomOffset.offset.y,
-    width: dimensions.width / zoomOffset.zoom,
-    height: dimensions.height / zoomOffset.zoom,
+    x: offset.x,
+    y: offset.y,
+    width: dimensions.width / zoom,
+    height: dimensions.height / zoom,
   };
 
   return (
@@ -125,9 +82,7 @@ const EditorSvgInner = React.forwardRef<
       }}
       // Zoom in/out on scroll
       // TODO capture pinch too
-      onWheel={(e) =>
-        updateZoom({ x: e.clientX, y: e.clientY }, zoomStep * e.deltaY * -1)
-      }
+      onWheel={(e) => updateZoom(e.deltaY * -1, { x: e.clientX, y: e.clientY })}
     >
       {children}
     </svg>

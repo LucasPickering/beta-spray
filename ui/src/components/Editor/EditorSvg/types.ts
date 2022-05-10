@@ -29,14 +29,6 @@ export interface APIPosition {
 }
 
 /**
- * Definition of zoom level and panning offset for the SVG
- */
-export interface ZoomOffset {
-  zoom: number;
-  offset: OverlayPosition;
-}
-
-/**
  * All supported body parts. Defined as an enum so we can iterate over it.
  */
 export enum BodyPart {
@@ -95,6 +87,26 @@ export function formatBodyPart(bodyPart: BodyPart): string {
 
 export function formatOrder(order: number): string {
   return (order + 1).toString();
+}
+
+/**
+ * Add two positions
+ */
+export function add(
+  position1: OverlayPosition,
+  position2: OverlayPosition
+): OverlayPosition {
+  return { x: position1.x + position2.x, y: position1.y + position2.y };
+}
+
+/**
+ * Subtract the second position from the first
+ */
+export function subtract(
+  position1: OverlayPosition,
+  position2: OverlayPosition
+): OverlayPosition {
+  return { x: position1.x - position2.x, y: position1.y - position2.y };
 }
 
 /**

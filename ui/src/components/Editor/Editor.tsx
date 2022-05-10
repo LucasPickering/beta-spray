@@ -17,10 +17,11 @@ import { TouchBackend } from "react-dnd-touch-backend";
 import HelpText from "./EditorSvg/HelpText";
 import DragLayer from "./EditorSvg/DragLayer";
 import { Helmet } from "react-helmet-async";
-import { ZoomOffset } from "./EditorSvg/types";
 import { Link } from "react-router-dom";
 import { Home as IconHome } from "@mui/icons-material";
 import { EditorContext } from "util/context";
+import PanZone from "./EditorSvg/PanZone";
+import { ZoomPanProvider } from "util/zoom";
 
 interface Props {
   queryRef: PreloadedQuery<EditorQuery>;
@@ -68,11 +69,6 @@ const Editor: React.FC<Props> = ({
     queryRef
   );
 
-  // Zoom and offset are controlled by scrolling on the SVG
-  const [zoomOffset, setZoomOffset] = useState<ZoomOffset>({
-    zoom: 1,
-    offset: { x: 0, y: 0 },
-  });
   // Toggle hold editor overlay
   const [editingHolds, setEditingHolds] = useState<boolean>(false);
   // Allows overlay to detect when a hold is clicked
@@ -116,71 +112,73 @@ const Editor: React.FC<Props> = ({
           setSelectedHold,
           highlightedMove,
           setHighlightedMove,
-          zoomOffset,
-          setZoomOffset,
         }}
       >
-        {/* The maximum possible display area (the full screen) */}
-        <Box
-          display="flex"
-          justifyContent="center"
-          // Anchor for overlay button positioning
-          position="relative"
-          width="100vw"
-          height="100vh"
-          // Hide the image when it grows bigger than the viewport
-          sx={{ overflow: "hidden" }}
-        >
-          <EditorSvg boulderKey={data.problem.boulder}>
-            <BoulderImage boulderKey={data.problem.boulder} />
-
-            {/* This has to go before other interactive stuff so it doesn't eat
-                events from other components */}
-            <DragLayer mode="svg" />
-
-            {editingHolds ? (
-              <HoldEditor problemKey={data.problem} />
-            ) : (
-              <HoldMarks
-                holdConnectionKey={data.problem.holds}
-                // Selecting a hold opens the move modal, which shouldn't be
-                // possible if no beta is selected
-                onClick={selectedBeta ? setSelectedHold : undefined}
-              />
-            )}
-
-            {data.beta && !editingHolds && <BetaEditor betaKey={data.beta} />}
-          </EditorSvg>
-
-          {/* Top-left overlay buttons */}
-          <Stack
-            position="absolute"
-            top={0}
-            left={0}
-            padding={1}
-            direction="row"
-            spacing={1}
+        <ZoomPanProvider>
+          {/* The maximum possible display area (the full screen) */}
+          <Box
+            display="flex"
+            justifyContent="center"
+            // Anchor for overlay button positioning
+            position="relative"
+            width="100vw"
+            height="100vh"
+            // Hide the image when it grows bigger than the viewport
+            sx={{ overflow: "hidden" }}
           >
-            <IconButton component={Link} to="/" size="small">
-              <IconHome />
-            </IconButton>
+            <EditorSvg boulderKey={data.problem.boulder}>
+              <BoulderImage boulderKey={data.problem.boulder} />
 
-            <HelpText helpMode={helpMode} />
-          </Stack>
+              {/* This has to go before other interactive stuff so it doesn't eat
+                events from other components */}
+              <DragLayer mode="svg" />
 
-          {/* Controls sidebar/drawer */}
-          <EditorControls>
-            <BetaList
-              problemKey={data.problem}
-              selectedBeta={selectedBeta}
-              setSelectedBeta={setSelectedBeta}
-            />
+              <PanZone />
 
-            {data.beta && <BetaDetails dataKey={data.beta} />}
+              {editingHolds ? (
+                <HoldEditor problemKey={data.problem} />
+              ) : (
+                <HoldMarks
+                  holdConnectionKey={data.problem.holds}
+                  // Selecting a hold opens the move modal, which shouldn't be
+                  // possible if no beta is selected
+                  onClick={selectedBeta ? setSelectedHold : undefined}
+                />
+              )}
 
-            <DragLayer mode="html" />
-          </EditorControls>
-        </Box>
+              {data.beta && !editingHolds && <BetaEditor betaKey={data.beta} />}
+            </EditorSvg>
+
+            {/* Top-left overlay buttons */}
+            <Stack
+              position="absolute"
+              top={0}
+              left={0}
+              padding={1}
+              direction="row"
+              spacing={1}
+            >
+              <IconButton component={Link} to="/" size="small">
+                <IconHome />
+              </IconButton>
+
+              <HelpText helpMode={helpMode} />
+            </Stack>
+
+            {/* Controls sidebar/drawer */}
+            <EditorControls>
+              <BetaList
+                problemKey={data.problem}
+                selectedBeta={selectedBeta}
+                setSelectedBeta={setSelectedBeta}
+              />
+
+              {data.beta && <BetaDetails dataKey={data.beta} />}
+
+              <DragLayer mode="html" />
+            </EditorControls>
+          </Box>
+        </ZoomPanProvider>
       </EditorContext.Provider>
     </DndProvider>
   );

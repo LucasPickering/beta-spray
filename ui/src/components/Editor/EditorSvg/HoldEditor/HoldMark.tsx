@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
 import { DropHandler, useDrag, useDrop } from "util/dnd";
 import { graphql, useFragment } from "react-relay";
-import { useOverlayUtils } from "util/useOverlayUtils";
+import useOverlayUtils from "util/useOverlayUtils";
 import { HoldMark_holdNode$key } from "./__generated__/HoldMark_holdNode.graphql";
 import Positioned from "../Positioned";
 import HoldIcon from "./HoldIcon";

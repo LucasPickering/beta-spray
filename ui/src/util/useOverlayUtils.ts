@@ -12,10 +12,10 @@ import { assertIsDefined } from "./func";
  * because some operations require context about the SVG's dimensions in order
  * to do calculations.
  */
-export function useOverlayUtils(): {
-  toOverlayPosition: (apiPosition: APIPosition) => OverlayPosition;
-  toAPIPosition: (overlayPosition: OverlayPosition) => APIPosition;
-  toSvgPosition: (domPosition: XYCoord) => OverlayPosition;
+function useOverlayUtils(): {
+  toOverlayPosition(apiPosition: APIPosition): OverlayPosition;
+  toAPIPosition(overlayPosition: OverlayPosition): APIPosition;
+  toSvgPosition(domPosition: XYCoord): OverlayPosition;
 } {
   const { svgRef, dimensions } = useContext(SvgContext);
   return useMemo(
@@ -50,3 +50,5 @@ export function useOverlayUtils(): {
     [dimensions.width, dimensions.height, svgRef]
   );
 }
+
+export default useOverlayUtils;
