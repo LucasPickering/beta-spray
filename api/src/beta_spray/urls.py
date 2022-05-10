@@ -34,6 +34,10 @@ urlpatterns = [
             ]
         ),
     ),
-    # TODO disable in prd
-    *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
 ]
+
+# Only include media route in dev
+if settings.MEDIA_ROOT:
+    urlpatterns.extend(
+        static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    )

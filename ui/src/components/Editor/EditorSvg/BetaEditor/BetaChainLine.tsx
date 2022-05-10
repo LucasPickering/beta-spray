@@ -39,7 +39,6 @@ const BetaChainLine: React.FC<Props> = ({ startMove, endMove, onDrop }) => {
       ref={drag}
       css={[styleDraggable, isDragging && styleDragging]}
       stroke={palette.bodyParts[startMove.bodyPart]}
-      // TODO apply offset as a rotation transformation (so it can be animated)
       x1={startPos.x}
       y1={startPos.y}
       x2={endPos.x}

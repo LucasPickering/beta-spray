@@ -50,7 +50,6 @@ const BetaDetails: React.FC<Props> = ({ dataKey }) => {
     setMoves(beta.moves.edges.map(({ node }) => node));
   }, [beta.moves.edges]);
 
-  // TODO use loading state
   const { commit: updateBetaMove, state: updateState } =
     useMutation<BetaDetails_updateBetaMoveMutation>(graphql`
       mutation BetaDetails_updateBetaMoveMutation(
@@ -67,7 +66,6 @@ const BetaDetails: React.FC<Props> = ({ dataKey }) => {
       }
     `);
 
-  // TODO use loading state
   const { commit: deleteBetaMove, state: deleteState } =
     useMutation<BetaDetails_deleteBetaMoveMutation>(graphql`
       mutation BetaDetails_deleteBetaMoveMutation(

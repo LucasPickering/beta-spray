@@ -30,7 +30,9 @@ services:
 
   # Jank way of testing prd image
   # api:
-  #   image: ghcr.io/lucaspickering/beta-spray-api
+  #   build:
+  #     context: ./api/
+  #     dockerfile: prd.Dockerfile
   #   init: true # Fixes slow shutdown
   #   environment:
   #     - BETA_SPRAY_DB_NAME=beta_spray
@@ -39,6 +41,7 @@ services:
   #     - BETA_SPRAY_HOSTNAME=localhost
   #     - BETA_SPRAY_SECRET_KEY=bad-secret-key
   #     - BETA_SPRAY_MEDIA_BUCKET=bad-bucket-name
+  #     - DJANGO_SETTINGS_MODULE=beta_spray.settings.settings_prd
   #   depends_on:
   #     - db
   #   ports:

@@ -59,7 +59,6 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
     [moves]
   );
 
-  // TODO use loading state
   const { commit: createBetaMove, state: createState } =
     useMutation<BetaEditor_createBetaMoveMutation>(createBetaMoveMutation);
   const { commit: updateBetaMove, state: updateState } =

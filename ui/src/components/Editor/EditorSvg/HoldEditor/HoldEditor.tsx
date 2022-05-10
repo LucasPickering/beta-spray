@@ -42,7 +42,6 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
 
   const { toAPIPosition, toSvgPosition } = useOverlayUtils();
 
-  // TODO handle loading states
   const { commit: createHold, state: createState } =
     useMutation<HoldEditor_createHoldMutation>(graphql`
       mutation HoldEditor_createHoldMutation(

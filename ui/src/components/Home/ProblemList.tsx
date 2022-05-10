@@ -39,6 +39,7 @@ const ProblemList: React.FC<Props> = ({ problemConnectionKey }) => {
   );
 
   // For now, we enforce one problem per image, so auto-create the problem now
+  // TODO show loading state
   const { commit: createProblem, state: createState } =
     useMutation<ProblemList_createProblemMutation>(graphql`
       mutation ProblemList_createProblemMutation(
