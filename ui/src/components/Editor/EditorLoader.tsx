@@ -2,7 +2,7 @@ import React, { Suspense, useEffect, useState } from "react";
 import { useQueryLoader } from "react-relay";
 import { useNavigate, useParams } from "react-router-dom";
 import { assertIsDefined } from "util/func";
-import Loading from "../Loading";
+import Loading from "../common/Loading";
 import type { EditorQuery as EditorQueryType } from "./__generated__/EditorQuery.graphql";
 import EditorQuery from "./__generated__/EditorQuery.graphql";
 import Editor from "./Editor";

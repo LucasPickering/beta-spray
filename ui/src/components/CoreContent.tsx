@@ -5,11 +5,11 @@ import { RelayEnvironmentProvider } from "react-relay";
 import { ThemeProvider } from "@mui/material/styles";
 import { CssBaseline } from "@mui/material";
 import environment from "util/environment";
-import Loading from "components/Loading";
-import NotFound from "components/NotFound";
+import Loading from "components/common/Loading";
+import NotFound from "components/common/NotFound";
 import theme from "util/theme";
 import PageLayout from "components/PageLayout";
-import ErrorBoundary from "components/ErrorBoundary";
+import ErrorBoundary from "components/common/ErrorBoundary";
 import Home from "components/Home/Home";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 

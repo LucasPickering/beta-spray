@@ -11,7 +11,7 @@ import { moveArrayElement } from "util/func";
 import { BetaDetails_updateBetaMoveMutation } from "./__generated__/BetaDetails_updateBetaMoveMutation.graphql";
 import { EditorContext } from "util/context";
 import useMutation from "util/useMutation";
-import MutationError from "components/MutationError";
+import MutationError from "components/common/MutationError";
 
 interface Props {
   dataKey: BetaDetails_betaNode$key;

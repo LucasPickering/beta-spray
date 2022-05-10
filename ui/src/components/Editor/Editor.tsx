@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { PreloadedQuery, usePreloadedQuery } from "react-relay";
 import { graphql } from "relay-runtime";
-import NotFound from "../NotFound";
+import NotFound from "../common/NotFound";
 import BetaDetails from "./EditorControls/BetaDetails";
 import BetaList from "./EditorControls/BetaList";
 import BetaEditor from "./EditorSvg/BetaEditor/BetaEditor";

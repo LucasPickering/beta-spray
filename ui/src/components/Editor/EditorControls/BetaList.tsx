@@ -6,7 +6,7 @@ import { BetaList_deleteBetaMutation } from "./__generated__/BetaList_deleteBeta
 import RadioList from "./RadioList";
 import { randomPhrase } from "util/func";
 import { EditorContext } from "util/context";
-import MutationError from "components/MutationError";
+import MutationError from "components/common/MutationError";
 import useMutation from "util/useMutation";
 
 interface Props {

@@ -9,7 +9,7 @@ import { ProblemList_deleteProblemMutation } from "./__generated__/ProblemList_d
 import { ProblemList_updateProblemMutation } from "./__generated__/ProblemList_updateProblemMutation.graphql";
 import { ProblemList_createProblemMutation } from "./__generated__/ProblemList_createProblemMutation.graphql";
 import useMutation from "util/useMutation";
-import MutationError from "components/MutationError";
+import MutationError from "components/common/MutationError";
 
 interface Props {
   problemConnectionKey: ProblemList_problemConnection$key;

@@ -1,4 +1,4 @@
-import MutationError from "components/MutationError";
+import MutationError from "components/common/MutationError";
 import React from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";

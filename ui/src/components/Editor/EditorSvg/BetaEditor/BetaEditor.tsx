@@ -25,7 +25,7 @@ import { DropHandler } from "util/dnd";
 import BetaChainLine from "./BetaChainLine";
 import BetaChainMark from "./BetaChainMark";
 import useMutation from "util/useMutation";
-import MutationError from "components/MutationError";
+import MutationError from "components/common/MutationError";
 
 /** The distance to shift a disambiguated move */
 const disambiguationDistance = 2.5;
