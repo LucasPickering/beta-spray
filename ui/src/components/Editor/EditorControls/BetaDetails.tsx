@@ -12,6 +12,9 @@ import { BetaDetails_updateBetaMoveMutation } from "./__generated__/BetaDetails_
 import { EditorContext } from "util/context";
 import useMutation from "util/useMutation";
 import MutationError from "components/common/MutationError";
+import { EditorQuery } from "../__generated__/EditorQuery.graphql";
+import { editorQuery } from "../queries";
+import withQuery from "util/withQuery";
 
 interface Props {
   betaKey: BetaDetails_betaNode$key;
@@ -138,4 +141,10 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
   );
 };
 
-export default BetaDetails;
+export default withQuery<EditorQuery, Props>({
+  query: editorQuery,
+  dataToProps: (data) =>
+    data.beta && {
+      betaKey: data.beta,
+    },
+})(BetaDetails);

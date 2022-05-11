@@ -44,6 +44,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "core.middleware.TimeDelayMiddleware",
 ]
 
 ROOT_URLCONF = "beta_spray.urls"
@@ -165,3 +166,7 @@ if GS_BUCKET_NAME:
     DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
     # See https://django-storages.readthedocs.io/en/latest/backends/gcloud.html
     GS_DEFAULT_ACL = "publicRead"  # Use unsigned URLs for public access
+
+# Time delay setting for TimeDelayMiddleware. Useful for testing loading states
+# in the UI. Set to None/0 for no delay
+REQUEST_TIME_DELAY = None

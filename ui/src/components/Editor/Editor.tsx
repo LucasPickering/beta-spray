@@ -1,73 +1,44 @@
-import React, { useState } from "react";
-import { PreloadedQuery, usePreloadedQuery } from "react-relay";
-import { graphql } from "relay-runtime";
-import NotFound from "../common/NotFound";
-import BetaDetails from "./EditorControls/BetaDetails";
-import BetaList from "./EditorControls/BetaList";
-import BetaEditor from "./EditorSvg/BetaEditor/BetaEditor";
-import BoulderImage from "./EditorSvg/BoulderImage";
-import EditorSvg from "./EditorSvg/EditorSvg";
-import EditorControls from "./EditorControls/EditorControls";
-import { EditorQuery } from "./__generated__/EditorQuery.graphql";
-import HoldEditor from "./EditorSvg/HoldEditor/HoldEditor";
-import { Box, IconButton, Stack } from "@mui/material";
-import HoldMarks from "./EditorSvg/HoldEditor/HoldMarks";
+import React, { Suspense, useEffect, useState } from "react";
+import { useQueryLoader } from "react-relay";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { assertIsDefined } from "util/func";
+import Loading from "../common/Loading";
+import type { EditorQuery as EditorQueryType } from "./__generated__/EditorQuery.graphql";
+import EditorQuery from "./__generated__/EditorQuery.graphql";
+import { Box, Stack, IconButton, Skeleton } from "@mui/material";
 import { DndProvider } from "react-dnd";
 import { TouchBackend } from "react-dnd-touch-backend";
-import HelpText from "./EditorSvg/HelpText";
-import DragLayer from "./EditorSvg/DragLayer";
-import { Helmet } from "react-helmet-async";
-import { Link } from "react-router-dom";
 import { Home as IconHome } from "@mui/icons-material";
 import { EditorContext } from "util/context";
-import PanZone from "./EditorSvg/PanZone";
 import { ZoomPanProvider } from "util/zoom";
-
-interface Props {
-  queryRef: PreloadedQuery<EditorQuery>;
-  selectedBeta: string | undefined;
-  setSelectedBeta: (betaId: string | undefined) => void;
-}
+import BetaDetails from "./EditorControls/BetaDetails";
+import BetaList from "./EditorControls/BetaList";
+import EditorControls from "./EditorControls/EditorControls";
+import DragLayer from "./EditorSvg/DragLayer";
+import EditorSvg from "./EditorSvg/EditorSvg";
+import HelpText from "./EditorSvg/HelpText";
 
 /**
  * Main app component, for viewing+editing boulders/problems/betas. This is
  * mainly just a shell for managing state that crosses between the editor
  * overlay (the controls that appear over the image, which is SVG) and the
  * sidebar (everything else, standard HTML).
+ *
+ * This root component initiates the GraphQL queries that populate the page, but
+ * it doesn't *grab* that query data itself. Instead it just passes the query
+ * refs down as needed. This allows us to render as much as possible immeidately,
+ * and only block certain parts of the UI as needed. Much better than having
+ * one fat loading icon.
  */
-const Editor: React.FC<Props> = ({
-  queryRef,
-  selectedBeta,
-  setSelectedBeta,
-}) => {
-  const data = usePreloadedQuery<EditorQuery>(
-    graphql`
-      query EditorQuery($problemId: ID!, $betaId: ID!) {
-        problem(id: $problemId) {
-          name
-          boulder {
-            image {
-              url
-            }
-            ...EditorSvg_boulderNode
-            ...BoulderImage_boulderNode
-          }
-          ...BetaList_problemNode
-          ...HoldEditor_problemNode
-          holds {
-            ...HoldMarks_holdConnection
-          }
-        }
+const Editor: React.FC = () => {
+  const { problemId, betaId } = useParams();
+  assertIsDefined(problemId); // Only undefined if routing isn't hooked up right
 
-        # TODO split this into a separate query
-        beta(id: $betaId) {
-          ...BetaDetails_betaNode
-          ...BetaEditor_betaNode
-        }
-      }
-    `,
-    queryRef
-  );
+  const navigate = useNavigate();
+
+  // Read initial state values from route
+  const [selectedBeta, setSelectedBeta] = useState<string | undefined>(betaId);
+  const [queryRef, loadQuery] = useQueryLoader<EditorQueryType>(EditorQuery);
 
   // Toggle hold editor overlay
   const [editingHolds, setEditingHolds] = useState<boolean>(false);
@@ -76,10 +47,13 @@ const Editor: React.FC<Props> = ({
   // Link hovering between move list and overlay
   const [highlightedMove, setHighlightedMove] = useState<string | undefined>();
 
-  // uh oh, stinkyyyy
-  if (!data.problem) {
-    return <NotFound />;
-  }
+  // Load image data
+  useEffect(() => {
+    loadQuery({
+      problemId,
+      betaId: selectedBeta ?? "",
+    });
+  }, [loadQuery, problemId, selectedBeta]);
 
   const helpMode = (() => {
     if (editingHolds) {
@@ -99,13 +73,25 @@ const Editor: React.FC<Props> = ({
         enableMouseEvents: true,
       }}
     >
-      <Helmet>
+      {/* TODO make this work */}
+      {/* <Helmet>
         <title>{data.problem.name} - Beta Spray</title>
         <meta property="og:image" content={data.problem.boulder.image.url} />
-      </Helmet>
+      </Helmet> */}
 
       <EditorContext.Provider
         value={{
+          selectedBeta,
+          setSelectedBeta: (betaId) => {
+            setSelectedBeta(betaId);
+            navigate(
+              betaId
+                ? `/problems/${problemId}/beta/${betaId}`
+                : `/problems/${problemId}`,
+              // Navigation doesn't really change the page
+              { replace: true }
+            );
+          },
           editingHolds,
           setEditingHolds,
           selectedHold,
@@ -126,28 +112,19 @@ const Editor: React.FC<Props> = ({
             // Hide the image when it grows bigger than the viewport
             sx={{ overflow: "hidden" }}
           >
-            <EditorSvg boulderKey={data.problem.boulder}>
-              <BoulderImage boulderKey={data.problem.boulder} />
-
-              {/* This has to go before other interactive stuff so it doesn't eat
-                events from other components */}
-              <DragLayer mode="svg" />
-
-              <PanZone />
-
-              {editingHolds ? (
-                <HoldEditor problemKey={data.problem} />
-              ) : (
-                <HoldMarks
-                  holdConnectionKey={data.problem.holds}
-                  // Selecting a hold opens the move modal, which shouldn't be
-                  // possible if no beta is selected
-                  onClick={selectedBeta ? setSelectedHold : undefined}
-                />
-              )}
-
-              {data.beta && !editingHolds && <BetaEditor betaKey={data.beta} />}
-            </EditorSvg>
+            {/* Wrapper for the SVG, to provide background color and spacing
+                during loading */}
+            <Box
+              width="100%"
+              height="100%"
+              sx={({ palette }) => ({
+                backgroundColor: palette.background.paper,
+              })}
+            >
+              <Suspense fallback={<Loading />}>
+                {queryRef && <EditorSvg queryRef={queryRef} />}
+              </Suspense>
+            </Box>
 
             {/* Top-left overlay buttons */}
             <Stack
@@ -167,13 +144,17 @@ const Editor: React.FC<Props> = ({
 
             {/* Controls sidebar/drawer */}
             <EditorControls>
-              <BetaList
-                problemKey={data.problem}
-                selectedBeta={selectedBeta}
-                setSelectedBeta={setSelectedBeta}
-              />
+              <Suspense
+                fallback={<Skeleton variant="rectangular" height={100} />}
+              >
+                {queryRef && <BetaList queryRef={queryRef} />}
+              </Suspense>
 
-              {data.beta && <BetaDetails betaKey={data.beta} />}
+              <Suspense
+                fallback={<Skeleton variant="rectangular" height={240} />}
+              >
+                {queryRef && <BetaDetails queryRef={queryRef} />}
+              </Suspense>
 
               <DragLayer mode="html" />
             </EditorControls>

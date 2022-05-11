@@ -7,21 +7,18 @@ import RadioList from "./RadioList";
 import { EditorContext } from "util/context";
 import MutationError from "components/common/MutationError";
 import useMutation from "util/useMutation";
+import { EditorQuery } from "../__generated__/EditorQuery.graphql";
+import { editorQuery } from "../queries";
+import withQuery from "util/withQuery";
 
 interface Props {
   problemKey: BetaList_problemNode$key;
-  selectedBeta: string | undefined;
-  setSelectedBeta: (betaId: string | undefined) => void;
 }
 
 /**
  * List all the betas for a problem
  */
-const BetaList: React.FC<Props> = ({
-  problemKey,
-  selectedBeta,
-  setSelectedBeta,
-}) => {
+const BetaList: React.FC<Props> = ({ problemKey }) => {
   const problem = useFragment(
     graphql`
       fragment BetaList_problemNode on ProblemNode {
@@ -45,7 +42,8 @@ const BetaList: React.FC<Props> = ({
     problemKey
   );
   const connections = [problem.betas.__id];
-  const { editingHolds } = useContext(EditorContext);
+  const { selectedBeta, setSelectedBeta, editingHolds } =
+    useContext(EditorContext);
 
   // Auto-select the first beta if nothing else is selected
   useEffect(() => {
@@ -146,7 +144,6 @@ const BetaList: React.FC<Props> = ({
             },
           })
         }
-        sx={{ width: 240 }}
       />
 
       <MutationError message="Error creating beta" state={createState} />
@@ -155,4 +152,10 @@ const BetaList: React.FC<Props> = ({
   );
 };
 
-export default BetaList;
+export default withQuery<EditorQuery, Props>({
+  query: editorQuery,
+  dataToProps: (data) =>
+    data.problem && {
+      problemKey: data.problem,
+    },
+})(BetaList);

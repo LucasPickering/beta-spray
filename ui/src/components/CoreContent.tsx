@@ -14,7 +14,7 @@ import Home from "components/Home/Home";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 
 // Code splitting! Don't split the home page since it's tiny
-const EditorLoader = React.lazy(() => import("components/Editor/EditorLoader"));
+const Editor = React.lazy(() => import("components/Editor/Editor"));
 
 /**
  * The main visible page content. This should be loaded as a separate chunk from
@@ -43,10 +43,7 @@ const CoreContent: React.FC = () => {
               <ErrorBoundary>
                 <Routes>
                   {/* Fullscreen routes */}
-                  <Route
-                    path={"problems/:problemId"}
-                    element={<EditorLoader />}
-                  >
+                  <Route path={"problems/:problemId"} element={<Editor />}>
                     {/* Just an alias to pre-select beta */}
                     <Route path="beta/:betaId" element={<></>} />
                   </Route>

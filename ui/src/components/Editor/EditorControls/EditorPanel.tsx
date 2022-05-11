@@ -16,6 +16,7 @@ const EditorPanel: React.FC<Props> = ({ children }) => (
     padding={2}
     overflow="auto"
     flexShrink={0}
+    width={280}
   >
     <EditHoldsButton />
 

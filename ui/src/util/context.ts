@@ -11,6 +11,8 @@ export const SvgContext = React.createContext<SvgContextType>(
 );
 
 export interface EditorContextType {
+  selectedBeta: string | undefined;
+  setSelectedBeta: (betaId: string | undefined) => void;
   editingHolds: boolean;
   setEditingHolds: React.Dispatch<React.SetStateAction<boolean>>;
   selectedHold: string | undefined;

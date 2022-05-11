@@ -1,39 +1,69 @@
 import React, { useContext, useRef } from "react";
-import { SvgContext } from "util/context";
+import { EditorContext, SvgContext } from "util/context";
 import { graphql, useFragment } from "react-relay";
-import { EditorSvg_boulderNode$key } from "./__generated__/EditorSvg_boulderNode.graphql";
-import { useTheme } from "@mui/material";
 import { useZoomPan } from "util/zoom";
+import { EditorQuery } from "../__generated__/EditorQuery.graphql";
+import NotFound from "components/common/NotFound";
+import BetaEditor from "./BetaEditor/BetaEditor";
+import BoulderImage from "./BoulderImage";
+import DragLayer from "./DragLayer";
+import HoldEditor from "./HoldEditor/HoldEditor";
+import HoldMarks from "./HoldEditor/HoldMarks";
+import PanZone from "./PanZone";
+import { EditorSvg_problemNode$key } from "./__generated__/EditorSvg_problemNode.graphql";
+import { EditorSvg_betaNode$key } from "./__generated__/EditorSvg_betaNode.graphql";
 import { usePinch } from "@use-gesture/react";
 import { isDefined } from "util/func";
+import { editorQuery } from "../queries";
+import withQuery from "util/withQuery";
 
 interface Props {
-  boulderKey: EditorSvg_boulderNode$key;
-  children?: React.ReactNode;
+  problemKey: EditorSvg_problemNode$key;
+  betaKey: EditorSvg_betaNode$key;
 }
 
 /**
  * Main component of the editor. Render the boulder image as well as all overlay
- * components on top. This is just a wrapper, children are passed in by the
- * parent so that props can be drilled more easily.
+ * components on top.
  */
-const EditorSvg: React.FC<Props> = ({ boulderKey, children }) => {
-  const boulder = useFragment(
+const EditorSvg: React.FC<Props> = ({ problemKey, betaKey }) => {
+  const problem = useFragment(
     graphql`
-      fragment EditorSvg_boulderNode on BoulderNode {
-        image {
-          width
-          height
+      fragment EditorSvg_problemNode on ProblemNode {
+        name
+        boulder {
+          image {
+            url
+            width
+            height
+          }
+          ...BoulderImage_boulderNode
+        }
+        ...HoldEditor_problemNode
+        holds {
+          ...HoldMarks_holdConnection
         }
       }
     `,
-    boulderKey
+    problemKey
   );
+  const beta = useFragment(
+    graphql`
+      fragment EditorSvg_betaNode on BetaNode {
+        ...BetaEditor_betaNode
+      }
+    `,
+    betaKey
+  );
+
+  const { selectedBeta, editingHolds, setSelectedHold } =
+    useContext(EditorContext);
   const ref = useRef<SVGSVGElement | null>(null);
 
   // Make sure 100 is always the *smaller* of the two dimensions, so we get
   // consistent sizing on SVG elements for landscape vs portrait
-  const aspectRatio = boulder.image.width / boulder.image.height;
+  const aspectRatio =
+    problem.boulder.image.width / problem.boulder.image.height;
   const dimensions =
     aspectRatio < 1
       ? { width: 100, height: 100 / aspectRatio }
@@ -41,7 +71,28 @@ const EditorSvg: React.FC<Props> = ({ boulderKey, children }) => {
 
   return (
     <SvgContext.Provider value={{ svgRef: ref, dimensions }}>
-      <EditorSvgInner ref={ref}>{children}</EditorSvgInner>
+      <EditorSvgInner ref={ref}>
+        <BoulderImage boulderKey={problem.boulder} />
+
+        {/* This has to go before other interactive stuff so it doesn't eat
+            events from other components */}
+        <DragLayer mode="svg" />
+
+        <PanZone />
+
+        {editingHolds ? (
+          <HoldEditor problemKey={problem} />
+        ) : (
+          <HoldMarks
+            holdConnectionKey={problem.holds}
+            // Selecting a hold opens the move modal, which shouldn't be
+            // possible if no beta is selected
+            onClick={selectedBeta ? setSelectedHold : undefined}
+          />
+        )}
+
+        {beta && !editingHolds && <BetaEditor betaKey={beta} />}
+      </EditorSvgInner>
     </SvgContext.Provider>
   );
 };
@@ -56,7 +107,6 @@ const EditorSvgInner = React.forwardRef<
   // eslint-disable-next-line @typescript-eslint/ban-types
   React.PropsWithChildren<{}>
 >(({ children }, ref) => {
-  const { palette } = useTheme();
   const { zoom, offset, updateZoom } = useZoomPan();
   const { dimensions } = useContext(SvgContext);
 
@@ -97,8 +147,6 @@ const EditorSvgInner = React.forwardRef<
       css={{
         width: "100%",
         height: "100%",
-        alignSelf: "center",
-        backgroundColor: palette.background.paper,
         touchAction: "none",
       }}
       // Zoom in/out on scroll
@@ -111,4 +159,13 @@ const EditorSvgInner = React.forwardRef<
 
 EditorSvgInner.displayName = "EditorSvgInner";
 
-export default EditorSvg;
+export default withQuery<EditorQuery, Props>({
+  query: editorQuery,
+  dataToProps: (data) =>
+    data.problem &&
+    data.beta && {
+      problemKey: data.problem,
+      betaKey: data.beta,
+    },
+  noDataElement: <NotFound />,
+})(EditorSvg);
