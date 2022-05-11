@@ -10,6 +10,7 @@ import {
   FormControlLabel,
   Button,
   Typography,
+  Skeleton,
 } from "@mui/material";
 import { Add as IconAdd, Close as IconClose } from "@mui/icons-material";
 
@@ -62,7 +63,8 @@ const RadioList: React.FC<Props> = ({
                 control={<Radio disabled={disabled} />}
                 label={
                   <>
-                    <Typography>{name}</Typography>
+                    {/* Missing name indicates it's still loading */}
+                    <Typography>{name || <Skeleton />}</Typography>
                     {subtitle && (
                       <Typography variant="subtitle2" color="text.secondary">
                         {subtitle}

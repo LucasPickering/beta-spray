@@ -4,7 +4,6 @@ import { BetaList_problemNode$key } from "./__generated__/BetaList_problemNode.g
 import { BetaList_createBetaMutation } from "./__generated__/BetaList_createBetaMutation.graphql";
 import { BetaList_deleteBetaMutation } from "./__generated__/BetaList_deleteBetaMutation.graphql";
 import RadioList from "./RadioList";
-import { randomPhrase } from "util/func";
 import { EditorContext } from "util/context";
 import MutationError from "components/common/MutationError";
 import useMutation from "util/useMutation";
@@ -14,21 +13,6 @@ interface Props {
   selectedBeta: string | undefined;
   setSelectedBeta: (betaId: string | undefined) => void;
 }
-
-// TODO move name generation to server side
-const phraseGroups = [
-  ["Simply", "Just", "You", "All you have to do is"],
-  [
-    "Hang On",
-    "Don't Let Go",
-    "Don't Fall",
-    "Send It",
-    "Squeeze Harder",
-    "Be Taller",
-    "Don't Be Short?",
-    "Grow 6 Inches",
-  ],
-];
 
 /**
  * List all the betas for a problem
@@ -121,19 +105,10 @@ const BetaList: React.FC<Props> = ({
         selectedId={selectedBeta}
         setSelectedId={setSelectedBeta}
         onCreateNew={() => {
-          // At some point we'll want to move this generation to the server side
-          // so we won't be able to predict the name, but this works for now
-
-          const name = randomPhrase(
-            phraseGroups,
-            // Exclude existing names
-            problem.betas.edges.map(({ node }) => node.name)
-          );
           createBeta({
             variables: {
               input: {
                 problemId: problem.id,
-                name,
               },
               connections,
             },
@@ -142,7 +117,7 @@ const BetaList: React.FC<Props> = ({
               createBeta: {
                 beta: {
                   id: "",
-                  name,
+                  name: "",
                   moves: { edges: [] },
                 },
               },

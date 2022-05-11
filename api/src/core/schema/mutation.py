@@ -1,3 +1,8 @@
+from core.util import (
+    random_phrase,
+    beta_name_phrase_groups,
+    problem_name_phrase_groups,
+)
 import graphene
 import uuid
 from graphene import relay
@@ -140,7 +145,7 @@ class CreateProblemMutation(relay.ClientIDMutation):
     """
 
     class Input:
-        name = graphene.String(required=True)
+        name = graphene.String()
         boulder_id = graphene.ID()
         image_file = graphene.String()
 
@@ -148,21 +153,26 @@ class CreateProblemMutation(relay.ClientIDMutation):
 
     @classmethod
     def mutate_and_get_payload(
-        cls, root, info, name, boulder_id=None, image_file=None
+        cls, root, info, name=None, boulder_id=None, image_file=None
     ):
-        # TODO validate exactly one of boulder_id/image_file given
+        fields = {
+            # Generate a random name if not given
+            "name": name
+            if name is not None
+            else random_phrase(problem_name_phrase_groups)
+        }
 
-        # Convert global ID to a PK
-        kwargs = {}
+        # TODO validate exactly one of boulder_id/image_file given
         if boulder_id:
-            kwargs["boulder_id"] = BoulderNode.get_pk_from_global_id(
+            # Convert global ID to a PK
+            fields["boulder_id"] = BoulderNode.get_pk_from_global_id(
                 info, boulder_id
             )
         else:
             file = get_file(info, image_file)
-            kwargs["boulder"] = Boulder.objects.create(image=file)
+            fields["boulder"] = Boulder.objects.create(image=file)
 
-        problem = Problem.objects.create(name=name, **kwargs)
+        problem = Problem.objects.create(**fields)
         return cls(problem=problem)
 
 
@@ -265,16 +275,20 @@ class DeleteProblemHoldMutation(relay.ClientIDMutation):
 
 class CreateBetaMutation(relay.ClientIDMutation):
     class Input:
-        name = graphene.String(required=True)
         problem_id = graphene.ID(required=True)
+        name = graphene.String()
 
     beta = graphene.Field(BetaNode, required=True)
 
     @classmethod
-    def mutate_and_get_payload(cls, root, info, name, problem_id):
+    def mutate_and_get_payload(cls, root, info, problem_id, name=None):
         # Convert global ID to a PK
         # TODO spit out a useful error for bad ID here
         problem_id = ProblemNode.get_pk_from_global_id(info, problem_id)
+        # Generate a default name if needed
+        name = (
+            name if name is not None else random_phrase(beta_name_phrase_groups)
+        )
         beta = Beta.objects.create(name=name, problem_id=problem_id)
         return cls(beta=beta)
 

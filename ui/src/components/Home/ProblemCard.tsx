@@ -86,7 +86,8 @@ const ProblemCard: React.FC<Props> = ({ problemKey, onEdit, onDelete }) => {
             />
           ) : (
             <Typography variant="h6" component="h3">
-              {problemName}
+              {/* Missing name indicates it's still loading */}
+              {problemName || <Skeleton />}
             </Typography>
           )}
           <Typography

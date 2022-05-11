@@ -3,7 +3,6 @@ import React from "react";
 import { graphql, useFragment } from "react-relay";
 import ProblemCard from "./ProblemCard";
 import BoulderImageUpload from "./BoulderImageUpload";
-import { randomPhrase } from "util/func";
 import { ProblemList_problemConnection$key } from "./__generated__/ProblemList_problemConnection.graphql";
 import { ProblemList_deleteProblemMutation } from "./__generated__/ProblemList_deleteProblemMutation.graphql";
 import { ProblemList_updateProblemMutation } from "./__generated__/ProblemList_updateProblemMutation.graphql";
@@ -14,14 +13,6 @@ import MutationError from "components/common/MutationError";
 interface Props {
   problemConnectionKey: ProblemList_problemConnection$key;
 }
-
-// TODO move name generation to server side
-const phraseGroups = [
-  ["Up Up", "Monster", "Slab", "Crack", "Lateral"],
-  ["Up", "And Away", "Sauce", "Joy", "Wolves", "Psoriasis"],
-  // repetition => weighted odds
-  [undefined, undefined, undefined, "2.0", "But Harder"],
-];
 
 const ProblemList: React.FC<Props> = ({ problemConnectionKey }) => {
   const problems = useFragment(
@@ -131,13 +122,9 @@ const ProblemList: React.FC<Props> = ({ problemConnectionKey }) => {
       <Grid item xs={12}>
         <BoulderImageUpload
           onUpload={(file) => {
-            const name = randomPhrase(phraseGroups);
             createProblem({
               variables: {
-                input: {
-                  name,
-                  imageFile: "boulderImage",
-                },
+                input: { imageFile: "boulderImage" },
                 connections: [problems.__id],
               },
               uploadables: {
@@ -148,7 +135,7 @@ const ProblemList: React.FC<Props> = ({ problemConnectionKey }) => {
                 createProblem: {
                   problem: {
                     id: "",
-                    name,
+                    name: "",
                     createdAt: new Date(),
                     boulder: {
                       id: "",

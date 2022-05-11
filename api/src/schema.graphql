@@ -313,7 +313,7 @@ type CreateProblemMutationPayload {
 }
 
 input CreateProblemMutationInput {
-  name: String!
+  name: String
   boulderId: ID
   imageFile: String
   clientMutationId: String
@@ -372,8 +372,8 @@ type CreateBetaMutationPayload {
 }
 
 input CreateBetaMutationInput {
-  name: String!
   problemId: ID!
+  name: String
   clientMutationId: String
 }
 
