@@ -137,7 +137,6 @@ const BetaDetailsMove: React.FC<Props> = ({
 
       // Block unnecessary updates
       if (newDragIndex !== dragIndex) {
-        // TODO debounce calls here
         onReorder(item, newDragIndex);
         // *Warning:* We mutate the monitor state here. Not ideal, but necessary
         // to prevent constant swapping. They do it in the example so it must be

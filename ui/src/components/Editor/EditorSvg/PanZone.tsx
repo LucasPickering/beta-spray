@@ -4,6 +4,7 @@ import { useOverlayUtils } from "util/svg";
 import { useZoomPan } from "util/zoom";
 import InvisibleZone from "./InvisibleZone";
 import { OverlayPosition, subtract } from "util/svg";
+import { XYCoord } from "react-dnd";
 
 /**
  * Invisible layer to manage panning. This captures drag actions to pan the
@@ -14,47 +15,51 @@ const PanZone: React.FC = () => {
   const { toSvgPosition } = useOverlayUtils();
   // This will constantly update while panning, so we can track how much the
   // cursor moves on each frame to update pan offset by that amount
-  const [prevCursorPosition, setPrevCursorPosition] = useState<OverlayPosition>(
-    {
-      x: 0,
-      y: 0,
-    }
-  );
+  const [prevClientOffset, setPrevClientOffset] = useState<
+    OverlayPosition | undefined
+  >();
 
   // Use dnd to manage dragging. We have no drop target here cause we care about
   // the drag action itself. On every render, we'll update the offset
-  const [{ isDragging, cursorPosition }, drag] = useDrag<
+  const [{ isDragging, clientOffset }, drag] = useDrag<
     "svgPan",
-    { isDragging: boolean; cursorPosition: OverlayPosition | undefined }
+    {
+      isDragging: boolean;
+      clientOffset: XYCoord | null;
+    }
   >({
     type: "svgPan",
     collect(monitor) {
-      const clientOffset = monitor.getClientOffset();
-
       return {
         isDragging: Boolean(monitor.isDragging()),
-        cursorPosition: clientOffset ? toSvgPosition(clientOffset) : undefined,
+        clientOffset: monitor.getClientOffset(),
       };
     },
   });
 
   useEffect(() => {
-    if (cursorPosition) {
+    if (clientOffset && prevClientOffset) {
       // Change to offset is just how mnuch the cursor has moved since the last
       // time we applied change. We do prev-current though, because panning
       // goes in the opposite direction as the cursor movement.
-      const offsetDelta = subtract(prevCursorPosition, cursorPosition);
+      //
+      // WARNING: You might think "wow it's dumb how we're converting to SVG
+      // position twice on every render, we should just convert it once in the
+      // useDrag collector then everything else just handles SVG positions and
+      // it's all clean and shiny yippee". You're right! Except that for some
+      // fucking reason, returning the SVG position from the collector causes it
+      // to not trigger a re-render when the cursor moves, and everything stops
+      // working. I spent a day debugging it, save yourself and just leave it.
+      const offsetDelta = subtract(
+        toSvgPosition(prevClientOffset),
+        toSvgPosition(clientOffset)
+      );
       updatePan(offsetDelta);
-      setPrevCursorPosition(cursorPosition);
     }
-  }, [updatePan, prevCursorPosition, cursorPosition]);
-
-  // When not dragging, reset last applied to 0
-  useEffect(() => {
-    if (!isDragging) {
-      setPrevCursorPosition({ x: 0, y: 0 });
-    }
-  }, [isDragging]);
+    setPrevClientOffset(clientOffset ?? undefined);
+    // Deliberately excluding prevCursorPosition to prevent infinite loop
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [clientOffset]);
 
   return <InvisibleZone ref={drag} css={isDragging && { cursor: "move" }} />;
 };

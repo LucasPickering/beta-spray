@@ -79,8 +79,8 @@ export function useZoomPan(): {
    * of the image.
    */
   const coerceOffset = (
-    zoom: number,
-    offset: OverlayPosition
+    offset: OverlayPosition,
+    zoom: number
   ): OverlayPosition => ({
     x: coerce(offset.x, 0, dimensions.width - dimensions.width / zoom),
     y: coerce(offset.y, 0, dimensions.height - dimensions.height / zoom),
@@ -110,10 +110,13 @@ export function useZoomPan(): {
         // the same, as a proportion of the overall width. So we scale that
         // delta from the prev zoom level to the new one.
         //
-        const offset = coerceOffset(zoom, {
-          x: mousePos.x - (prev.zoom * (mousePos.x - prev.offset.x)) / zoom,
-          y: mousePos.y - (prev.zoom * (mousePos.y - prev.offset.y)) / zoom,
-        });
+        const offset = coerceOffset(
+          {
+            x: mousePos.x - (prev.zoom * (mousePos.x - prev.offset.x)) / zoom,
+            y: mousePos.y - (prev.zoom * (mousePos.y - prev.offset.y)) / zoom,
+          },
+          zoom
+        );
         return { zoom, offset };
       });
     },
@@ -124,7 +127,7 @@ export function useZoomPan(): {
     updatePan(offsetDelta) {
       setZoomOffset((prev) => ({
         zoom: prev.zoom,
-        offset: coerceOffset(prev.zoom, add(prev.offset, offsetDelta)),
+        offset: coerceOffset(add(prev.offset, offsetDelta), prev.zoom),
       }));
     },
   };
