@@ -14,12 +14,12 @@ import useMutation from "util/useMutation";
 import MutationError from "components/common/MutationError";
 
 interface Props {
-  dataKey: BetaDetails_betaNode$key;
+  betaKey: BetaDetails_betaNode$key;
 }
 
 type BetaMove = BetaDetails_betaNode$data["moves"]["edges"][0]["node"];
 
-const BetaDetails: React.FC<Props> = ({ dataKey }) => {
+const BetaDetails: React.FC<Props> = ({ betaKey }) => {
   const beta = useFragment(
     graphql`
       fragment BetaDetails_betaNode on BetaNode {
@@ -34,7 +34,7 @@ const BetaDetails: React.FC<Props> = ({ dataKey }) => {
         }
       }
     `,
-    dataKey
+    betaKey
   );
 
   const { editingHolds } = useContext(EditorContext);

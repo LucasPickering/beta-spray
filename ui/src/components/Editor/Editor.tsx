@@ -173,7 +173,7 @@ const Editor: React.FC<Props> = ({
                 setSelectedBeta={setSelectedBeta}
               />
 
-              {data.beta && <BetaDetails dataKey={data.beta} />}
+              {data.beta && <BetaDetails betaKey={data.beta} />}
 
               <DragLayer mode="html" />
             </EditorControls>
