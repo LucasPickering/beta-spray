@@ -51,12 +51,17 @@ jobs:
     steps:
       - uses: actions/checkout@master
 
+      - name: Cache poetry files
+        uses: actions/cache@v2
+        with:
+          path: /home/runner/.cache/pypoetry/virtualenvs
+          key: poetry-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
+
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      # TODO cache poetry files
       - name: Install Poetry
         uses: snok/install-poetry@v1
 

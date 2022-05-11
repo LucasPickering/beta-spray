@@ -47,7 +47,6 @@ const BetaList: React.FC<Props> = ({
             node {
               id
               name
-              # TODO get length directly from connection
               moves {
                 edges {
                   cursor
@@ -86,7 +85,6 @@ const BetaList: React.FC<Props> = ({
             # This should match the fragment above
             id
             name
-            # TODO get length directly from connection
             moves {
               edges {
                 cursor

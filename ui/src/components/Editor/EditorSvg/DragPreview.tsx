@@ -35,7 +35,6 @@ const DragPreview: React.FC<Props> = ({ mode, itemWithKind }) => {
       case "betaMoveOverlay": {
         const { item } = itemWithKind;
         const move = item.kind === "move" ? item.move : item.startMove;
-        // TODO include projected `order` on the preview
         return <BetaMoveIcon bodyPart={move.bodyPart} isDragging />;
       }
     }
