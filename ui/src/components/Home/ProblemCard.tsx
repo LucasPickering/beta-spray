@@ -6,6 +6,7 @@ import {
   CardMedia,
   IconButton,
   Input,
+  Skeleton,
   Typography,
 } from "@mui/material";
 import dayjs from "dayjs";
@@ -56,15 +57,21 @@ const ProblemCard: React.FC<Props> = ({ problemKey, onEdit, onDelete }) => {
   return (
     <Card>
       <CardActionArea component={RouterLink} to={`/problems/${problem.id}`}>
-        <CardMedia
-          component="img"
-          image={problem.boulder.image.url}
-          alt="boulder"
-          sx={{
-            objectFit: "cover",
-            height: 200,
-          }}
-        />
+        <CardMedia sx={{ height: 200 }}>
+          {problem.boulder.image.url ? (
+            <img
+              src={problem.boulder.image.url}
+              alt={`${problem.name} boulder`}
+              width="100%"
+              height="100%"
+              css={{ objectFit: "cover" }}
+            />
+          ) : (
+            // Empty URL indicates this object was optimistically inserted, and
+            // we're still waiting on the image URL from the server
+            <Skeleton variant="rectangular" width="100%" height="100%" />
+          )}
+        </CardMedia>
       </CardActionArea>
 
       {/* Form enables name editing functionalities */}

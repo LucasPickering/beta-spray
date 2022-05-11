@@ -15,6 +15,7 @@ interface Props {
   setSelectedBeta: (betaId: string | undefined) => void;
 }
 
+// TODO move name generation to server side
 const phraseGroups = [
   ["Simply", "Just", "You", "All you have to do is"],
   [
@@ -69,7 +70,6 @@ const BetaList: React.FC<Props> = ({
     }
   }, [selectedBeta, setSelectedBeta, problem.betas.edges]);
 
-  // TODO handle loading states
   const { commit: createBeta, state: createState } =
     useMutation<BetaList_createBetaMutation>(graphql`
       mutation BetaList_createBetaMutation(
@@ -120,33 +120,52 @@ const BetaList: React.FC<Props> = ({
         disabled={editingHolds}
         selectedId={selectedBeta}
         setSelectedId={setSelectedBeta}
-        onCreateNew={() =>
+        onCreateNew={() => {
+          // At some point we'll want to move this generation to the server side
+          // so we won't be able to predict the name, but this works for now
+
+          const name = randomPhrase(
+            phraseGroups,
+            // Exclude existing names
+            problem.betas.edges.map(({ node }) => node.name)
+          );
           createBeta({
             variables: {
               input: {
                 problemId: problem.id,
-                name: randomPhrase(
-                  phraseGroups,
-                  // Exclude existing names
-                  problem.betas.edges.map(({ node }) => node.name)
-                ),
+                name,
               },
               connections,
             },
+            // Unfortunately no static typing here, but Relay checks at runtime
+            optimisticResponse: {
+              createBeta: {
+                beta: {
+                  id: "",
+                  name,
+                  moves: { edges: [] },
+                },
+              },
+            },
             // Select the new beta after creation
-            onCompleted: (data) => {
+            onCompleted(data) {
               if (data.createBeta) {
                 setSelectedBeta(data.createBeta.beta.id);
               }
             },
-          })
-        }
-        onDelete={(id) =>
+          });
+        }}
+        onDelete={(betaId) =>
           deleteBeta({
-            variables: { input: { betaId: id }, connections },
-            onCompleted: () => {
+            variables: { input: { betaId }, connections },
+            optimisticResponse: {
+              deleteBeta: {
+                beta: { id: betaId },
+              },
+            },
+            onCompleted() {
               // If the selected beta was deleted, unselect it
-              if (selectedBeta === id) {
+              if (selectedBeta === betaId) {
                 setSelectedBeta(undefined);
               }
             },

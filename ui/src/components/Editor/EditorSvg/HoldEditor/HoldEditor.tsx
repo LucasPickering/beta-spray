@@ -104,6 +104,11 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
               // *Don't* add to the problem, just to the image
               connections: [problem.holds.__id],
             },
+            optimisticResponse: {
+              createHold: {
+                hold: { id: "", ...apiPos },
+              },
+            },
           });
         }}
       />
@@ -121,6 +126,11 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
               // Delete from everywhere possible
               connections: [problem.holds.__id],
             },
+            optimisticResponse: {
+              deleteHold: {
+                hold: { id: holdId },
+              },
+            },
           });
         }}
         // Darg and drop = move hold
@@ -129,6 +139,11 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
           updateHold({
             variables: {
               input: { holdId: item.holdId, ...apiPos },
+            },
+            optimisticResponse: {
+              updateHold: {
+                hold: { id: item.holdId, ...apiPos },
+              },
             },
           });
         }}

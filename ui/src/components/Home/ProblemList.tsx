@@ -15,6 +15,7 @@ interface Props {
   problemConnectionKey: ProblemList_problemConnection$key;
 }
 
+// TODO move name generation to server side
 const phraseGroups = [
   ["Up Up", "Monster", "Slab", "Crack", "Lateral"],
   ["Up", "And Away", "Sauce", "Joy", "Wolves", "Psoriasis"],
@@ -39,7 +40,6 @@ const ProblemList: React.FC<Props> = ({ problemConnectionKey }) => {
   );
 
   // For now, we enforce one problem per image, so auto-create the problem now
-  // TODO show loading state
   const { commit: createProblem, state: createState } =
     useMutation<ProblemList_createProblemMutation>(graphql`
       mutation ProblemList_createProblemMutation(
@@ -67,7 +67,7 @@ const ProblemList: React.FC<Props> = ({ problemConnectionKey }) => {
         updateProblem(input: $input) {
           problem {
             id
-            ...ProblemCard_problemNode
+            name
           }
         }
       }
@@ -99,13 +99,28 @@ const ProblemList: React.FC<Props> = ({ problemConnectionKey }) => {
           <ProblemCard
             problemKey={node}
             onEdit={(problemId, name) =>
-              updateProblem({ variables: { input: { problemId, name } } })
+              updateProblem({
+                variables: { input: { problemId, name } },
+                optimisticResponse: {
+                  updateProblem: {
+                    problem: {
+                      id: problemId,
+                      name,
+                    },
+                  },
+                },
+              })
             }
             onDelete={(problemId) =>
               deleteProblem({
                 variables: {
                   input: { problemId },
                   connections: [problems.__id],
+                },
+                optimisticResponse: {
+                  deleteProblem: {
+                    problem: { id: problemId },
+                  },
                 },
               })
             }
@@ -116,16 +131,34 @@ const ProblemList: React.FC<Props> = ({ problemConnectionKey }) => {
       <Grid item xs={12}>
         <BoulderImageUpload
           onUpload={(file) => {
+            const name = randomPhrase(phraseGroups);
             createProblem({
               variables: {
                 input: {
-                  name: randomPhrase(phraseGroups),
+                  name,
                   imageFile: "boulderImage",
                 },
                 connections: [problems.__id],
               },
               uploadables: {
                 boulderImage: file,
+              },
+              // Unfortunately no static typing here, but Relay checks at runtime
+              optimisticResponse: {
+                createProblem: {
+                  problem: {
+                    id: "",
+                    name,
+                    createdAt: new Date(),
+                    boulder: {
+                      id: "",
+                      // Card should detect empty URL and render a placeholder
+                      image: {
+                        url: "",
+                      },
+                    },
+                  },
+                },
               },
             });
           }}

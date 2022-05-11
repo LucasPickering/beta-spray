@@ -85,6 +85,7 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
                     holdId: result.holdId,
                   },
                 },
+                // Punting on optimistic update because ordering is hard
               });
             } else {
               // Dragging an intermediate move just moves it to another spot
@@ -93,6 +94,11 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
                   input: {
                     betaMoveId: item.move.id,
                     holdId: result.holdId,
+                  },
+                },
+                optimisticResponse: {
+                  updateBetaMove: {
+                    betaMove: { id: item.move.id, hold: { id: result.holdId } },
                   },
                 },
               });
@@ -111,6 +117,7 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
                 holdId: result.holdId,
               },
             },
+            // Punting on optimistic update because ordering is hard
           });
       }
     },
@@ -130,6 +137,7 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
             betaMoveId: move.id,
           },
         },
+        // Punting on optimistic update because ordering is hard
         // Prevent ghost highlight
         onCompleted: () => setHighlightedMove(undefined),
       }),
@@ -194,6 +202,7 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
                 holdId: selectedHold,
               },
             },
+            // Punting on optimistic update because ordering is hard
           });
           setSelectedHold(undefined);
         }}
@@ -255,8 +264,10 @@ const updateBetaMoveMutation = graphql`
   ) {
     updateBetaMove(input: $input) {
       betaMove {
-        beta {
-          ...BetaEditor_betaNode # Refetch to update UI
+        id
+        # These are the fields we modify
+        hold {
+          id
         }
       }
     }

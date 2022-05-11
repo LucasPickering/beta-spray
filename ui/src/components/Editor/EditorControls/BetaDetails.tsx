@@ -116,6 +116,7 @@ const BetaDetails: React.FC<Props> = ({ dataKey }) => {
                       order: item.index,
                     },
                   },
+                  // Punting on optimistic update because it's complicated
                 });
               }
             }}
@@ -124,6 +125,7 @@ const BetaDetails: React.FC<Props> = ({ dataKey }) => {
                 variables: {
                   input: { betaMoveId: node.id },
                 },
+                // Punting on optimistic update because it's complicated
               })
             }
           />
