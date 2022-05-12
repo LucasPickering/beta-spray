@@ -4,6 +4,8 @@ import { graphql, useFragment } from "react-relay";
 import { EditorSvg_boulderNode$key } from "./__generated__/EditorSvg_boulderNode.graphql";
 import { useTheme } from "@mui/material";
 import { useZoomPan } from "util/zoom";
+import { usePinch } from "@use-gesture/react";
+import { isDefined } from "util/func";
 
 interface Props {
   boulderKey: EditorSvg_boulderNode$key;
@@ -57,6 +59,26 @@ const EditorSvgInner = React.forwardRef<
   const { zoom, offset, updateZoom } = useZoomPan();
   const { dimensions } = useContext(SvgContext);
 
+  // Capture pinch gesture for zoom on mobile
+  const bind = usePinch((state) => {
+    const {
+      origin: [originX, originY],
+      da: [distance],
+      memo,
+    } = state;
+
+    // Calculate *difference between* the *distance between the fingers* on this
+    // render compared to the previous render. prevDistance should only be
+    // undefined on the first render of a gesture.
+    const prevDistance = memo?.distance as number | undefined;
+    if (isDefined(prevDistance)) {
+      const zoomDelta = distance - prevDistance;
+      updateZoom(zoomDelta, { x: originX, y: originY });
+    }
+
+    return { distance }; // Memoize this for the next loop
+  });
+
   // SVG view box, which defines the visible window into the SVG. This is how
   // we implement both pan and zoom, by translating and scaling the view box.
   const viewBox = {
@@ -69,6 +91,7 @@ const EditorSvgInner = React.forwardRef<
   return (
     <svg
       ref={ref}
+      {...bind()}
       // Define bounds of the SVG coordinate system
       width={dimensions.width}
       height={dimensions.height}
@@ -79,9 +102,9 @@ const EditorSvgInner = React.forwardRef<
         height: "100%",
         alignSelf: "center",
         backgroundColor: palette.background.paper,
+        touchAction: "none",
       }}
       // Zoom in/out on scroll
-      // TODO capture pinch too
       onWheel={(e) => updateZoom(e.deltaY * -1, { x: e.clientX, y: e.clientY })}
     >
       {children}

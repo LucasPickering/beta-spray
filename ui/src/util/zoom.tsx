@@ -32,7 +32,6 @@ interface ZoomPanContextType {
 const ZoomPanContext = React.createContext<ZoomPanContextType>({
   zoomOffset: {
     zoom: 0,
-
     offset: { x: 0, y: 0 },
   },
   setZoomOffset: noop,
