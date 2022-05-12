@@ -66,11 +66,10 @@ If something goes wrong, figure it out.
 
 ### Kubernetes Deploy
 
-We use Helm. Helm sucks. `¯\_(ツ)_/¯`
+Deployment is managed via Terraform, which underneath uses Helm to manage the Kubernetes resources. See the README files in each `terraform` sub-directory for more info. To deploy the latest version:
 
 ```sh
-cd deploy/
-./scripts/deploy.sh
+./deploy/deploy.sh
 ```
 
 ## Notes

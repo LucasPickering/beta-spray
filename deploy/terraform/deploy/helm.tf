@@ -1,8 +1,6 @@
-
-
 resource "helm_release" "beta_spray" {
   name             = "beta-spray"
-  chart            = "../../helm"
+  chart            = "./helm"
   namespace        = var.kube_namespace
   create_namespace = true
 
