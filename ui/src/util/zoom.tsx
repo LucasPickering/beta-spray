@@ -37,10 +37,14 @@ const ZoomPanContext = React.createContext<ZoomPanContextType>({
   setZoomOffset: noop,
 });
 
+interface Props {
+  children?: React.ReactNode;
+}
+
 /**
  * Context provider for zooming/panning the SVG.
  */
-export const ZoomPanProvider: React.FC = ({ children }) => {
+export const ZoomPanProvider: React.FC<Props> = ({ children }) => {
   const [zoomOffset, setZoomOffset] = useState<ZoomOffset>({
     zoom: 1,
     offset: { x: 0, y: 0 },

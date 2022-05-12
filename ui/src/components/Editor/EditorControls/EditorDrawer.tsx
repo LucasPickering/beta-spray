@@ -5,10 +5,14 @@ import { Done as IconDone } from "@mui/icons-material";
 import { EditorContext } from "util/context";
 import EditHoldsButton from "./EditHoldsButton";
 
+interface Props {
+  children?: React.ReactNode;
+}
+
 /**
  * Drawer container for editor controls. For small screens.
  */
-const EditorDrawer: React.FC = ({ children }) => {
+const EditorDrawer: React.FC<Props> = ({ children }) => {
   const [isOpen, setIsOpen] = useState<boolean>(true);
   const { editingHolds, setEditingHolds } = useContext(EditorContext);
 

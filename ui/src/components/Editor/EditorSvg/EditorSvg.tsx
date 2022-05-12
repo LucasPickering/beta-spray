@@ -9,6 +9,7 @@ import { isDefined } from "util/func";
 
 interface Props {
   boulderKey: EditorSvg_boulderNode$key;
+  children?: React.ReactNode;
 }
 
 /**

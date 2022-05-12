@@ -3,6 +3,7 @@ import ErrorMessage from "./ErrorMessage";
 
 interface Props {
   fallback?: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 interface State {

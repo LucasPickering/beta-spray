@@ -2,10 +2,14 @@ import { Stack } from "@mui/material";
 import React from "react";
 import EditHoldsButton from "./EditHoldsButton";
 
+interface Props {
+  children?: React.ReactNode;
+}
+
 /**
  * Static container for editor controls. For large screens.
  */
-const EditorPanel: React.FC = ({ children }) => (
+const EditorPanel: React.FC<Props> = ({ children }) => (
   <Stack
     direction="column"
     spacing={2}
