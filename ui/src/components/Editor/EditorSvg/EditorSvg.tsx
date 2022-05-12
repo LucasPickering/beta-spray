@@ -61,24 +61,20 @@ const EditorSvgInner = React.forwardRef<
   const { dimensions } = useContext(SvgContext);
 
   // Capture pinch gesture for zoom on mobile
-  const bind = usePinch((state) => {
-    const {
-      origin: [originX, originY],
-      da: [distance],
-      memo,
-    } = state;
+  const bind = usePinch(
+    ({ origin: [originX, originY], da: [distance], memo }) => {
+      // Calculate *difference between* the *distance between the fingers* on this
+      // render compared to the previous render. prevDistance should only be
+      // undefined on the first render of a gesture.
+      const prevDistance = memo?.distance as number | undefined;
+      if (isDefined(prevDistance)) {
+        const zoomDelta = distance - prevDistance;
+        updateZoom(zoomDelta, { x: originX, y: originY });
+      }
 
-    // Calculate *difference between* the *distance between the fingers* on this
-    // render compared to the previous render. prevDistance should only be
-    // undefined on the first render of a gesture.
-    const prevDistance = memo?.distance as number | undefined;
-    if (isDefined(prevDistance)) {
-      const zoomDelta = distance - prevDistance;
-      updateZoom(zoomDelta, { x: originX, y: originY });
+      return { distance }; // Memoize this for the next loop
     }
-
-    return { distance }; // Memoize this for the next loop
-  });
+  );
 
   // SVG view box, which defines the visible window into the SVG. This is how
   // we implement both pan and zoom, by translating and scaling the view box.

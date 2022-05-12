@@ -21,7 +21,6 @@ import { DistributivePick } from "./types";
  * drag/drop object in those universes.
  */
 export type DragType =
-  | { kind: "svgPan"; item: never; drop: never }
   | {
       kind: "holdOverlay";
       item: { holdId: string };
