@@ -46,6 +46,8 @@ function withQuery<Q extends OperationType, P>({
   noDataElement = null,
 }: Options<Q, P>): (Component: React.FC<P>) => React.FC<SuspenseProps<Q>> {
   return (Component) => {
+    const baseName = Component.displayName ?? Component.name;
+
     // We need two separate components here: Loader loads the query data when
     // the query has been executed, Suspense shows loading status when it hasn't.
     // This is two queries because hooks can't be optional, we can only do
@@ -60,14 +62,14 @@ function withQuery<Q extends OperationType, P>({
 
       return <Component {...childProps} />;
     };
-    LoaderComponent.displayName = `${Component.displayName}Loader`;
+    LoaderComponent.displayName = `${baseName}Loader`;
 
     const SuspenseComponent: React.FC<SuspenseProps<Q>> = ({ queryRef }) => (
       <Suspense fallback={fallbackElement}>
         {queryRef && <LoaderComponent queryRef={queryRef} />}
       </Suspense>
     );
-    SuspenseComponent.displayName = `${Component.displayName}Suspense`;
+    SuspenseComponent.displayName = `${baseName}Suspense`;
 
     return SuspenseComponent;
   };

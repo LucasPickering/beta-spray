@@ -6,8 +6,8 @@ import { BetaList_deleteBetaMutation } from "./__generated__/BetaList_deleteBeta
 import { EditorContext } from "util/context";
 import MutationError from "components/common/MutationError";
 import useMutation from "util/useMutation";
-import { queriesEditorQuery } from "../__generated__/queriesEditorQuery.graphql";
-import { editorQuery } from "../queries";
+import { queriesProblemQuery } from "../__generated__/queriesProblemQuery.graphql";
+import { problemQuery } from "../queries";
 import withQuery from "util/withQuery";
 import {
   Button,
@@ -245,8 +245,8 @@ const BetaList: React.FC<Props> = ({ problemKey }) => {
   );
 };
 
-export default withQuery<queriesEditorQuery, Props>({
-  query: editorQuery,
+export default withQuery<queriesProblemQuery, Props>({
+  query: problemQuery,
   dataToProps: (data) => data.problem && { problemKey: data.problem },
   fallbackElement: <Skeleton variant="rectangular" height={100} />,
 })(BetaList);

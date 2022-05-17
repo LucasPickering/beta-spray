@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useQueryLoader } from "react-relay";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { assertIsDefined } from "util/func";
-import type { queriesEditorQuery as queriesEditorQueryType } from "./__generated__/queriesEditorQuery.graphql";
-import queriesEditorQuery from "./__generated__/queriesEditorQuery.graphql";
+import type { queriesProblemQuery as queriesProblemQueryType } from "./__generated__/queriesProblemQuery.graphql";
+import queriesProblemQuery from "./__generated__/queriesProblemQuery.graphql";
+import type { queriesBetaQuery as queriesBetaQueryType } from "./__generated__/queriesBetaQuery.graphql";
+import queriesBetaQuery from "./__generated__/queriesBetaQuery.graphql";
 import { Box, Stack, IconButton } from "@mui/material";
 import { DndProvider } from "react-dnd";
 import { TouchBackend } from "react-dnd-touch-backend";
@@ -38,8 +40,10 @@ const Editor: React.FC = () => {
 
   // Read initial state values from route
   const [selectedBeta, setSelectedBeta] = useState<string | undefined>(betaId);
-  const [queryRef, loadQuery] =
-    useQueryLoader<queriesEditorQueryType>(queriesEditorQuery);
+  const [problemQueryRef, loadProblemQuery] =
+    useQueryLoader<queriesProblemQueryType>(queriesProblemQuery);
+  const [betaQueryRef, loadBetaQuery] =
+    useQueryLoader<queriesBetaQueryType>(queriesBetaQuery);
 
   // Toggle hold editor overlay
   const [editingHolds, setEditingHolds] = useState<boolean>(false);
@@ -50,11 +54,22 @@ const Editor: React.FC = () => {
 
   // Load image data
   useEffect(() => {
-    loadQuery({
-      problemId,
-      betaId: selectedBeta ?? "",
-    });
-  }, [loadQuery, problemId, selectedBeta]);
+    loadProblemQuery({ problemId });
+  }, [loadProblemQuery, problemId]);
+  useEffect(() => {
+    if (selectedBeta) {
+      loadBetaQuery(
+        { betaId: selectedBeta },
+        // This is really whacky but if we don't include this (instead use
+        // default of store-or-network), then any time we request a cached beta,
+        // Relay will re-send the request for the *problem* (???). It's gotta
+        // be a bug in Relay but I haven't bothered to find a minimal repro
+        // yet so haven't reported it, just using this workaround.
+        // TODO report Relay bug
+        { fetchPolicy: "store-and-network" }
+      );
+    }
+  }, [loadBetaQuery, selectedBeta]);
 
   // Make sure state stays in sync with the URL
   // In most cases we should update both of these simultaneously so this hook
@@ -82,10 +97,12 @@ const Editor: React.FC = () => {
         enableMouseEvents: true,
       }}
     >
-      <EditorHelmet queryRef={queryRef} />
+      <EditorHelmet queryRef={problemQueryRef} />
 
       <EditorContext.Provider
         value={{
+          problemQueryRef,
+          betaQueryRef,
           selectedBeta,
           setSelectedBeta: (betaId) => {
             setSelectedBeta(betaId);
@@ -126,7 +143,7 @@ const Editor: React.FC = () => {
                 backgroundColor: palette.background.paper,
               })}
             >
-              <EditorSvg queryRef={queryRef} />
+              <EditorSvg queryRef={problemQueryRef} />
             </Box>
 
             {/* Top-left overlay buttons */}
@@ -147,9 +164,9 @@ const Editor: React.FC = () => {
 
             {/* Controls sidebar/drawer */}
             <EditorControls>
-              <BetaList queryRef={queryRef} />
+              <BetaList queryRef={problemQueryRef} />
 
-              <BetaDetails queryRef={queryRef} />
+              <BetaDetails queryRef={betaQueryRef} />
 
               <DragLayer mode="html" />
             </EditorControls>

@@ -1,4 +1,7 @@
+import { queriesBetaQuery } from "components/Editor/__generated__/queriesBetaQuery.graphql";
+import { queriesProblemQuery } from "components/Editor/__generated__/queriesProblemQuery.graphql";
 import React from "react";
+import { PreloadedQuery } from "react-relay";
 import { Dimensions } from "./svg";
 
 export interface SvgContextType {
@@ -11,6 +14,8 @@ export const SvgContext = React.createContext<SvgContextType>(
 );
 
 export interface EditorContextType {
+  problemQueryRef: PreloadedQuery<queriesProblemQuery> | null | undefined;
+  betaQueryRef: PreloadedQuery<queriesBetaQuery> | null | undefined;
   selectedBeta: string | undefined;
   setSelectedBeta: (betaId: string | undefined) => void;
   editingHolds: boolean;

@@ -2,7 +2,7 @@ import React, { useContext, useRef } from "react";
 import { EditorContext, SvgContext } from "util/context";
 import { graphql, useFragment } from "react-relay";
 import { useZoomPan } from "util/zoom";
-import { queriesEditorQuery } from "../__generated__/queriesEditorQuery.graphql";
+import { queriesProblemQuery } from "../__generated__/queriesProblemQuery.graphql";
 import NotFound from "components/common/NotFound";
 import BetaEditor from "./BetaEditor/BetaEditor";
 import BoulderImage from "./BoulderImage";
@@ -13,21 +13,19 @@ import PanZone from "./PanZone";
 import { EditorSvg_problemNode$key } from "./__generated__/EditorSvg_problemNode.graphql";
 import { usePinch } from "@use-gesture/react";
 import { isDefined } from "util/func";
-import { editorQuery } from "../queries";
+import { problemQuery } from "../queries";
 import withQuery from "util/withQuery";
 import Loading from "components/common/Loading";
-import { BetaEditor_betaNode$key } from "./BetaEditor/__generated__/BetaEditor_betaNode.graphql";
 
 interface Props {
   problemKey: EditorSvg_problemNode$key;
-  betaKey: BetaEditor_betaNode$key | null;
 }
 
 /**
  * Main component of the editor. Render the boulder image as well as all overlay
  * components on top.
  */
-const EditorSvg: React.FC<Props> = ({ problemKey, betaKey }) => {
+const EditorSvg: React.FC<Props> = ({ problemKey }) => {
   const problem = useFragment(
     graphql`
       fragment EditorSvg_problemNode on ProblemNode {
@@ -49,7 +47,7 @@ const EditorSvg: React.FC<Props> = ({ problemKey, betaKey }) => {
     problemKey
   );
 
-  const { selectedBeta, editingHolds, setSelectedHold } =
+  const { betaQueryRef, selectedBeta, editingHolds, setSelectedHold } =
     useContext(EditorContext);
   const ref = useRef<SVGSVGElement | null>(null);
 
@@ -84,7 +82,7 @@ const EditorSvg: React.FC<Props> = ({ problemKey, betaKey }) => {
           />
         )}
 
-        {betaKey && !editingHolds && <BetaEditor betaKey={betaKey} />}
+        {!editingHolds && <BetaEditor queryRef={betaQueryRef} />}
       </EditorSvgInner>
     </SvgContext.Provider>
   );
@@ -152,13 +150,9 @@ const EditorSvgInner = React.forwardRef<
 
 EditorSvgInner.displayName = "EditorSvgInner";
 
-export default withQuery<queriesEditorQuery, Props>({
-  query: editorQuery,
-  dataToProps: (data) =>
-    data.problem && {
-      problemKey: data.problem,
-      betaKey: data.beta,
-    },
+export default withQuery<queriesProblemQuery, Props>({
+  query: problemQuery,
+  dataToProps: (data) => data.problem && { problemKey: data.problem },
   fallbackElement: <Loading size={100} />,
   noDataElement: <NotFound />,
 })(EditorSvg);

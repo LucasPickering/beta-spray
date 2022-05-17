@@ -28,6 +28,9 @@ import BetaChainLine from "./BetaChainLine";
 import BetaChainMark from "./BetaChainMark";
 import useMutation from "util/useMutation";
 import MutationError from "components/common/MutationError";
+import withQuery from "util/withQuery";
+import { queriesBetaQuery } from "components/Editor/__generated__/queriesBetaQuery.graphql";
+import { betaQuery } from "components/Editor/queries";
 
 /** The distance to shift a disambiguated move */
 const disambiguationDistance = 2.5;
@@ -364,4 +367,10 @@ function getMoves(
   return moves;
 }
 
-export default BetaEditor;
+export default withQuery<queriesBetaQuery, Props>({
+  query: betaQuery,
+  dataToProps: (data) => data.beta && { betaKey: data.beta },
+  // This is rendered on top of the existing editor, so we don't want to block
+  // anything while beta is loading
+  fallbackElement: null,
+})(BetaEditor);

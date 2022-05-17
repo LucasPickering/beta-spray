@@ -2,9 +2,9 @@ import React from "react";
 import { Helmet } from "react-helmet-async";
 import { graphql, useFragment } from "react-relay";
 import withQuery from "util/withQuery";
-import { editorQuery } from "./queries";
+import { problemQuery } from "./queries";
 import { EditorHelmet_problemNode$key } from "./__generated__/EditorHelmet_problemNode.graphql";
-import { queriesEditorQuery } from "./__generated__/queriesEditorQuery.graphql";
+import { queriesProblemQuery } from "./__generated__/queriesProblemQuery.graphql";
 
 interface Props {
   problemKey: EditorHelmet_problemNode$key;
@@ -36,8 +36,8 @@ const EditorHelmet: React.FC<Props> = ({ problemKey }) => {
   );
 };
 
-export default withQuery<queriesEditorQuery, Props>({
-  query: editorQuery,
+export default withQuery<queriesProblemQuery, Props>({
+  query: problemQuery,
   dataToProps: (data) => data.problem && { problemKey: data.problem },
   // This component doesn't render anything visible
   fallbackElement: null,

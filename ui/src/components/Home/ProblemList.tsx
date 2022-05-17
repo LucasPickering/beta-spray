@@ -39,7 +39,7 @@ const ProblemList: React.FC<Props> = ({ problemConnectionKey }) => {
       ) {
         createProblem(input: $input) {
           problem
-            @appendNode(
+            @prependNode(
               connections: $connections
               edgeTypeName: "ProblemNodeEdge"
             ) {

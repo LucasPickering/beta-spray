@@ -14,18 +14,24 @@
 import { graphql } from "react-relay";
 
 /**
- * Main query that drives the editor
- *
- * TODO break this into two queries
+ * Query for a single boulder problem
  */
-export const editorQuery = graphql`
-  query queriesEditorQuery($problemId: ID!, $betaId: ID!) {
+export const problemQuery = graphql`
+  query queriesProblemQuery($problemId: ID!) {
     problem(id: $problemId) {
       ...EditorHelmet_problemNode
       ...EditorSvg_problemNode
       ...BetaList_problemNode
     }
+  }
+`;
 
+/**
+ * Query for a specific beta. This should belong to the boulder problem being
+ * shown in the editor, but that's not enforced here.
+ */
+export const betaQuery = graphql`
+  query queriesBetaQuery($betaId: ID!) {
     beta(id: $betaId) {
       ...BetaDetails_betaNode
       ...BetaEditor_betaNode
