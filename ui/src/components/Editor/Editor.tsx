@@ -1,11 +1,10 @@
-import React, { Suspense, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useQueryLoader } from "react-relay";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { assertIsDefined } from "util/func";
-import Loading from "../common/Loading";
-import type { EditorQuery as EditorQueryType } from "./__generated__/EditorQuery.graphql";
-import EditorQuery from "./__generated__/EditorQuery.graphql";
-import { Box, Stack, IconButton, Skeleton } from "@mui/material";
+import type { queriesEditorQuery as queriesEditorQueryType } from "./__generated__/queriesEditorQuery.graphql";
+import queriesEditorQuery from "./__generated__/queriesEditorQuery.graphql";
+import { Box, Stack, IconButton } from "@mui/material";
 import { DndProvider } from "react-dnd";
 import { TouchBackend } from "react-dnd-touch-backend";
 import { Home as IconHome } from "@mui/icons-material";
@@ -17,6 +16,7 @@ import EditorControls from "./EditorControls/EditorControls";
 import DragLayer from "./EditorSvg/DragLayer";
 import EditorSvg from "./EditorSvg/EditorSvg";
 import HelpText from "./EditorSvg/HelpText";
+import EditorHelmet from "./EditorHelmet";
 
 /**
  * Main app component, for viewing+editing boulders/problems/betas. This is
@@ -38,7 +38,8 @@ const Editor: React.FC = () => {
 
   // Read initial state values from route
   const [selectedBeta, setSelectedBeta] = useState<string | undefined>(betaId);
-  const [queryRef, loadQuery] = useQueryLoader<EditorQueryType>(EditorQuery);
+  const [queryRef, loadQuery] =
+    useQueryLoader<queriesEditorQueryType>(queriesEditorQuery);
 
   // Toggle hold editor overlay
   const [editingHolds, setEditingHolds] = useState<boolean>(false);
@@ -73,11 +74,7 @@ const Editor: React.FC = () => {
         enableMouseEvents: true,
       }}
     >
-      {/* TODO make this work */}
-      {/* <Helmet>
-        <title>{data.problem.name} - Beta Spray</title>
-        <meta property="og:image" content={data.problem.boulder.image.url} />
-      </Helmet> */}
+      <EditorHelmet queryRef={queryRef} />
 
       <EditorContext.Provider
         value={{
@@ -121,9 +118,7 @@ const Editor: React.FC = () => {
                 backgroundColor: palette.background.paper,
               })}
             >
-              <Suspense fallback={<Loading />}>
-                {queryRef && <EditorSvg queryRef={queryRef} />}
-              </Suspense>
+              <EditorSvg queryRef={queryRef} />
             </Box>
 
             {/* Top-left overlay buttons */}
@@ -144,17 +139,9 @@ const Editor: React.FC = () => {
 
             {/* Controls sidebar/drawer */}
             <EditorControls>
-              <Suspense
-                fallback={<Skeleton variant="rectangular" height={100} />}
-              >
-                {queryRef && <BetaList queryRef={queryRef} />}
-              </Suspense>
+              <BetaList queryRef={queryRef} />
 
-              <Suspense
-                fallback={<Skeleton variant="rectangular" height={240} />}
-              >
-                {queryRef && <BetaDetails queryRef={queryRef} />}
-              </Suspense>
+              <BetaDetails queryRef={queryRef} />
 
               <DragLayer mode="html" />
             </EditorControls>

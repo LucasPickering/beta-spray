@@ -19,21 +19,11 @@ import { graphql } from "react-relay";
  * TODO break this into two queries
  */
 export const editorQuery = graphql`
-  query EditorQuery($problemId: ID!, $betaId: ID!) {
+  query queriesEditorQuery($problemId: ID!, $betaId: ID!) {
     problem(id: $problemId) {
-      name
+      ...EditorHelmet_problemNode
       ...EditorSvg_problemNode
-      boulder {
-        image {
-          url
-        }
-        ...BoulderImage_boulderNode
-      }
       ...BetaList_problemNode
-      ...HoldEditor_problemNode
-      holds {
-        ...HoldMarks_holdConnection
-      }
     }
 
     beta(id: $betaId) {

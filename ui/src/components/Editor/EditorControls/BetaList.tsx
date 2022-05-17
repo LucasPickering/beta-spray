@@ -7,9 +7,10 @@ import RadioList from "./RadioList";
 import { EditorContext } from "util/context";
 import MutationError from "components/common/MutationError";
 import useMutation from "util/useMutation";
-import { EditorQuery } from "../__generated__/EditorQuery.graphql";
+import { queriesEditorQuery } from "../__generated__/queriesEditorQuery.graphql";
 import { editorQuery } from "../queries";
 import withQuery from "util/withQuery";
+import { Skeleton } from "@mui/material";
 
 interface Props {
   problemKey: BetaList_problemNode$key;
@@ -152,10 +153,8 @@ const BetaList: React.FC<Props> = ({ problemKey }) => {
   );
 };
 
-export default withQuery<EditorQuery, Props>({
+export default withQuery<queriesEditorQuery, Props>({
   query: editorQuery,
-  dataToProps: (data) =>
-    data.problem && {
-      problemKey: data.problem,
-    },
+  dataToProps: (data) => data.problem && { problemKey: data.problem },
+  fallbackElement: <Skeleton variant="rectangular" height={100} />,
 })(BetaList);

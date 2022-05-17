@@ -6,13 +6,13 @@ import {
   BetaDetails_betaNode$key,
 } from "./__generated__/BetaDetails_betaNode.graphql";
 import { BetaDetails_deleteBetaMoveMutation } from "./__generated__/BetaDetails_deleteBetaMoveMutation.graphql";
-import { FormLabel, List, Typography } from "@mui/material";
+import { FormLabel, List, Skeleton, Typography } from "@mui/material";
 import { moveArrayElement } from "util/func";
 import { BetaDetails_updateBetaMoveMutation } from "./__generated__/BetaDetails_updateBetaMoveMutation.graphql";
 import { EditorContext } from "util/context";
 import useMutation from "util/useMutation";
 import MutationError from "components/common/MutationError";
-import { EditorQuery } from "../__generated__/EditorQuery.graphql";
+import { queriesEditorQuery } from "../__generated__/queriesEditorQuery.graphql";
 import { editorQuery } from "../queries";
 import withQuery from "util/withQuery";
 
@@ -141,10 +141,8 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
   );
 };
 
-export default withQuery<EditorQuery, Props>({
+export default withQuery<queriesEditorQuery, Props>({
   query: editorQuery,
-  dataToProps: (data) =>
-    data.beta && {
-      betaKey: data.beta,
-    },
+  dataToProps: (data) => data.beta && { betaKey: data.beta },
+  fallbackElement: <Skeleton variant="rectangular" height={240} />,
 })(BetaDetails);

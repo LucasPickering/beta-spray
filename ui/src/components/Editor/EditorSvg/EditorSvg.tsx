@@ -2,7 +2,7 @@ import React, { useContext, useRef } from "react";
 import { EditorContext, SvgContext } from "util/context";
 import { graphql, useFragment } from "react-relay";
 import { useZoomPan } from "util/zoom";
-import { EditorQuery } from "../__generated__/EditorQuery.graphql";
+import { queriesEditorQuery } from "../__generated__/queriesEditorQuery.graphql";
 import NotFound from "components/common/NotFound";
 import BetaEditor from "./BetaEditor/BetaEditor";
 import BoulderImage from "./BoulderImage";
@@ -16,6 +16,7 @@ import { usePinch } from "@use-gesture/react";
 import { isDefined } from "util/func";
 import { editorQuery } from "../queries";
 import withQuery from "util/withQuery";
+import Loading from "components/common/Loading";
 
 interface Props {
   problemKey: EditorSvg_problemNode$key;
@@ -159,7 +160,7 @@ const EditorSvgInner = React.forwardRef<
 
 EditorSvgInner.displayName = "EditorSvgInner";
 
-export default withQuery<EditorQuery, Props>({
+export default withQuery<queriesEditorQuery, Props>({
   query: editorQuery,
   dataToProps: (data) =>
     data.problem &&
@@ -167,5 +168,6 @@ export default withQuery<EditorQuery, Props>({
       problemKey: data.problem,
       betaKey: data.beta,
     },
+  fallbackElement: <Loading size={100} />,
   noDataElement: <NotFound />,
 })(EditorSvg);
