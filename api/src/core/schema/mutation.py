@@ -3,6 +3,7 @@ from core.util import (
     beta_name_phrase_groups,
     problem_name_phrase_groups,
 )
+from django.forms import model_to_dict
 import graphene
 import uuid
 from graphene import relay
@@ -293,6 +294,38 @@ class CreateBetaMutation(relay.ClientIDMutation):
         return cls(beta=beta)
 
 
+class CopyBetaMutation(relay.ClientIDMutation):
+    class Input:
+        beta_id = graphene.ID(required=True)
+
+    beta = graphene.Field(BetaNode, required=True)
+
+    @classmethod
+    def mutate_and_get_payload(cls, root, info, beta_id):
+        original_beta = relay.Node.get_node_from_global_id(
+            info, beta_id, only_type=BetaNode
+        )
+        # Copy the base beta
+        new_beta = Beta.objects.create(
+            problem_id=original_beta.problem_id,
+            name=f"{original_beta.name} 2.0",
+        )
+        # Copy each move
+        BetaMove.objects.bulk_create(
+            BetaMove(
+                # This is a little jank but still better than manually copying
+                # each field
+                **model_to_dict(move, exclude=["id", "beta", "hold"]),
+                beta_id=new_beta.id,
+                # model_to_dict returns primary key in the `hold` field, so we
+                # need to manually remap that field
+                hold_id=move.hold_id,
+            )
+            for move in original_beta.moves.all()
+        )
+        return cls(beta=new_beta)
+
+
 class DeleteBetaMutation(relay.ClientIDMutation):
     class Input:
         beta_id = graphene.ID(required=True)
@@ -399,6 +432,7 @@ class Mutation(graphene.ObjectType):
     create_problem_hold = CreateProblemHoldMutation.Field()
     delete_problem_hold = DeleteProblemHoldMutation.Field()
     create_beta = CreateBetaMutation.Field()
+    copy_beta = CopyBetaMutation.Field()
     delete_beta = DeleteBetaMutation.Field()
     create_beta_move = CreateBetaMoveMutation.Field()
     update_beta_move = UpdateBetaMoveMutation.Field()

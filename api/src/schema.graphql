@@ -232,6 +232,7 @@ type Mutation {
   """Remove a hold from a problem"""
   deleteProblemHold(input: DeleteProblemHoldMutationInput!): DeleteProblemHoldMutationPayload
   createBeta(input: CreateBetaMutationInput!): CreateBetaMutationPayload
+  copyBeta(input: CopyBetaMutationInput!): CopyBetaMutationPayload
   deleteBeta(input: DeleteBetaMutationInput!): DeleteBetaMutationPayload
 
   """
@@ -374,6 +375,16 @@ type CreateBetaMutationPayload {
 input CreateBetaMutationInput {
   problemId: ID!
   name: String
+  clientMutationId: String
+}
+
+type CopyBetaMutationPayload {
+  beta: BetaNode!
+  clientMutationId: String
+}
+
+input CopyBetaMutationInput {
+  betaId: ID!
   clientMutationId: String
 }
 

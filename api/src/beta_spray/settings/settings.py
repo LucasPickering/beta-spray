@@ -79,6 +79,7 @@ DATABASES = {
         "PASSWORD": os.getenv("BETA_SPRAY_DB_PASSWORD"),
         "HOST": os.getenv("BETA_SPRAY_DB_HOST", "db"),
         "PORT": 5432,
+        "ATOMIC_REQUESTS": True,
     }
 }
 
