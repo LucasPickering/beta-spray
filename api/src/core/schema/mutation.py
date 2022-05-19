@@ -294,6 +294,24 @@ class CreateBetaMutation(relay.ClientIDMutation):
         return cls(beta=beta)
 
 
+class UpdateBetaMutation(relay.ClientIDMutation):
+    class Input:
+        beta_id = graphene.ID(required=True)
+        name = graphene.String()
+
+    beta = graphene.Field(BetaNode, required=True)
+
+    @classmethod
+    def mutate_and_get_payload(cls, root, info, beta_id, name):
+        beta = relay.Node.get_node_from_global_id(
+            info, beta_id, only_type=BetaNode
+        )
+        if name is not None:
+            beta.name = name
+        beta.save()
+        return cls(beta=beta)
+
+
 class CopyBetaMutation(relay.ClientIDMutation):
     class Input:
         beta_id = graphene.ID(required=True)
@@ -432,6 +450,7 @@ class Mutation(graphene.ObjectType):
     create_problem_hold = CreateProblemHoldMutation.Field()
     delete_problem_hold = DeleteProblemHoldMutation.Field()
     create_beta = CreateBetaMutation.Field()
+    update_beta = UpdateBetaMutation.Field()
     copy_beta = CopyBetaMutation.Field()
     delete_beta = DeleteBetaMutation.Field()
     create_beta_move = CreateBetaMoveMutation.Field()

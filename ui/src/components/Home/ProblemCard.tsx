@@ -7,6 +7,7 @@ import {
   IconButton,
   Input,
   Skeleton,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import dayjs from "dayjs";
@@ -55,7 +56,19 @@ const ProblemCard: React.FC<Props> = ({ problemKey, onEdit, onDelete }) => {
   }, [problem.name]);
 
   return (
-    <Card>
+    <Card
+      // Form enables name editing functionalities
+      {...(editing && {
+        component: "form",
+        onSubmit: (e) => {
+          e.preventDefault(); // Prevent page reload from form
+          setEditing(false);
+          if (onEdit) {
+            onEdit(problem.id, problemName);
+          }
+        },
+      })}
+    >
       <CardActionArea component={RouterLink} to={`/problems/${problem.id}`}>
         <CardMedia sx={{ height: 200 }}>
           {problem.boulder.image.url ? (
@@ -74,75 +87,57 @@ const ProblemCard: React.FC<Props> = ({ problemKey, onEdit, onDelete }) => {
         </CardMedia>
       </CardActionArea>
 
-      {/* Form enables name editing functionalities */}
-      <form>
-        <CardContent>
-          {editing ? (
-            <Input
-              autoFocus
-              value={problemName}
-              onChange={(e) => setProblemName(e.target.value)}
-              sx={{ display: "block" }}
-            />
-          ) : (
-            <Typography variant="h6" component="h3">
-              {/* Missing name indicates it's still loading */}
-              {problemName || <Skeleton />}
-            </Typography>
-          )}
-          <Typography
-            variant="subtitle1"
-            component="span"
-            color="text.secondary"
-          >
-            {dayjs(problem.createdAt).format("LLL")}
+      <CardContent>
+        {editing ? (
+          <Input
+            autoFocus
+            value={problemName}
+            onChange={(e) => setProblemName(e.target.value)}
+            sx={{ display: "block" }}
+          />
+        ) : (
+          <Typography variant="h6" component="h3">
+            {/* Missing name indicates it's still loading */}
+            {problemName || <Skeleton />}
           </Typography>
-        </CardContent>
+        )}
+        <Typography variant="subtitle1" component="span" color="text.secondary">
+          {dayjs(problem.createdAt).format("LLL")}
+        </Typography>
+      </CardContent>
 
-        <CardActions sx={{ justifyContent: "end" }}>
-          {onEdit &&
-            (editing ? (
-              <IconButton
-                aria-label="Save Changes"
-                type="submit"
-                color="success"
-                onClick={(e) => {
-                  e.preventDefault(); // Prevent page reload from form
-                  setEditing(false);
-                  onEdit(problem.id, problemName);
-                }}
-              >
+      <CardActions sx={{ justifyContent: "end" }}>
+        {onEdit &&
+          (editing ? (
+            <Tooltip title="Save Changes">
+              <IconButton type="submit" color="success">
                 <IconDone />
               </IconButton>
-            ) : (
-              <IconButton
-                aria-label="Edit"
-                onClick={(e) => {
-                  e.preventDefault(); // Prevent page reload from form
-                  setEditing(true);
-                }}
-              >
+            </Tooltip>
+          ) : (
+            <Tooltip title="Edit">
+              <IconButton aria-label="Edit" onClick={() => setEditing(true)}>
                 <IconEdit />
               </IconButton>
-            ))}
-          {onDelete && (
-            <IconButton
-              color="error"
-              onClick={() => {
-                if (
-                  window.confirm(
-                    `Are you sure you want to delete ${problemName}?`
-                  )
-                ) {
-                  onDelete(problem.id);
-                }
-              }}
-            >
-              <IconDelete />
-            </IconButton>
-          )}
-        </CardActions>
-      </form>
+            </Tooltip>
+          ))}
+        {onDelete && (
+          <IconButton
+            color="error"
+            onClick={() => {
+              if (
+                window.confirm(
+                  `Are you sure you want to delete ${problemName}?`
+                )
+              ) {
+                onDelete(problem.id);
+              }
+            }}
+          >
+            <IconDelete />
+          </IconButton>
+        )}
+      </CardActions>
     </Card>
   );
 };

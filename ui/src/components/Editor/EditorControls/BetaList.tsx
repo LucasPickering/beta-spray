@@ -20,6 +20,7 @@ import {
 import { Add as IconAdd } from "@mui/icons-material";
 import BetaListItem from "./BetaListItem";
 import { BetaList_copyBetaMutation } from "./__generated__/BetaList_copyBetaMutation.graphql";
+import { BetaList_updateBetaMutation } from "./__generated__/BetaList_updateBetaMutation.graphql";
 
 interface Props {
   problemKey: BetaList_problemNode$key;
@@ -71,6 +72,25 @@ const BetaList: React.FC<Props> = ({ problemKey }) => {
             ) {
             id
             ...BetaListItem_betaNode
+          }
+        }
+      }
+    `);
+  const { commit: updateBeta, state: updateState } =
+    useMutation<BetaList_updateBetaMutation>(graphql`
+      mutation BetaList_updateBetaMutation(
+        $input: UpdateBetaMutationInput!
+        $connections: [ID!]!
+      ) {
+        updateBeta(input: $input) {
+          beta
+            @appendNode(
+              connections: $connections
+              edgeTypeName: "BetaNodeEdge"
+            ) {
+            id
+            # Only refresh what we know could have changed
+            name
           }
         }
       }
@@ -134,6 +154,16 @@ const BetaList: React.FC<Props> = ({ problemKey }) => {
       },
     });
   };
+  const onRename = (betaId: string, newName: string): void => {
+    updateBeta({
+      variables: { input: { betaId, name: newName }, connections },
+      optimisticResponse: {
+        updateBeta: {
+          beta: { id: betaId, name: newName },
+        },
+      },
+    });
+  };
   const onCopy = (betaId: string): void => {
     copyBeta({
       variables: { input: { betaId }, connections },
@@ -187,6 +217,7 @@ const BetaList: React.FC<Props> = ({ problemKey }) => {
                 key={node.id}
                 betaKey={node}
                 disabled={disabled}
+                onRename={onRename}
                 onCopy={onCopy}
                 onDelete={onDelete}
               />
@@ -207,6 +238,7 @@ const BetaList: React.FC<Props> = ({ problemKey }) => {
       </FormControl>
 
       <MutationError message="Error creating beta" state={createState} />
+      <MutationError message="Error renaming beta" state={updateState} />
       <MutationError message="Error copying beta" state={copyState} />
       <MutationError message="Error deleting beta" state={deleteState} />
     </>
