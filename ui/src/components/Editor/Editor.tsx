@@ -56,6 +56,14 @@ const Editor: React.FC = () => {
     });
   }, [loadQuery, problemId, selectedBeta]);
 
+  // Make sure state stays in sync with the URL
+  // In most cases we should update both of these simultaneously so this hook
+  // generally doesn't do anything, but it's a backup (e.g. if user externally
+  // navigates to a different beta via bookmark, back button, etc.)
+  useEffect(() => {
+    setSelectedBeta(betaId);
+  }, [betaId]);
+
   const helpMode = (() => {
     if (editingHolds) {
       return "editHolds";
