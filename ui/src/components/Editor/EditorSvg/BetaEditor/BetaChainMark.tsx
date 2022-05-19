@@ -67,6 +67,9 @@ const BetaChainMark: React.FC<Props> = ({
   drag(drop(ref));
   return (
     <ClickAwayListener
+      // Listen for leading edge of event, to catch drags as well
+      mouseEvent="onMouseDown"
+      touchEvent="onTouchStart"
       onClickAway={onClickAway ? () => onClickAway(move) : noop}
     >
       <Positioned position={getMoveVisualPosition(move)}>
