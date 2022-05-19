@@ -127,15 +127,10 @@ const BetaListItem: React.FC<Props> = ({
         id={`${beta.id}-actions`}
         anchorEl={actionsAnchorEl}
         open={actionsOpen}
+        onClick={onCloseActions}
         onClose={onCloseActions}
       >
-        <MenuItem
-          onClick={() => {
-            setEditingName(true);
-            // Close menu so we can focus on the name text box
-            onCloseActions();
-          }}
-        >
+        <MenuItem onClick={() => setEditingName(true)}>
           <ListItemIcon>
             <IconEdit />
           </ListItemIcon>
