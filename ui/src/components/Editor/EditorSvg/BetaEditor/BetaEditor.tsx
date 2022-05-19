@@ -8,8 +8,9 @@ import {
 import {
   APIPosition,
   BetaOverlayMove,
+  BodyPart,
   OverlayPosition,
-  polarToCartesian,
+  polarToSvg,
   toBodyPart,
 } from "util/svg";
 import { BetaEditor_createBetaMoveMutation } from "./__generated__/BetaEditor_createBetaMoveMutation.graphql";
@@ -18,7 +19,7 @@ import { BetaEditor_deleteBetaMoveMutation } from "./__generated__/BetaEditor_de
 import { useOverlayUtils } from "util/svg";
 import BetaMoveDialog from "./BetaMoveDialog";
 import { EditorContext } from "util/context";
-import { assertIsDefined, groupBy } from "util/func";
+import { assertIsDefined, groupBy, isDefined } from "util/func";
 import BodyState from "./BodyState";
 import { DropHandler } from "util/dnd";
 
@@ -288,6 +289,16 @@ const deleteBetaMoveMutation = graphql`
 `;
 
 /**
+ * Body parts sorted counter-clockwise, which follows the unit circle
+ */
+const bodyPartsCCW = [
+  BodyPart.RIGHT_HAND,
+  BodyPart.LEFT_HAND,
+  BodyPart.LEFT_FOOT,
+  BodyPart.RIGHT_FOOT,
+];
+
+/**
  * Map API BetaMoveNodes to UI-friendly objects. This is kind of a Relay
  * anti-pattern, but it makes a lot of UI logic a whole lot simpler so who cares.
  *
@@ -314,22 +325,38 @@ function getMoves(
     };
   });
 
-  // If any holds have multiple moves on them, spread them apart so they don't
-  // stack up on top of each other
-  for (const [, holdMoves] of groupBy(moves, (move) => move.holdId).entries()) {
-    if (holdMoves.length > 1) {
-      // We want to shift all the nearby moves apart. So break up the unit
-      // circle into evenly sized slices, one per move, and shift each one away
-      // a fixed distance along its slice angle.
-      const sliceRadians = (2 * Math.PI) / holdMoves.length;
+  // We want to position each move like so:
+  // 1. By body part, so left hand is top-left, right foot is bottom-right, etc.
+  // 2. Spread evenly within that 90° slice (if multiple moves per body part)
+  // So iterate over each move and set its visual offset accordingly
 
-      holdMoves.forEach((move, i) => {
-        move.offset = polarToCartesian(
-          disambiguationDistance,
-          sliceRadians * i
-        );
-      });
-    }
+  const sliceSize = Math.PI / 2; // 90 degrees
+
+  // Group by hold, then body part
+  for (const [, holdMoves] of groupBy(moves, (move) => move.holdId).entries()) {
+    const movesByBodyPart = groupBy(holdMoves, (move) => move.bodyPart);
+
+    bodyPartsCCW.forEach((bodyPart, i) => {
+      const bodyPartMoves = movesByBodyPart.get(bodyPart);
+      if (isDefined(bodyPartMoves)) {
+        // The angle of the *start* of the slice
+        const bodyPartAngle = sliceSize * i;
+
+        // Break the slice into n+1 subslices, where n is number of moves on this
+        // hold *for this body part*. We do +1 because we want them evenly spaced
+        // between beginning and end, e.g. 1 move => 1/2 mark, 2 moves => 1/3 marks
+        const subsliceSize = sliceSize / (bodyPartMoves.length + 1);
+
+        // API wil pre-sort by order, and that ordering will persist here
+        bodyPartMoves.forEach((move, i) => {
+          move.offset = polarToSvg(
+            disambiguationDistance,
+            // i+1 so we don't start at the extreme edge
+            bodyPartAngle + subsliceSize * (i + 1)
+          );
+        });
+      }
+    });
   }
 
   return moves;

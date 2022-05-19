@@ -125,17 +125,17 @@ export function distanceTo(
 }
 
 /**
- * Convert a polar coordinate of (radius, angle) to a cartesian one.
- * @param radius Distance from the origin
- * @param radians Offset angle, in *radians*
+ * Convert a polar point of (radius, angle) to an SVG point. Note: SVG
+ * coordinates are *not* cartesian! SVG uses the top-left as origin, with right
+ * being +x and down being +y.
+ *
+ * @param radius Distance from the origin, in SVG coordinates (top-left is origin)
+ * @param radians Offset angle, in *radians*, following the unit circle
  */
-export function polarToCartesian(
-  radius: number,
-  radians: number
-): OverlayPosition {
+export function polarToSvg(radius: number, radians: number): OverlayPosition {
   return {
     x: radius * Math.cos(radians),
-    y: radius * Math.sin(radians),
+    y: radius * -Math.sin(radians),
   };
 }
 
