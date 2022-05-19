@@ -14,6 +14,11 @@ const zoomMaximum = 10.0;
 /** Step between editor zoom levels, when scrolling/pinching */
 const zoomStep = 0.01;
 
+/**
+ * Distance beyond the image that user can pan (to get around overlay obstructions)
+ * */
+const panBufferSpace = 2;
+
 interface ZoomOffset {
   zoom: number;
   offset: OverlayPosition;
@@ -85,8 +90,16 @@ export function useZoomPan(): {
     offset: OverlayPosition,
     zoom: number
   ): OverlayPosition => ({
-    x: coerce(offset.x, 0, dimensions.width - dimensions.width / zoom),
-    y: coerce(offset.y, 0, dimensions.height - dimensions.height / zoom),
+    x: coerce(
+      offset.x,
+      -panBufferSpace,
+      dimensions.width - dimensions.width / zoom + panBufferSpace
+    ),
+    y: coerce(
+      offset.y,
+      -panBufferSpace,
+      dimensions.height - dimensions.height / zoom + panBufferSpace
+    ),
   });
 
   return {
