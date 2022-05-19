@@ -32,7 +32,7 @@ import { queriesBetaQuery } from "components/Editor/__generated__/queriesBetaQue
 import { betaQuery } from "components/Editor/queries";
 
 /** The distance to shift a disambiguated move */
-const disambiguationDistance = 2.5;
+const disambiguationDistance = 3.5;
 
 interface Props {
   betaKey: BetaEditor_betaNode$key;

@@ -7,9 +7,9 @@ import {
 } from "styles/dnd";
 import { useTheme } from "@mui/material";
 import { Interpolation, Theme } from "@emotion/react";
+import { IconBodyPartRaw } from "components/common/icons";
 
-const radius = 2;
-const hashLength = radius + 2;
+const hashLength = 4.5;
 
 interface Props extends React.SVGProps<SVGGElement> {
   move: BetaOverlayMove;
@@ -21,6 +21,8 @@ interface Props extends React.SVGProps<SVGGElement> {
 
 /**
  * Dumb component representing a beta move.
+ *
+ * TODO rename this to something less confusing (remove the Icon word)
  */
 const BetaMoveIcon = React.forwardRef<SVGGElement, Props>(
   (
@@ -38,8 +40,8 @@ const BetaMoveIcon = React.forwardRef<SVGGElement, Props>(
     const hashStart = { x: 0, y: 0 };
     // We don't want hash length to change if we happen to change the offset
     // distance, so scale the offset down to a unit vector, then scale up again
-    // by a known length factor. Note: this length will include a buffer for the
-    // amount of the line that gets hidden behind the circle.
+    // by a known length factor. Note: this length includes the segment hidden
+    // behind the circle.
     const hashEnd = multiply(unit(move.offset), hashLength);
     // Applied to both the line and the circle
     const startMoveStyle = {
@@ -68,9 +70,10 @@ const BetaMoveIcon = React.forwardRef<SVGGElement, Props>(
           />
         )}
 
-        <circle
+        <IconBodyPartRaw
+          bodyPart={move.bodyPart}
           css={[
-            { r: radius, fill: move.color },
+            { fill: move.color },
             // Special outline for start moves
             move.isStart && startMoveStyle,
           ]}
