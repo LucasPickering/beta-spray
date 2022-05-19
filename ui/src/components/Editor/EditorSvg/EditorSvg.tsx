@@ -11,16 +11,16 @@ import HoldEditor from "./HoldEditor/HoldEditor";
 import HoldMarks from "./HoldEditor/HoldMarks";
 import PanZone from "./PanZone";
 import { EditorSvg_problemNode$key } from "./__generated__/EditorSvg_problemNode.graphql";
-import { EditorSvg_betaNode$key } from "./__generated__/EditorSvg_betaNode.graphql";
 import { usePinch } from "@use-gesture/react";
 import { isDefined } from "util/func";
 import { editorQuery } from "../queries";
 import withQuery from "util/withQuery";
 import Loading from "components/common/Loading";
+import { BetaEditor_betaNode$key } from "./BetaEditor/__generated__/BetaEditor_betaNode.graphql";
 
 interface Props {
   problemKey: EditorSvg_problemNode$key;
-  betaKey: EditorSvg_betaNode$key;
+  betaKey: BetaEditor_betaNode$key | null;
 }
 
 /**
@@ -47,14 +47,6 @@ const EditorSvg: React.FC<Props> = ({ problemKey, betaKey }) => {
       }
     `,
     problemKey
-  );
-  const beta = useFragment(
-    graphql`
-      fragment EditorSvg_betaNode on BetaNode {
-        ...BetaEditor_betaNode
-      }
-    `,
-    betaKey
   );
 
   const { selectedBeta, editingHolds, setSelectedHold } =
@@ -92,7 +84,7 @@ const EditorSvg: React.FC<Props> = ({ problemKey, betaKey }) => {
           />
         )}
 
-        {beta && !editingHolds && <BetaEditor betaKey={beta} />}
+        {betaKey && !editingHolds && <BetaEditor betaKey={betaKey} />}
       </EditorSvgInner>
     </SvgContext.Provider>
   );
@@ -163,8 +155,7 @@ EditorSvgInner.displayName = "EditorSvgInner";
 export default withQuery<queriesEditorQuery, Props>({
   query: editorQuery,
   dataToProps: (data) =>
-    data.problem &&
-    data.beta && {
+    data.problem && {
       problemKey: data.problem,
       betaKey: data.beta,
     },

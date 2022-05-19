@@ -28,7 +28,7 @@ export const editorQuery = graphql`
 
     beta(id: $betaId) {
       ...BetaDetails_betaNode
-      ...EditorSvg_betaNode
+      ...BetaEditor_betaNode
     }
   }
 `;
