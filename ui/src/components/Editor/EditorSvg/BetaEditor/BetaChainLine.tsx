@@ -2,7 +2,6 @@ import React from "react";
 import { BetaOverlayMove, getMoveVisualPosition } from "util/svg";
 import { DropHandler, useDrag } from "util/dnd";
 import { styleDraggable, styleDragging } from "styles/dnd";
-import { useTheme } from "@mui/material";
 
 interface Props {
   startMove: BetaOverlayMove;
@@ -14,7 +13,6 @@ interface Props {
  * A circle representing a single beta move in a chain
  */
 const BetaChainLine: React.FC<Props> = ({ startMove, endMove, onDrop }) => {
-  const { palette } = useTheme();
   const [{ isDragging }, drag] = useDrag<
     "betaMoveOverlay",
     { isDragging: boolean }
@@ -38,7 +36,7 @@ const BetaChainLine: React.FC<Props> = ({ startMove, endMove, onDrop }) => {
     <line
       ref={drag}
       css={[styleDraggable, isDragging && styleDragging]}
-      stroke={palette[startMove.bodyPart].main}
+      stroke={endMove.color}
       x1={startPos.x}
       y1={startPos.y}
       x2={endPos.x}

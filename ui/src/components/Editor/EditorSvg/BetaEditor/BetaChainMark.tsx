@@ -83,8 +83,7 @@ const BetaChainMark: React.FC<Props> = ({
         >
           <BetaMoveIcon
             ref={ref}
-            bodyPart={move.bodyPart}
-            order={move.order}
+            move={move}
             isDragging={isDragging}
             isHighlighted={isHighlighted}
           />

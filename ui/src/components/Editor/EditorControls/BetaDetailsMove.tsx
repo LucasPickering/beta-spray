@@ -10,6 +10,7 @@ import BetaMoveListItem from "./BetaMoveListItem";
 interface Props {
   dataKey: BetaDetailsMove_betaMoveNode$key;
   index: number;
+  totalMoves: number;
   disabled?: boolean;
   onReorder?: (dragItem: DragItem<"betaMoveList">, newIndex: number) => void;
   onDrop?: DropHandler<"betaMoveList">;
@@ -22,6 +23,7 @@ interface Props {
 const BetaDetailsMove: React.FC<Props> = ({
   dataKey,
   index,
+  totalMoves,
   disabled = false,
   onReorder,
   onDrop,
@@ -156,6 +158,7 @@ const BetaDetailsMove: React.FC<Props> = ({
       ref={ref}
       bodyPart={bodyPart}
       order={betaMove.order}
+      totalMoves={totalMoves}
       disabled={disabled}
       onMouseEnter={() => {
         if (!disabled) {

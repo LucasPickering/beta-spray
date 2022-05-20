@@ -99,6 +99,7 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
             key={node.id}
             dataKey={node}
             index={moveIndex}
+            totalMoves={moves.length} // Needed to colorize moves
             disabled={editingHolds}
             onReorder={(dragItem, newIndex) => {
               // This is called on the *hovered* move, so the passed index is

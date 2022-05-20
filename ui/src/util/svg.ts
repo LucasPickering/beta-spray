@@ -3,6 +3,8 @@ import { XYCoord } from "react-dnd";
 import { SvgContext } from "./context";
 import { assertIsDefined } from "./func";
 import { BodyPart as BodyPartApi } from "../components/Editor/EditorSvg/BetaEditor/__generated__/BetaEditor_betaNode.graphql";
+import { htmlToHex, lerpColor } from "./math";
+import theme from "./theme";
 
 /**
  * 2D dimension of a rectangle
@@ -61,6 +63,12 @@ export interface BetaOverlayMove {
    * disambiguation.
    */
   offset: OverlayPosition | undefined;
+
+  /**
+   * We pre-compute color because we need the full list of moves present to do
+   * so, which isn't feasible to pass around everywhere.
+   */
+  color: string;
 }
 
 /**
@@ -147,6 +155,22 @@ export function getMoveVisualPosition(move: BetaOverlayMove): OverlayPosition {
     x: move.position.x + (move.offset?.x ?? 0),
     y: move.position.y + (move.offset?.y ?? 0),
   };
+}
+
+/**
+ * Get the color representing a beta move. The color will be a linear
+ * interpolation between two colors based on the ordering of the move within
+ * the beta.
+ *
+ * @param order Order of the move in question
+ * @param totalMoves Total number of moves in the beta
+ * @returns Color, as a hex string
+ */
+export function getMoveColor(order: number, totalMoves: number): string {
+  const startColor = 0xffffff;
+  const endColor = htmlToHex(theme.palette.primary.main);
+  const hex = lerpColor(startColor, endColor, order / totalMoves);
+  return `#${hex.toString(16)}`;
 }
 
 /**

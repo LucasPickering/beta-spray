@@ -9,6 +9,7 @@ import {
   APIPosition,
   BetaOverlayMove,
   BodyPart,
+  getMoveColor,
   OverlayPosition,
   polarToSvg,
   toBodyPart,
@@ -322,6 +323,7 @@ function getMoves(
       holdId: node.hold.id,
       position: toOverlayPosition(node.hold),
       offset: undefined,
+      color: getMoveColor(node.order, edges.length),
     };
   });
 

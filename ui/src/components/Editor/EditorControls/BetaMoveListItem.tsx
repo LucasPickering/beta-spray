@@ -10,11 +10,12 @@ import {
   ListItemSecondaryAction,
   ListItemText,
 } from "@mui/material";
-import { BodyPart, formatBodyPart, formatOrder } from "util/svg";
+import { BodyPart, formatBodyPart, formatOrder, getMoveColor } from "util/svg";
 
 interface Props extends React.ComponentProps<typeof ListItem> {
   bodyPart: BodyPart;
   order: number;
+  totalMoves: number;
   disabled?: boolean;
   onDelete?: () => void;
 }
@@ -23,7 +24,10 @@ interface Props extends React.ComponentProps<typeof ListItem> {
  * A dumb component to render a beta move in a list.
  */
 const BetaMoveListItem = React.forwardRef<SVGSVGElement, Props>(
-  ({ bodyPart, order, disabled = false, onDelete, ...rest }, ref) => (
+  (
+    { bodyPart, order, totalMoves, disabled = false, onDelete, ...rest },
+    ref
+  ) => (
     <ListItem disabled={disabled} {...rest}>
       <ListItemIcon>
         {/* Ref is used for dnd only, so pass it to the drag handle.
@@ -31,7 +35,7 @@ const BetaMoveListItem = React.forwardRef<SVGSVGElement, Props>(
         <IconDragHandle ref={ref} sx={[!disabled && { cursor: "move" }]} />
       </ListItemIcon>
 
-      <ListItemText sx={({ palette }) => ({ color: palette[bodyPart].main })}>
+      <ListItemText sx={{ color: getMoveColor(order, totalMoves) }}>
         {formatOrder(order)} {formatBodyPart(bodyPart)}
       </ListItemText>
 
