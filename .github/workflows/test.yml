@@ -81,7 +81,7 @@ jobs:
 
       - name: Check for DB schema changes
         working-directory: api/
-        run: poetry run ./src/manage.py makemigrations --dry-run --check
+        run: poetry run ./src/manage.py makemigrations --skip-checks --dry-run --check
 
   # This runs in a docker container cause it needs DB access
   test-api:
