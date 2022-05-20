@@ -58,16 +58,7 @@ const Editor: React.FC = () => {
   }, [loadProblemQuery, problemId]);
   useEffect(() => {
     if (selectedBeta) {
-      loadBetaQuery(
-        { betaId: selectedBeta },
-        // This is really whacky but if we don't include this (instead use
-        // default of store-or-network), then any time we request a cached beta,
-        // Relay will re-send the request for the *problem* (???). It's gotta
-        // be a bug in Relay but I haven't bothered to find a minimal repro
-        // yet so haven't reported it, just using this workaround.
-        // TODO report Relay bug
-        { fetchPolicy: "store-and-network" }
-      );
+      loadBetaQuery({ betaId: selectedBeta });
     }
   }, [loadBetaQuery, selectedBeta]);
 

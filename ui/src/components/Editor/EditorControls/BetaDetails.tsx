@@ -13,7 +13,7 @@ import { EditorContext } from "util/context";
 import useMutation from "util/useMutation";
 import MutationError from "components/common/MutationError";
 import { queriesBetaQuery } from "../__generated__/queriesBetaQuery.graphql";
-import { problemQuery } from "../queries";
+import { betaQuery } from "../queries";
 import withQuery from "util/withQuery";
 
 interface Props {
@@ -143,7 +143,7 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
 };
 
 export default withQuery<queriesBetaQuery, Props>({
-  query: problemQuery,
+  query: betaQuery,
   dataToProps: (data) => data.beta && { betaKey: data.beta },
   fallbackElement: <Skeleton variant="rectangular" height={240} />,
 })(BetaDetails);
