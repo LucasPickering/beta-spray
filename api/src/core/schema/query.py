@@ -96,18 +96,10 @@ class BetaMoveNode(NodeType):
     class Meta:
         model = BetaMove
         interfaces = (relay.Node,)
-        fields = (
-            "beta",
-            "hold",
-            "order",
-        )
+        fields = ("beta", "hold", "order")
         filter_fields = []
 
     body_part = BodyPartType(required=True)
-
-    @classmethod
-    def get_queryset(cls, queryset, info):
-        return queryset.order_by("order")
 
 
 class Query(graphene.ObjectType):

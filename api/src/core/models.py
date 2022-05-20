@@ -1,7 +1,5 @@
 from core.query import BetaMoveQuerySet
 from django.db import models
-from django.db.models.signals import pre_save
-from django.dispatch import receiver
 
 
 class BodyPart(models.TextChoices):
@@ -36,6 +34,8 @@ class Boulder(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    # TODO override __str__ after name field is actually populated
+
 
 class Hold(models.Model):
     """
@@ -67,6 +67,9 @@ class Problem(models.Model):
     A problem is made up of a collection of holds
     """
 
+    class Meta:
+        ordering = ["-created_at"]
+
     name = models.TextField()
     holds = models.ManyToManyField(
         Hold, related_name="problems", through="ProblemHold", blank=True
@@ -78,6 +81,9 @@ class Problem(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
 
 
 class ProblemHold(models.Model):
@@ -108,6 +114,9 @@ class Beta(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return self.name
+
 
 class BetaMove(models.Model):
     """
@@ -126,6 +135,7 @@ class BetaMove(models.Model):
                 deferrable=models.Deferrable.DEFERRED,
             )
         ]
+        ordering = ["order"]
 
     # Custom query set
     objects = BetaMoveQuerySet.as_manager()
@@ -150,7 +160,3 @@ class BetaMove(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     # TODO add annotation, e.g. "flag", "drop knee", etc.
-
-    @receiver(pre_save)
-    def on_pre_save(sender, instance, raw, *args, **kwargs):
-        pass
