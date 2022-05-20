@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Button } from "@mui/material";
-import { PhotoCamera as IconPhotoCamera } from "@mui/icons-material";
+import { Card, CardActionArea, CardContent, Typography } from "@mui/material";
+import { Upload as IconUpload } from "@mui/icons-material";
 import imageCompression from "browser-image-compression";
 import ErrorSnackbar from "components/common/ErrorSnackbar";
 
@@ -13,8 +13,9 @@ interface Props {
 const BoulderImageUpload: React.FC<Props> = ({ onUpload }) => {
   const [error, setError] = useState<Error | undefined>();
 
+  // Use height:100% everywhere so we match the other cards in the problem list
   return (
-    <>
+    <Card sx={{ height: "100%" }}>
       <label htmlFor="upload-image-input">
         <input
           accept="image/*"
@@ -39,21 +40,33 @@ const BoulderImageUpload: React.FC<Props> = ({ onUpload }) => {
             }
           }}
         />
-        <Button
-          variant="contained"
-          component="span"
-          endIcon={<IconPhotoCamera />}
-          css={{ width: "100%" }}
-        >
-          Upload
-        </Button>
+        {/* Action "button" has to go *inside* the upload label */}
+        <CardActionArea component="span" sx={{ height: "100%" }}>
+          <CardContent
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100%",
+            }}
+          >
+            <IconUpload sx={{ fontSize: 120 }} />
+            <Typography variant="h6" component="span">
+              New Problem
+            </Typography>
+            <Typography variant="subtitle2">
+              Upload a photo of a problem to share new beta
+            </Typography>
+          </CardContent>
+        </CardActionArea>
       </label>
 
       <ErrorSnackbar
         summary="An error occurred while compressing image"
         error={error}
       />
-    </>
+    </Card>
   );
 };
 

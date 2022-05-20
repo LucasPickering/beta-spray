@@ -78,6 +78,8 @@ const ProblemList: React.FC<Props> = ({ problemConnectionKey }) => {
       }
     `);
 
+  const cardSizes = { xs: 12, sm: 6, md: 4 };
+
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
@@ -85,8 +87,43 @@ const ProblemList: React.FC<Props> = ({ problemConnectionKey }) => {
           Problems
         </Typography>
       </Grid>
+
+      <Grid item {...cardSizes}>
+        <BoulderImageUpload
+          onUpload={(file) => {
+            createProblem({
+              variables: {
+                input: { imageFile: "boulderImage" },
+                connections: [problems.__id],
+              },
+              uploadables: {
+                boulderImage: file,
+              },
+              // Optimistically create the new problem
+              // Unfortunately no static typing here, but Relay checks at runtime
+              optimisticResponse: {
+                createProblem: {
+                  problem: {
+                    id: "",
+                    name: "",
+                    createdAt: new Date(),
+                    boulder: {
+                      id: "",
+                      // Card should detect empty URL and render a placeholder
+                      image: {
+                        url: "",
+                      },
+                    },
+                  },
+                },
+              },
+            });
+          }}
+        />
+      </Grid>
+
       {problems.edges.map(({ node }) => (
-        <Grid key={node.id} item xs={12} sm={6} md={4}>
+        <Grid key={node.id} item {...cardSizes}>
           <ProblemCard
             problemKey={node}
             onEdit={(problemId, name) =>
@@ -118,39 +155,6 @@ const ProblemList: React.FC<Props> = ({ problemConnectionKey }) => {
           />
         </Grid>
       ))}
-
-      <Grid item xs={12}>
-        <BoulderImageUpload
-          onUpload={(file) => {
-            createProblem({
-              variables: {
-                input: { imageFile: "boulderImage" },
-                connections: [problems.__id],
-              },
-              uploadables: {
-                boulderImage: file,
-              },
-              // Unfortunately no static typing here, but Relay checks at runtime
-              optimisticResponse: {
-                createProblem: {
-                  problem: {
-                    id: "",
-                    name: "",
-                    createdAt: new Date(),
-                    boulder: {
-                      id: "",
-                      // Card should detect empty URL and render a placeholder
-                      image: {
-                        url: "",
-                      },
-                    },
-                  },
-                },
-              },
-            });
-          }}
-        />
-      </Grid>
 
       <MutationError message="Error uploading problem" state={createState} />
       <MutationError message="Error updating problem" state={updateState} />
