@@ -35,6 +35,9 @@ class BetaMoveQuerySet(QuerySet):
                 # https://stackoverflow.com/a/64902200/1907353
                 .annotate(dummy_group_by=Value(1))
                 .values("dummy_group_by")
+                # Similarly, the default ORDER BY also breaks the query, once
+                # again I have no idea why but it's an easy fix
+                .order_by()
                 .annotate(next_order=Coalesce(Max("order") + 1, 0))
                 .values("next_order")
             )
