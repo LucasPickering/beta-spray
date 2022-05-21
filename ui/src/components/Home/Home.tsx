@@ -1,21 +1,29 @@
-import React from "react";
-import { graphql, useLazyLoadQuery } from "react-relay";
-import { HomeQuery } from "./__generated__/HomeQuery.graphql";
+import { Grid, Typography } from "@mui/material";
+import React, { useEffect } from "react";
+import { useQueryLoader } from "react-relay";
 import ProblemList from "./ProblemList";
+import type { ProblemListQuery as ProblemListQueryType } from "./__generated__/ProblemListQuery.graphql";
+import ProblemListQuery from "./__generated__/ProblemListQuery.graphql";
 
 const Home: React.FC = () => {
-  const data = useLazyLoadQuery<HomeQuery>(
-    graphql`
-      query HomeQuery {
-        problems {
-          ...ProblemList_problemConnection
-        }
-      }
-    `,
-    {}
-  );
+  const [queryRef, loadQuery] =
+    useQueryLoader<ProblemListQueryType>(ProblemListQuery);
 
-  return data.problems && <ProblemList problemConnectionKey={data.problems} />;
+  useEffect(() => {
+    loadQuery({});
+  }, [loadQuery]);
+
+  return (
+    <Grid container spacing={2}>
+      <Grid item xs={12}>
+        <Typography component="h2" variant="h4">
+          Problems
+        </Typography>
+      </Grid>
+
+      <ProblemList queryRef={queryRef} />
+    </Grid>
+  );
 };
 
 export default Home;

@@ -1,4 +1,4 @@
-import { Grid, Typography } from "@mui/material";
+import { Grid, Skeleton } from "@mui/material";
 import React from "react";
 import { graphql, useFragment } from "react-relay";
 import ProblemCard from "./ProblemCard";
@@ -9,6 +9,10 @@ import { ProblemList_updateProblemMutation } from "./__generated__/ProblemList_u
 import { ProblemList_createProblemMutation } from "./__generated__/ProblemList_createProblemMutation.graphql";
 import useMutation from "util/useMutation";
 import MutationError from "components/common/MutationError";
+import { ProblemListQuery } from "./__generated__/ProblemListQuery.graphql";
+import withQuery from "util/withQuery";
+
+const cardSizes = { xs: 12, sm: 6, md: 4 };
 
 interface Props {
   problemConnectionKey: ProblemList_problemConnection$key;
@@ -49,7 +53,6 @@ const ProblemList: React.FC<Props> = ({ problemConnectionKey }) => {
         }
       }
     `);
-
   const { commit: updateProblem, state: updateState } =
     useMutation<ProblemList_updateProblemMutation>(graphql`
       mutation ProblemList_updateProblemMutation(
@@ -63,7 +66,6 @@ const ProblemList: React.FC<Props> = ({ problemConnectionKey }) => {
         }
       }
     `);
-
   const { commit: deleteProblem, state: deleteState } =
     useMutation<ProblemList_deleteProblemMutation>(graphql`
       mutation ProblemList_deleteProblemMutation(
@@ -78,16 +80,8 @@ const ProblemList: React.FC<Props> = ({ problemConnectionKey }) => {
       }
     `);
 
-  const cardSizes = { xs: 12, sm: 6, md: 4 };
-
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={12}>
-        <Typography component="h2" variant="h4">
-          Problems
-        </Typography>
-      </Grid>
-
+    <>
       <Grid item {...cardSizes}>
         <BoulderImageUpload
           onUpload={(file) => {
@@ -159,8 +153,23 @@ const ProblemList: React.FC<Props> = ({ problemConnectionKey }) => {
       <MutationError message="Error uploading problem" state={createState} />
       <MutationError message="Error updating problem" state={updateState} />
       <MutationError message="Error deleting problem" state={deleteState} />
-    </Grid>
+    </>
   );
 };
 
-export default ProblemList;
+export default withQuery<ProblemListQuery, Props>({
+  query: graphql`
+    query ProblemListQuery {
+      problems {
+        ...ProblemList_problemConnection
+      }
+    }
+  `,
+  dataToProps: (data) =>
+    data.problems && { problemConnectionKey: data.problems },
+  fallbackElement: (
+    <Grid item {...cardSizes}>
+      <Skeleton variant="rectangular" height={348} />
+    </Grid>
+  ),
+})(ProblemList);

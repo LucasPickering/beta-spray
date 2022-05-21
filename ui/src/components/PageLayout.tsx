@@ -1,5 +1,6 @@
 import { AppBar, Box } from "@mui/material";
-import React from "react";
+import React, { Suspense } from "react";
+import Loading from "./common/Loading";
 import HeaderBar from "./HeaderBar";
 
 interface Props {
@@ -11,7 +12,10 @@ const PageLayout: React.FC<Props> = ({ children }) => (
     <AppBar position="static">
       <HeaderBar />
     </AppBar>
-    <Box margin={2}>{children}</Box>
+    <Box margin={2}>
+      {/* Generally each page should provide its own suspenses, this is a backup */}
+      <Suspense fallback={<Loading />}>{children}</Suspense>
+    </Box>
   </Box>
 );
 
