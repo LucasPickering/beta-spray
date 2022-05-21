@@ -10,6 +10,9 @@ const theme = createTheme({
     primary: {
       main: "#f08080",
     },
+    secondary: {
+      main: "#00b0ff",
+    },
   },
   components: {
     MuiIconButton: {

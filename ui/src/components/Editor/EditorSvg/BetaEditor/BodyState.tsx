@@ -1,3 +1,4 @@
+import { useTheme } from "@mui/material";
 import React from "react";
 import { BetaOverlayMove, BodyPart, OverlayPosition } from "util/svg";
 
@@ -10,6 +11,8 @@ interface Props {
  * A visual for the body's current position on a given move.
  */
 const BodyState: React.FC<Props> = ({ moves, highlightedMove }) => {
+  const { palette } = useTheme();
+
   // Find the most recent position of each body part at the point of the
   // highlighted move. Moves should always be sorted by order!
   const lastMoves: Map<BodyPart, BetaOverlayMove> = new Map();
@@ -37,8 +40,9 @@ const BodyState: React.FC<Props> = ({ moves, highlightedMove }) => {
       {values.map((move) => (
         <line
           key={move.id}
-          stroke="red"
-          strokeWidth={0.4}
+          stroke={palette.secondary.main}
+          strokeWidth={0.6}
+          strokeDasharray="2,2"
           x1={center.x}
           y1={center.y}
           x2={move.position.x}
