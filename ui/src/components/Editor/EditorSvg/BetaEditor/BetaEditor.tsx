@@ -23,7 +23,6 @@ import { EditorContext } from "util/context";
 import { assertIsDefined, groupBy, isDefined } from "util/func";
 import BodyState from "./BodyState";
 import { DropHandler } from "util/dnd";
-
 import BetaChainLine from "./BetaChainLine";
 import BetaChainMark from "./BetaChainMark";
 import useMutation from "util/useMutation";
@@ -338,7 +337,7 @@ function getMoves(
   const sliceSize = Math.PI / 2; // 90 degrees
 
   // Group by hold, then body part
-  for (const [, holdMoves] of groupBy(moves, (move) => move.holdId).entries()) {
+  for (const holdMoves of groupBy(moves, (move) => move.holdId).values()) {
     const movesByBodyPart = groupBy(holdMoves, (move) => move.bodyPart);
 
     bodyPartsCCW.forEach((bodyPart, i) => {

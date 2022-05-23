@@ -6,6 +6,7 @@ import {
   styleDragging,
   styleDropHover,
 } from "styles/dnd";
+import { useTheme } from "@mui/material";
 
 interface Props {
   clickable?: boolean;
@@ -30,16 +31,22 @@ const HoldIcon: React.FC<Props> = ({
   draggable = false,
   isDragging = false,
   isOver = false,
-}) => (
-  <circle
-    css={[
-      styleHoldMark,
-      clickable && styleAddObject,
-      draggable && styleDraggable,
-      isDragging && styleDragging,
-      isOver && styleDropHover,
-    ]}
-  />
-);
+}) => {
+  const { palette } = useTheme();
+  return (
+    <circle
+      css={[
+        styleHoldMark,
+        draggable
+          ? { fill: palette.primary.main, stroke: "white" }
+          : { fill: "white", stroke: palette.primary.main },
+        clickable && styleAddObject,
+        draggable && styleDraggable,
+        isDragging && styleDragging,
+        isOver && styleDropHover,
+      ]}
+    />
+  );
+};
 
 export default HoldIcon;

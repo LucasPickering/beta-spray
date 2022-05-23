@@ -16,6 +16,7 @@ export const styleDragging = css({
   opacity: 0.6,
   cursor: "grabbing",
   pointerEvents: "none",
+  "&": styleDraggableHighlight,
 });
 
 // Apply to elements that, upon being clicked, will add some resource

@@ -1,6 +1,6 @@
 import { Stack } from "@mui/material";
 import React from "react";
-import EditHoldsButton from "./EditHoldsButton";
+import ModeButton from "./ModeButton";
 
 interface Props {
   children?: React.ReactNode;
@@ -18,7 +18,7 @@ const EditorPanel: React.FC<Props> = ({ children }) => (
     flexShrink={0}
     width={280}
   >
-    <EditHoldsButton />
+    <ModeButton />
 
     {children}
   </Stack>

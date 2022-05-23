@@ -10,7 +10,7 @@ import { Box, Stack, IconButton } from "@mui/material";
 import { DndProvider } from "react-dnd";
 import { TouchBackend } from "react-dnd-touch-backend";
 import { Home as IconHome } from "@mui/icons-material";
-import { EditorContext } from "util/context";
+import { EditorContext, EditorMode } from "util/context";
 import { ZoomPanProvider } from "util/zoom";
 import BetaDetails from "./EditorControls/BetaDetails";
 import BetaList from "./EditorControls/BetaList";
@@ -45,8 +45,8 @@ const Editor: React.FC = () => {
   const [betaQueryRef, loadBetaQuery] =
     useQueryLoader<queriesBetaQueryType>(queriesBetaQuery);
 
-  // Toggle hold editor overlay
-  const [editingHolds, setEditingHolds] = useState<boolean>(false);
+  // Toggle between editing holds and beta
+  const [mode, setMode] = useState<EditorMode>("beta");
   // Allows overlay to detect when a hold is clicked
   const [selectedHold, setSelectedHold] = useState<string>();
   // Link hovering between move list and overlay
@@ -70,14 +70,14 @@ const Editor: React.FC = () => {
     setSelectedBeta(betaId);
   }, [betaId]);
 
+  // Figure out which help text to show based on editor state
   const helpMode = (() => {
-    if (editingHolds) {
-      return "editHolds";
+    switch (mode) {
+      case "holds":
+        return "editHolds";
+      case "beta":
+        return selectedBeta ? "editBeta" : "noBeta";
     }
-    if (!selectedBeta) {
-      return "noBeta";
-    }
-    return "editBeta";
   })();
 
   return (
@@ -105,8 +105,8 @@ const Editor: React.FC = () => {
               { replace: true }
             );
           },
-          editingHolds,
-          setEditingHolds,
+          mode,
+          setMode,
           selectedHold,
           setSelectedHold,
           highlightedMove,
@@ -153,13 +153,14 @@ const Editor: React.FC = () => {
               <HelpText helpMode={helpMode} />
             </Stack>
 
+            {/* Top-right overlay buttons are mobile-only, so they live in
+                EditorDrawer */}
+
             {/* Controls sidebar/drawer */}
             <EditorControls>
               <BetaList queryRef={problemQueryRef} />
-
               <BetaDetails queryRef={betaQueryRef} />
-
-              <DragLayer mode="html" />
+              <DragLayer mode="html" /> {/* Provides DnD previews */}
             </EditorControls>
           </Box>
         </ZoomPanProvider>

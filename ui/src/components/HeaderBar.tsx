@@ -1,7 +1,7 @@
 import { Link, Toolbar, Typography } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 import React from "react";
-import Logo from "./Logo";
+import Logo from "./common/Logo";
 
 interface Props {
   children?: React.ReactNode;

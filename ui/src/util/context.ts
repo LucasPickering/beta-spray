@@ -4,6 +4,8 @@ import React from "react";
 import { PreloadedQuery } from "react-relay";
 import { Dimensions } from "./svg";
 
+export type EditorMode = "holds" | "beta";
+
 export interface SvgContextType {
   svgRef: React.RefObject<SVGSVGElement | null>;
   dimensions: Dimensions;
@@ -18,8 +20,8 @@ export interface EditorContextType {
   betaQueryRef: PreloadedQuery<queriesBetaQuery> | null | undefined;
   selectedBeta: string | undefined;
   setSelectedBeta: (betaId: string | undefined) => void;
-  editingHolds: boolean;
-  setEditingHolds: React.Dispatch<React.SetStateAction<boolean>>;
+  mode: EditorMode;
+  setMode: React.Dispatch<React.SetStateAction<EditorMode>>;
   selectedHold: string | undefined;
   setSelectedHold: React.Dispatch<React.SetStateAction<string | undefined>>;
   highlightedMove: string | undefined;

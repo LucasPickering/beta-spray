@@ -40,7 +40,7 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
     betaKey
   );
 
-  const { editingHolds } = useContext(EditorContext);
+  const { mode } = useContext(EditorContext);
 
   // Track moves in internal state so we can reorder them without constantly
   // saving to the API. We'll reorder on hover, then persist on drop.
@@ -100,7 +100,7 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
             dataKey={node}
             index={moveIndex}
             totalMoves={moves.length} // Needed to colorize moves
-            disabled={editingHolds}
+            disabled={mode !== "beta"}
             onReorder={(dragItem, newIndex) => {
               // This is called on the *hovered* move, so the passed index is
               // the one being dragged

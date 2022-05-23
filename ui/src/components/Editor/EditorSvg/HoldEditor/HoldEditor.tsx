@@ -39,7 +39,6 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
     `,
     problemKey
   );
-
   const { toAPIPosition, toSvgPosition } = useOverlayUtils();
 
   const { commit: createHold, state: createState } =
@@ -59,7 +58,6 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
         }
       }
     `);
-
   const { commit: updateHold, state: updateState } =
     useMutation<HoldEditor_updateHoldMutation>(graphql`
       mutation HoldEditor_updateHoldMutation($input: UpdateHoldMutationInput!) {
@@ -71,7 +69,6 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
         }
       }
     `);
-
   const { commit: deleteHold, state: deleteState } =
     useMutation<HoldEditor_deleteHoldMutation>(graphql`
       mutation HoldEditor_deleteHoldMutation(

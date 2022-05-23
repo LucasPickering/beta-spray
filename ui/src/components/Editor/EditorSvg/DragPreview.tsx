@@ -32,7 +32,7 @@ const DragPreview: React.FC<Props> = ({ mode, itemWithKind }) => {
   if (mode === "svg") {
     switch (itemWithKind.kind) {
       case "holdOverlay":
-        return <HoldIcon isDragging />;
+        return <HoldIcon draggable isDragging />;
       case "betaMoveOverlay": {
         const { item } = itemWithKind;
         const move = item.kind === "move" ? item.move : item.startMove;

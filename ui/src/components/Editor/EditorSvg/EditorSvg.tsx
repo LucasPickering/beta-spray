@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { EditorContext, SvgContext } from "util/context";
 import { graphql, useFragment } from "react-relay";
 import { useZoomPan } from "util/zoom";
@@ -32,7 +32,6 @@ const EditorSvg: React.FC<Props> = ({ problemKey }) => {
         name
         boulder {
           image {
-            url
             width
             height
           }
@@ -40,6 +39,9 @@ const EditorSvg: React.FC<Props> = ({ problemKey }) => {
         }
         ...HoldEditor_problemNode
         holds {
+          edges {
+            cursor
+          }
           ...HoldMarks_holdConnection
         }
       }
@@ -47,9 +49,20 @@ const EditorSvg: React.FC<Props> = ({ problemKey }) => {
     problemKey
   );
 
-  const { betaQueryRef, selectedBeta, editingHolds, setSelectedHold } =
+  const { betaQueryRef, selectedBeta, mode, setMode, setSelectedHold } =
     useContext(EditorContext);
   const ref = useRef<SVGSVGElement | null>(null);
+
+  // On first load, we'll be editing beta by default. If there are no holds
+  // though, edit holds instead since you can't create any beta yet.
+  useEffect(() => {
+    if (problem.holds.edges.length === 0) {
+      setMode("holds");
+    }
+    // Intentionally ignore all changes, we really really only want to do this
+    // on first mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Make sure 100 is always the *smaller* of the two dimensions, so we get
   // consistent sizing on SVG elements for landscape vs portrait
@@ -71,18 +84,19 @@ const EditorSvg: React.FC<Props> = ({ problemKey }) => {
 
         <PanZone />
 
-        {editingHolds ? (
-          <HoldEditor problemKey={problem} />
-        ) : (
-          <HoldMarks
-            holdConnectionKey={problem.holds}
-            // Selecting a hold opens the move modal, which shouldn't be
-            // possible if no beta is selected
-            onClick={selectedBeta ? setSelectedHold : undefined}
-          />
-        )}
+        {mode === "holds" && <HoldEditor problemKey={problem} />}
 
-        {!editingHolds && <BetaEditor queryRef={betaQueryRef} />}
+        {mode === "beta" && (
+          <>
+            <HoldMarks
+              holdConnectionKey={problem.holds}
+              // Selecting a hold opens the move modal, which shouldn't be
+              // possible if no beta is selected
+              onClick={selectedBeta ? setSelectedHold : undefined}
+            />
+            <BetaEditor queryRef={betaQueryRef} />
+          </>
+        )}
       </EditorSvgInner>
     </SvgContext.Provider>
   );

@@ -48,8 +48,7 @@ const BetaList: React.FC<Props> = ({ problemKey }) => {
     problemKey
   );
   const connections = [problem.betas.__id];
-  const { selectedBeta, setSelectedBeta, editingHolds } =
-    useContext(EditorContext);
+  const { selectedBeta, setSelectedBeta, mode } = useContext(EditorContext);
 
   // Auto-select the first beta if nothing else is selected
   useEffect(() => {
@@ -198,7 +197,7 @@ const BetaList: React.FC<Props> = ({ problemKey }) => {
   };
 
   const labelId = `beta-select`;
-  const disabled = editingHolds;
+  const disabled = mode !== "beta";
   return (
     <>
       <FormControl>
