@@ -19,6 +19,8 @@ import DragLayer from "./EditorSvg/DragLayer";
 import EditorSvg from "./EditorSvg/EditorSvg";
 import HelpText from "./EditorSvg/HelpText";
 import EditorHelmet from "./EditorHelmet";
+import ProblemName from "./EditorControls/ProblemName";
+import ModeButton from "./EditorControls/ModeButton";
 
 /**
  * Main app component, for viewing+editing boulders/problems/betas. This is
@@ -158,6 +160,8 @@ const Editor: React.FC = () => {
 
             {/* Controls sidebar/drawer */}
             <EditorControls>
+              <ProblemName queryRef={problemQueryRef} />
+              <ModeButton />
               <BetaList queryRef={problemQueryRef} />
               <BetaDetails queryRef={betaQueryRef} />
               <DragLayer mode="html" /> {/* Provides DnD previews */}

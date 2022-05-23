@@ -28,8 +28,6 @@ const EditorDrawer: React.FC<Props> = ({ children }) => {
       <Drawer anchor="right" open={isOpen} onClose={() => setIsOpen(false)}>
         <Box sx={({ spacing }) => ({ padding: spacing(2) })}>
           <Stack direction="column" spacing={2}>
-            <ModeButton onClick={() => setIsOpen(false)} />
-
             {children}
           </Stack>
         </Box>
