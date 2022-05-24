@@ -73,21 +73,17 @@ const BetaChainMark: React.FC<Props> = ({
       onClickAway={onClickAway ? () => onClickAway(move) : noop}
     >
       <Positioned position={getMoveVisualPosition(move)}>
-        {/* This wrapper allows for applying transforms to all children */}
-        <g
+        <BetaMoveIcon
+          ref={ref}
+          move={move}
+          isDragging={isDragging}
+          isHighlighted={isHighlighted}
           css={isOver && styleDropHover}
           onClick={onClick && (() => onClick(move))}
           onDoubleClick={onDoubleClick && (() => onDoubleClick(move))}
           onMouseEnter={onMouseEnter && (() => onMouseEnter(move))}
           onMouseLeave={onMouseLeave && (() => onMouseLeave(move))}
-        >
-          <BetaMoveIcon
-            ref={ref}
-            move={move}
-            isDragging={isDragging}
-            isHighlighted={isHighlighted}
-          />
-        </g>
+        />
       </Positioned>
     </ClickAwayListener>
   );

@@ -52,7 +52,7 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
   // Map moves to a shorthand form that we can use in the AI. These should
   // always be sorted by order from the API, and remain that way
   const moves: BetaOverlayMove[] = useMemo(
-    () => getMoves(beta.moves.edges, toOverlayPosition),
+    () => buildMoves(beta.moves.edges, toOverlayPosition),
     [beta.moves.edges, toOverlayPosition]
   );
 
@@ -310,25 +310,45 @@ const bodyPartsCCW = [
  *  this requires the context of the image aspect ratio
  * @returns UI move objects
  */
-function getMoves(
+function buildMoves(
   edges: BetaEditor_betaNode$data["moves"]["edges"],
   toOverlayPosition: (apiPosition: APIPosition) => OverlayPosition
 ): BetaOverlayMove[] {
+  let seenBodyParts: Set<BodyPart> | undefined = new Set();
   const moves: BetaOverlayMove[] = edges.map(({ node }) => {
     // TODO render holdless moves
     assertIsDefined(node.hold);
 
+    // This is a little jank, but we want to identify start moves and any move
+    // that occurs before the first body part moves again. Importantly, we don't
+    // just take the first move for each body part, because we won't necessarily
+    // have every part on for the start.
+    const bodyPart = toBodyPart(node.bodyPart);
+    let isStart = false;
+    if (isDefined(seenBodyParts)) {
+      if (seenBodyParts.has(bodyPart)) {
+        // undefined indicates we're past the start and can skip this logic
+        seenBodyParts = undefined;
+      } else {
+        isStart = true;
+        seenBodyParts.add(bodyPart);
+      }
+    }
+
     return {
       id: node.id,
-      bodyPart: toBodyPart(node.bodyPart),
+      bodyPart,
       order: node.order,
       holdId: node.hold.id,
       position: toOverlayPosition(node.hold),
-      offset: undefined,
+      isStart,
       color: getMoveColor(node.order, edges.length),
+      // This will be updated below
+      offset: { x: 0, y: 0 },
     };
   });
 
+  // Next step is to apply a visual offset to each move to make them legible.
   // We want to position each move like so:
   // 1. By body part, so left hand is top-left, right foot is bottom-right, etc.
   // 2. Spread evenly within that 90° slice (if multiple moves per body part)

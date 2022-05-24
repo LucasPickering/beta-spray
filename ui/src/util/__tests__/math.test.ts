@@ -1,4 +1,4 @@
-import { coerce, hexToRgb, rgbToHex } from "../math";
+import { coerce, lerpColor } from "../math";
 
 describe("coerce", () => {
   test("value in range", () => {
@@ -14,14 +14,10 @@ describe("coerce", () => {
   });
 });
 
-describe("hexToRgb", () => {
-  test("mixed color", () => {
-    expect(hexToRgb(0xfe9865)).toEqual([0xfe, 0x98, 0x65]);
-  });
-});
-
-describe("rgbToHex", () => {
-  test("mixed color", () => {
-    expect(rgbToHex([0xfe, 0x98, 0x65])).toEqual(0xfe9865);
+describe("lerpColor", () => {
+  test("white/black", () => {
+    expect(lerpColor(0x000000, 0xffffff, 0.0)).toEqual(0x000000);
+    expect(lerpColor(0x000000, 0xffffff, 0.5)).toEqual(0x7f7f7f);
+    expect(lerpColor(0x000000, 0xffffff, 1.0)).toEqual(0xffffff);
   });
 });

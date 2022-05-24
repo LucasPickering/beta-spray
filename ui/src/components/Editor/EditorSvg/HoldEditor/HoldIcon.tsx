@@ -18,9 +18,7 @@ interface Props {
 const styleHoldMark = css({
   r: 4,
   opacity: 0.5,
-  fill: "white",
-  stroke: "white",
-  strokeWidth: 0.3,
+  strokeWidth: 0.5,
 });
 
 /**
