@@ -18,9 +18,9 @@ function getHelpText(helpMode: Props["helpMode"]): React.ReactChild {
     case "editHolds":
       return (
         <>
-          <div>Click to add a hold</div>
+          <div>Double click to add a hold</div>
           <div>Drag to move</div>
-          <div>Double click to delete</div>
+          <div>Double click a hold to delete</div>
         </>
       );
     case "editBeta":

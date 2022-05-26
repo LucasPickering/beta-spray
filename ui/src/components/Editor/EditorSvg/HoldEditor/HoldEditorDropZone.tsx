@@ -1,18 +1,15 @@
 import React from "react";
-import { styleAddObject } from "styles/svg";
 import { useDrop } from "util/dnd";
 import { assertIsDefined } from "util/func";
 import { useOverlayUtils } from "util/svg";
-import InvisibleZone from "../InvisibleZone";
-
-interface Props {
-  onClick?: React.MouseEventHandler<SVGRectElement>;
-}
+import PanZone from "../PanZone";
 
 /**
  * A layer to catch clicks and drops on the hold editor.
  */
-const HoldEditorDropZone: React.FC<Props> = ({ onClick }) => {
+const HoldEditorDropZone: React.FC<React.ComponentProps<typeof PanZone>> = (
+  props
+) => {
   const { toSvgPosition } = useOverlayUtils();
 
   // Listen for holds being dropped
@@ -26,7 +23,10 @@ const HoldEditorDropZone: React.FC<Props> = ({ onClick }) => {
     },
   });
 
-  return <InvisibleZone ref={drop} css={styleAddObject} onClick={onClick} />;
+  // We need to rely on the standard pan zone because we can't have more than
+  // one element trying to capture clicks/drags across the entire screen. So
+  // it will handle both sets of logic for us.
+  return <PanZone ref={drop} {...props} />;
 };
 
 export default HoldEditorDropZone;

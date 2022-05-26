@@ -82,12 +82,13 @@ const EditorSvg: React.FC<Props> = ({ problemKey }) => {
             events from other components */}
         <DragLayer mode="svg" />
 
-        <PanZone />
-
         {mode === "holds" && <HoldEditor problemKey={problem} />}
 
         {mode === "beta" && (
           <>
+            {/* Hold editor extends PanZone so it renders it itself, beta editor
+                doesn't so we need to provide it */}
+            <PanZone />
             <HoldMarks
               holdConnectionKey={problem.holds}
               // Selecting a hold opens the move modal, which shouldn't be

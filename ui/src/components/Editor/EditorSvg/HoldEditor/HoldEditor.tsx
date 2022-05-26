@@ -87,7 +87,7 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
     <>
       {/* Invisible layer to capture clicks for new holds */}
       <HoldEditorDropZone
-        onClick={(e) => {
+        onDoubleClick={(e) => {
           const apiPos = toAPIPosition(
             toSvgPosition({ x: e.clientX, y: e.clientY })
           );
@@ -130,7 +130,7 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
             },
           });
         }}
-        // Darg and drop = move hold
+        // Drag and drop = move hold
         onDrop={(item, result) => {
           const apiPos = toAPIPosition(result.position);
           updateHold({
