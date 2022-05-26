@@ -30,9 +30,7 @@ import MutationError from "components/common/MutationError";
 import withQuery from "util/withQuery";
 import { queriesBetaQuery } from "components/Editor/__generated__/queriesBetaQuery.graphql";
 import { betaQuery } from "components/Editor/queries";
-
-/** The distance to shift a disambiguated move */
-const disambiguationDistance = 3.5;
+import { disambiguationDistance } from "styles/svg";
 
 interface Props {
   betaKey: BetaEditor_betaNode$key;

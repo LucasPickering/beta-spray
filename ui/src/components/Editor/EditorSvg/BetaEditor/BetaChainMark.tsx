@@ -1,7 +1,7 @@
 import React, { useContext, useRef } from "react";
 import { BetaOverlayMove, getMoveVisualPosition } from "util/svg";
 import { DropHandler, useDrag, useDrop } from "util/dnd";
-import { styleDropHover } from "styles/dnd";
+import { styleDropHover } from "styles/svg";
 import { ClickAwayListener } from "@mui/material";
 import { EditorContext } from "util/context";
 import Positioned from "../Positioned";

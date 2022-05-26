@@ -1,11 +1,11 @@
 import React from "react";
-import { css } from "@emotion/react";
 import {
   styleAddObject,
   styleDraggable,
   styleDragging,
   styleDropHover,
-} from "styles/dnd";
+  styleHoldIcon,
+} from "styles/svg";
 import { useTheme } from "@mui/material";
 
 interface Props {
@@ -14,12 +14,6 @@ interface Props {
   isDragging?: boolean;
   isOver?: boolean;
 }
-
-const styleHoldMark = css({
-  r: 4,
-  opacity: 0.5,
-  strokeWidth: 0.5,
-});
 
 /**
  * Dumb component for rendering a hold
@@ -34,7 +28,9 @@ const HoldIcon: React.FC<Props> = ({
   return (
     <circle
       css={[
-        styleHoldMark,
+        styleHoldIcon,
+        // TODO figure out how to move this into styles/, need to access MUI
+        // theme from the emotion `css` function
         draggable
           ? { fill: palette.primary.main, stroke: "white" }
           : { fill: "white", stroke: palette.primary.main },

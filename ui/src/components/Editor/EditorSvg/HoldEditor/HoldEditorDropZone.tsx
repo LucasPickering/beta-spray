@@ -1,5 +1,5 @@
 import React from "react";
-import { styleAddObject } from "styles/dnd";
+import { styleAddObject } from "styles/svg";
 import { useDrop } from "util/dnd";
 import { assertIsDefined } from "util/func";
 import { useOverlayUtils } from "util/svg";

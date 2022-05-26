@@ -11,7 +11,6 @@ import {
   ListItemText,
 } from "@mui/material";
 import { BodyPart, formatBodyPart, formatOrder, getMoveColor } from "util/svg";
-import { IconBodyPart } from "components/common/icons";
 
 interface Props extends React.ComponentProps<typeof ListItem> {
   bodyPart: BodyPart;
@@ -36,8 +35,6 @@ const BetaMoveListItem = React.forwardRef<SVGSVGElement, Props>(
           {/* Ref is used for dnd only, so pass it to the drag handle.
                 This prevents interfering with scrolling on mobile */}
           <IconDragHandle ref={ref} sx={[!disabled && { cursor: "move" }]} />
-          {/* TODO clean the spacing around this */}
-          <IconBodyPart bodyPart={bodyPart} sx={{ color }} />
         </ListItemIcon>
 
         <ListItemText sx={{ color }}>

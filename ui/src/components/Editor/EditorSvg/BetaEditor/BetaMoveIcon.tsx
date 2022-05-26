@@ -1,15 +1,14 @@
 import React from "react";
 import { BetaOverlayMove, formatOrder, multiply, unit } from "util/svg";
 import {
+  startHashLength,
   styleDraggable,
   styleDraggableHighlight,
   styleDragging,
-} from "styles/dnd";
+} from "styles/svg";
 import { useTheme } from "@mui/material";
 import { Interpolation, Theme } from "@emotion/react";
 import { IconBodyPartRaw } from "components/common/icons";
-
-const hashLength = 4.5;
 
 interface Props extends React.SVGProps<SVGGElement> {
   move: BetaOverlayMove;
@@ -42,7 +41,7 @@ const BetaMoveIcon = React.forwardRef<SVGGElement, Props>(
     // distance, so scale the offset down to a unit vector, then scale up again
     // by a known length factor. Note: this length includes the segment hidden
     // behind the circle.
-    const hashEnd = multiply(unit(move.offset), hashLength);
+    const hashEnd = multiply(unit(move.offset), startHashLength);
     // Applied to both the line and the circle
     const startMoveStyle = {
       stroke: palette.secondary.main,
