@@ -54,6 +54,7 @@ const BetaDetailsMove: React.FC<Props> = ({
       index,
       bodyPart: toBodyPart(betaMove.bodyPart),
       order: betaMove.order,
+      totalMoves,
     },
     canDrag() {
       return !disabled;
