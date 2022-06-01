@@ -1,8 +1,32 @@
-import { Button, IconButton, Tooltip } from "@mui/material";
+import {
+  IconButton,
+  Stack,
+  ToggleButton,
+  ToggleButtonGroup,
+  Tooltip,
+} from "@mui/material";
 import React, { useContext } from "react";
 import { Handyman as IconHandyman } from "@mui/icons-material";
 import { EditorContext, EditorMode } from "util/context";
 import { IconLogo } from "components/common/icons";
+import { isDefined } from "util/func";
+
+const modes: Array<{
+  mode: EditorMode;
+  text: string;
+  icon: React.ReactElement;
+}> = [
+  {
+    mode: "holds",
+    text: "Holds",
+    icon: <IconHandyman />,
+  },
+  {
+    mode: "beta",
+    text: "Beta",
+    icon: <IconLogo />,
+  },
+];
 
 interface Props {
   iconOnly?: boolean;
@@ -18,39 +42,51 @@ const ModeButton: React.FC<Props> = ({
 }) => {
   const { mode, setMode } = useContext(EditorContext);
 
-  // Set button contents/behavior based on our current mode
-  const {
-    icon,
-    text,
-    nextMode,
-  }: { icon: React.ReactElement; text: string; nextMode: EditorMode } =
-    mode === "holds"
-      ? { icon: <IconLogo />, text: "Edit Beta", nextMode: "beta" }
-      : { icon: <IconHandyman />, text: "Edit Holds", nextMode: "holds" };
-  const onClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
-    setMode(nextMode);
-    if (onClickParent) {
-      onClickParent(e);
-    }
-  };
-
+  // The icon button cycles through modes
   if (iconOnly) {
+    // Find the next mode in the cycle, and decorate the button to match it
+    const currentIndex = modes.findIndex((el) => el.mode === mode);
+    const nextIndex = (currentIndex + 1) % modes.length;
+    const next = modes[nextIndex];
+
+    // Set button contents/behavior based on our current mode
+    const onClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
+      setMode(next.mode);
+      if (onClickParent) {
+        onClickParent(e);
+      }
+    };
+
     return (
-      <Tooltip title={text}>
-        <IconButton onClick={onClick}>{icon}</IconButton>
+      <Tooltip title={`Edit ${next.text}`}>
+        <IconButton onClick={onClick}>{next.icon}</IconButton>
       </Tooltip>
     );
   }
 
+  // THe full button shows all possible modes
   return (
-    <Button
+    <ToggleButtonGroup
+      value={mode}
+      exclusive
+      fullWidth
       color="primary"
-      variant="outlined"
-      startIcon={icon}
-      onClick={onClick}
+      size="small"
+      onChange={(e, value: EditorMode | null) => {
+        // Value is null if re-selecting the active button
+        if (isDefined(value)) {
+          setMode(value);
+        }
+      }}
     >
-      {text}
-    </Button>
+      {modes.map(({ mode, text, icon }) => (
+        <ToggleButton key={mode} value={mode}>
+          <Stack direction="row" spacing={1}>
+            {icon} <span>{text}</span>
+          </Stack>
+        </ToggleButton>
+      ))}
+    </ToggleButtonGroup>
   );
 };
 
