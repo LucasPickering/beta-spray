@@ -1,6 +1,7 @@
 import { AppBar, Box } from "@mui/material";
 import React, { Suspense } from "react";
 import Loading from "./common/Loading";
+import Footer from "./Footer";
 import HeaderBar from "./HeaderBar";
 
 interface Props {
@@ -8,7 +9,7 @@ interface Props {
 }
 
 const PageLayout: React.FC<Props> = ({ children }) => (
-  <Box display="flex" flexDirection="column">
+  <Box display="flex" flexDirection="column" minHeight="100vh">
     <AppBar position="static">
       <HeaderBar />
     </AppBar>
@@ -16,6 +17,7 @@ const PageLayout: React.FC<Props> = ({ children }) => (
       {/* Generally each page should provide its own suspenses, this is a backup */}
       <Suspense fallback={<Loading />}>{children}</Suspense>
     </Box>
+    <Footer />
   </Box>
 );
 
