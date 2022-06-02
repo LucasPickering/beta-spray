@@ -1,6 +1,5 @@
 from core.models import Beta, BetaMove
 from core.schema.query import BetaNode, ProblemNode
-from core import util
 from django.forms import model_to_dict
 from graphene import relay
 import graphene
@@ -17,14 +16,15 @@ class CreateBetaMutation(relay.ClientIDMutation):
     def mutate_and_get_payload(cls, root, info, problem_id, name=None):
         # Convert global ID to a PK
         # TODO spit out a useful error for bad ID here
-        problem_id = ProblemNode.get_pk_from_global_id(info, problem_id)
-        # Generate a default name if needed
-        name = (
-            name
-            if name is not None
-            else util.random_phrase(util.beta_name_phrase_groups)
-        )
-        beta = Beta.objects.create(name=name, problem_id=problem_id)
+        fields = {
+            "problem_id": ProblemNode.get_pk_from_global_id(info, problem_id)
+        }
+
+        # Rely on default if not given
+        if name is not None:
+            fields["name"] = name
+
+        beta = Beta.objects.create(**fields)
         return cls(beta=beta)
 
 

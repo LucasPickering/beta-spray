@@ -22,12 +22,11 @@ class CreateProblemMutation(relay.ClientIDMutation):
     def mutate_and_get_payload(
         cls, root, info, name=None, boulder_id=None, image_file=None
     ):
-        fields = {
-            # Generate a random name if not given
-            "name": name
-            if name is not None
-            else util.random_phrase(util.problem_name_phrase_groups)
-        }
+        fields = {}
+
+        # Rely on default if not given
+        if name is not None:
+            fields["name"] = name
 
         # TODO validate exactly one of boulder_id/image_file given
         if boulder_id:
@@ -37,6 +36,7 @@ class CreateProblemMutation(relay.ClientIDMutation):
             )
         else:
             file = util.get_request_file(info, image_file)
+            # Pass the whole object so it's pre-loaded for the return query
             fields["boulder"] = Boulder.objects.create(image=file)
 
         problem = Problem.objects.create(**fields)

@@ -1,10 +1,11 @@
-from core.queryset import BetaMoveQuerySet
 from django.db.models import F, Q, Max
 from django.db.models.functions import Coalesce
 from django.db.models.signals import pre_save, post_delete
 from django.dispatch import receiver
 from django.db import models
 from enum import Enum
+from .queryset import BetaMoveQuerySet
+from . import util
 
 
 class SlideDirection(Enum):
@@ -78,7 +79,7 @@ class Problem(models.Model):
     class Meta:
         ordering = ["-created_at"]
 
-    name = models.TextField()
+    name = models.TextField(default=util.random_problem_name)
     holds = models.ManyToManyField(
         Hold, related_name="problems", through="ProblemHold", blank=True
     )
@@ -115,7 +116,7 @@ class Beta(models.Model):
     A prescribed series of moves to solve a problem.
     """
 
-    name = models.TextField()
+    name = models.TextField(default=util.random_beta_name)
     problem = models.ForeignKey(
         Problem, related_name="betas", on_delete=models.CASCADE
     )
@@ -193,9 +194,9 @@ class BetaMove(models.Model):
         choices=BodyPart.choices,
         help_text="Body part in question",
     )
+    # TODO add annotation, e.g. "flag", "drop knee", etc.
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    # TODO add annotation, e.g. "flag", "drop knee", etc.
 
 
 # ========== SIGNALS ==========

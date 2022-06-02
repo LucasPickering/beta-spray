@@ -41,6 +41,14 @@ def random_phrase(phrase_groups):
     )
 
 
+def random_problem_name():
+    return random_phrase(problem_name_phrase_groups)
+
+
+def random_beta_name():
+    return random_phrase(beta_name_phrase_groups)
+
+
 def get_request_file(info, file_key):
     """Get an attached file object for a request"""
     # TODO validate file type and max size
