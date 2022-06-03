@@ -185,7 +185,12 @@ type BetaMoveNode implements Node {
 
   """The ID of the object"""
   id: ID!
+
+  """Body part being moved"""
   bodyPart: BodyPart!
+
+  """Is this one of the initial moves for the beta?"""
+  isStart: Boolean!
 }
 
 """A body part that someone could put on a hold"""

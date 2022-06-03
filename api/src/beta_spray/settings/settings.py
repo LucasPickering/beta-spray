@@ -153,6 +153,7 @@ LOGGING = {
             # Set to DEBUG to log DB queries
             "level": "INFO",
             "handlers": ["console"],
+            "propagate": False,  # Prevent dupe logging
         },
     },
     "root": {"level": "INFO", "handlers": ["console"]},

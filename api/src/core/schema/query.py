@@ -96,10 +96,25 @@ class BetaMoveNode(NodeType):
     class Meta:
         model = BetaMove
         interfaces = (relay.Node,)
-        fields = ("beta", "hold", "order")
         filter_fields = []
+        fields = ("beta", "hold", "order")
 
-    body_part = BodyPartType(required=True)
+    body_part = BodyPartType(required=True, description="Body part being moved")
+    is_start = graphene.Boolean(
+        required=True,
+        description="Is this one of the initial moves for the beta?",
+    )
+
+    @classmethod
+    def get_queryset(cls, queryset, info):
+        # Include is_start field. Hypothetically we could only include this if
+        # it's actually requested, but the documentation for the `info` object
+        # is horrendous and I don't feel like trying too hard on that.
+        return queryset.annotate_is_start()
+
+    def resolve_is_start(self, info):
+        # This is populated by annotation, so we need to resolve it explicitly
+        return self.is_start
 
 
 class Query(graphene.ObjectType):

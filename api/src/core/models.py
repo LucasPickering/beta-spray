@@ -1,4 +1,5 @@
-from django.db.models import F, Q, Max, Value
+from core.queryset import BetaMoveQuerySet
+from django.db.models import F, Q, Max
 from django.db.models.functions import Coalesce
 from django.db.models.signals import pre_save, post_delete
 from django.dispatch import receiver
@@ -171,6 +172,9 @@ class BetaMove(models.Model):
         ]
         ordering = ["order"]
 
+    # Custom query set
+    objects = BetaMoveQuerySet.as_manager()
+
     beta = models.ForeignKey(
         "Beta", related_name="moves", on_delete=models.CASCADE
     )
@@ -181,7 +185,8 @@ class BetaMove(models.Model):
         help_text="Optional destination hold for this move",
     )
     order = models.PositiveIntegerField(
-        help_text="Ordering number of the hold in the beta, with 0 as start"
+        db_index=True,  # We sort and filter by this a lot
+        help_text="Ordering number of the hold in the beta, with 0 as start",
     )
     body_part = models.CharField(
         max_length=2,
@@ -245,14 +250,8 @@ def beta_move_on_pre_save(sender, instance, raw, **kwargs):
             # TODO make sure this is atomic
             instance.order = (
                 BetaMove.objects.filter(beta_id=beta_id)
-                # This is needed to prevent django adding a GROUP BY that
-                # breaks the query
-                # https://stackoverflow.com/a/64902200/1907353
-                .annotate(dummy_group_by=Value(1))
-                .values("dummy_group_by")
-                # Similarly, the default ORDER BY also breaks the query,
-                # once again I have no idea why but it's an easy fix
-                .order_by()
+                # Remove annoying django clauses that break shit
+                .remove_group_by_order_by()
                 .annotate(next_order=Coalesce(Max("order") + 1, 0))
                 .values("next_order")
             )
