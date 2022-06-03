@@ -398,8 +398,8 @@ class CreateBetaMoveMutation(relay.ClientIDMutation):
         hold_id = hold_id and HoldNode.get_pk_from_global_id(info, hold_id)
 
         # TODO validate that hold and beta belong to the same problem
-        # TODO handle if new order value is too high
-        beta_move = BetaMove.objects.add_to_beta(
+        # TODO validate new order (take logic from commit cfd112a, query.py)
+        beta_move = BetaMove.objects.create(
             beta_id=beta_id, order=order, body_part=body_part, hold_id=hold_id
         )
 
@@ -420,9 +420,16 @@ class UpdateBetaMoveMutation(relay.ClientIDMutation):
     ):
         beta_move_id = BetaMoveNode.get_pk_from_global_id(info, beta_move_id)
         hold_id = hold_id and HoldNode.get_pk_from_global_id(info, hold_id)
-        beta_move = BetaMove.objects.update_in_beta(
-            beta_move_id=beta_move_id, order=order, hold_id=hold_id
-        )
+        # WARNING: we have to use .save() here instead of .update(), so that
+        # the pre_save trigger gets called and the surrouding moves get slidded
+        # around properly to make room for the new order (if any)
+        beta_move = BetaMove.objects.get(id=beta_move_id)
+        if order is not None:
+            beta_move.order = order
+        if hold_id is not None:
+            beta_move.hold_id = hold_id
+        beta_move.save()
+
         return cls(beta_move=beta_move)
 
 
@@ -435,7 +442,9 @@ class DeleteBetaMoveMutation(relay.ClientIDMutation):
     @classmethod
     def mutate_and_get_payload(cls, root, info, beta_move_id):
         beta_move_id = BetaMoveNode.get_pk_from_global_id(info, beta_move_id)
-        beta_move = BetaMove.objects.delete_from_beta(beta_move_id=beta_move_id)
+        beta_move = BetaMove.objects.get(id=beta_move_id)
+        # `object.delete()` wipes out the PK field for some reason ¯\_(ツ)_/¯
+        BetaMove.objects.filter(id=beta_move.id).delete()
         return cls(beta_move=beta_move)
 
 

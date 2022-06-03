@@ -1,5 +1,14 @@
-from core.query import BetaMoveQuerySet
 from django.db import models
+from django.db.models import F, Q, Max, Value
+from django.db.models.functions import Coalesce
+from django.db.models.signals import pre_save, post_delete
+from django.dispatch import receiver
+from enum import Enum
+
+
+class SlideDirection(Enum):
+    DOWN = "down"
+    UP = "up"
 
 
 class BodyPart(models.TextChoices):
@@ -117,6 +126,33 @@ class Beta(models.Model):
     def __str__(self):
         return self.name
 
+    @staticmethod
+    def slide_moves(beta_id, direction, from_order, to_order=None):
+        """
+        Slide the moves in a beta either up or down one slot, starting from a
+        given order and optionally ending at another order. If `to_order` is
+        not given, this will go to the end of the list.
+
+        `from_order` and `to_order` are both inclusive.
+
+        In this case, "down" means "increasing order". The metaphor is of a
+        vertical list of increasing orders.
+        """
+
+        if direction == SlideDirection.DOWN:
+            order_expr = F("order") + 1
+        elif direction == SlideDirection.UP:
+            order_expr = F("order") - 1
+        else:
+            raise ValueError(f"Unexpected slide direction: {direction}")
+
+        # Find our window basic on from/to values
+        filt = Q(beta_id=beta_id, order__gte=from_order)
+        if to_order is not None:
+            filt &= Q(order__lte=to_order)
+
+        BetaMove.objects.filter(filt).update(order=order_expr)
+
 
 class BetaMove(models.Model):
     """
@@ -136,9 +172,6 @@ class BetaMove(models.Model):
             )
         ]
         ordering = ["order"]
-
-    # Custom query set
-    objects = BetaMoveQuerySet.as_manager()
 
     beta = models.ForeignKey(
         "Beta", related_name="moves", on_delete=models.CASCADE
@@ -160,3 +193,81 @@ class BetaMove(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     # TODO add annotation, e.g. "flag", "drop knee", etc.
+
+
+@receiver(pre_save, sender=BetaMove)
+def beta_move_on_pre_save(sender, instance, raw, **kwargs):
+    """
+    Before creating a move, slide all the moves below it down 1 to make
+    room. If updating an existing move, we need to slide the moves between
+    the old and new order.
+    """
+    # Don't do anything for loaded fixtures
+    if raw:
+        return
+
+    beta_id = instance.beta_id
+    if instance.id is None:
+        # Creating a new move
+        if instance.order is None:
+            # No order given, just do max+1
+            # TODO make sure this is atomic
+            instance.order = (
+                BetaMove.objects.filter(beta_id=beta_id)
+                # This is needed to prevent django adding a GROUP BY that
+                # breaks the query
+                # https://stackoverflow.com/a/64902200/1907353
+                .annotate(dummy_group_by=Value(1))
+                .values("dummy_group_by")
+                # Similarly, the default ORDER BY also breaks the query,
+                # once again I have no idea why but it's an easy fix
+                .order_by()
+                .annotate(next_order=Coalesce(Max("order") + 1, 0))
+                .values("next_order")
+            )
+        else:
+            # Order was given, slide everything below that value down to
+            # make room
+            Beta.slide_moves(
+                beta_id=beta_id,
+                direction=SlideDirection.DOWN,
+                from_order=instance.order,
+            )
+    else:
+        # Updating existing move: slide the moves between old and new spots
+        old_order = BetaMove.objects.get(id=instance.id).order
+        new_order = instance.order
+
+        if old_order < new_order:
+            # Moving *down* the list, so slide intermediate moves *up*
+            Beta.slide_moves(
+                beta_id=beta_id,
+                direction=SlideDirection.UP,
+                # If we're moving e.g. 4->7, slide 5-7 to be 4-6
+                from_order=old_order + 1,
+                to_order=new_order,
+            )
+        elif old_order > new_order:
+            # Moving *up* the list, so slide intermediate moves *down*
+            Beta.slide_moves(
+                beta_id=beta_id,
+                direction=SlideDirection.DOWN,
+                # If we're moving e.g. 7->4, slide 4-6 to be 5-7
+                from_order=new_order,
+                to_order=old_order - 1,
+            )
+        else:
+            # Order didn't change, do nothing
+            pass
+
+
+@receiver(post_delete, sender=BetaMove)
+def beta_move_on_post_delete(sender, instance, **kwargs):
+    """
+    Upon deleting a move, slide all moves below it in the list up 1
+    """
+    Beta.slide_moves(
+        beta_id=instance.beta_id,
+        direction=SlideDirection.UP,
+        from_order=instance.order,
+    )

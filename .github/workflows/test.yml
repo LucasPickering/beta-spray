@@ -83,6 +83,10 @@ jobs:
         working-directory: api/
         run: poetry run ./src/manage.py makemigrations --skip-checks --dry-run --check
 
+      - name: Run Django tests
+        working-directory: api/
+        run: poetry run ./src/manage.py test
+
   # This runs in a docker container cause it needs DB access
   test-api:
     name: "Test API"
