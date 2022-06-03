@@ -11,7 +11,7 @@ interface Props {
  * Drawer container for editor controls. For small screens.
  */
 const EditorDrawer: React.FC<Props> = ({ children }) => {
-  const [isOpen, setIsOpen] = useState<boolean>(true);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
 
   return (
     <>
@@ -25,7 +25,13 @@ const EditorDrawer: React.FC<Props> = ({ children }) => {
         </IconButton>
       </Box>
 
-      <Drawer anchor="right" open={isOpen} onClose={() => setIsOpen(false)}>
+      <Drawer
+        anchor="right"
+        open={isOpen}
+        onClose={() => setIsOpen(false)}
+        // Make sure not to cover the whole screen
+        PaperProps={{ sx: { maxWidth: "80%" } }}
+      >
         <Box sx={({ spacing }) => ({ padding: spacing(2) })}>
           <Stack direction="column" spacing={2}>
             {children}
