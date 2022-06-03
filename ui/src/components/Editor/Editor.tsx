@@ -44,7 +44,7 @@ const Editor: React.FC = () => {
   const [selectedBeta, setSelectedBeta] = useState<string | undefined>(betaId);
   const [problemQueryRef, loadProblemQuery] =
     useQueryLoader<queriesProblemQueryType>(queriesProblemQuery);
-  const [betaQueryRef, loadBetaQuery] =
+  const [betaQueryRef, loadBetaQuery, disposeBetaQuery] =
     useQueryLoader<queriesBetaQueryType>(queriesBetaQuery);
 
   // Toggle between editing holds and beta
@@ -61,8 +61,11 @@ const Editor: React.FC = () => {
   useEffect(() => {
     if (selectedBeta) {
       loadBetaQuery({ betaId: selectedBeta });
+    } else {
+      // Beta is no longer selected, wipe out the query
+      disposeBetaQuery();
     }
-  }, [loadBetaQuery, selectedBeta]);
+  }, [loadBetaQuery, disposeBetaQuery, selectedBeta]);
 
   // Make sure state stays in sync with the URL
   // In most cases we should update both of these simultaneously so this hook
