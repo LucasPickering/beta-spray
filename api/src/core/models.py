@@ -1,8 +1,8 @@
-from django.db import models
 from django.db.models import F, Q, Max, Value
 from django.db.models.functions import Coalesce
 from django.db.models.signals import pre_save, post_delete
 from django.dispatch import receiver
+from django.db import models
 from enum import Enum
 
 
@@ -36,9 +36,7 @@ class Boulder(models.Model):
     up one or more problem
     """
 
-    name = models.TextField()
-    # TODO add a cron to auto-delete old images
-    # https://docs.djangoproject.com/en/4.0/ref/models/fields/#django.db.models.fields.files.FieldFile.delete
+    name = models.TextField()  # This field isn't populated yet
     image = models.ImageField(unique=True, upload_to="boulders")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -193,6 +191,39 @@ class BetaMove(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     # TODO add annotation, e.g. "flag", "drop knee", etc.
+
+
+# ========== SIGNALS ==========
+
+
+@receiver(post_delete, sender=Boulder)
+def boulder_on_post_delete(sender, instance, **kwargs):
+    """
+    After deleting a boulder, delete the associated image from media storage
+    """
+    # IMPORTANT: Without save=False, this will reincarnate the deleted row by
+    # calling .save() on it with an empty image path
+    instance.image.delete(save=False)
+
+
+@receiver(post_delete, sender=Problem)
+def problem_on_post_delete(sender, instance, **kwargs):
+    """
+    After deleting a problem, delete the associated boulder (if no other
+    problems point to it). This seems weird considering the DB schema allows
+    boulders to live without any referencing problems, but it's because the UI
+    masks the existence of boulders and pretends they're 1:1 with problems. This
+    means once a problem is deleted, the underlying boulder is no longer
+    accessible.
+
+    In the future however, we may transparently allow multiple problems to
+    point to the same boulder (e.g. if you copy a problem), to prevent
+    duplicating images. Because of this, we want to make sure the boulder is
+    unreferenced before deleting it.
+    """
+    Boulder.objects.filter(id=instance.boulder_id).exclude(
+        id__in=Problem.objects.values("boulder_id")
+    ).delete()
 
 
 @receiver(pre_save, sender=BetaMove)

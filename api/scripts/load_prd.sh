@@ -8,7 +8,7 @@ set -e
 API_DIR="$(git rev-parse --show-toplevel)/api"
 DUMP_FILE=dump.json
 FIXTURE_PATH="$API_DIR/src/$DUMP_FILE"
-BOULDER_DIR="$API_DIR/src/media/boulders"
+BOULDER_IMAGE_DIR="$API_DIR/src/media/boulders"
 API_POD=$(kubectl get pod -o json | jq -r '.items[].metadata | select(.labels.app == "api") | .name')
 
 cd $API_DIR
@@ -25,9 +25,9 @@ echo "Loading data locally"
 rm "$FIXTURE_PATH"
 
 echo "Copying boulder images"
-rm $BOULDER_DIR/*
+rm -f $BOULDER_IMAGE_DIR/*
 
-# Grab a the list of image URLs from the DB
+# Grab the list of image URLs from the DB
 BOULDER_IMAGES=$(kubectl exec $API_POD -- ./m.sh shell --command="import json; from core.models import Boulder; print(json.dumps(list(boulder.image.url for boulder in Boulder.objects.all())))" | jq -r '.[]')
 # Download files in parallel
-echo $BOULDER_IMAGES | xargs -n1 -P10 wget --no-verbose -P $BOULDER_DIR
+echo $BOULDER_IMAGES | xargs -n1 -P10 wget --no-verbose -P $BOULDER_IMAGE_DIR
