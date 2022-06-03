@@ -36,7 +36,7 @@ const BetaChainLine: React.FC<Props> = ({ startMove, endMove, onDrop }) => {
     <line
       ref={drag}
       css={[styleDraggable, isDragging && styleDragging]}
-      stroke={endMove.color}
+      stroke={endMove.color.fill}
       x1={startPos.x}
       y1={startPos.y}
       x2={endPos.x}

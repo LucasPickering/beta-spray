@@ -35,6 +35,7 @@ const BetaDetailsMove: React.FC<Props> = ({
         id
         bodyPart
         order
+        isStart
       }
     `,
     dataKey
@@ -54,6 +55,7 @@ const BetaDetailsMove: React.FC<Props> = ({
       index,
       bodyPart: toBodyPart(betaMove.bodyPart),
       order: betaMove.order,
+      isStart: betaMove.isStart,
       totalMoves,
     },
     canDrag() {
@@ -159,6 +161,7 @@ const BetaDetailsMove: React.FC<Props> = ({
       ref={ref}
       bodyPart={bodyPart}
       order={betaMove.order}
+      isStart={betaMove.isStart}
       totalMoves={totalMoves}
       disabled={disabled}
       onMouseEnter={() => {

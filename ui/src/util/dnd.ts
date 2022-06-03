@@ -46,6 +46,7 @@ export type DragType =
         // they can be fetched from Relay
         bodyPart: BodyPart;
         order: number; // See note above about order vs index
+        isStart: boolean;
         totalMoves: number; // Total number of moves in the list, used for color
       };
       drop: undefined;

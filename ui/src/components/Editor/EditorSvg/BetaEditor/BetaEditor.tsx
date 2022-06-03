@@ -237,6 +237,7 @@ const betaNodeFragment = graphql`
           id
           bodyPart
           order
+          isStart
           hold {
             id
             positionX
@@ -312,35 +313,18 @@ function buildMoves(
   edges: BetaEditor_betaNode$data["moves"]["edges"],
   toOverlayPosition: (apiPosition: APIPosition) => OverlayPosition
 ): BetaOverlayMove[] {
-  let seenBodyParts: Set<BodyPart> | undefined = new Set();
   const moves: BetaOverlayMove[] = edges.map(({ node }) => {
     // TODO render holdless moves
     assertIsDefined(node.hold);
 
-    // This is a little jank, but we want to identify start moves and any move
-    // that occurs before the first body part moves again. Importantly, we don't
-    // just take the first move for each body part, because we won't necessarily
-    // have every part on for the start.
-    const bodyPart = toBodyPart(node.bodyPart);
-    let isStart = false;
-    if (isDefined(seenBodyParts)) {
-      if (seenBodyParts.has(bodyPart)) {
-        // undefined indicates we're past the start and can skip this logic
-        seenBodyParts = undefined;
-      } else {
-        isStart = true;
-        seenBodyParts.add(bodyPart);
-      }
-    }
-
     return {
       id: node.id,
-      bodyPart,
+      bodyPart: toBodyPart(node.bodyPart),
       order: node.order,
+      isStart: node.isStart,
       holdId: node.hold.id,
       position: toOverlayPosition(node.hold),
-      isStart,
-      color: getMoveColor(node.order, edges.length),
+      color: getMoveColor(node.order, node.isStart, edges.length),
       // This will be updated below
       offset: { x: 0, y: 0 },
     };

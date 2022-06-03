@@ -19,10 +19,19 @@ export function coerce(
  * Convert an HTML color string to a hex code. HTML string must be a simple hex
  * code, no English names (e.g. "white")
  * @param html HTML color string, e.g. #ff0000
- * @returns 24-bit hex code
+ * @returns 24-bit hex code, e.g. 0xff0000
  */
 export function htmlToHex(html: string): number {
   return parseInt(html.substring(1), 16);
+}
+
+/**
+ * Convert a hex code color to an HTML color string.
+ * @param hex 24-bit hex code, e.g. 0xff0000
+ * @returns HTML color string, e.g. #ff0000
+ */
+export function hexToHtml(hex: number): string {
+  return `#${hex.toString(16)}`;
 }
 
 /**

@@ -6,7 +6,6 @@ import {
   styleDraggableHighlight,
   styleDragging,
 } from "styles/svg";
-import { useTheme } from "@mui/material";
 import { Interpolation, Theme } from "@emotion/react";
 import { IconBodyPartRaw } from "components/common/icons";
 
@@ -28,8 +27,6 @@ const BetaMoveIcon = React.forwardRef<SVGGElement, Props>(
     { move, hideOrder, isDragging, isHighlighted, css: parentCss, ...rest },
     ref
   ) => {
-    const { palette } = useTheme();
-
     // For start moves, we'll draw a hashmark akin to what routesetters use.
     // We want the hash to move away from the center of the hold so it doesn't
     // cover anything (also aesthetically matches hashes on holds). We'll put
@@ -42,9 +39,10 @@ const BetaMoveIcon = React.forwardRef<SVGGElement, Props>(
     // by a known length factor. Note: this length includes the segment hidden
     // behind the circle.
     const hashEnd = multiply(unit(move.offset), startHashLength);
-    // Applied to both the line and the circle
-    const startMoveStyle = {
-      stroke: palette.secondary.main,
+
+    // Applied to both the main icon and the hash mark
+    const css = {
+      ...move.color,
       strokeWidth: 0.5,
     };
 
@@ -60,8 +58,9 @@ const BetaMoveIcon = React.forwardRef<SVGGElement, Props>(
         {...rest}
       >
         {move.isStart && (
+          // Hash mark on start moves
           <line
-            css={startMoveStyle}
+            css={css}
             x1={hashStart.x}
             y1={hashStart.y}
             x2={hashEnd.x}
@@ -69,14 +68,7 @@ const BetaMoveIcon = React.forwardRef<SVGGElement, Props>(
           />
         )}
 
-        <IconBodyPartRaw
-          bodyPart={move.bodyPart}
-          css={[
-            { fill: move.color },
-            // Special outline for start moves
-            move.isStart && startMoveStyle,
-          ]}
-        />
+        <IconBodyPartRaw bodyPart={move.bodyPart} css={css} />
 
         {!hideOrder && (
           <text

@@ -17,6 +17,7 @@ const DragPreview: React.FC<Props> = ({ mode, itemWithKind }) => {
           <BetaMoveListItem
             bodyPart={itemWithKind.item.bodyPart}
             order={itemWithKind.item.order}
+            isStart={itemWithKind.item.isStart}
             totalMoves={itemWithKind.item.totalMoves}
             // Hacky translation: DnD uses the drag handle as the component
             // root, so the parent offset will align to that. We want to align
