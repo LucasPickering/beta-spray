@@ -46,7 +46,7 @@ export const styleDraggable = css({
  * Apply to elements that are actively being dragged
  */
 export const styleDragging = css({
-  opacity: 0.6,
+  opacity: 0.5,
   cursor: "grabbing",
   pointerEvents: "none",
   "&": styleDraggableHighlight,

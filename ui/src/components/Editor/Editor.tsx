@@ -6,7 +6,7 @@ import type { queriesProblemQuery as queriesProblemQueryType } from "./__generat
 import queriesProblemQuery from "./__generated__/queriesProblemQuery.graphql";
 import type { queriesBetaQuery as queriesBetaQueryType } from "./__generated__/queriesBetaQuery.graphql";
 import queriesBetaQuery from "./__generated__/queriesBetaQuery.graphql";
-import { Box, Stack, IconButton } from "@mui/material";
+import { Box, IconButton, Paper } from "@mui/material";
 import { DndProvider } from "react-dnd";
 import { TouchBackend } from "react-dnd-touch-backend";
 import { Home as IconHome } from "@mui/icons-material";
@@ -140,20 +140,13 @@ const Editor: React.FC = () => {
             </Box>
 
             {/* Top-left overlay buttons */}
-            <Stack
-              position="absolute"
-              top={0}
-              left={0}
-              padding={1}
-              direction="row"
-              spacing={1}
-            >
-              <IconButton component={Link} to="/" size="small">
+            <Paper sx={{ position: "absolute", top: 0, left: 0, margin: 1 }}>
+              <IconButton component={Link} to="/">
                 <IconHome />
               </IconButton>
 
               <HelpText helpMode={helpMode} />
-            </Stack>
+            </Paper>
 
             {/* Top-right overlay buttons are mobile-only, so they live in
                 EditorDrawer */}
