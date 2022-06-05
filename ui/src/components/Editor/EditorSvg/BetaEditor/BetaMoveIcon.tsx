@@ -57,18 +57,18 @@ const BetaMoveIcon = React.forwardRef<SVGGElement, Props>(
         ]}
         {...rest}
       >
-        {move.isStart && (
-          // Hash mark on start moves
-          <line
-            css={strokeStyles}
-            x1={hashStart.x}
-            y1={hashStart.y}
-            x2={hashEnd.x}
-            y2={hashEnd.y}
-          />
-        )}
-
         <g css={{ transform: "scale(1.5)" }}>
+          {move.isStart && (
+            // Hash mark on start moves
+            <line
+              css={strokeStyles}
+              x1={hashStart.x}
+              y1={hashStart.y}
+              x2={hashEnd.x}
+              y2={hashEnd.y}
+            />
+          )}
+
           <IconBodyPartRaw bodyPart={move.bodyPart} css={strokeStyles} />
         </g>
 
