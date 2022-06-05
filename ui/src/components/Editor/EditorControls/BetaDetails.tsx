@@ -102,10 +102,19 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
             totalMoves={moves.length} // Needed to colorize moves
             disabled={mode !== "beta"}
             onReorder={(dragItem, newIndex) => {
-              // This is called on the *hovered* move, so the passed index is
+              // This is called on the *hovered* move, so the passed item is
               // the one being dragged
+
+              // IMPORTANT: We need to store this value *outside* the lambda
+              // below, because the caller of this function is going to mutate
+              // the dragItem object to update the index value. This is an
+              // unfortunate necessity to prevent flickering in the UI, but it
+              // means that if we don't capture this value now, then by the
+              // time the state setter executes, `dragItem` will be mutated
+              // with the new index and we won't end up swapping anything.
+              const oldIndex = dragItem.index;
               setMoves((oldMoves) =>
-                moveArrayElement(oldMoves, dragItem.index, newIndex)
+                moveArrayElement(oldMoves, oldIndex, newIndex)
               );
             }}
             onDrop={(item) => {
@@ -114,10 +123,11 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
                   variables: {
                     input: {
                       betaMoveId: item.betaMoveId,
-                      // The index field should already be updated to the
-                      // desired new order value. The API should take care of
-                      // sliding the other moves up/down to fit this one in
-                      order: item.index,
+                      // The index field  was modified during dragging, but
+                      // index is 0-based and order is 1-based, so we need to
+                      // convert now. The API will take care of sliding the
+                      // other moves up/down to fit this one in
+                      order: item.index + 1,
                     },
                   },
                   // Punting on optimistic update because it's complicated

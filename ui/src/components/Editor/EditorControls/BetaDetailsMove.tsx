@@ -89,6 +89,8 @@ const BetaDetailsMove: React.FC<Props> = ({
         return;
       }
 
+      // Remember - this function is called for the *hovered* element, `item`
+      // refers to the element being dragged
       const dragIndex = item.index;
       const hoverIndex = index;
 
@@ -116,10 +118,10 @@ const BetaDetailsMove: React.FC<Props> = ({
       // Bottom half => after
       // For each of those, we need to cover two sub-cases: whether or not the
       // dragee just crossed over the hoveree. E.g. these 4 cases:
-      // 1. dragIndex=0, hoverIndex=4, top half    => newDragIndex=3
+      // 1. dragIndex=1, hoverIndex=4, top half    => newDragIndex=3
       // 2. dragIndex=6, hoverIndex=4, top half    => newDragIndex=4
       // 3. dragIndex=6, hoverIndex=4, bottom half => newDragIndex=5
-      // 4. dragIndex=0, hoverIndex=4, bottom half => newDragIndex=4
+      // 4. dragIndex=1, hoverIndex=4, bottom half => newDragIndex=4
       // In an ideal world, we would only need to cover the crossover cases,
       // but in reality some drag events gets missed on quick moves, meaning
       // you can skip over a few items and suddenly you're hovering the top half

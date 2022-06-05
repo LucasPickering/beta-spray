@@ -38,9 +38,13 @@ export type DragType =
       kind: "betaMoveList";
       item: {
         betaMoveId: string;
-        // This is *not necessarily* the move's order, it's the visible index
-        // in the list. The two can mismatch while dragging, since order isn't
-        // saved until dropping
+        // This is *similar to* the move's order, but with a couple critical
+        // differences:
+        // - `order` is 1-indexed, this is 0-indexed. I chose not to make them
+        //    to prevent logic mistakes w/ array reordering, but that means we
+        //    we have +1 when setting order
+        // - While reordering moves, this index will change, but `order won't
+        //    be updated until the user stops dragging and the API call is sent
         index: number;
         // These values are only needed for the drag layer preview, otherwise
         // they can be fetched from Relay
