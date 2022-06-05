@@ -1,4 +1,4 @@
-import React, { useContext, useRef } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { graphql, useFragment } from "react-relay";
 import { BetaDetailsMove_betaMoveNode$key } from "./__generated__/BetaDetailsMove_betaMoveNode.graphql";
 import { XYCoord } from "react-dnd";
@@ -41,7 +41,7 @@ const BetaDetailsMove: React.FC<Props> = ({
     EditorHighlightedMoveContext
   );
 
-  const ref = useRef<SVGSVGElement | null>(null);
+  const dragHandleRef = useRef<SVGSVGElement | null>(null);
 
   const [{ isDragging }, drag] = useDrag<
     "betaMoveList",
@@ -76,7 +76,7 @@ const BetaDetailsMove: React.FC<Props> = ({
       };
     },
     hover(item, monitor) {
-      if (!ref.current || !onReorder) {
+      if (!dragHandleRef.current || !onReorder) {
         return;
       }
 
@@ -91,7 +91,7 @@ const BetaDetailsMove: React.FC<Props> = ({
       }
 
       // Determine rectangle on screen
-      const hoverBoundingRect = ref.current.getBoundingClientRect();
+      const hoverBoundingRect = dragHandleRef.current.getBoundingClientRect();
 
       // Get vertical middle
       const hoverMiddleY =
@@ -147,10 +147,20 @@ const BetaDetailsMove: React.FC<Props> = ({
 
   const isHighlighted = highlightedMove === betaMove.id;
 
-  drag(drop(ref));
+  // Scroll the highlighted move into view
+  useEffect(() => {
+    if (dragHandleRef.current && isHighlighted) {
+      dragHandleRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+      });
+    }
+  }, [isHighlighted]);
+
+  drag(drop(dragHandleRef));
   return (
     <BetaMoveListItem
-      ref={ref}
+      ref={dragHandleRef}
       betaMoveKey={betaMove}
       disabled={disabled}
       onMouseEnter={() => {
