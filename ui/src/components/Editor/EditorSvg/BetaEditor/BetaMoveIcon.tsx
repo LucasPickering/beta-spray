@@ -1,5 +1,5 @@
 import React from "react";
-import { BetaOverlayMove, formatOrder, multiply, unit } from "util/svg";
+import { BetaOverlayMove, multiply, unit } from "util/svg";
 import {
   startHashLength,
   styleDraggable,
@@ -84,7 +84,7 @@ const BetaMoveIcon = React.forwardRef<SVGGElement, Props>(
             textAnchor="middle"
             dominantBaseline="middle"
           >
-            {formatOrder(move.order)}
+            {move.order}
           </text>
         )}
       </g>

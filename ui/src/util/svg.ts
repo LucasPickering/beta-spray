@@ -109,10 +109,6 @@ export function formatBodyPart(bodyPart: BodyPart): string {
   }
 }
 
-export function formatOrder(order: number): string {
-  return (order + 1).toString();
-}
-
 /**
  * Add two positions
  */

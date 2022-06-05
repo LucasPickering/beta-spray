@@ -10,7 +10,7 @@ import {
   ListItemSecondaryAction,
   ListItemText,
 } from "@mui/material";
-import { BodyPart, formatBodyPart, formatOrder, getMoveColor } from "util/svg";
+import { BodyPart, formatBodyPart, getMoveColor } from "util/svg";
 import { isDefined } from "util/func";
 
 interface Props extends React.ComponentProps<typeof ListItem> {
@@ -59,7 +59,7 @@ const BetaMoveListItem = React.forwardRef<SVGSVGElement, Props>(
             },
           ]}
         >
-          {formatOrder(order)} {formatBodyPart(bodyPart)}
+          {order} {formatBodyPart(bodyPart)}
         </ListItemText>
 
         {/* Preview version of the element shouldn't show this button. Note: this
@@ -69,7 +69,7 @@ const BetaMoveListItem = React.forwardRef<SVGSVGElement, Props>(
         {onDelete && (
           <ListItemSecondaryAction>
             <IconButton
-              aria-label={`delete move ${formatOrder(order)}`}
+              aria-label={`delete move ${order}`}
               size="small"
               disabled={disabled}
               onClick={onDelete}

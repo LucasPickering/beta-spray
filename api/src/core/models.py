@@ -186,7 +186,7 @@ class BetaMove(models.Model):
     )
     order = models.PositiveIntegerField(
         db_index=True,  # We sort and filter by this a lot
-        help_text="Ordering number of the hold in the beta, with 0 as start",
+        help_text="Ordering number of the hold in the beta, starting at 1",
     )
     body_part = models.CharField(
         max_length=2,
@@ -246,13 +246,13 @@ def beta_move_on_pre_save(sender, instance, raw, **kwargs):
     if instance.id is None:
         # Creating a new move
         if instance.order is None:
-            # No order given, just do max+1
+            # No order given, just do max+1 (or default to 1)
             # TODO make sure this is atomic
             instance.order = (
                 BetaMove.objects.filter(beta_id=beta_id)
                 # Remove annoying django clauses that break shit
                 .remove_group_by_order_by()
-                .annotate(next_order=Coalesce(Max("order") + 1, 0))
+                .annotate(next_order=Coalesce(Max("order") + 1, 1))
                 .values("next_order")
             )
         else:
