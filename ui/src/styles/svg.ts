@@ -31,7 +31,16 @@ export const styleHoldIcon = css({
  * Apply to elements that are draggable and currently highlighted (usually because they're hovered)
  */
 export const styleDraggableHighlight = css({
-  transform: "scale(1.5)",
+  // We can't scale lines because that fucks up their length, so we need to
+  // just adjust stroke width for them instead.
+  "&:not(line)": {
+    transform: "scale(1.5)",
+  },
+
+  // I can't figure out the correct incantation to make this rule only apply to
+  // `line` elements, but fortunately it doesn't seem to impact any other
+  // elements so we can apply to all.
+  strokeWidth: 2,
 });
 
 /**
