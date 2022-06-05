@@ -6,28 +6,50 @@ interface Props {
   helpMode: "noBeta" | "editHolds" | "editBeta";
 }
 
-function getHelpText(helpMode: Props["helpMode"]): React.ReactChild {
+/**
+ * An overlay to show contextual help on top of the editor.
+ */
+const HelpText: React.FC<Props> = ({ helpMode }) => (
+  <Tooltip title={<HelpTextContent helpMode={helpMode} />} arrow describeChild>
+    <IconButton>
+      <IconHelp />
+    </IconButton>
+  </Tooltip>
+);
+
+const HelpTextContent: React.FC<Props> = ({ helpMode }) => {
   switch (helpMode) {
     case "noBeta":
       return (
         <>
-          <div>Click &quot;Edit Holds&quot; to mark holds in the problem</div>
-          <div>Add or select beta to start marking moves</div>
+          <div>
+            <strong>Click &quot;Edit Holds&quot;</strong> to mark holds in the
+            problem
+          </div>
+          <div>
+            <strong>Add beta in the sidebar</strong> to start marking moves
+          </div>
         </>
       );
     case "editHolds":
       return (
         <>
-          <div>Double click to add a hold</div>
-          <div>Drag to move</div>
-          <div>Double click a hold to delete</div>
+          <div>
+            <strong>Double click anywhere</strong> to add a hold
+          </div>
+          <div>
+            <strong>Drag a hold</strong> to relocate
+          </div>
+          <div>
+            <strong>Double click a hold</strong> to delete
+          </div>
         </>
       );
     case "editBeta":
       return (
         <>
           <div>
-            <strong>Click a hold</strong> to add initial move
+            <strong>Click a hold</strong> to add a move
           </div>
           <div>
             <strong>Drag a leading move</strong> to add new move
@@ -47,17 +69,6 @@ function getHelpText(helpMode: Props["helpMode"]): React.ReactChild {
         </>
       );
   }
-}
-
-/**
- * An overlay to show contextual help on top of the editor.
- */
-const HelpText: React.FC<Props> = ({ helpMode }) => (
-  <Tooltip title={getHelpText(helpMode)}>
-    <IconButton>
-      <IconHelp />
-    </IconButton>
-  </Tooltip>
-);
+};
 
 export default HelpText;
