@@ -200,6 +200,9 @@ type BetaMoveNode implements Node {
   """Ordering number of the hold in the beta, starting at 1"""
   order: Int!
 
+  """Free-form annotations created by the user"""
+  annotation: String!
+
   """The ID of the object"""
   id: ID!
 
@@ -596,6 +599,7 @@ input UpdateBetaMoveMutationInput {
   betaMoveId: ID!
   order: Int
   holdId: ID
+  annotation: String
   clientMutationId: String
 }
 

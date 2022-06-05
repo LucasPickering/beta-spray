@@ -194,7 +194,9 @@ class BetaMove(models.Model):
         choices=BodyPart.choices,
         help_text="Body part in question",
     )
-    # TODO add annotation, e.g. "flag", "drop knee", etc.
+    annotation = models.TextField(
+        blank=True, help_text="Free-form annotations created by the user"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

@@ -164,7 +164,7 @@ class BetaMoveNode(NodeType):
         model = BetaMove
         interfaces = (relay.Node,)
         filter_fields = []
-        fields = ("beta", "hold", "order")
+        fields = ("beta", "hold", "order", "annotation")
 
     body_part = BodyPartType(required=True, description="Body part being moved")
     is_start = graphene.Boolean(

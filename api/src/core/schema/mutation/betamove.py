@@ -91,12 +91,13 @@ class UpdateBetaMoveMutation(relay.ClientIDMutation):
         beta_move_id = graphene.ID(required=True)
         order = graphene.Int()
         hold_id = graphene.ID()
+        annotation = graphene.String()
 
     beta_move = graphene.Field(BetaMoveNode, required=True)
 
     @classmethod
     def mutate_and_get_payload(
-        cls, root, info, beta_move_id, order=None, hold_id=None
+        cls, root, info, beta_move_id, order=None, hold_id=None, annotation=None
     ):
         beta_move_id = BetaMoveNode.get_pk_from_global_id(info, beta_move_id)
         hold_id = hold_id and HoldNode.get_pk_from_global_id(info, hold_id)
@@ -110,6 +111,9 @@ class UpdateBetaMoveMutation(relay.ClientIDMutation):
         # TODO validate hold and beta belong to same problem
         if hold_id is not None:
             beta_move.hold_id = hold_id
+            # TODO validate length
+        if annotation is not None:
+            beta_move.annotation = annotation
         beta_move.save()
 
         return cls(beta_move=beta_move)
