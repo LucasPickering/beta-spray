@@ -4,7 +4,6 @@ import {
   styleDraggable,
   styleDragging,
   styleDropHover,
-  styleHoldIcon,
 } from "styles/svg";
 import { useTheme } from "@mui/material";
 
@@ -28,7 +27,7 @@ const HoldIcon: React.FC<Props> = ({
   return (
     <circle
       css={[
-        styleHoldIcon,
+        { r: 7, opacity: 0.6, strokeWidth: 0.5 },
         // TODO figure out how to move this into styles/, need to access MUI
         // theme from the emotion `css` function
         draggable

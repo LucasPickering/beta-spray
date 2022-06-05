@@ -41,7 +41,7 @@ const BetaMoveIcon = React.forwardRef<SVGGElement, Props>(
     const hashEnd = multiply(unit(move.offset), startHashLength);
 
     // Applied to both the main icon and the hash mark
-    const css = {
+    const strokeStyles = {
       ...move.color,
       strokeWidth: 0.5,
     };
@@ -60,7 +60,7 @@ const BetaMoveIcon = React.forwardRef<SVGGElement, Props>(
         {move.isStart && (
           // Hash mark on start moves
           <line
-            css={css}
+            css={strokeStyles}
             x1={hashStart.x}
             y1={hashStart.y}
             x2={hashEnd.x}
@@ -68,12 +68,14 @@ const BetaMoveIcon = React.forwardRef<SVGGElement, Props>(
           />
         )}
 
-        <IconBodyPartRaw bodyPart={move.bodyPart} css={css} />
+        <g css={{ transform: "scale(1.5)" }}>
+          <IconBodyPartRaw bodyPart={move.bodyPart} css={strokeStyles} />
+        </g>
 
         {!hideOrder && (
           <text
             css={{
-              fontSize: 3,
+              fontSize: 4,
               userSelect: "none",
               pointerEvents: "none",
               // This should contrast all possible fill colors
