@@ -11,7 +11,7 @@ interface Props {
  */
 const HelpText: React.FC<Props> = ({ helpMode }) => (
   <Tooltip title={<HelpTextContent helpMode={helpMode} />} arrow describeChild>
-    <IconButton>
+    <IconButton color="secondary">
       <IconHelp />
     </IconButton>
   </Tooltip>
