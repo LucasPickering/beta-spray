@@ -28,6 +28,10 @@ const EditorDrawer: React.FC<Props> = ({ children }) => {
       <Drawer
         anchor="right"
         open={isOpen}
+        // This is maybe a little jank, but we need to make sure BetaList is
+        // always mounted, because it has logic to pre-select the first beta
+        // on load, which is important.
+        keepMounted
         onClose={() => setIsOpen(false)}
         // Make sure not to cover the whole screen
         PaperProps={{ sx: { maxWidth: "80%" } }}
