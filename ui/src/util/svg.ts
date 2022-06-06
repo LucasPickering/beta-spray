@@ -1,4 +1,4 @@
-import { useContext, useMemo } from "react";
+import { useCallback, useContext } from "react";
 import { XYCoord } from "react-dnd";
 import { SvgContext } from "./context";
 import { assertIsDefined } from "./func";
@@ -217,45 +217,36 @@ export function getMoveColor(
 }
 
 /**
- * Helpful utility functions for working with overlay positions. This is a hook
- * because some operations require context about the SVG's dimensions in order
- * to do calculations.
+ * Hook that returns a function to convert DOM positions to SVG positions. DOM
+ * positions are returned from DOM events, and we often need to convert those
+ * to SVG coordinates. This will handle both the scaling and translation needed
+ * to do that conversion.
+ *
+ * @param domPosition DOM position, in pixels, starting at the top-left *of the screen*
+ * @returns SVG position, in SVG units, starting at the top-left *of the SVG*
  */
-export function useOverlayUtils(): {
-  toOverlayPosition(apiPosition: APIPosition): OverlayPosition;
-  toAPIPosition(overlayPosition: OverlayPosition): APIPosition;
-  toSvgPosition(domPosition: XYCoord): OverlayPosition;
-} {
-  const { svgRef, dimensions } = useContext(SvgContext);
-  return useMemo(
-    () => ({
-      toOverlayPosition(apiPosition) {
-        return {
-          x: apiPosition.positionX * dimensions.width,
-          y: apiPosition.positionY * dimensions.height,
-        };
-      },
-      toAPIPosition(overlayPosition) {
-        return {
-          positionX: overlayPosition.x / dimensions.width,
-          positionY: overlayPosition.y / dimensions.height,
-        };
-      },
-      toSvgPosition(domPosition) {
-        // Map DOM coords to SVG
-        // https://www.sitepoint.com/how-to-translate-from-dom-to-svg-coordinates-and-back-again/
-        const svg = svgRef.current;
-        assertIsDefined(svg); // Ref is only null on first render
+export function useDOMToSVGPosition(): (
+  domPosition: XYCoord
+) => OverlayPosition {
+  const { svgRef } = useContext(SvgContext);
+  return useCallback(
+    (domPosition) => {
+      // Map DOM coords to SVG
+      // https://www.sitepoint.com/how-to-translate-from-dom-to-svg-coordinates-and-back-again/
+      const svg = svgRef.current;
+      assertIsDefined(svg); // Ref is only null on first render
 
-        const point = svg.createSVGPoint();
-        point.x = domPosition.x;
-        point.y = domPosition.y;
+      const point = svg.createSVGPoint();
+      point.x = domPosition.x;
+      point.y = domPosition.y;
 
-        const ctm = svg.getScreenCTM();
-        assertIsDefined(ctm);
-        return point.matrixTransform(ctm.inverse());
-      },
-    }),
-    [dimensions.width, dimensions.height, svgRef]
+      const ctm = svg.getScreenCTM();
+      assertIsDefined(ctm);
+      const result = point.matrixTransform(ctm.inverse());
+      // Make sure we map the SVGPoint instance to a plain object
+      // Otherwise, it can't be freely passed as a Relay arg
+      return { x: result.x, y: result.y };
+    },
+    [svgRef]
   );
 }

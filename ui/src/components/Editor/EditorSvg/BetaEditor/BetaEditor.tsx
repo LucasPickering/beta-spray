@@ -6,18 +6,15 @@ import {
   BetaEditor_betaNode$key,
 } from "./__generated__/BetaEditor_betaNode.graphql";
 import {
-  APIPosition,
   BetaOverlayMove,
   BodyPart,
   getMoveColor,
-  OverlayPosition,
   polarToSvg,
   toBodyPart,
 } from "util/svg";
 import { BetaEditor_createBetaMoveMutation } from "./__generated__/BetaEditor_createBetaMoveMutation.graphql";
 import { BetaEditor_updateBetaMoveMutation } from "./__generated__/BetaEditor_updateBetaMoveMutation.graphql";
 import { BetaEditor_deleteBetaMoveMutation } from "./__generated__/BetaEditor_deleteBetaMoveMutation.graphql";
-import { useOverlayUtils } from "util/svg";
 import BetaMoveDialog from "./BetaMoveDialog";
 import { EditorContext } from "util/context";
 import { assertIsDefined, groupBy, isDefined } from "util/func";
@@ -45,13 +42,11 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
   const { selectedHold, setSelectedHold, highlightedMove, setHighlightedMove } =
     useContext(EditorContext);
 
-  const { toOverlayPosition } = useOverlayUtils();
-
   // Map moves to a shorthand form that we can use in the AI. These should
   // always be sorted by order from the API, and remain that way
   const moves: BetaOverlayMove[] = useMemo(
-    () => buildMoves(beta.moves.edges, toOverlayPosition),
-    [beta.moves.edges, toOverlayPosition]
+    () => buildMoves(beta.moves.edges),
+    [beta.moves.edges]
   );
 
   // Group the moves by body part so we can draw chains. We assume the API
@@ -221,16 +216,6 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
 const betaNodeFragment = graphql`
   fragment BetaEditor_betaNode on BetaNode {
     id
-    problem {
-      holds {
-        edges {
-          node {
-            positionX
-            positionY
-          }
-        }
-      }
-    }
     moves {
       edges {
         node {
@@ -240,8 +225,10 @@ const betaNodeFragment = graphql`
           isStart
           hold {
             id
-            positionX
-            positionY
+            position {
+              x
+              y
+            }
           }
         }
       }
@@ -305,13 +292,10 @@ const bodyPartsCCW = [
  * anti-pattern, but it makes a lot of UI logic a whole lot simpler so who cares.
  *
  * @param edges Moves from the API
- * @param toOverlayPosition Function to convert API position to UI positionl
- *  this requires the context of the image aspect ratio
  * @returns UI move objects
  */
 function buildMoves(
-  edges: BetaEditor_betaNode$data["moves"]["edges"],
-  toOverlayPosition: (apiPosition: APIPosition) => OverlayPosition
+  edges: BetaEditor_betaNode$data["moves"]["edges"]
 ): BetaOverlayMove[] {
   const moves: BetaOverlayMove[] = edges.map(({ node }) => {
     // TODO render holdless moves
@@ -323,7 +307,7 @@ function buildMoves(
       order: node.order,
       isStart: node.isStart,
       holdId: node.hold.id,
-      position: toOverlayPosition(node.hold),
+      position: node.hold.position,
       color: getMoveColor(node.order, node.isStart, edges.length),
       // This will be updated below
       offset: { x: 0, y: 0 },

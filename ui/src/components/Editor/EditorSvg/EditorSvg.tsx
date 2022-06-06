@@ -32,8 +32,8 @@ const EditorSvg: React.FC<Props> = ({ problemKey }) => {
         name
         boulder {
           image {
-            width
-            height
+            svgWidth
+            svgHeight
           }
           ...BoulderImage_boulderNode
         }
@@ -64,14 +64,10 @@ const EditorSvg: React.FC<Props> = ({ problemKey }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Make sure 100 is always the *smaller* of the two dimensions, so we get
-  // consistent sizing on SVG elements for landscape vs portrait
-  const aspectRatio =
-    problem.boulder.image.width / problem.boulder.image.height;
-  const dimensions =
-    aspectRatio < 1
-      ? { width: 100, height: 100 / aspectRatio }
-      : { width: 100 * aspectRatio, height: 100 };
+  const dimensions = {
+    width: problem.boulder.image.svgWidth,
+    height: problem.boulder.image.svgHeight,
+  };
 
   return (
     <SvgContext.Provider value={{ svgRef: ref, dimensions }}>
@@ -115,7 +111,7 @@ const EditorSvg: React.FC<Props> = ({ problemKey }) => {
 };
 
 /**
- * Internal helper component. This is separate so we can use useOverlayUtils
+ * Internal helper component. This is separate so we can use useDomToSvgPosition
  * to get access to some helper functions that depend on SvgContext.
  */
 const EditorSvgInner = React.forwardRef<

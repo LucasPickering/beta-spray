@@ -13,7 +13,7 @@ from core.schema.mutation.boulder import CreateBoulderMutation
 from core.schema.mutation.hold import (
     CreateHoldMutation,
     DeleteHoldMutation,
-    UpdateHoldMutation,
+    RelocateHoldMutation,
 )
 from core.schema.mutation.problem import (
     CreateProblemMutation,
@@ -30,7 +30,7 @@ import graphene
 class Mutation(graphene.ObjectType):
     create_boulder = CreateBoulderMutation.Field()
     create_hold = CreateHoldMutation.Field()
-    update_hold = UpdateHoldMutation.Field()
+    relocate_hold = RelocateHoldMutation.Field()
     delete_hold = DeleteHoldMutation.Field()
     create_problem = CreateProblemMutation.Field()
     update_problem = UpdateProblemMutation.Field()

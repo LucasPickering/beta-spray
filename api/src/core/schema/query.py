@@ -5,6 +5,7 @@ from graphene_django.filter import DjangoFilterConnectionField
 import graphql_relay
 
 from core.models import Beta, BetaMove, BodyPart, Boulder, Hold, Problem
+from core import util
 
 
 # Generate a GQL enum for BodyPart
@@ -51,11 +52,53 @@ class NodeType(DjangoObjectType):
 class Image(ObjectType):
     """
     An image, e.g. JPG or PNG
+
+    TODO describe SVG values
     """
 
     url = graphene.String(required=True)
-    width = graphene.Int(required=True)
-    height = graphene.Int(required=True)
+    # Rename these two externally to be more descriptive
+    width = graphene.Int(
+        name="pixelWidth", required=True, description="Image width, in pixels"
+    )
+    height = graphene.Int(
+        name="pixelHeight", required=True, description="Image height, in pixels"
+    )
+    svg_width = graphene.Float(
+        required=True,
+        description="Image width, either `100` if portrait or"
+        " `width/height*100` if landscape",
+    )
+    svg_height = graphene.Float(
+        required=True,
+        description="Image width, either `100` if landscape or"
+        " `height/width*100` if portrait",
+    )
+
+    def resolve_svg_width(self, info):
+        return util.get_svg_dimensions(self)[0]
+
+    def resolve_svg_height(self, info):
+        return util.get_svg_dimensions(self)[1]
+
+
+# TODO update all these comments
+class SVGPosition(ObjectType):
+    """
+    A 2D position in an image, which can be expressed in two ways:
+        - 0-1 in both X and Y, as a fraction of the width/height, respectively
+            - This is API coordinates
+        - 0-100 in the smaller dimension, and 0-(100*w/h) or 0-(100*h/w) in the
+            larger dimension
+            - This is SVG coordinates
+            - See the Image type for a better description of this system
+
+    Both coordinate systems use the top-left as the origin, with X increasing
+    to the right and Y increasing down.
+    """
+
+    x = graphene.Float(required=True, description="X position, 0-100ish")
+    y = graphene.Float(required=True, description="Y position, 0-100ish")
 
 
 class BoulderNode(NodeType):
@@ -72,8 +115,17 @@ class HoldNode(NodeType):
     class Meta:
         model = Hold
         interfaces = (relay.Node,)
-        fields = ("boulder", "position_x", "position_y")
+        fields = ("boulder",)
         filter_fields = []
+
+    position = graphene.Field(SVGPosition, required=True)
+
+    def resolve_position(self, info):
+        (svg_width, svg_height) = util.get_svg_dimensions(self.boulder.image)
+        return {
+            "x": self.position_x * svg_width,
+            "y": self.position_y * svg_height,
+        }
 
 
 class ProblemNode(NodeType):

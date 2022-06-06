@@ -3,13 +3,13 @@ import React from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
 import useMutation from "util/useMutation";
-import { useOverlayUtils } from "util/svg";
+import { useDOMToSVGPosition } from "util/svg";
 import HoldEditorDropZone from "./HoldEditorDropZone";
 import HoldOverlay from "./HoldOverlay";
 import { HoldEditor_createHoldMutation } from "./__generated__/HoldEditor_createHoldMutation.graphql";
 import { HoldEditor_deleteHoldMutation } from "./__generated__/HoldEditor_deleteHoldMutation.graphql";
 import { HoldEditor_problemNode$key } from "./__generated__/HoldEditor_problemNode.graphql";
-import { HoldEditor_updateHoldMutation } from "./__generated__/HoldEditor_updateHoldMutation.graphql";
+import { HoldEditor_relocateHoldMutation } from "./__generated__/HoldEditor_relocateHoldMutation.graphql";
 
 interface Props {
   problemKey: HoldEditor_problemNode$key;
@@ -39,7 +39,7 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
     `,
     problemKey
   );
-  const { toAPIPosition, toSvgPosition } = useOverlayUtils();
+  const domToSVGPosition = useDOMToSVGPosition();
 
   const { commit: createHold, state: createState } =
     useMutation<HoldEditor_createHoldMutation>(graphql`
@@ -58,10 +58,12 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
         }
       }
     `);
-  const { commit: updateHold, state: updateState } =
-    useMutation<HoldEditor_updateHoldMutation>(graphql`
-      mutation HoldEditor_updateHoldMutation($input: UpdateHoldMutationInput!) {
-        updateHold(input: $input) {
+  const { commit: relocateHold, state: relocateState } =
+    useMutation<HoldEditor_relocateHoldMutation>(graphql`
+      mutation HoldEditor_relocateHoldMutation(
+        $input: RelocateHoldMutationInput!
+      ) {
+        relocateHold(input: $input) {
           hold {
             id # So relay knows how to update this node locally
             ...HoldMark_holdNode
@@ -88,22 +90,21 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
       {/* Invisible layer to capture clicks for new holds */}
       <HoldEditorDropZone
         onDoubleClick={(e) => {
-          const apiPos = toAPIPosition(
-            toSvgPosition({ x: e.clientX, y: e.clientY })
-          );
+          // Convert DOM position to SVG coords
+          const svgPosition = domToSVGPosition({ x: e.clientX, y: e.clientY });
           createHold({
             variables: {
               input: {
                 boulderId: problem.boulder.id,
                 problemId: problem.id,
-                ...apiPos,
+                position: svgPosition,
               },
               // *Don't* add to the problem, just to the image
               connections: [problem.holds.__id],
             },
             optimisticResponse: {
               createHold: {
-                hold: { id: "", ...apiPos },
+                hold: { id: "", position: svgPosition },
               },
             },
           });
@@ -132,14 +133,13 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
         }}
         // Drag and drop = move hold
         onDrop={(item, result) => {
-          const apiPos = toAPIPosition(result.position);
-          updateHold({
+          relocateHold({
             variables: {
-              input: { holdId: item.holdId, ...apiPos },
+              input: { holdId: item.holdId, position: result.position },
             },
             optimisticResponse: {
-              updateHold: {
-                hold: { id: item.holdId, ...apiPos },
+              relocateHold: {
+                hold: { id: item.holdId, position: result.position },
               },
             },
           });
@@ -147,7 +147,7 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
       />
 
       <MutationError message="Error creating hold" state={createState} />
-      <MutationError message="Error updating hold" state={updateState} />
+      <MutationError message="Error moving hold" state={relocateState} />
       <MutationError message="Error deleting hold" state={deleteState} />
     </>
   );

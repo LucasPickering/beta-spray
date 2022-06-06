@@ -49,3 +49,21 @@ def get_request_file(info, file_key):
     # Replace file name with a UUID
     file.name = f"{uuid.uuid4()}.{extension}"
     return file
+
+
+def get_svg_dimensions(image):
+    """
+    Get the dimensions of this image in the SVG system. The smaller of the
+    two dimensions will always be 100, and the larger will be multiplied
+    or divided by the aspect ratio (whichever would make it >100). This
+    ensures that distance in X is equal to distance in Y.
+
+    Thanks to duck typing, this function works on `ImageFieldFile` or the
+    GraphQL `Image` type.
+    """
+    aspect_ratio = image.width / image.height
+    return (
+        (100, 100 / aspect_ratio)
+        if aspect_ratio < 1
+        else (100 * aspect_ratio, 100)
+    )

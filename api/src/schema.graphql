@@ -92,14 +92,29 @@ type HoldNodeEdge {
 type HoldNode implements Node {
   boulder: BoulderNode!
 
-  """Left-to-right position of the hold within the image, 0-1"""
-  positionX: Float!
-
-  """Top-to-bottom position of the hold within the image, 0-1"""
-  positionY: Float!
-
   """The ID of the object"""
   id: ID!
+  position: SVGPosition!
+}
+
+"""
+A 2D position in an image, which can be expressed in two ways:
+    - 0-1 in both X and Y, as a fraction of the width/height, respectively
+        - This is API coordinates
+    - 0-100 in the smaller dimension, and 0-(100*w/h) or 0-(100*h/w) in the
+        larger dimension
+        - This is SVG coordinates
+        - See the Image type for a better description of this system
+
+Both coordinate systems use the top-left as the origin, with X increasing
+to the right and Y increasing down.
+"""
+type SVGPosition {
+  """X position, 0-100ish"""
+  x: Float!
+
+  """Y position, 0-100ish"""
+  y: Float!
 }
 
 type ProblemNodeConnection {
@@ -201,11 +216,29 @@ enum BodyPart {
   RIGHT_FOOT
 }
 
-"""An image, e.g. JPG or PNG"""
+"""
+An image, e.g. JPG or PNG
+
+TODO describe SVG values
+"""
 type Image {
   url: String!
-  width: Int!
-  height: Int!
+
+  """Image width, in pixels"""
+  pixelWidth: Int!
+
+  """Image height, in pixels"""
+  pixelHeight: Int!
+
+  """
+  Image width, either `100` if portrait or `width/height*100` if landscape
+  """
+  svgWidth: Float!
+
+  """
+  Image width, either `100` if landscape or `height/width*100` if portrait
+  """
+  svgHeight: Float!
 }
 
 type Mutation {
@@ -217,8 +250,8 @@ type Mutation {
   """
   createHold(input: CreateHoldMutationInput!): CreateHoldMutationPayload
 
-  """Modify an existing hold"""
-  updateHold(input: UpdateHoldMutationInput!): UpdateHoldMutationPayload
+  """Change the position of an existing hold"""
+  relocateHold(input: RelocateHoldMutationInput!): RelocateHoldMutationPayload
 
   """Delete a hold from a boulder"""
   deleteHold(input: DeleteHoldMutationInput!): DeleteHoldMutationPayload
@@ -280,22 +313,28 @@ type CreateHoldMutationPayload {
 
 input CreateHoldMutationInput {
   boulderId: ID!
-  positionX: Float!
-  positionY: Float!
+  position: SVGPositionInput!
   problemId: ID
   clientMutationId: String
 }
 
-"""Modify an existing hold"""
-type UpdateHoldMutationPayload {
+input SVGPositionInput {
+  """X position, 0-100ish"""
+  x: Float!
+
+  """Y position, 0-100ish"""
+  y: Float!
+}
+
+"""Change the position of an existing hold"""
+type RelocateHoldMutationPayload {
   hold: HoldNode!
   clientMutationId: String
 }
 
-input UpdateHoldMutationInput {
+input RelocateHoldMutationInput {
   holdId: ID!
-  positionX: Float
-  positionY: Float
+  position: SVGPositionInput!
   clientMutationId: String
 }
 

@@ -1,7 +1,6 @@
 import React, { useRef } from "react";
 import { DropHandler, useDrag, useDrop } from "util/dnd";
 import { graphql, useFragment } from "react-relay";
-import { useOverlayUtils } from "util/svg";
 import { HoldMark_holdNode$key } from "./__generated__/HoldMark_holdNode.graphql";
 import Positioned from "../Positioned";
 import HoldIcon from "./HoldIcon";
@@ -24,15 +23,15 @@ const HoldMark: React.FC<Props> = ({
     graphql`
       fragment HoldMark_holdNode on HoldNode {
         id
-        positionX
-        positionY
+        position {
+          x
+          y
+        }
       }
     `,
     holdKey
   );
   const ref = useRef<SVGCircleElement | null>(null);
-  const { toOverlayPosition } = useOverlayUtils();
-  const position = toOverlayPosition(hold);
 
   // Drag this hold around, while editing holds
   const [{ isDragging }, drag] = useDrag<
@@ -70,7 +69,7 @@ const HoldMark: React.FC<Props> = ({
   return (
     <Positioned
       ref={ref}
-      position={position}
+      position={hold.position}
       onClick={onClick && (() => onClick(hold.id))}
       onDoubleClick={onDoubleClick && (() => onDoubleClick(hold.id))}
     >

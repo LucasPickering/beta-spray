@@ -3,7 +3,7 @@ import { XYCoord } from "react-dnd";
 import { SvgContext } from "./context";
 import { noop } from "./func";
 import { coerce } from "./math";
-import { add, OverlayPosition, useOverlayUtils } from "./svg";
+import { add, OverlayPosition, useDOMToSVGPosition } from "./svg";
 
 /** Minimum editor zoom level */
 const zoomMinimum = 1.0;
@@ -74,7 +74,7 @@ export function useZoomPan(): {
 } {
   const { dimensions } = useContext(SvgContext);
   const { zoomOffset, setZoomOffset } = useContext(ZoomPanContext);
-  const { toSvgPosition } = useOverlayUtils();
+  const domToSVGPosition = useDOMToSVGPosition();
 
   const coerceZoom = (zoom: number): number =>
     coerce(zoom, zoomMinimum, zoomMaximum);
@@ -115,7 +115,7 @@ export function useZoomPan(): {
     updateZoom(zoomDelta, focusPosition) {
       // Map the focus coordinates (either cursor or pinch origin) from DOM to
       // SVG coordinates. We'll use that to figure out the new offset.
-      const mousePos = toSvgPosition(focusPosition);
+      const mousePos = domToSVGPosition(focusPosition);
 
       setZoomOffset((prev) => {
         const zoom = coerceZoom(prev.zoom + zoomDelta * zoomStep);

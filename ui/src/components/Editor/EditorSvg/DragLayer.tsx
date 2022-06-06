@@ -2,7 +2,7 @@ import { Portal } from "@mui/material";
 import React from "react";
 import { XYCoord } from "react-dnd";
 import { DragItemWithKind, DragKind, useDragLayer } from "util/dnd";
-import { useOverlayUtils } from "util/svg";
+import { useDOMToSVGPosition } from "util/svg";
 import DragPreview from "./DragPreview";
 import Positioned from "./Positioned";
 
@@ -108,11 +108,11 @@ const SvgDragLayer: React.FC<InnerProps> = ({
   itemWithKind,
   currentOffset,
 }) => {
-  const { toSvgPosition } = useOverlayUtils();
+  const domToSVGPosition = useDOMToSVGPosition();
 
   // Translate coords from DOM to SVG, then shift the preview
   return (
-    <Positioned position={toSvgPosition(currentOffset)}>
+    <Positioned position={domToSVGPosition(currentOffset)}>
       <DragPreview mode="svg" itemWithKind={itemWithKind} />;
     </Positioned>
   );

@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { useOverlayUtils } from "util/svg";
+import { useDOMToSVGPosition } from "util/svg";
 import { useZoomPan } from "util/zoom";
 import { subtract } from "util/svg";
 import { useDrag } from "@use-gesture/react";
@@ -24,7 +24,7 @@ interface Props extends React.SVGProps<SVGRectElement> {
 const PanZone = React.forwardRef<SVGRectElement, Props>(
   ({ css: parentCss, ...rest }, ref) => {
     const { updatePan } = useZoomPan();
-    const { toSvgPosition } = useOverlayUtils();
+    const domToSVGPosition = useDOMToSVGPosition();
     const { dimensions } = useContext(SvgContext);
     const [isDragging, setIsDragging] = useState<boolean>(false);
 
@@ -48,8 +48,8 @@ const PanZone = React.forwardRef<SVGRectElement, Props>(
         // We do previous-current to get a negative offset, since the view box
         // shifts in the opposite direction of cursor movement
         const offsetDelta = subtract(
-          toSvgPosition({ x: prevMovementX, y: prevMovementY }),
-          toSvgPosition({ x: movementX, y: movementY })
+          domToSVGPosition({ x: prevMovementX, y: prevMovementY }),
+          domToSVGPosition({ x: movementX, y: movementY })
         );
         updatePan(offsetDelta);
       }

@@ -1,7 +1,7 @@
 import React from "react";
 import { useDrop } from "util/dnd";
 import { assertIsDefined } from "util/func";
-import { useOverlayUtils } from "util/svg";
+import { useDOMToSVGPosition } from "util/svg";
 import PanZone from "../PanZone";
 
 /**
@@ -10,7 +10,7 @@ import PanZone from "../PanZone";
 const HoldEditorDropZone: React.FC<React.ComponentProps<typeof PanZone>> = (
   props
 ) => {
-  const { toSvgPosition } = useOverlayUtils();
+  const domToSVGPosition = useDOMToSVGPosition();
 
   // Listen for holds being dropped
   const [, drop] = useDrop<"holdOverlay">({
@@ -19,7 +19,7 @@ const HoldEditorDropZone: React.FC<React.ComponentProps<typeof PanZone>> = (
     drop(item, monitor) {
       const mousePos = monitor.getClientOffset();
       assertIsDefined(mousePos);
-      return { position: toSvgPosition(mousePos) };
+      return { position: domToSVGPosition(mousePos) };
     },
   });
 
