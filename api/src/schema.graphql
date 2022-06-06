@@ -180,7 +180,7 @@ type BetaMoveNode implements Node {
   """Optional destination hold for this move"""
   hold: HoldNode
 
-  """Ordering number of the hold in the beta, with 0 as start"""
+  """Ordering number of the hold in the beta, starting at 1"""
   order: Int!
 
   """The ID of the object"""

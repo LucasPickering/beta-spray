@@ -1,4 +1,5 @@
 import random
+import uuid
 
 problem_name_phrase_groups = [
     ["Up Up", "Monster", "Slab", "Crack", "Lateral"],
@@ -38,3 +39,13 @@ def random_phrase(phrase_groups):
     return " ".join(
         filter(None, (random.choice(group) for group in phrase_groups))
     )
+
+
+def get_request_file(info, file_key):
+    """Get an attached file object for a request"""
+    # TODO validate file type and max size
+    file = info.context.FILES.get(file_key)
+    extension = file.content_type.split("/")[-1]
+    # Replace file name with a UUID
+    file.name = f"{uuid.uuid4()}.{extension}"
+    return file
