@@ -13,7 +13,7 @@ import {
   ConnectDropTarget,
   DragLayerMonitor,
 } from "react-dnd";
-import { BetaOverlayMove, BodyPart, OverlayPosition } from "./svg";
+import { BodyPart, OverlayPosition } from "./svg";
 import { DistributivePick } from "./types";
 
 /**
@@ -29,9 +29,9 @@ export type DragType =
   | {
       kind: "betaMoveOverlay";
       item: // Dragging a move around
-      | { kind: "move"; move: BetaOverlayMove; isLast: boolean }
+      | { kind: "move"; betaMoveId: string; bodyPart: BodyPart }
         // Dragging a line between two moves (to insert a move)
-        | { kind: "line"; startMove: BetaOverlayMove };
+        | { kind: "line"; startMoveId: string; bodyPart: BodyPart };
       drop: { kind: "hold"; holdId: string };
     }
   | {
@@ -46,12 +46,6 @@ export type DragType =
         // - While reordering moves, this index will change, but `order won't
         //    be updated until the user stops dragging and the API call is sent
         index: number;
-        // These values are only needed for the drag layer preview, otherwise
-        // they can be fetched from Relay
-        bodyPart: BodyPart;
-        order: number; // See note above about order vs index
-        isStart: boolean;
-        totalMoves: number; // Total number of moves in the list, used for color
       };
       drop: undefined;
     };

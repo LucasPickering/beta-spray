@@ -69,7 +69,7 @@
     "pretype-check": "npm run relay",
     "type-check": "tsc",
     "relay": "relay-compiler",
-    "relay:watch": "nodemon -x \"npm run relay\" -w src -e \"ts tsx\" -i \"**/__generated/*\""
+    "relay:watch": "nodemon -x \"npm run relay\" -w src -e \"graphql ts tsx\" -i \"**/__generated/*\""
   },
   "browserslist": {
     "production": [

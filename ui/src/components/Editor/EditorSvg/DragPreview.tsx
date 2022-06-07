@@ -1,3 +1,4 @@
+import { useTheme } from "@mui/material";
 import React from "react";
 import { DragItemWithKind } from "util/dnd";
 import BetaMoveListItem from "../EditorControls/BetaMoveListItem";
@@ -10,6 +11,8 @@ interface Props {
 }
 
 const DragPreview: React.FC<Props> = ({ mode, itemWithKind }) => {
+  const theme = useTheme();
+
   if (mode === "html") {
     switch (itemWithKind.kind) {
       case "betaMoveList":
@@ -36,8 +39,17 @@ const DragPreview: React.FC<Props> = ({ mode, itemWithKind }) => {
         return <HoldIcon draggable isDragging />;
       case "betaMoveOverlay": {
         const { item } = itemWithKind;
-        const move = item.kind === "move" ? item.move : item.startMove;
-        return <BetaMoveIcon move={move} isDragging />;
+        // We don't know what order the new move will be, so don't show text
+        // and kinda "guess" at the color. We know for sure it's not a start
+        // move though, since you can only add subsequent moves.
+        return (
+          <BetaMoveIcon
+            bodyPart={item.bodyPart}
+            // Just pick a pretty color, basically
+            primaryColor={theme.palette.primary.main}
+            isDragging
+          />
+        );
       }
     }
   }

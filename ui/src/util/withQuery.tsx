@@ -50,7 +50,7 @@ function withQuery<Q extends OperationType, P>({
 
     // We need two separate components here: Loader loads the query data when
     // the query has been executed, Suspense shows loading status when it hasn't.
-    // This is two queries because hooks can't be optional, we can only do
+    // This is two components because hooks can't be optional, we can only do
     // optional logic at the component boundary (when queryRef is null)
     const LoaderComponent: React.FC<LoaderProps<Q>> = ({ queryRef }) => {
       const data = usePreloadedQuery<Q>(query, queryRef);

@@ -2,13 +2,12 @@ import React, { useContext, useRef } from "react";
 import { graphql, useFragment } from "react-relay";
 import { BetaDetailsMove_betaMoveNode$key } from "./__generated__/BetaDetailsMove_betaMoveNode.graphql";
 import { XYCoord } from "react-dnd";
-import { toBodyPart } from "util/svg";
 import { DragItem, DropHandler, useDrag, useDrop } from "util/dnd";
 import { EditorContext } from "util/context";
 import BetaMoveListItem from "./BetaMoveListItem";
 
 interface Props {
-  dataKey: BetaDetailsMove_betaMoveNode$key;
+  betaMoveKey: BetaDetailsMove_betaMoveNode$key;
   index: number;
   totalMoves: number;
   disabled?: boolean;
@@ -21,9 +20,8 @@ interface Props {
  * A smart(ish) component to render one move in a list of a beta's moves.
  */
 const BetaDetailsMove: React.FC<Props> = ({
-  dataKey,
+  betaMoveKey,
   index,
-  totalMoves,
   disabled = false,
   onReorder,
   onDrop,
@@ -33,12 +31,10 @@ const BetaDetailsMove: React.FC<Props> = ({
     graphql`
       fragment BetaDetailsMove_betaMoveNode on BetaMoveNode {
         id
-        bodyPart
-        order
-        isStart
+        ...BetaMoveListItem_betaMoveNode
       }
     `,
-    dataKey
+    betaMoveKey
   );
 
   const { highlightedMove, setHighlightedMove } = useContext(EditorContext);
@@ -50,14 +46,7 @@ const BetaDetailsMove: React.FC<Props> = ({
     { isDragging: boolean }
   >({
     type: "betaMoveList",
-    item: {
-      betaMoveId: betaMove.id,
-      index,
-      bodyPart: toBodyPart(betaMove.bodyPart),
-      order: betaMove.order,
-      isStart: betaMove.isStart,
-      totalMoves,
-    },
+    item: { betaMoveId: betaMove.id, index },
     canDrag() {
       return !disabled;
     },
@@ -154,17 +143,13 @@ const BetaDetailsMove: React.FC<Props> = ({
     },
   });
 
-  const bodyPart = toBodyPart(betaMove.bodyPart); // simple type conversion
   const isHighlighted = highlightedMove === betaMove.id;
 
   drag(drop(ref));
   return (
     <BetaMoveListItem
       ref={ref}
-      bodyPart={bodyPart}
-      order={betaMove.order}
-      isStart={betaMove.isStart}
-      totalMoves={totalMoves}
+      betaMoveKey={betaMove}
       disabled={disabled}
       onMouseEnter={() => {
         if (!disabled) {

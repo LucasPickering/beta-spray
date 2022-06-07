@@ -5,8 +5,9 @@ from core.schema.mutation.beta import (
     UpdateBetaMutation,
 )
 from core.schema.mutation.betamove import (
-    CreateBetaMoveMutation,
+    AppendBetaMoveMutation,
     DeleteBetaMoveMutation,
+    InsertBetaMoveMutation,
     UpdateBetaMoveMutation,
 )
 from core.schema.mutation.boulder import CreateBoulderMutation
@@ -41,6 +42,7 @@ class Mutation(graphene.ObjectType):
     update_beta = UpdateBetaMutation.Field()
     copy_beta = CopyBetaMutation.Field()
     delete_beta = DeleteBetaMutation.Field()
-    create_beta_move = CreateBetaMoveMutation.Field()
+    append_beta_move = AppendBetaMoveMutation.Field()
+    insert_beta_move = InsertBetaMoveMutation.Field()
     update_beta_move = UpdateBetaMoveMutation.Field()
     delete_beta_move = DeleteBetaMoveMutation.Field()

@@ -62,5 +62,5 @@ services:
       - "3000:3000"
     volumes:
       - ./ui:/app
-      - ./api/src/schema.graphql:/app/schema.graphql
+      - ./api/src/schema.graphql:/app/graphql/schema.graphql
       - ui_node_modules:/app/ui/node_modules

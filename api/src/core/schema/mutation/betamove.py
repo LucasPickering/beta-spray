@@ -4,8 +4,10 @@ from graphene import relay
 import graphene
 
 
-class CreateBetaMoveMutation(relay.ClientIDMutation):
+class AppendBetaMoveMutation(relay.ClientIDMutation):
     """
+    TODO update comment
+
     Add a new move to an existing beta. A move can optionally be associated with
     a hold. Some moves (flagging, smearing, etc.) do not need an associated hold
     though.
@@ -21,8 +23,10 @@ class CreateBetaMoveMutation(relay.ClientIDMutation):
     class Input:
         beta_id = graphene.ID(required=True)
         body_part = BodyPartType(required=True)
-        order = graphene.Int()
-        hold_id = graphene.ID()
+        # TODO make this optional if we support free moves
+        hold_id = graphene.ID(
+            required=True, description="Hold to connect the move to"
+        )
 
     beta_move = graphene.Field(BetaMoveNode, required=True)
     beta = graphene.Field(BetaNode, required=True)
@@ -34,17 +38,57 @@ class CreateBetaMoveMutation(relay.ClientIDMutation):
         info,
         beta_id,
         body_part,
-        order=None,
-        hold_id=None,
+        hold_id,
     ):
         # Convert GQL IDs to PKs
         beta_id = BetaNode.get_pk_from_global_id(info, beta_id)
-        hold_id = hold_id and HoldNode.get_pk_from_global_id(info, hold_id)
+        hold_id = HoldNode.get_pk_from_global_id(info, hold_id)
 
         # TODO validate that hold and beta belong to the same problem
-        # TODO validate new order (take logic from commit cfd112a, query.py)
         beta_move = BetaMove.objects.create(
-            beta_id=beta_id, order=order, body_part=body_part, hold_id=hold_id
+            beta_id=beta_id, body_part=body_part, hold_id=hold_id
+        )
+
+        return cls(beta_move=beta_move)
+
+
+class InsertBetaMoveMutation(relay.ClientIDMutation):
+    """
+    TODO
+    """
+
+    class Input:
+        previous_beta_move_id = graphene.ID(
+            required=True, description="Move *preceding* this one in the beta"
+        )
+        # TODO make this optional if we support free moves
+        hold_id = graphene.ID(
+            required=True, description="Hold to connect the move to"
+        )
+
+    beta_move = graphene.Field(BetaMoveNode, required=True)
+    beta = graphene.Field(BetaNode, required=True)
+
+    @classmethod
+    def mutate_and_get_payload(
+        cls,
+        root,
+        info,
+        previous_beta_move_id,
+        hold_id,
+    ):
+        # Convert GQL IDs to PKs
+        previous_move = BetaNode.get_node_from_global_id(
+            info, previous_beta_move_id
+        )
+        hold_id = HoldNode.get_pk_from_global_id(info, hold_id)
+
+        # TODO validate that hold and beta belong to the same problem
+        beta_move = BetaMove.objects.create(
+            beta_id=previous_move.beta_id,
+            body_part=previous_move.body_part,
+            order=previous_move.order + 1,
+            hold_id=hold_id,
         )
 
         return cls(beta_move=beta_move)
@@ -68,8 +112,10 @@ class UpdateBetaMoveMutation(relay.ClientIDMutation):
         # the pre_save trigger gets called and the surrouding moves get slidded
         # around properly to make room for the new order (if any)
         beta_move = BetaMove.objects.get(id=beta_move_id)
+        # TODO validate new order is in range
         if order is not None:
             beta_move.order = order
+        # TODO validate hold and beta belong to same problem
         if hold_id is not None:
             beta_move.hold_id = hold_id
         beta_move.save()

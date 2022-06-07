@@ -8,12 +8,6 @@
 
 import { css } from "@emotion/react";
 
-/**
- * Length of the hash mark on starting moves, including the portion hidden by
- * the move itself.
- */
-export const startHashLength = 4.5;
-
 /** The distance to shift a disambiguated move from the center of the hold */
 export const disambiguationDistance = 6;
 

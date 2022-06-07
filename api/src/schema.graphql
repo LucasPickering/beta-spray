@@ -206,6 +206,9 @@ type BetaMoveNode implements Node {
 
   """Is this one of the initial moves for the beta?"""
   isStart: Boolean!
+
+  """Is this the last move in the beta *for its body part*?"""
+  isLastInChain: Boolean!
 }
 
 """A body part that someone could put on a hold"""
@@ -275,6 +278,8 @@ type Mutation {
   deleteBeta(input: DeleteBetaMutationInput!): DeleteBetaMutationPayload
 
   """
+  TODO update comment
+  
   Add a new move to an existing beta. A move can optionally be associated with
   a hold. Some moves (flagging, smearing, etc.) do not need an associated hold
   though.
@@ -286,7 +291,10 @@ type Mutation {
   
   If no order is given, the move will be appended to the end.
   """
-  createBetaMove(input: CreateBetaMoveMutationInput!): CreateBetaMoveMutationPayload
+  appendBetaMove(input: AppendBetaMoveMutationInput!): AppendBetaMoveMutationPayload
+
+  """TODO"""
+  insertBetaMove(input: InsertBetaMoveMutationInput!): InsertBetaMoveMutationPayload
   updateBetaMove(input: UpdateBetaMoveMutationInput!): UpdateBetaMoveMutationPayload
   deleteBetaMove(input: DeleteBetaMoveMutationInput!): DeleteBetaMoveMutationPayload
 }
@@ -455,6 +463,8 @@ input DeleteBetaMutationInput {
 }
 
 """
+TODO update comment
+
 Add a new move to an existing beta. A move can optionally be associated with
 a hold. Some moves (flagging, smearing, etc.) do not need an associated hold
 though.
@@ -466,17 +476,34 @@ become #4, #4 will become #5, etc.
 
 If no order is given, the move will be appended to the end.
 """
-type CreateBetaMoveMutationPayload {
+type AppendBetaMoveMutationPayload {
   betaMove: BetaMoveNode!
   beta: BetaNode!
   clientMutationId: String
 }
 
-input CreateBetaMoveMutationInput {
+input AppendBetaMoveMutationInput {
   betaId: ID!
   bodyPart: BodyPart!
-  order: Int
-  holdId: ID
+
+  """Hold to connect the move to"""
+  holdId: ID!
+  clientMutationId: String
+}
+
+"""TODO"""
+type InsertBetaMoveMutationPayload {
+  betaMove: BetaMoveNode!
+  beta: BetaNode!
+  clientMutationId: String
+}
+
+input InsertBetaMoveMutationInput {
+  """Move *preceding* this one in the beta"""
+  previousBetaMoveId: ID!
+
+  """Hold to connect the move to"""
+  holdId: ID!
   clientMutationId: String
 }
 

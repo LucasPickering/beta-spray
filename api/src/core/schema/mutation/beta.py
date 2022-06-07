@@ -54,9 +54,7 @@ class CopyBetaMutation(relay.ClientIDMutation):
 
     @classmethod
     def mutate_and_get_payload(cls, root, info, beta_id):
-        original_beta = relay.Node.get_node_from_global_id(
-            info, beta_id, only_type=BetaNode
-        )
+        original_beta = BetaNode.get_node_from_global_id(info, beta_id)
         # Copy the base beta
         new_beta = Beta.objects.create(
             problem_id=original_beta.problem_id,

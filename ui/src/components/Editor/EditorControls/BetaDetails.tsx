@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { graphql, useFragment } from "react-relay";
 import BetaDetailsMove from "./BetaDetailsMove";
 import {
@@ -9,12 +9,13 @@ import { BetaDetails_deleteBetaMoveMutation } from "./__generated__/BetaDetails_
 import { FormLabel, List, Skeleton, Typography } from "@mui/material";
 import { moveArrayElement } from "util/func";
 import { BetaDetails_updateBetaMoveMutation } from "./__generated__/BetaDetails_updateBetaMoveMutation.graphql";
-import { EditorContext } from "util/context";
+import { BetaContext, EditorContext } from "util/context";
 import useMutation from "util/useMutation";
 import MutationError from "components/common/MutationError";
 import { queriesBetaQuery } from "../__generated__/queriesBetaQuery.graphql";
 import { betaQuery } from "../queries";
 import withQuery from "util/withQuery";
+import { getBetaMoveColors } from "util/svg";
 
 interface Props {
   betaKey: BetaDetails_betaNode$key;
@@ -31,6 +32,8 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
           edges {
             node {
               id
+              order
+              isStart
               ...BetaDetailsMove_betaMoveNode
             }
           }
@@ -52,6 +55,12 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
   useEffect(() => {
     setMoves(beta.moves.edges.map(({ node }) => node));
   }, [beta.moves.edges]);
+
+  // Calculate color for each move, only updated when the remove data changes
+  const betaMoveColors = useMemo(
+    () => getBetaMoveColors(beta.moves.edges.map(({ node }) => node)),
+    [beta.moves.edges]
+  );
 
   const { commit: updateBetaMove, state: updateState } =
     useMutation<BetaDetails_updateBetaMoveMutation>(graphql`
@@ -86,69 +95,78 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
     `);
 
   return (
-    <div>
-      <FormLabel component="span">Moves</FormLabel>
+    <BetaContext.Provider
+      value={{
+        betaMoveColors,
+        // We don't need positions in this list, so leave this empty. If we try
+        // to access it within this tree, it'll just trigger an error
+        betaMoveVisualPositions: new Map(),
+      }}
+    >
+      <div>
+        <FormLabel component="span">Moves</FormLabel>
 
-      {moves.length === 0 && (
-        <Typography variant="body2">Click a hold to add a move</Typography>
-      )}
+        {moves.length === 0 && (
+          <Typography variant="body2">Click a hold to add a move</Typography>
+        )}
 
-      <List component="ol">
-        {moves.map((node, moveIndex) => (
-          <BetaDetailsMove
-            key={node.id}
-            dataKey={node}
-            index={moveIndex}
-            totalMoves={moves.length} // Needed to colorize moves
-            disabled={mode !== "beta"}
-            onReorder={(dragItem, newIndex) => {
-              // This is called on the *hovered* move, so the passed item is
-              // the one being dragged
+        <List component="ol">
+          {moves.map((node, moveIndex) => (
+            <BetaDetailsMove
+              key={node.id}
+              betaMoveKey={node}
+              index={moveIndex}
+              totalMoves={moves.length} // Needed to colorize moves
+              disabled={mode !== "beta"}
+              onReorder={(dragItem, newIndex) => {
+                // This is called on the *hovered* move, so the passed item is
+                // the one being dragged
 
-              // IMPORTANT: We need to store this value *outside* the lambda
-              // below, because the caller of this function is going to mutate
-              // the dragItem object to update the index value. This is an
-              // unfortunate necessity to prevent flickering in the UI, but it
-              // means that if we don't capture this value now, then by the
-              // time the state setter executes, `dragItem` will be mutated
-              // with the new index and we won't end up swapping anything.
-              const oldIndex = dragItem.index;
-              setMoves((oldMoves) =>
-                moveArrayElement(oldMoves, oldIndex, newIndex)
-              );
-            }}
-            onDrop={(item) => {
-              if (item) {
-                updateBetaMove({
-                  variables: {
-                    input: {
-                      betaMoveId: item.betaMoveId,
-                      // The index field  was modified during dragging, but
-                      // index is 0-based and order is 1-based, so we need to
-                      // convert now. The API will take care of sliding the
-                      // other moves up/down to fit this one in
-                      order: item.index + 1,
+                // IMPORTANT: We need to store this value *outside* the lambda
+                // below, because the caller of this function is going to mutate
+                // the dragItem object to update the index value. This is an
+                // unfortunate necessity to prevent flickering in the UI, but it
+                // means that if we don't capture this value now, then by the
+                // time the state setter executes, `dragItem` will be mutated
+                // with the new index and we won't end up swapping anything.
+                const oldIndex = dragItem.index;
+                setMoves((oldMoves) =>
+                  moveArrayElement(oldMoves, oldIndex, newIndex)
+                );
+              }}
+              onDrop={(item) => {
+                if (item) {
+                  updateBetaMove({
+                    variables: {
+                      input: {
+                        betaMoveId: item.betaMoveId,
+                        // The index field  was modified during dragging, but
+                        // index is 0-based and order is 1-based, so we need to
+                        // convert now. The API will take care of sliding the
+                        // other moves up/down to fit this one in
+                        order: item.index + 1,
+                      },
                     },
+                    // Punting on optimistic update because it's complicated
+                  });
+                }
+              }}
+              onDelete={() =>
+                deleteBetaMove({
+                  variables: {
+                    input: { betaMoveId: node.id },
                   },
                   // Punting on optimistic update because it's complicated
-                });
+                })
               }
-            }}
-            onDelete={() =>
-              deleteBetaMove({
-                variables: {
-                  input: { betaMoveId: node.id },
-                },
-                // Punting on optimistic update because it's complicated
-              })
-            }
-          />
-        ))}
-      </List>
+            />
+          ))}
+        </List>
 
-      <MutationError message="Error updating move" state={updateState} />
-      <MutationError message="Error deleting move" state={deleteState} />
-    </div>
+        <MutationError message="Error updating move" state={updateState} />
+        <MutationError message="Error deleting move" state={deleteState} />
+      </div>
+    </BetaContext.Provider>
   );
 };
 

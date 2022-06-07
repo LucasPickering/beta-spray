@@ -10,14 +10,13 @@ import {
   ListItemSecondaryAction,
   ListItemText,
 } from "@mui/material";
-import { BodyPart, formatBodyPart, getMoveColor } from "util/svg";
+import { formatBodyPart, useBetaMoveColors } from "util/svg";
 import { isDefined } from "util/func";
+import { graphql, useFragment } from "react-relay";
+import { BetaMoveListItem_betaMoveNode$key } from "./__generated__/BetaMoveListItem_betaMoveNode.graphql";
 
 interface Props extends React.ComponentProps<typeof ListItem> {
-  bodyPart: BodyPart;
-  order: number;
-  isStart: boolean;
-  totalMoves: number;
+  betaMoveKey: BetaMoveListItem_betaMoveNode$key;
   disabled?: boolean;
   onDelete?: () => void;
 }
@@ -26,20 +25,19 @@ interface Props extends React.ComponentProps<typeof ListItem> {
  * A dumb component to render a beta move in a list.
  */
 const BetaMoveListItem = React.forwardRef<SVGSVGElement, Props>(
-  (
-    {
-      bodyPart,
-      order,
-      isStart,
-      totalMoves,
-      disabled = false,
-      onDelete,
-      ...rest
-    },
-    ref
-  ) => {
-    const { fill, stroke } = getMoveColor(order, isStart, totalMoves);
+  ({ betaMoveKey, disabled = false, onDelete, ...rest }, ref) => {
+    const betaMove = useFragment(
+      graphql`
+        fragment BetaMoveListItem_betaMoveNode on BetaMoveNode {
+          id
+          bodyPart
+          order
+        }
+      `,
+      betaMoveKey
+    );
 
+    const colors = useBetaMoveColors()(betaMove.id);
     return (
       <ListItem disabled={disabled} {...rest}>
         <ListItemIcon>
@@ -50,16 +48,16 @@ const BetaMoveListItem = React.forwardRef<SVGSVGElement, Props>(
 
         <ListItemText
           sx={[
-            { color: fill },
+            { color: colors.primary },
             // Show stroke color as an underline. This is a little ugly but it
             // works for now at least (ecks dee)
-            isDefined(stroke) && {
+            isDefined(colors.secondary) && {
               textDecoration: "underline",
-              textDecorationColor: stroke,
+              textDecorationColor: colors.secondary,
             },
           ]}
         >
-          {order} {formatBodyPart(bodyPart)}
+          {betaMove.order} {formatBodyPart(betaMove.bodyPart)}
         </ListItemText>
 
         {/* Preview version of the element shouldn't show this button. Note: this
@@ -69,7 +67,7 @@ const BetaMoveListItem = React.forwardRef<SVGSVGElement, Props>(
         {onDelete && (
           <ListItemSecondaryAction>
             <IconButton
-              aria-label={`delete move ${order}`}
+              aria-label={`delete move ${betaMove.order}`}
               size="small"
               disabled={disabled}
               onClick={onDelete}

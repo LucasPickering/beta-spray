@@ -22,6 +22,12 @@ class NodeType(DjangoObjectType):
 
     @classmethod
     def get_pk_from_global_id(cls, info, global_id):
+        """
+        Convert a global Relay ID into a database primary key. If the global
+        ID doesn't match this node's model type, raise an exception.
+
+        This is the same as get_node_from_global_id, but it avoids any queries.
+        """
         # This is mostly ripped from relay.Node.get_node_from_global_id
         try:
             _type, _id = graphql_relay.from_global_id(global_id)
@@ -47,6 +53,17 @@ class NodeType(DjangoObjectType):
             )
 
         return _id
+
+    # TODO use this everywhere
+    @classmethod
+    def get_node_from_global_id(cls, info, global_id):
+        """
+        Get a node object based on a global ID, restricted to this class type.
+        If the node exists but isn't of this type, raise an exception.
+        """
+        return relay.Node.get_node_from_global_id(
+            info, global_id, only_type=cls
+        )
 
 
 class Image(ObjectType):
@@ -156,17 +173,25 @@ class BetaMoveNode(NodeType):
         required=True,
         description="Is this one of the initial moves for the beta?",
     )
+    is_last_in_chain = graphene.Boolean(
+        required=True,
+        description="Is this the last move in the beta *for its body part*?",
+    )
 
     @classmethod
     def get_queryset(cls, queryset, info):
         # Include is_start field. Hypothetically we could only include this if
         # it's actually requested, but the documentation for the `info` object
         # is horrendous and I don't feel like trying too hard on that.
-        return queryset.annotate_is_start()
+        return queryset.annotate_is_start().annotate_is_last_in_chain()
 
     def resolve_is_start(self, info):
         # This is populated by annotation, so we need to resolve it explicitly
         return self.is_start
+
+    def resolve_is_last_in_chain(self, info):
+        # This is populated by annotation, so we need to resolve it explicitly
+        return self.is_last_in_chain
 
 
 class Query(graphene.ObjectType):
