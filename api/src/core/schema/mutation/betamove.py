@@ -6,18 +6,8 @@ import graphene
 
 class AppendBetaMoveMutation(relay.ClientIDMutation):
     """
-    TODO update comment
-
-    Add a new move to an existing beta. A move can optionally be associated with
-    a hold. Some moves (flagging, smearing, etc.) do not need an associated hold
-    though.
-
-    If a move already exists for the given order+beta combo, the new move will
-    be given the requested order, and every other move in the beta will "slide
-    down", e.g. if the new move is `order=3`, then the existing move #3 will
-    become #4, #4 will become #5, etc.
-
-    If no order is given, the move will be appended to the end.
+    Add a new move to the end of an existing beta. The order of the new move
+    will simply be the current final move, plus one.
     """
 
     class Input:
@@ -54,7 +44,9 @@ class AppendBetaMoveMutation(relay.ClientIDMutation):
 
 class InsertBetaMoveMutation(relay.ClientIDMutation):
     """
-    TODO
+    Insert a beta move into the middle of an existing beta. The new move will
+    *directly precede* the given move ID, and all following moves will be
+    shifted down the list by one to accomodate the new move.
     """
 
     class Input:

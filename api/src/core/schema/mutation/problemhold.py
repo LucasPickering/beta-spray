@@ -24,12 +24,8 @@ class CreateProblemHoldMutation(relay.ClientIDMutation):
     ):
         # Convert global ID to a PK
         # TODO validate hold and problem belong to same boulder
-        problem = relay.Node.get_node_from_global_id(
-            info, problem_id, only_type=ProblemNode
-        )
-        hold = relay.Node.get_node_from_global_id(
-            info, hold_id, only_type=HoldNode
-        )
+        problem = ProblemNode.get_node_from_global_id(info, problem_id)
+        hold = HoldNode.get_node_from_global_id(info, hold_id)
         ProblemHold.objects.create(
             problem=problem,
             hold=hold,
@@ -58,11 +54,7 @@ class DeleteProblemHoldMutation(relay.ClientIDMutation):
     ):
         # Convert global ID to a PK
         # TODO validate hold and problem belong to same boulder
-        problem = relay.Node.get_node_from_global_id(
-            info, problem_id, only_type=ProblemNode
-        )
-        hold = relay.Node.get_node_from_global_id(
-            info, hold_id, only_type=HoldNode
-        )
+        problem = ProblemNode.get_node_from_global_id(info, problem_id)
+        hold = HoldNode.get_node_from_global_id(info, hold_id)
         hold.problems.remove(problem)
         return cls(problem=problem, hold=hold)

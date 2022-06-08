@@ -18,8 +18,6 @@ export interface Dimensions {
 /**
  * The position of an object in the rendered overlay. Values are [0,100] for X
  * and [0,height] in Y, where `height` is 100/aspectRatio.
- *
- * TODO replace this with an alias to GraphQL's SVGPosition
  */
 export interface OverlayPosition {
   x: number;
@@ -257,8 +255,14 @@ export function useDOMToSVGPosition(): (
   );
 }
 
-// TODO comment hooks
-
+/**
+ * A hook for accessing the colors of each move in the beta. This returns a
+ * getter than can then provide each move's colors, so that you can easily
+ * handle multiple moves within one component. Relies on BetaContext being
+ * present and the colors being initialized within that context.
+ *
+ * @returns A function that takes in a move ID and returns its position
+ */
 export function useBetaMoveColors(): (betaMoveId: string) => ColorPair {
   const { betaMoveColors } = useContext(BetaContext);
   return useCallback(
@@ -276,6 +280,14 @@ export function useBetaMoveColors(): (betaMoveId: string) => ColorPair {
   );
 }
 
+/**
+ * A hook for accessing the visual position of each move in the beta. This
+ * returns a getter than can then provide each move's position, so that you can
+ * easily handle multiple moves within one component. Relies on BetaContext
+ * being present and the visual positions being initialized within that context.
+ *
+ * @returns A function that takes in a move ID and returns its position
+ */
 export function useBetaMoveVisualPosition(): (
   betaMoveId: string
 ) => OverlayPosition {

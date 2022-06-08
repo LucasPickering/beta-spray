@@ -28,8 +28,6 @@ const HoldIcon: React.FC<Props> = ({
     <circle
       css={[
         { r: 7, opacity: 0.6, strokeWidth: 0.5 },
-        // TODO figure out how to move this into styles/, need to access MUI
-        // theme from the emotion `css` function
         draggable
           ? { fill: palette.primary.main, stroke: palette.primary.main }
           : { fill: "white", stroke: palette.primary.main },

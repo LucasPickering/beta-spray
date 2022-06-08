@@ -37,9 +37,7 @@ class UpdateBetaMutation(relay.ClientIDMutation):
 
     @classmethod
     def mutate_and_get_payload(cls, root, info, beta_id, name):
-        beta = relay.Node.get_node_from_global_id(
-            info, beta_id, only_type=BetaNode
-        )
+        beta = BetaNode.get_node_from_global_id(info, beta_id)
         if name is not None:
             beta.name = name
         beta.save()
@@ -84,9 +82,7 @@ class DeleteBetaMutation(relay.ClientIDMutation):
 
     @classmethod
     def mutate_and_get_payload(cls, root, info, beta_id):
-        beta = relay.Node.get_node_from_global_id(
-            info, beta_id, only_type=BetaNode
-        )
+        beta = BetaNode.get_node_from_global_id(info, beta_id)
         # `object.delete()` wipes out the PK field for some reason ¯\_(ツ)_/¯
         Beta.objects.filter(id=beta.id).delete()
         return cls(beta=beta)

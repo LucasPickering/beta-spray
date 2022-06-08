@@ -36,9 +36,7 @@ class CreateHoldMutation(relay.ClientIDMutation):
         cls, root, info, boulder_id, position, problem_id
     ):
         # We need to grab the whole boulder object so we can access the img dims
-        boulder = relay.Node.get_node_from_global_id(
-            info, boulder_id, only_type=BoulderNode
-        )
+        boulder = BoulderNode.get_node_from_global_id(info, boulder_id)
 
         # Convert SVG position to normalized position
         (position_x, position_y) = position.to_normalized(boulder.image)
@@ -52,9 +50,7 @@ class CreateHoldMutation(relay.ClientIDMutation):
 
         # TODO validate hold and problem belong to same boulder
         if problem_id:
-            problem = relay.Node.get_node_from_global_id(
-                info, problem_id, only_type=ProblemNode
-            )
+            problem = ProblemNode.get_node_from_global_id(info, problem_id)
             ProblemHold.objects.create(
                 problem=problem,
                 hold=hold,
@@ -77,9 +73,7 @@ class RelocateHoldMutation(relay.ClientIDMutation):
 
     @classmethod
     def mutate_and_get_payload(cls, root, info, hold_id, position):
-        hold = relay.Node.get_node_from_global_id(
-            info, hold_id, only_type=HoldNode
-        )
+        hold = HoldNode.get_node_from_global_id(info, hold_id)
         # Convert position from SVG coords to normalized (DB) coords
         (position_x, position_y) = position.to_normalized(hold.boulder.image)
         hold.position_x = position_x
@@ -98,8 +92,6 @@ class DeleteHoldMutation(relay.ClientIDMutation):
 
     @classmethod
     def mutate_and_get_payload(cls, root, info, hold_id):
-        hold = relay.Node.get_node_from_global_id(
-            info, hold_id, only_type=HoldNode
-        )
+        hold = HoldNode.get_node_from_global_id(info, hold_id)
         Hold.objects.filter(id=hold.id).delete()
         return cls(hold=hold)

@@ -98,16 +98,17 @@ type HoldNode implements Node {
 }
 
 """
-A 2D position in an image, which can be expressed in two ways:
-    - 0-1 in both X and Y, as a fraction of the width/height, respectively
-        - This is API coordinates
-    - 0-100 in the smaller dimension, and 0-(100*w/h) or 0-(100*h/w) in the
-        larger dimension
-        - This is SVG coordinates
-        - See the Image type for a better description of this system
+A 2D position in an image, in the terms that the UI uses. The bounds of the
+coordinates are:
+    - `[0, 100]` in the smaller of the two dimensions
+    - `[0, 100 * width / height]` or `[0, 100 * height / width]`
 
-Both coordinate systems use the top-left as the origin, with X increasing
-to the right and Y increasing down.
+The origin is the top-left, with X increasing to the right and Y increasing
+down.
+
+The purpose of this system is to provide normalized width and height so that
+UI elements can be sized statically without having to worry about varying
+image resolutions.
 """
 type SVGPosition {
   """X position, 0-100ish"""
@@ -219,11 +220,7 @@ enum BodyPart {
   RIGHT_FOOT
 }
 
-"""
-An image, e.g. JPG or PNG
-
-TODO describe SVG values
-"""
+"""An image, e.g. JPG or PNG"""
 type Image {
   url: String!
 
@@ -278,22 +275,16 @@ type Mutation {
   deleteBeta(input: DeleteBetaMutationInput!): DeleteBetaMutationPayload
 
   """
-  TODO update comment
-  
-  Add a new move to an existing beta. A move can optionally be associated with
-  a hold. Some moves (flagging, smearing, etc.) do not need an associated hold
-  though.
-  
-  If a move already exists for the given order+beta combo, the new move will
-  be given the requested order, and every other move in the beta will "slide
-  down", e.g. if the new move is `order=3`, then the existing move #3 will
-  become #4, #4 will become #5, etc.
-  
-  If no order is given, the move will be appended to the end.
+  Add a new move to the end of an existing beta. The order of the new move
+  will simply be the current final move, plus one.
   """
   appendBetaMove(input: AppendBetaMoveMutationInput!): AppendBetaMoveMutationPayload
 
-  """TODO"""
+  """
+  Insert a beta move into the middle of an existing beta. The new move will
+  *directly precede* the given move ID, and all following moves will be
+  shifted down the list by one to accomodate the new move.
+  """
   insertBetaMove(input: InsertBetaMoveMutationInput!): InsertBetaMoveMutationPayload
   updateBetaMove(input: UpdateBetaMoveMutationInput!): UpdateBetaMoveMutationPayload
   deleteBetaMove(input: DeleteBetaMoveMutationInput!): DeleteBetaMoveMutationPayload
@@ -463,18 +454,8 @@ input DeleteBetaMutationInput {
 }
 
 """
-TODO update comment
-
-Add a new move to an existing beta. A move can optionally be associated with
-a hold. Some moves (flagging, smearing, etc.) do not need an associated hold
-though.
-
-If a move already exists for the given order+beta combo, the new move will
-be given the requested order, and every other move in the beta will "slide
-down", e.g. if the new move is `order=3`, then the existing move #3 will
-become #4, #4 will become #5, etc.
-
-If no order is given, the move will be appended to the end.
+Add a new move to the end of an existing beta. The order of the new move
+will simply be the current final move, plus one.
 """
 type AppendBetaMoveMutationPayload {
   betaMove: BetaMoveNode!
@@ -491,7 +472,11 @@ input AppendBetaMoveMutationInput {
   clientMutationId: String
 }
 
-"""TODO"""
+"""
+Insert a beta move into the middle of an existing beta. The new move will
+*directly precede* the given move ID, and all following moves will be
+shifted down the list by one to accomodate the new move.
+"""
 type InsertBetaMoveMutationPayload {
   betaMove: BetaMoveNode!
   beta: BetaNode!

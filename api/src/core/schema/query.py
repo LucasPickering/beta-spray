@@ -54,7 +54,6 @@ class NodeType(DjangoObjectType):
 
         return _id
 
-    # TODO use this everywhere
     @classmethod
     def get_node_from_global_id(cls, info, global_id):
         """
@@ -69,8 +68,6 @@ class NodeType(DjangoObjectType):
 class Image(ObjectType):
     """
     An image, e.g. JPG or PNG
-
-    TODO describe SVG values
     """
 
     url = graphene.String(required=True)
@@ -99,19 +96,19 @@ class Image(ObjectType):
         return util.get_svg_dimensions(self)[1]
 
 
-# TODO update all these comments
 class SVGPosition(ObjectType):
     """
-    A 2D position in an image, which can be expressed in two ways:
-        - 0-1 in both X and Y, as a fraction of the width/height, respectively
-            - This is API coordinates
-        - 0-100 in the smaller dimension, and 0-(100*w/h) or 0-(100*h/w) in the
-            larger dimension
-            - This is SVG coordinates
-            - See the Image type for a better description of this system
+    A 2D position in an image, in the terms that the UI uses. The bounds of the
+    coordinates are:
+        - `[0, 100]` in the smaller of the two dimensions
+        - `[0, 100 * width / height]` or `[0, 100 * height / width]`
 
-    Both coordinate systems use the top-left as the origin, with X increasing
-    to the right and Y increasing down.
+    The origin is the top-left, with X increasing to the right and Y increasing
+    down.
+
+    The purpose of this system is to provide normalized width and height so that
+    UI elements can be sized statically without having to worry about varying
+    image resolutions.
     """
 
     x = graphene.Float(required=True, description="X position, 0-100ish")

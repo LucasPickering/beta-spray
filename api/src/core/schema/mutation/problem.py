@@ -52,9 +52,7 @@ class UpdateProblemMutation(relay.ClientIDMutation):
 
     @classmethod
     def mutate_and_get_payload(cls, root, info, problem_id, name):
-        problem = relay.Node.get_node_from_global_id(
-            info, problem_id, only_type=ProblemNode
-        )
+        problem = ProblemNode.get_node_from_global_id(info, problem_id)
         if name is not None:
             problem.name = name
         problem.save()
@@ -69,8 +67,6 @@ class DeleteProblemMutation(relay.ClientIDMutation):
 
     @classmethod
     def mutate_and_get_payload(cls, root, info, problem_id):
-        problem = relay.Node.get_node_from_global_id(
-            info, problem_id, only_type=ProblemNode
-        )
+        problem = ProblemNode.get_node_from_global_id(info, problem_id)
         Problem.objects.filter(id=problem.id).delete()
         return cls(problem=problem)
