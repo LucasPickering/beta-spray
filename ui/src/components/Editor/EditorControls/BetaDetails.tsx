@@ -16,6 +16,7 @@ import { queriesBetaQuery } from "../__generated__/queriesBetaQuery.graphql";
 import { betaQuery } from "../queries";
 import withQuery from "util/withQuery";
 import { getBetaMoveColors } from "util/svg";
+import BetaDetailsDragLayer from "./BetaDetailsDragLayer";
 
 interface Props {
   betaKey: BetaDetails_betaNode$key;
@@ -29,6 +30,7 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
       fragment BetaDetails_betaNode on BetaNode {
         id
         moves {
+          ...BetaDetailsDragPreview_betaMoveNodeConnection
           edges {
             node {
               id
@@ -162,10 +164,11 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
             />
           ))}
         </List>
-
-        <MutationError message="Error updating move" state={updateState} />
-        <MutationError message="Error deleting move" state={deleteState} />
       </div>
+
+      <BetaDetailsDragLayer betaMoveConnectionKey={beta.moves} />
+      <MutationError message="Error updating move" state={updateState} />
+      <MutationError message="Error deleting move" state={deleteState} />
     </BetaContext.Provider>
   );
 };

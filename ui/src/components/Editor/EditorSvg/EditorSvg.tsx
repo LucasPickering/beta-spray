@@ -6,7 +6,7 @@ import { queriesProblemQuery } from "../__generated__/queriesProblemQuery.graphq
 import NotFound from "components/common/NotFound";
 import BetaEditor from "./BetaEditor/BetaEditor";
 import BoulderImage from "./BoulderImage";
-import DragLayer from "./DragLayer";
+import SvgDragLayer from "./SvgDragLayer";
 import HoldEditor from "./HoldEditor/HoldEditor";
 import HoldMarks from "./HoldEditor/HoldMarks";
 import PanZone from "./PanZone";
@@ -76,7 +76,7 @@ const EditorSvg: React.FC<Props> = ({ problemKey }) => {
 
         {/* This has to go before other interactive stuff so it doesn't eat
             events from other components */}
-        <DragLayer mode="svg" />
+        <SvgDragLayer />
 
         {mode === "holds" && <HoldEditor problemKey={problem} />}
 

@@ -15,7 +15,6 @@ import { ZoomPanProvider } from "util/zoom";
 import BetaDetails from "./EditorControls/BetaDetails";
 import BetaList from "./EditorControls/BetaList";
 import EditorControls from "./EditorControls/EditorControls";
-import DragLayer from "./EditorSvg/DragLayer";
 import EditorSvg from "./EditorSvg/EditorSvg";
 import HelpText from "./EditorSvg/HelpText";
 import EditorHelmet from "./EditorHelmet";
@@ -160,7 +159,6 @@ const Editor: React.FC = () => {
               <ModeButton />
               <BetaList queryRef={problemQueryRef} />
               <BetaDetails queryRef={betaQueryRef} />
-              <DragLayer mode="html" /> {/* Provides DnD previews */}
             </EditorControls>
           </Box>
         </ZoomPanProvider>

@@ -17,7 +17,7 @@ interface Props {
  * types, hence BodyState instead.
  */
 const BodyState: React.FC<Props> = ({ betaMoveConnectionKey }) => {
-  const moves = useFragment(
+  const betaMoveConnection = useFragment(
     graphql`
       fragment BodyState_betaMoveNodeConnection on BetaMoveNodeConnection {
         edges {
@@ -45,7 +45,7 @@ const BodyState: React.FC<Props> = ({ betaMoveConnectionKey }) => {
     // Just pull out the fields we need
     { id: string; position: OverlayPosition }
   > = new Map();
-  for (const edge of moves.edges) {
+  for (const edge of betaMoveConnection.edges) {
     const move = edge.node;
     lastMoves.set(move.bodyPart, {
       id: move.id,

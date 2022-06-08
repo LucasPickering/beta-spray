@@ -112,10 +112,30 @@ export function useDrop<K extends DragKind, CollectedProps = unknown>(
 }
 
 /**
+ * Collected props that are always provided by useDragLayer
+ */
+interface BaseCollectedProps {
+  itemWithKind: DragItemWithKind;
+}
+
+/**
  * Wrapper around react-dnd's useDragLayer that enforces better typing.
  */
-export function useDragLayer<CollectedProps = unknown>(
+export function useDragLayer<CollectedProps = Record<string, unknown>>(
   collect: (monitor: DragLayerMonitor<DragItem>) => CollectedProps
-): CollectedProps {
-  return useDragLayerBase(collect);
+): BaseCollectedProps & CollectedProps {
+  return useDragLayerBase<BaseCollectedProps & CollectedProps, DragItem>(
+    (monitor) => ({
+      ...collect(monitor),
+      // Type hack here. *We* know that itemType corresponds to the `kind`
+      // field of DragType, and the type of `item` will match the
+      // corresponding kind, but there's no way to pass that info through
+      // dnd. We *could* do a type guard here to safety check, but it's
+      // easier just to trust that the data went in correctly.
+      itemWithKind: {
+        kind: monitor.getItemType() as DragKind,
+        item: monitor.getItem(),
+      } as DragItemWithKind,
+    })
+  );
 }
