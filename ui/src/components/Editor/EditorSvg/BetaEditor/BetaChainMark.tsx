@@ -1,6 +1,5 @@
 import React, { useContext, useRef } from "react";
-import { useDrag, useDrop } from "util/dnd";
-import { styleDropHover } from "styles/svg";
+import { useDrag, useDragLayer } from "util/dnd";
 import { ClickAwayListener } from "@mui/material";
 import { EditorContext } from "util/context";
 import Positioned from "../Positioned";
@@ -30,10 +29,6 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey }) => {
         order
         isLastInChain
         beta {
-          id
-        }
-        # TODO can we remove these?
-        hold {
           id
         }
       }
@@ -138,21 +133,19 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey }) => {
     },
   });
 
-  // Move is a drop target, just aliases to the underlying hold
-  // TODO fix or remove
-  const [{ isOver }, drop] = useDrop<"betaMoveOverlay", { isOver: boolean }>({
-    accept: "betaMoveOverlay",
-    collect: (monitor) => ({
-      isOver: Boolean(monitor.isOver()),
-    }),
-    // Tell the dragger which hold they just dropped onto
-    // drop: () => ({ kind: "hold", holdId: betaMove.hold.id }),
-  });
+  // Check if we're dragging *anything*. We'll mask this with isDragging from
+  // above to check if we're dragging anything *else*. If so, we'll disable
+  // pointer events for this element. This will prevent us from blocking drop
+  // events on the underlying hold.
+  const { isDraggingAny } = useDragLayer((monitor) => ({
+    isDraggingAny: monitor.isDragging(),
+  }));
+  const isDraggingOther = isDraggingAny && !isDragging;
 
   const { highlightedMove, setHighlightedMove } = useContext(EditorContext);
   const isHighlighted = highlightedMove === moveId;
 
-  drag(drop(ref));
+  drag(ref);
   return (
     <>
       <ClickAwayListener
@@ -171,7 +164,8 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey }) => {
             secondaryColor={colors.secondary}
             isDragging={isDragging}
             isHighlighted={isHighlighted}
-            css={isOver && styleDropHover}
+            // Don't block drop events when another element is being dragged
+            css={isDraggingOther && { pointerEvents: "none" }}
             // Click => toggle highlight on move
             onClick={() =>
               // If we already "own" the highlight, then toggle off

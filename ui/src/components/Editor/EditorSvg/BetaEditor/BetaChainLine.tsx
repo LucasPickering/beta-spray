@@ -60,7 +60,7 @@ const BetaChainLine: React.FC<Props> = ({ startMoveKey, endMoveKey }) => {
     type: "betaMoveOverlay",
     item: {
       kind: "line",
-      startMoveId: startMove.id,
+      betaMoveId: startMove.id,
       bodyPart: startMove.bodyPart,
     },
     collect: (monitor) => ({

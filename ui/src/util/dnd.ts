@@ -28,10 +28,9 @@ export type DragType =
     }
   | {
       kind: "betaMoveOverlay";
-      item: // Dragging a move around
-      | { kind: "move"; betaMoveId: string; bodyPart: BodyPart }
-        // Dragging a line between two moves (to insert a move)
-        | { kind: "line"; startMoveId: string; bodyPart: BodyPart };
+      // Dragging either a move or a line around, to add a new move. In the case
+      // of lines, the move should be the *start* of the line
+      item: { kind: "move" | "line"; betaMoveId: string; bodyPart: BodyPart };
       drop: { kind: "hold"; holdId: string };
     }
   | {
