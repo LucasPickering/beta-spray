@@ -269,10 +269,17 @@ export function useBetaMoveColors(): (betaMoveId: string) => ColorPair {
     (betaMoveId) => {
       const colorPair = betaMoveColors.get(betaMoveId);
       if (!isDefined(colorPair)) {
-        throw new Error(
+        // TODO figure out why this gets triggered in BetaDetails after deletion
+        // eslint-disable-next-line no-console
+        console.warn(
           `No color pair for beta move ${betaMoveId}. Either the ID is unknown or` +
             ` colors weren't initialized in this part of the component tree.`
         );
+        return { primary: "#000000", secondary: undefined };
+        // throw new Error(
+        //   `No color pair for beta move ${betaMoveId}. Either the ID is unknown or` +
+        //     ` colors weren't initialized in this part of the component tree.`
+        // );
       }
       return colorPair;
     },

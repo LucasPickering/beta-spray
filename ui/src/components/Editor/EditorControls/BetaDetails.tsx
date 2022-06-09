@@ -58,9 +58,16 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
     setMoves(beta.moves.edges.map(({ node }) => node));
   }, [beta.moves.edges]);
 
-  // Calculate color for each move, only updated when the remove data changes
-  const betaMoveColors = useMemo(
-    () => getBetaMoveColors(beta.moves.edges.map(({ node }) => node)),
+  const betaContextValue = useMemo(
+    () => ({
+      // Calculate color for each move
+      betaMoveColors: getBetaMoveColors(
+        beta.moves.edges.map(({ node }) => node)
+      ),
+      // We don't need positions in this list, so leave this empty. If we try
+      // to access it within this tree, it'll just trigger an error
+      betaMoveVisualPositions: new Map(),
+    }),
     [beta.moves.edges]
   );
 
@@ -74,6 +81,7 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
             beta {
               # Refetch to update UI
               ...BetaEditor_betaNode
+              ...BetaDetails_betaNode
             }
           }
         }
@@ -90,6 +98,7 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
             beta {
               # Refetch to update UI
               ...BetaEditor_betaNode
+              ...BetaDetails_betaNode
             }
           }
         }
@@ -97,14 +106,7 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
     `);
 
   return (
-    <BetaContext.Provider
-      value={{
-        betaMoveColors,
-        // We don't need positions in this list, so leave this empty. If we try
-        // to access it within this tree, it'll just trigger an error
-        betaMoveVisualPositions: new Map(),
-      }}
-    >
+    <BetaContext.Provider value={betaContextValue}>
       <div>
         <FormLabel component="span">Moves</FormLabel>
 
@@ -123,7 +125,6 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
               onReorder={(dragItem, newIndex) => {
                 // This is called on the *hovered* move, so the passed item is
                 // the one being dragged
-
                 // IMPORTANT: We need to store this value *outside* the lambda
                 // below, because the caller of this function is going to mutate
                 // the dragItem object to update the index value. This is an
@@ -142,7 +143,7 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
                     variables: {
                       input: {
                         betaMoveId: item.betaMoveId,
-                        // The index field  was modified during dragging, but
+                        // The index field was modified during dragging, but
                         // index is 0-based and order is 1-based, so we need to
                         // convert now. The API will take care of sliding the
                         // other moves up/down to fit this one in
