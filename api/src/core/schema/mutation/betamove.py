@@ -70,7 +70,7 @@ class InsertBetaMoveMutation(relay.ClientIDMutation):
         hold_id,
     ):
         # Convert GQL IDs to PKs
-        previous_move = BetaNode.get_node_from_global_id(
+        previous_move = BetaMoveNode.get_node_from_global_id(
             info, previous_beta_move_id
         )
         hold_id = HoldNode.get_pk_from_global_id(info, hold_id)
