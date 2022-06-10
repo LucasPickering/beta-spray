@@ -36,16 +36,18 @@ const MutationError: React.FC<Props> = ({ state, message }) => {
       <ErrorSnackbar
         summary={message}
         error={error?.data}
-        renderError={(err) =>
-          err instanceof Error ? (
-            err.toString()
-          ) : (
-            <pre>{JSON.stringify(err, null, 2)}</pre>
-          )
-        }
+        renderError={renderError}
       />
     </Portal>
   );
 };
+
+function renderError(error: unknown): React.ReactNode {
+  return error instanceof Error ? (
+    error.toString()
+  ) : (
+    <pre>{JSON.stringify(error, null, 2)}</pre>
+  );
+}
 
 export default MutationError;
