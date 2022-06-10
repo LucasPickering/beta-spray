@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 import React, { useContext } from "react";
 import { Handyman as IconHandyman } from "@mui/icons-material";
-import { EditorContext, EditorMode } from "util/context";
+import { EditorModeContext, EditorMode } from "util/context";
 import { IconLogo } from "components/common/icons";
 import { isDefined } from "util/func";
 
@@ -40,7 +40,7 @@ const ModeButton: React.FC<Props> = ({
   iconOnly = false,
   onClick: onClickParent,
 }) => {
-  const { mode, setMode } = useContext(EditorContext);
+  const [mode, setMode] = useContext(EditorModeContext);
 
   // The icon button cycles through modes
   if (iconOnly) {

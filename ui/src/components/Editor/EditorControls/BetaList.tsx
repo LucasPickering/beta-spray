@@ -48,7 +48,7 @@ const BetaList: React.FC<Props> = ({ problemKey }) => {
     problemKey
   );
   const connections = [problem.betas.__id];
-  const { selectedBeta, setSelectedBeta, mode } = useContext(EditorContext);
+  const { selectedBeta, setSelectedBeta } = useContext(EditorContext);
 
   // Auto-select the first beta if nothing else is selected
   useEffect(() => {
@@ -197,7 +197,6 @@ const BetaList: React.FC<Props> = ({ problemKey }) => {
   };
 
   const labelId = `beta-select`;
-  const disabled = mode !== "beta";
   return (
     <>
       <FormControl>
@@ -215,7 +214,6 @@ const BetaList: React.FC<Props> = ({ problemKey }) => {
               <BetaListItem
                 key={node.id}
                 betaKey={node}
-                disabled={disabled}
                 onRename={onRename}
                 onCopy={onCopy}
                 onDelete={onDelete}
@@ -228,7 +226,6 @@ const BetaList: React.FC<Props> = ({ problemKey }) => {
           size="small"
           variant="outlined"
           startIcon={<IconAdd />}
-          disabled={disabled}
           onClick={() => onCreateNew()}
           sx={{ width: "100%" }}
         >

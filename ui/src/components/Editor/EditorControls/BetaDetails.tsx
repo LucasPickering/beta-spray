@@ -9,7 +9,7 @@ import { BetaDetails_deleteBetaMoveMutation } from "./__generated__/BetaDetails_
 import { FormLabel, List, Skeleton, Typography } from "@mui/material";
 import { moveArrayElement } from "util/func";
 import { BetaDetails_updateBetaMoveMutation } from "./__generated__/BetaDetails_updateBetaMoveMutation.graphql";
-import { BetaContext, EditorContext } from "util/context";
+import { BetaContext, EditorModeContext } from "util/context";
 import useMutation from "util/useMutation";
 import MutationError from "components/common/MutationError";
 import { queriesBetaQuery } from "../__generated__/queriesBetaQuery.graphql";
@@ -45,7 +45,7 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
     betaKey
   );
 
-  const { mode } = useContext(EditorContext);
+  const [mode] = useContext(EditorModeContext);
 
   // Track moves in internal state so we can reorder them without constantly
   // saving to the API. We'll reorder on hover, then persist on drop.

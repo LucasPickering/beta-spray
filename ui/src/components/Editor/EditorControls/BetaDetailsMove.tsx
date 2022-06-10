@@ -3,7 +3,7 @@ import { graphql, useFragment } from "react-relay";
 import { BetaDetailsMove_betaMoveNode$key } from "./__generated__/BetaDetailsMove_betaMoveNode.graphql";
 import { XYCoord } from "react-dnd";
 import { DragItem, DropHandler, useDrag, useDrop } from "util/dnd";
-import { EditorContext } from "util/context";
+import { EditorHighlightedMoveContext } from "util/context";
 import BetaMoveListItem from "./BetaMoveListItem";
 
 interface Props {
@@ -37,7 +37,9 @@ const BetaDetailsMove: React.FC<Props> = ({
     betaMoveKey
   );
 
-  const { highlightedMove, setHighlightedMove } = useContext(EditorContext);
+  const [highlightedMove, setHighlightedMove] = useContext(
+    EditorHighlightedMoveContext
+  );
 
   const ref = useRef<SVGSVGElement | null>(null);
 

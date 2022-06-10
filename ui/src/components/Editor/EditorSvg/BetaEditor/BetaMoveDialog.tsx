@@ -4,7 +4,7 @@ import { Box, Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
 import useMutation from "util/useMutation";
 import { graphql, useFragment } from "react-relay";
 import MutationError from "components/common/MutationError";
-import { EditorContext } from "util/context";
+import { EditorSelectedHoldContext } from "util/context";
 import { BetaMoveDialog_appendBetaMoveMutation } from "./__generated__/BetaMoveDialog_appendBetaMoveMutation.graphql";
 import { assertIsDefined } from "util/func";
 import { BetaMoveDialog_betaNode$key } from "./__generated__/BetaMoveDialog_betaNode.graphql";
@@ -50,7 +50,7 @@ const BetaMoveDialog: React.FC<Props> = ({ betaKey }) => {
         }
       }
     `);
-  const { selectedHold, setSelectedHold } = useContext(EditorContext);
+  const [selectedHold, setSelectedHold] = useContext(EditorSelectedHoldContext);
 
   const isOpen = Boolean(selectedHold);
   const onClose = (): void => setSelectedHold(undefined);

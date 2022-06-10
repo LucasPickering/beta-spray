@@ -1,5 +1,10 @@
 import React, { useContext, useEffect, useRef } from "react";
-import { EditorContext, SvgContext } from "util/context";
+import {
+  EditorContext,
+  EditorModeContext,
+  EditorSelectedHoldContext,
+  SvgContext,
+} from "util/context";
 import { graphql, useFragment } from "react-relay";
 import { useZoomPan } from "util/zoom";
 import { queriesProblemQuery } from "../__generated__/queriesProblemQuery.graphql";
@@ -49,8 +54,9 @@ const EditorSvg: React.FC<Props> = ({ problemKey }) => {
     problemKey
   );
 
-  const { betaQueryRef, selectedBeta, mode, setMode, setSelectedHold } =
-    useContext(EditorContext);
+  const { betaQueryRef, selectedBeta } = useContext(EditorContext);
+  const [mode, setMode] = useContext(EditorModeContext);
+  const [, setSelectedHold] = useContext(EditorSelectedHoldContext);
   const ref = useRef<SVGSVGElement | null>(null);
 
   // On first load, we'll be editing beta by default. If there are no holds

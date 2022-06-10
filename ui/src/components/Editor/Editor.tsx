@@ -10,7 +10,13 @@ import { Box, IconButton, Paper } from "@mui/material";
 import { DndProvider } from "react-dnd";
 import { TouchBackend } from "react-dnd-touch-backend";
 import { Home as IconHome } from "@mui/icons-material";
-import { EditorContext, EditorMode } from "util/context";
+import {
+  EditorContext,
+  EditorHighlightedMoveContext,
+  EditorMode,
+  EditorModeContext,
+  EditorSelectedHoldContext,
+} from "util/context";
 import { ZoomPanProvider } from "util/zoom";
 import BetaDetails from "./EditorControls/BetaDetails";
 import BetaList from "./EditorControls/BetaList";
@@ -46,12 +52,16 @@ const Editor: React.FC = () => {
   const [betaQueryRef, loadBetaQuery, disposeBetaQuery] =
     useQueryLoader<queriesBetaQueryType>(queriesBetaQuery);
 
+  // ===
+  // All 3 of these *don't* unpack the array, so they can be passed to context
+  // without unnecessarily creating a new array object (and thus re-render)
+  // ===
   // Toggle between editing holds and beta
-  const [mode, setMode] = useState<EditorMode>("beta");
+  const editorModeState = useState<EditorMode>("beta");
   // Allows overlay to detect when a hold is clicked
-  const [selectedHold, setSelectedHold] = useState<string>();
+  const selectedHoldState = useState<string>();
   // Link hovering between move list and overlay
-  const [highlightedMove, setHighlightedMove] = useState<string | undefined>();
+  const highlightedMoveState = useState<string | undefined>();
 
   // Load image data
   useEffect(() => {
@@ -76,7 +86,7 @@ const Editor: React.FC = () => {
 
   // Figure out which help text to show based on editor state
   const helpMode = (() => {
-    switch (mode) {
+    switch (editorModeState[0]) {
       case "holds":
         return "editHolds";
       case "beta":
@@ -109,59 +119,61 @@ const Editor: React.FC = () => {
               { replace: true }
             );
           },
-          mode,
-          setMode,
-          selectedHold,
-          setSelectedHold,
-          highlightedMove,
-          setHighlightedMove,
         }}
       >
-        <ZoomPanProvider>
-          {/* The maximum possible display area (the full screen) */}
-          <Box
-            display="flex"
-            justifyContent="center"
-            // Anchor for overlay button positioning
-            position="relative"
-            width="100vw"
-            height="100vh"
-            // Hide the image when it grows bigger than the viewport
-            sx={{ overflow: "hidden" }}
-          >
-            {/* Wrapper for the SVG, to provide background color and spacing
+        <EditorModeContext.Provider value={editorModeState}>
+          <EditorSelectedHoldContext.Provider value={selectedHoldState}>
+            <EditorHighlightedMoveContext.Provider value={highlightedMoveState}>
+              <ZoomPanProvider>
+                {/* The maximum possible display area (the full screen) */}
+                <Box
+                  display="flex"
+                  justifyContent="center"
+                  // Anchor for overlay button positioning
+                  position="relative"
+                  width="100vw"
+                  height="100vh"
+                  // Hide the image when it grows bigger than the viewport
+                  sx={{ overflow: "hidden" }}
+                >
+                  {/* Wrapper for the SVG, to provide background color and spacing
                 during loading */}
-            <Box
-              width="100%"
-              height="100%"
-              sx={({ palette }) => ({
-                backgroundColor: palette.background.paper,
-              })}
-            >
-              <EditorSvg queryRef={problemQueryRef} />
-            </Box>
+                  <Box
+                    width="100%"
+                    height="100%"
+                    sx={({ palette }) => ({
+                      backgroundColor: palette.background.paper,
+                    })}
+                  >
+                    <EditorSvg queryRef={problemQueryRef} />
+                  </Box>
 
-            {/* Top-left overlay buttons */}
-            <Paper sx={{ position: "absolute", top: 0, left: 0, margin: 1 }}>
-              <IconButton component={Link} to="/">
-                <IconHome />
-              </IconButton>
+                  {/* Top-left overlay buttons */}
+                  <Paper
+                    sx={{ position: "absolute", top: 0, left: 0, margin: 1 }}
+                  >
+                    <IconButton component={Link} to="/">
+                      <IconHome />
+                    </IconButton>
 
-              <HelpText helpMode={helpMode} />
-            </Paper>
+                    <HelpText helpMode={helpMode} />
+                  </Paper>
 
-            {/* Top-right overlay buttons are mobile-only, so they live in
-                EditorDrawer */}
+                  {/* Top-right overlay buttons are mobile-only, so they live in
+                      EditorDrawer */}
 
-            {/* Controls sidebar/drawer */}
-            <EditorControls>
-              <ProblemName queryRef={problemQueryRef} />
-              <ModeButton />
-              <BetaList queryRef={problemQueryRef} />
-              <BetaDetails queryRef={betaQueryRef} />
-            </EditorControls>
-          </Box>
-        </ZoomPanProvider>
+                  {/* Controls sidebar/drawer */}
+                  <EditorControls>
+                    <ProblemName queryRef={problemQueryRef} />
+                    <ModeButton />
+                    <BetaList queryRef={problemQueryRef} />
+                    <BetaDetails queryRef={betaQueryRef} />
+                  </EditorControls>
+                </Box>
+              </ZoomPanProvider>
+            </EditorHighlightedMoveContext.Provider>
+          </EditorSelectedHoldContext.Provider>
+        </EditorModeContext.Provider>
       </EditorContext.Provider>
     </DndProvider>
   );

@@ -1,7 +1,7 @@
 import { useTheme } from "@mui/material";
 import React, { useContext } from "react";
 import { graphql, useFragment } from "react-relay";
-import { EditorContext } from "util/context";
+import { EditorHighlightedMoveContext } from "util/context";
 import { BodyPart, OverlayPosition, useBetaMoveVisualPosition } from "util/svg";
 import { BodyState_betaMoveNodeConnection$key } from "./__generated__/BodyState_betaMoveNodeConnection.graphql";
 
@@ -31,7 +31,7 @@ const BodyState: React.FC<Props> = ({ betaMoveConnectionKey }) => {
     betaMoveConnectionKey
   );
   const { palette } = useTheme();
-  const { highlightedMove } = useContext(EditorContext);
+  const [highlightedMove] = useContext(EditorHighlightedMoveContext);
   const getPosition = useBetaMoveVisualPosition();
 
   if (!highlightedMove) {

@@ -2,6 +2,7 @@ import { queriesBetaQuery } from "components/Editor/__generated__/queriesBetaQue
 import { queriesProblemQuery } from "components/Editor/__generated__/queriesProblemQuery.graphql";
 import React from "react";
 import { PreloadedQuery } from "react-relay";
+import { noop } from "./func";
 import { ColorPair, Dimensions, OverlayPosition } from "./svg";
 
 /**
@@ -28,12 +29,6 @@ export interface EditorContextType {
   betaQueryRef: PreloadedQuery<queriesBetaQuery> | null | undefined;
   selectedBeta: string | undefined;
   setSelectedBeta: (betaId: string | undefined) => void;
-  mode: EditorMode;
-  setMode: React.Dispatch<React.SetStateAction<EditorMode>>;
-  selectedHold: string | undefined;
-  setSelectedHold: React.Dispatch<React.SetStateAction<string | undefined>>;
-  highlightedMove: string | undefined;
-  setHighlightedMove: React.Dispatch<React.SetStateAction<string | undefined>>;
 }
 
 /**
@@ -43,6 +38,22 @@ export interface EditorContextType {
 export const EditorContext = React.createContext<EditorContextType>(
   {} as EditorContextType
 );
+
+// TODO comments
+export type StateContext<T> = [T, React.Dispatch<React.SetStateAction<T>>];
+
+export const EditorModeContext = React.createContext<StateContext<EditorMode>>([
+  "holds",
+  noop,
+]);
+
+export const EditorSelectedHoldContext = React.createContext<
+  StateContext<string | undefined>
+>([undefined, noop]);
+
+export const EditorHighlightedMoveContext = React.createContext<
+  StateContext<string | undefined>
+>([undefined, noop]);
 
 export interface BetaContextType {
   betaMoveColors: Map<string, ColorPair>;
