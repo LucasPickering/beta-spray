@@ -1,11 +1,10 @@
 import React, { useContext, useEffect, useRef } from "react";
 import {
-  EditorContext,
   EditorModeContext,
   EditorSelectedHoldContext,
   SvgContext,
 } from "util/context";
-import { graphql, useFragment } from "react-relay";
+import { graphql, PreloadedQuery, useFragment } from "react-relay";
 import { useZoomPan } from "util/zoom";
 import { queriesProblemQuery } from "../__generated__/queriesProblemQuery.graphql";
 import NotFound from "components/common/NotFound";
@@ -21,16 +20,23 @@ import { isDefined } from "util/func";
 import { problemQuery } from "../queries";
 import withQuery from "util/withQuery";
 import Loading from "components/common/Loading";
+import { queriesBetaQuery } from "../__generated__/queriesBetaQuery.graphql";
 
 interface Props {
   problemKey: EditorSvg_problemNode$key;
+  betaQueryRef: PreloadedQuery<queriesBetaQuery> | null | undefined;
+  selectedBeta: string | undefined;
 }
 
 /**
  * Main component of the editor. Render the boulder image as well as all overlay
  * components on top.
  */
-const EditorSvg: React.FC<Props> = ({ problemKey }) => {
+const EditorSvg: React.FC<Props> = ({
+  problemKey,
+  betaQueryRef,
+  selectedBeta,
+}) => {
   const problem = useFragment(
     graphql`
       fragment EditorSvg_problemNode on ProblemNode {
@@ -54,7 +60,6 @@ const EditorSvg: React.FC<Props> = ({ problemKey }) => {
     problemKey
   );
 
-  const { betaQueryRef, selectedBeta } = useContext(EditorContext);
   const [mode, setMode] = useContext(EditorModeContext);
   const [, setSelectedHold] = useContext(EditorSelectedHoldContext);
   const ref = useRef<SVGSVGElement | null>(null);
@@ -178,7 +183,7 @@ const EditorSvgInner = React.forwardRef<
 
 EditorSvgInner.displayName = "EditorSvgInner";
 
-export default withQuery<queriesProblemQuery, Props>({
+export default withQuery<queriesProblemQuery, Props, "problemKey">({
   query: problemQuery,
   dataToProps: (data) => data.problem && { problemKey: data.problem },
   fallbackElement: <Loading size={100} />,

@@ -1,7 +1,4 @@
-import { queriesBetaQuery } from "components/Editor/__generated__/queriesBetaQuery.graphql";
-import { queriesProblemQuery } from "components/Editor/__generated__/queriesProblemQuery.graphql";
 import React from "react";
-import { PreloadedQuery } from "react-relay";
 import { noop } from "./func";
 import { ColorPair, Dimensions, OverlayPosition } from "./svg";
 
@@ -24,22 +21,12 @@ export const SvgContext = React.createContext<SvgContextType>(
   {} as SvgContextType
 );
 
-export interface EditorContextType {
-  problemQueryRef: PreloadedQuery<queriesProblemQuery> | null | undefined;
-  betaQueryRef: PreloadedQuery<queriesBetaQuery> | null | undefined;
-  selectedBeta: string | undefined;
-  setSelectedBeta: (betaId: string | undefined) => void;
-}
-
 /**
- * Generate data and callbacks related to the state of the editor. Provided by
- * Editor.
+ * A React context definition based on a state field. The context contains the
+ * state value and the setter, exactly as returned from useState. This format
+ * means we can directly pass the returned value from useState to the context,
+ * and not worry about unnecessary re-renders.
  */
-export const EditorContext = React.createContext<EditorContextType>(
-  {} as EditorContextType
-);
-
-// TODO comments
 export type StateContext<T> = [T, React.Dispatch<React.SetStateAction<T>>];
 
 export const EditorModeContext = React.createContext<StateContext<EditorMode>>([

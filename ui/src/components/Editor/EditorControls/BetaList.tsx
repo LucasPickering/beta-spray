@@ -1,9 +1,8 @@
-import React, { useContext, useEffect } from "react";
+import React, { useEffect } from "react";
 import { graphql, useFragment } from "react-relay";
 import { BetaList_problemNode$key } from "./__generated__/BetaList_problemNode.graphql";
 import { BetaList_createBetaMutation } from "./__generated__/BetaList_createBetaMutation.graphql";
 import { BetaList_deleteBetaMutation } from "./__generated__/BetaList_deleteBetaMutation.graphql";
-import { EditorContext } from "util/context";
 import MutationError from "components/common/MutationError";
 import useMutation from "util/useMutation";
 import { queriesProblemQuery } from "../__generated__/queriesProblemQuery.graphql";
@@ -24,12 +23,18 @@ import { BetaList_updateBetaMutation } from "./__generated__/BetaList_updateBeta
 
 interface Props {
   problemKey: BetaList_problemNode$key;
+  selectedBeta: string | undefined;
+  onSelectBeta: (betaId: string | undefined) => void;
 }
 
 /**
  * List all the betas for a problem
  */
-const BetaList: React.FC<Props> = ({ problemKey }) => {
+const BetaList: React.FC<Props> = ({
+  problemKey,
+  selectedBeta,
+  onSelectBeta,
+}) => {
   const problem = useFragment(
     graphql`
       fragment BetaList_problemNode on ProblemNode {
@@ -48,14 +53,13 @@ const BetaList: React.FC<Props> = ({ problemKey }) => {
     problemKey
   );
   const connections = [problem.betas.__id];
-  const { selectedBeta, setSelectedBeta } = useContext(EditorContext);
 
   // Auto-select the first beta if nothing else is selected
   useEffect(() => {
     if (!selectedBeta && problem.betas.edges.length > 0) {
-      setSelectedBeta(problem.betas.edges[0].node.id);
+      onSelectBeta(problem.betas.edges[0].node.id);
     }
-  }, [selectedBeta, setSelectedBeta, problem.betas.edges]);
+  }, [selectedBeta, onSelectBeta, problem.betas.edges]);
 
   const { commit: createBeta, state: createState } =
     useMutation<BetaList_createBetaMutation>(graphql`
@@ -148,7 +152,7 @@ const BetaList: React.FC<Props> = ({ problemKey }) => {
       // Select the new beta after creation
       onCompleted(data) {
         if (data.createBeta) {
-          setSelectedBeta(data.createBeta.beta.id);
+          onSelectBeta(data.createBeta.beta.id);
         }
       },
     });
@@ -174,7 +178,7 @@ const BetaList: React.FC<Props> = ({ problemKey }) => {
       // Select the new beta after creation
       onCompleted(data) {
         if (data.copyBeta) {
-          setSelectedBeta(data.copyBeta.beta.id);
+          onSelectBeta(data.copyBeta.beta.id);
         }
       },
     });
@@ -190,7 +194,7 @@ const BetaList: React.FC<Props> = ({ problemKey }) => {
       onCompleted() {
         // If the selected beta was deleted, unselect it
         if (selectedBeta === betaId) {
-          setSelectedBeta(undefined);
+          onSelectBeta(undefined);
         }
       },
     });
@@ -206,7 +210,7 @@ const BetaList: React.FC<Props> = ({ problemKey }) => {
           aria-labelledby={labelId}
           // `undefined` makes the group think it's in uncontrolled state
           value={selectedBeta ?? null}
-          onChange={(e) => setSelectedBeta(e.target.value)}
+          onChange={(e) => onSelectBeta(e.target.value)}
           sx={{ marginTop: 1, marginBottom: 1 }}
         >
           <Stack direction="column">
@@ -241,7 +245,7 @@ const BetaList: React.FC<Props> = ({ problemKey }) => {
   );
 };
 
-export default withQuery<queriesProblemQuery, Props>({
+export default withQuery<queriesProblemQuery, Props, "problemKey">({
   query: problemQuery,
   dataToProps: (data) => data.problem && { problemKey: data.problem },
   fallbackElement: <Skeleton variant="rectangular" height={100} />,

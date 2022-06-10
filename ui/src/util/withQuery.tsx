@@ -2,20 +2,47 @@ import React, { Suspense } from "react";
 import { PreloadedQuery, usePreloadedQuery } from "react-relay";
 import { GraphQLTaggedNode, OperationType } from "relay-runtime";
 
-interface Options<Q extends OperationType, P> {
+interface Options<
+  Query extends OperationType,
+  Props,
+  DataKeys extends keyof Props
+> {
   query: GraphQLTaggedNode;
-  dataToProps: (data: Q["response"]) => P | null | undefined;
+  dataToProps: (
+    data: Query["response"]
+  ) => Pick<Props, DataKeys> | null | undefined;
   fallbackElement: React.ReactElement | null;
   noDataElement?: React.ReactElement | null;
 }
 
-interface LoaderProps<Q extends OperationType> {
-  queryRef: PreloadedQuery<Q>;
-}
+/**
+ * Get a type for the props of a wrapping component, given:
+ * - Wrapper props (T)
+ * - Underling props, defined by the wrapped component (Props)
+ * - Data props, defined by the wrapped component by derived from Relay state
+ */
+type Gloobulate<T, Props, DataKeys extends keyof Props> = T &
+  // We want to only pull out the static props from `Props`. Generally, `Props`
+  // shouldn't intersect with `T`, but I included that in the `Omit` in an
+  // attempt to convince TS that what I'm doing is legit. It didn't work, but
+  // I'm leaving it there to make myself feel better.
+  Omit<Props, DataKeys | keyof T>;
 
-interface SuspenseProps<Q extends OperationType> {
-  queryRef: PreloadedQuery<Q> | null | undefined;
-}
+type LoaderProps<
+  Query extends OperationType,
+  Props,
+  DataKeys extends keyof Props
+> = Gloobulate<{ queryRef: PreloadedQuery<Query> }, Props, DataKeys>;
+
+type SuspenseProps<
+  Query extends OperationType,
+  Props,
+  DataKeys extends keyof Props
+> = Gloobulate<
+  { queryRef: PreloadedQuery<Query> | null | undefined },
+  Props,
+  DataKeys
+>;
 
 /**
  * Higher-order component to wrap a component with the logic necessary to
@@ -31,6 +58,9 @@ interface SuspenseProps<Q extends OperationType> {
  * withQuery({ ...options })(Component)
  * ```
  *
+ * The returned component will support pass-through props, meaning any prop
+ * not returned from the `dataToProps` param should be passed by the parent.
+ *
  * @param query GraphQL query definition supplying data
  * @param dataToProps Function to map the query response to the child component's
  *  props. Return null/undefined if data is missing, which will render the
@@ -39,12 +69,18 @@ interface SuspenseProps<Q extends OperationType> {
  * @param noDataElement Child to render when needed data is not present
  * @returns Wrapped component
  */
-function withQuery<Q extends OperationType, P>({
+function withQuery<
+  Query extends OperationType,
+  Props,
+  DataKeys extends keyof Props = keyof Props
+>({
   query,
   dataToProps,
   fallbackElement,
   noDataElement = null,
-}: Options<Q, P>): (Component: React.FC<P>) => React.FC<SuspenseProps<Q>> {
+}: Options<Query, Props, DataKeys>): (
+  Component: React.FC<Props>
+) => React.FC<SuspenseProps<Query, Props, DataKeys>> {
   return (Component) => {
     const baseName = Component.displayName ?? Component.name;
 
@@ -52,23 +88,41 @@ function withQuery<Q extends OperationType, P>({
     // the query has been executed, Suspense shows loading status when it hasn't.
     // This is two components because hooks can't be optional, we can only do
     // optional logic at the component boundary (when queryRef is null)
-    const LoaderComponent: React.FC<LoaderProps<Q>> = ({ queryRef }) => {
-      const data = usePreloadedQuery<Q>(query, queryRef);
-      const childProps = dataToProps(data);
+    const LoaderComponent: React.FC<LoaderProps<Query, Props, DataKeys>> = ({
+      queryRef,
+      ...rest
+    }) => {
+      const data = usePreloadedQuery<Query>(query, queryRef);
+      const dataProps = dataToProps(data);
 
-      if (!childProps) {
+      if (!dataProps) {
         return noDataElement;
       }
 
-      return <Component {...childProps} />;
+      // Unfortunate type assertion. I'm 99% sure I set up all the types
+      // correctly here, TS just isn't complicated enough to do these assertions
+      const props = {
+        ...rest,
+        ...dataProps,
+      } as unknown as Props;
+      return <Component {...props} />;
     };
     LoaderComponent.displayName = `${baseName}Loader`;
 
-    const SuspenseComponent: React.FC<SuspenseProps<Q>> = ({ queryRef }) => (
-      <Suspense fallback={fallbackElement}>
-        {queryRef && <LoaderComponent queryRef={queryRef} />}
-      </Suspense>
-    );
+    const SuspenseComponent: React.FC<
+      SuspenseProps<Query, Props, DataKeys>
+    > = ({ queryRef, ...rest }) => {
+      return (
+        <Suspense fallback={fallbackElement}>
+          {queryRef && (
+            <LoaderComponent
+              queryRef={queryRef}
+              {...(rest as unknown as Props)}
+            />
+          )}
+        </Suspense>
+      );
+    };
     SuspenseComponent.displayName = `${baseName}Suspense`;
 
     return SuspenseComponent;
