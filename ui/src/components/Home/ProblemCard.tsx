@@ -69,6 +69,7 @@ const ProblemCard: React.FC<Props> = ({ problemKey, onEdit, onDelete }) => {
         },
       })}
     >
+      {/* TODO pre-load editor query on click */}
       <CardActionArea component={RouterLink} to={`/problems/${problem.id}`}>
         <CardMedia sx={{ height: 200 }}>
           {problem.boulder.image.url ? (
