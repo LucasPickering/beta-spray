@@ -62,18 +62,25 @@ const Editor: React.FC = () => {
   // Link hovering between move list and overlay
   const highlightedMoveState = useState<string | undefined>();
 
+  const refreshBetaQuery = useCallback(
+    (betaId: string | undefined) => {
+      if (betaId) {
+        loadBetaQuery({ betaId });
+      } else {
+        // Beta is no longer selected, wipe out the query
+        disposeBetaQuery();
+      }
+    },
+    [loadBetaQuery, disposeBetaQuery]
+  );
+
   // Load image data
   useEffect(() => {
     loadProblemQuery({ problemId });
   }, [loadProblemQuery, problemId]);
   useEffect(() => {
-    if (selectedBeta) {
-      loadBetaQuery({ betaId: selectedBeta });
-    } else {
-      // Beta is no longer selected, wipe out the query
-      disposeBetaQuery();
-    }
-  }, [loadBetaQuery, disposeBetaQuery, selectedBeta]);
+    refreshBetaQuery(selectedBeta);
+  }, [refreshBetaQuery, selectedBeta]);
 
   // Make sure state stays in sync with the URL
   // In most cases we should update both of these simultaneously so this hook
@@ -86,6 +93,8 @@ const Editor: React.FC = () => {
   const onSelectBeta = useCallback(
     (betaId: string | undefined) => {
       setSelectedBeta(betaId);
+      // Start beta query ASAP (gotta go fast)
+      refreshBetaQuery(betaId);
       navigate(
         betaId
           ? `/problems/${problemId}/beta/${betaId}`
@@ -94,7 +103,7 @@ const Editor: React.FC = () => {
         { replace: true }
       );
     },
-    [navigate, problemId]
+    [refreshBetaQuery, navigate, problemId]
   );
 
   // Figure out which help text to show based on editor state
