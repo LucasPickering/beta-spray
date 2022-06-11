@@ -5,7 +5,7 @@ import { graphql } from "relay-runtime";
 import { useFragment } from "react-relay";
 import { BetaChainLine_startBetaMoveNode$key } from "./__generated__/BetaChainLine_startBetaMoveNode.graphql";
 import { BetaChainLine_endBetaMoveNode$key } from "./__generated__/BetaChainLine_endBetaMoveNode.graphql";
-import MutationError from "components/common/MutationError";
+import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
 import { BetaChainLine_insertBetaMoveMutation } from "./__generated__/BetaChainLine_insertBetaMoveMutation.graphql";
 import { isDefined } from "util/func";
 import useMutation from "util/useMutation";
@@ -120,7 +120,7 @@ const BetaChainLine: React.FC<Props> = ({ startMoveKey, endMoveKey }) => {
         stroke={`url(#${gradientId})`}
         {...coords}
       />
-      <MutationError message="Error adding move" state={insertState} />
+      <MutationErrorSnackbar message="Error adding move" state={insertState} />
     </>
   );
 };

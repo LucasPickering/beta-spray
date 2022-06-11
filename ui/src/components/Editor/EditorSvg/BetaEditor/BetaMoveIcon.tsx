@@ -6,14 +6,16 @@ import {
   styleDragging,
 } from "styles/svg";
 import { Interpolation, Theme } from "@emotion/react";
-import { IconBodyPartRaw } from "components/common/icons";
+import { IconBodyPartRaw, IconNotesRaw } from "components/common/icons";
 import { isDefined } from "util/func";
+import Positioned from "../Positioned";
 
 interface Props extends React.SVGProps<SVGGElement> {
   bodyPart: BodyPart;
+  order?: number;
+  hasAnnotation?: boolean;
   primaryColor: string;
   secondaryColor?: string | null; // Allow null to match w/ the gql schema
-  order?: number;
   isDragging?: boolean;
   isHighlighted?: boolean;
   css?: Interpolation<Theme>;
@@ -31,6 +33,7 @@ const BetaMoveIcon = React.forwardRef<SVGGElement, Props>(
       primaryColor,
       secondaryColor,
       order,
+      hasAnnotation,
       isDragging,
       isHighlighted,
       css: parentCss,
@@ -74,6 +77,13 @@ const BetaMoveIcon = React.forwardRef<SVGGElement, Props>(
         >
           {order}
         </text>
+      )}
+
+      {hasAnnotation && (
+        <Positioned position={{ x: 2, y: -2 }}>
+          <circle css={{ r: 1.5, fill: primaryColor }} />
+          <IconNotesRaw />
+        </Positioned>
       )}
     </g>
   )

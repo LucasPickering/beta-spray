@@ -16,6 +16,11 @@ const theme = createTheme({
     },
   },
   components: {
+    MuiAlert: {
+      defaultProps: {
+        variant: "filled",
+      },
+    },
     MuiLink: {
       defaultProps: {
         // I really can't figure out the typing here, pretty sure it's an MUI
@@ -36,6 +41,11 @@ const theme = createTheme({
         root: ({ theme }) => ({
           borderRadius: theme.shape.borderRadius,
         }),
+      },
+    },
+    MuiSnackbar: {
+      defaultProps: {
+        autoHideDuration: 5000,
       },
     },
     MuiSvgIcon: {

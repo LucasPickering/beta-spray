@@ -11,7 +11,7 @@ import { moveArrayElement } from "util/func";
 import { BetaDetails_updateBetaMoveMutation } from "./__generated__/BetaDetails_updateBetaMoveMutation.graphql";
 import { BetaContext, EditorModeContext } from "util/context";
 import useMutation from "util/useMutation";
-import MutationError from "components/common/MutationError";
+import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
 import { queriesBetaQuery } from "../__generated__/queriesBetaQuery.graphql";
 import { betaQuery } from "../queries";
 import withQuery from "util/withQuery";
@@ -168,8 +168,14 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
       </div>
 
       <BetaDetailsDragLayer betaMoveConnectionKey={beta.moves} />
-      <MutationError message="Error updating move" state={updateState} />
-      <MutationError message="Error deleting move" state={deleteState} />
+      <MutationErrorSnackbar
+        message="Error updating move"
+        state={updateState}
+      />
+      <MutationErrorSnackbar
+        message="Error deleting move"
+        state={deleteState}
+      />
     </BetaContext.Provider>
   );
 };

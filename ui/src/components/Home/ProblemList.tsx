@@ -8,7 +8,7 @@ import { ProblemList_deleteProblemMutation } from "./__generated__/ProblemList_d
 import { ProblemList_updateProblemMutation } from "./__generated__/ProblemList_updateProblemMutation.graphql";
 import { ProblemList_createBoulderWithFriendsMutation } from "./__generated__/ProblemList_createBoulderWithFriendsMutation.graphql";
 import useMutation from "util/useMutation";
-import MutationError from "components/common/MutationError";
+import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
 import { ProblemListQuery } from "./__generated__/ProblemListQuery.graphql";
 import withQuery from "util/withQuery";
 import { useNavigate } from "react-router-dom";
@@ -165,9 +165,18 @@ const ProblemList: React.FC<Props> = ({ problemConnectionKey }) => {
         </Grid>
       ))}
 
-      <MutationError message="Error uploading problem" state={createState} />
-      <MutationError message="Error updating problem" state={updateState} />
-      <MutationError message="Error deleting problem" state={deleteState} />
+      <MutationErrorSnackbar
+        message="Error uploading problem"
+        state={createState}
+      />
+      <MutationErrorSnackbar
+        message="Error updating problem"
+        state={updateState}
+      />
+      <MutationErrorSnackbar
+        message="Error deleting problem"
+        state={deleteState}
+      />
     </>
   );
 };

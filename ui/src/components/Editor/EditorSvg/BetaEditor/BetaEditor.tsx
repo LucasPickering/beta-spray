@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
 import { BetaEditor_betaNode$key } from "./__generated__/BetaEditor_betaNode.graphql";
-import BetaMoveDialog from "./BetaMoveDialog";
+import NewBetaMoveDialog from "./NewBetaMoveDialog";
 import { groupBy } from "util/func";
 import BodyState from "./BodyState";
 import BetaChainLine from "./BetaChainLine";
@@ -12,6 +12,7 @@ import { queriesBetaQuery } from "components/Editor/__generated__/queriesBetaQue
 import { betaQuery } from "components/Editor/queries";
 import { getBetaMoveColors, getBetaMoveVisualPositions } from "util/svg";
 import { BetaContext } from "util/context";
+import EditBetaMoveDialog from "./EditBetaMoveDialog";
 
 interface Props {
   betaKey: BetaEditor_betaNode$key;
@@ -25,11 +26,13 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
     graphql`
       fragment BetaEditor_betaNode on BetaNode {
         id
-        ...BetaMoveDialog_betaNode
+        ...NewBetaMoveDialog_betaNode
+        ...EditBetaMoveDialog_betaNode
         moves {
           ...BodyState_betaMoveNodeConnection
           edges {
             node {
+              # Yes these fields are all needed, to get positions and colors
               id
               bodyPart
               order
@@ -102,7 +105,9 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
       ))}
 
       {/* After clicking a hold, show a modal to add a move to it */}
-      <BetaMoveDialog betaKey={beta} />
+      <NewBetaMoveDialog betaKey={beta} />
+      {/* After clicking a move, show a modal to edit it */}
+      <EditBetaMoveDialog betaKey={beta} />
     </BetaContext.Provider>
   );
 };

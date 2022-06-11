@@ -1,4 +1,4 @@
-import MutationError from "components/common/MutationError";
+import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
 import React from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
@@ -146,9 +146,18 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
         }}
       />
 
-      <MutationError message="Error creating hold" state={createState} />
-      <MutationError message="Error moving hold" state={relocateState} />
-      <MutationError message="Error deleting hold" state={deleteState} />
+      <MutationErrorSnackbar
+        message="Error creating hold"
+        state={createState}
+      />
+      <MutationErrorSnackbar
+        message="Error moving hold"
+        state={relocateState}
+      />
+      <MutationErrorSnackbar
+        message="Error deleting hold"
+        state={deleteState}
+      />
     </>
   );
 };

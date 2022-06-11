@@ -5,6 +5,9 @@ interface Props extends React.SVGProps<SVGGElement> {
   position: OverlayPosition;
 }
 
+/**
+ * Translate an SVG element to a particiular position
+ */
 const Positioned = React.forwardRef<SVGGElement, Props>(
   ({ position, children, ...rest }, ref) => (
     <g

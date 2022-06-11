@@ -42,6 +42,10 @@ export const EditorHighlightedMoveContext = React.createContext<
   StateContext<string | undefined>
 >([undefined, noop]);
 
+export const EditorSelectedMoveContext = React.createContext<
+  StateContext<string | undefined>
+>([undefined, noop]);
+
 export interface BetaContextType {
   betaMoveColors: Map<string, ColorPair>;
   betaMoveVisualPositions: Map<string, OverlayPosition>;

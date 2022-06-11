@@ -1,15 +1,17 @@
 import React, { useContext, useRef } from "react";
 import { useDrag, useDragLayer } from "util/dnd";
-import { ClickAwayListener } from "@mui/material";
-import { EditorHighlightedMoveContext } from "util/context";
+import { ClickAwayListener, Portal, Tooltip } from "@mui/material";
+import {
+  EditorHighlightedMoveContext,
+  EditorSelectedMoveContext,
+} from "util/context";
 import Positioned from "../Positioned";
 import BetaMoveIcon from "./BetaMoveIcon";
 import { graphql, useFragment } from "react-relay";
 import { BetaChainMark_betaMoveNode$key } from "./__generated__/BetaChainMark_betaMoveNode.graphql";
 import useMutation from "util/useMutation";
-import MutationError from "components/common/MutationError";
+import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
 import { BetaChainMark_appendBetaMoveMutation } from "./__generated__/BetaChainMark_appendBetaMoveMutation.graphql";
-import { BetaChainMark_deleteBetaMoveMutation } from "./__generated__/BetaChainMark_deleteBetaMoveMutation.graphql";
 import { BetaChainMark_updateBetaMoveMutation } from "./__generated__/BetaChainMark_updateBetaMoveMutation.graphql";
 import { useBetaMoveColors, useBetaMoveVisualPosition } from "util/svg";
 
@@ -28,6 +30,7 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey }) => {
         bodyPart
         order
         isLastInChain
+        annotation
         beta {
           id
         }
@@ -64,20 +67,6 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey }) => {
             # These are the only fields we modify
             hold {
               id
-            }
-          }
-        }
-      }
-    `);
-  const { commit: deleteBetaMove, state: deleteState } =
-    useMutation<BetaChainMark_deleteBetaMoveMutation>(graphql`
-      mutation BetaChainMark_deleteBetaMoveMutation(
-        $input: DeleteBetaMoveMutationInput!
-      ) {
-        deleteBetaMove(input: $input) {
-          betaMove {
-            beta {
-              ...BetaEditor_betaNode # Refetch to update UI
             }
           }
         }
@@ -145,6 +134,7 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey }) => {
   const [highlightedMove, setHighlightedMove] = useContext(
     EditorHighlightedMoveContext
   );
+  const [, setSelectedMove] = useContext(EditorSelectedMoveContext);
   const isHighlighted = highlightedMove === moveId;
 
   drag(ref);
@@ -162,6 +152,7 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey }) => {
             ref={ref}
             bodyPart={betaMove.bodyPart}
             order={betaMove.order}
+            hasAnnotation={Boolean(betaMove.annotation)}
             primaryColor={colors.primary}
             secondaryColor={colors.secondary}
             isDragging={isDragging}
@@ -170,27 +161,36 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey }) => {
             css={isDraggingOther && { pointerEvents: "none" }}
             // Click => toggle highlight on move
             onClick={() =>
-              // If we already "own" the highlight, then toggle off
+              // If we already "own" the selection, then toggle off
               setHighlightedMove((old) => (old === moveId ? undefined : moveId))
             }
             // Double click => delete move
-            onDoubleClick={() => {
-              deleteBetaMove({
-                variables: { input: { betaMoveId: moveId } },
-                // Reset selection to prevent ghost highlight
-                onCompleted: () => setHighlightedMove(undefined),
-                // Punting on optimistic update because ordering is hard.
-              });
-            }}
+            onDoubleClick={() => setSelectedMove(moveId)}
             // Hover => highlight move
             onMouseEnter={() => setHighlightedMove(moveId)}
             onMouseLeave={() => setHighlightedMove(undefined)}
           />
         </Positioned>
       </ClickAwayListener>
-      <MutationError message="Error adding move" state={appendState} />
-      <MutationError message="Error updating move" state={updateState} />
-      <MutationError message="Error deleting move" state={deleteState} />
+
+      {betaMove.annotation && (
+        <Portal>
+          <Tooltip
+            open={isHighlighted}
+            title={betaMove.annotation}
+            placement="top-end"
+            PopperProps={{ anchorEl: ref.current }}
+          >
+            <span />
+          </Tooltip>
+        </Portal>
+      )}
+
+      <MutationErrorSnackbar message="Error adding move" state={appendState} />
+      <MutationErrorSnackbar
+        message="Error updating move"
+        state={updateState}
+      />
     </>
   );
 };

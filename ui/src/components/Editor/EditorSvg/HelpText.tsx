@@ -61,7 +61,7 @@ const HelpTextContent: React.FC<Props> = ({ helpMode }) => {
             <strong>Drag a line</strong> to add an intermediate move
           </div>
           <div>
-            <strong>Double click a move</strong> to delete
+            <strong>Double click a move</strong> to edit or delete
           </div>
           <div>
             <strong>Reorder moves</strong> in the list at right

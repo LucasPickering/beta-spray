@@ -3,7 +3,7 @@ import { graphql, useFragment } from "react-relay";
 import { BetaList_problemNode$key } from "./__generated__/BetaList_problemNode.graphql";
 import { BetaList_createBetaMutation } from "./__generated__/BetaList_createBetaMutation.graphql";
 import { BetaList_deleteBetaMutation } from "./__generated__/BetaList_deleteBetaMutation.graphql";
-import MutationError from "components/common/MutationError";
+import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
 import useMutation from "util/useMutation";
 import { queriesProblemQuery } from "../__generated__/queriesProblemQuery.graphql";
 import { problemQuery } from "../queries";
@@ -237,10 +237,19 @@ const BetaList: React.FC<Props> = ({
         </Button>
       </FormControl>
 
-      <MutationError message="Error creating beta" state={createState} />
-      <MutationError message="Error renaming beta" state={updateState} />
-      <MutationError message="Error copying beta" state={copyState} />
-      <MutationError message="Error deleting beta" state={deleteState} />
+      <MutationErrorSnackbar
+        message="Error creating beta"
+        state={createState}
+      />
+      <MutationErrorSnackbar
+        message="Error renaming beta"
+        state={updateState}
+      />
+      <MutationErrorSnackbar message="Error copying beta" state={copyState} />
+      <MutationErrorSnackbar
+        message="Error deleting beta"
+        state={deleteState}
+      />
     </>
   );
 };

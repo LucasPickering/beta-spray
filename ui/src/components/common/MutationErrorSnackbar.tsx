@@ -16,7 +16,7 @@ type MutationError = Extract<MutationState, { status: "error" }>["error"];
  * description of the use case, and the error will be rendered whenever
  * appropriate.
  */
-const MutationError: React.FC<Props> = ({ state, message }) => {
+const MutationErrorSnackbar: React.FC<Props> = ({ state, message }) => {
   // Error to be rendered. Populated when an error occurs, and maintained until
   // the next error occurs. If the underlying hook state resets or the snackbar
   // closes, we maintain the error to prevent rendering bugs.
@@ -50,4 +50,4 @@ function renderError(error: unknown): React.ReactNode {
   );
 }
 
-export default MutationError;
+export default MutationErrorSnackbar;
