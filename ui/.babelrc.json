@@ -4,13 +4,8 @@
       "@babel/react",
       { "runtime": "automatic", "importSource": "@emotion/react" }
     ],
-    "@babel/typescript",
-    [
-      "@babel/env",
-      {
-        "modules": false
-      }
-    ]
+    ["@babel/env", { "modules": false }],
+    "@babel/typescript"
   ],
   "plugins": ["@emotion", "relay"]
 }
