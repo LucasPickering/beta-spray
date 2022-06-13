@@ -5,8 +5,6 @@ name = "beta-spray-api"
 publish = false
 version = "0.1.0"
 
-[workspace]
-members = [".", "entity", "migration"]
-
 [dependencies]
-sea-orm = {version = "^0.8.0", features = ["sqlx-postgres", "runtime-tokio-rustls", "macros"]}
+sqlx = {version = "^0.5.13", features = ["runtime-tokio-rustls", "postgres", "time", "macros", "migrate"]}
+tokio = {version = "^1.19.2", features = ["macros"]}

@@ -72,6 +72,9 @@ services:
       - POSTGRES_DB=beta_spray
       - POSTGRES_USER=beta_spray
       - POSTGRES_PASSWORD=beta_spray
+    ports:
+      # Exposed so sqlx can access schema in editor
+      - "5432:5432"
 
   rust-api:
     build: ./rust-api/
