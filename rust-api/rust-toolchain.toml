@@ -1,0 +1,4 @@
+[toolchain]
+# If you update this, update the docker files too
+channel = "1.61"
+profile = "default"

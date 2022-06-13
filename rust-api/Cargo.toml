@@ -1,0 +1,12 @@
+[package]
+authors = ["Lucas Pickering <lucas@lucaspickering.me>"]
+edition = "2021"
+name = "beta-spray-api"
+publish = false
+version = "0.1.0"
+
+[workspace]
+members = [".", "entity", "migration"]
+
+[dependencies]
+sea-orm = {version = "^0.8.0", features = ["sqlx-postgres", "runtime-tokio-rustls", "macros"]}

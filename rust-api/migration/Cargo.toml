@@ -1,0 +1,9 @@
+[package]
+edition = "2021"
+name = "beta-spray-migration"
+publish = false
+version = "0.1.0"
+
+[dependencies]
+beta-spray-entity = {path = "../entity"}
+sea-orm-migration = "^0.8.0"

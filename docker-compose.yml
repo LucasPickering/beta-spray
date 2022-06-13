@@ -2,6 +2,7 @@ version: "3"
 
 volumes:
   api_poetry_cache:
+  api_cargo_target:
   ui_node_modules:
 
 services:
@@ -64,3 +65,26 @@ services:
       - ./ui:/app
       - ./api/src/schema.graphql:/app/schema.graphql
       - ui_node_modules:/app/ui/node_modules
+
+  rust-db:
+    image: postgres:14-alpine
+    environment:
+      - POSTGRES_DB=beta_spray
+      - POSTGRES_USER=beta_spray
+      - POSTGRES_PASSWORD=beta_spray
+
+  rust-api:
+    build: ./rust-api/
+    command: cargo watch -x run
+    init: true # Fixes slow shutdown
+    environment:
+      - HOST=127.0.0.1
+      - PORT=8001
+      - DATABASE_URL=postgres://beta_spray:beta_spray@rust-db/beta_spray
+    depends_on:
+      - db
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./rust-api:/app:rw
+      - api_cargo_target:/app/target:rw
