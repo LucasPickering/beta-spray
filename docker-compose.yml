@@ -78,10 +78,11 @@ services:
 
   rust-api:
     build: ./rust-api/
-    command: cargo watch -x run
+    command: cargo watch -w src -x run
     init: true # Fixes slow shutdown
+    tty: true # Colorize output
     environment:
-      - HOST=127.0.0.1
+      - HOST=0.0.0.0
       - PORT=8001
       - DATABASE_URL=postgres://beta_spray:beta_spray@rust-db/beta_spray
     depends_on:

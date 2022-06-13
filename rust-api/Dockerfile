@@ -9,4 +9,4 @@ RUN apt-get update && \
     && \
     rm -rf /var/lib/apt/lists/*
 COPY rust-toolchain.toml .
-RUN cargo install cargo-watch && cargo install sea-orm-cli
+RUN cargo install cargo-watch
