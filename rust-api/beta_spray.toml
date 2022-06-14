@@ -1,0 +1,5 @@
+host = "127.0.0.1"
+log_filter = "beta_spray_api=debug,tower_http=debug"
+port = 8000
+schema_path = "./schema.graphql"
+# Other fields provided exclusively by environment variable

@@ -13,6 +13,8 @@ split-debuginfo = "unpacked"
 async-graphql = {version = "^4.0.2"}
 async-graphql-axum = {version = "^4.0.2"}
 axum = {version = "^0.5.7"}
+figment = {version = "^0.10.6", features = ["env", "toml"]}
+serde = {version = "^1.0.137", features = ["derive"]}
 sqlx = {version = "^0.5.13", features = ["runtime-tokio-rustls", "postgres", "time", "macros", "migrate"]}
 tokio = {version = "^1.19.2", features = ["macros", "rt"]}
 tower-http = {version = "^0.3.4", features = ["trace"]}

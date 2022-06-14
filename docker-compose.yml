@@ -82,8 +82,8 @@ services:
     init: true # Fixes slow shutdown
     tty: true # Colorize output
     environment:
-      - HOST=0.0.0.0
-      - PORT=8001
+      - BETA_SPRAY_HOST=0.0.0.0
+      - BETA_SPRAY_PORT=8001
       - DATABASE_URL=postgres://beta_spray:beta_spray@rust-db/beta_spray
     depends_on:
       - db
