@@ -5,6 +5,10 @@ name = "beta-spray-api"
 publish = false
 version = "0.1.0"
 
+[profile.dev]
+# Faster compile times on Mac
+split-debuginfo = "unpacked"
+
 [dependencies]
 async-graphql = {version = "^4.0.2"}
 async-graphql-axum = {version = "^4.0.2"}

@@ -29,6 +29,11 @@ async fn main() {
 
     // GraphQL setup
     let schema = Schema::build(QueryRoot, EmptyMutation, EmptySubscription).finish();
+    // Write schema to disk so UI can access it
+    // TODO read this path from config
+    graphql::export_schema(&schema, "./schema.graphql")
+        .await
+        .unwrap();
 
     // DB setup
     let _pool = PgPoolOptions::new()
@@ -48,7 +53,7 @@ async fn main() {
     let host = env::var("HOST").unwrap();
     let port = env::var("PORT").unwrap();
     let address = format!("{host}:{port}");
-    tracing::debug!("listening on {}", address);
+    tracing::info!("Listening on {}", address);
     Server::bind(&address.parse().unwrap())
         .serve(app.into_make_service())
         .await

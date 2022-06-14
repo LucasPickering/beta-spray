@@ -1,0 +1,15 @@
+
+
+
+
+"""
+Root GraphQL query object
+"""
+type QueryRoot {
+	ass: String!
+}
+
+
+schema {
+	query: QueryRoot
+}
