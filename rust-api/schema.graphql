@@ -1,4 +1,8 @@
 
+type BoulderNode {
+	id: ID!
+}
+
 
 
 
@@ -6,7 +10,8 @@
 Root GraphQL query object
 """
 type QueryRoot {
-	ass: String!
+	boulders(after: String, before: String, first: Int, last: Int): BoulderNode!
+	boulder: BoulderNode!
 }
 
 

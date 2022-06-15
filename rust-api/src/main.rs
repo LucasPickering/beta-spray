@@ -18,6 +18,7 @@ use tracing_subscriber::prelude::*;
 
 mod config;
 mod graphql;
+mod util;
 
 #[tokio::main]
 async fn main() {
@@ -29,19 +30,21 @@ async fn main() {
         .with(tracing_subscriber::fmt::layer())
         .init();
 
-    // GraphQL setup
-    let schema =
-        Schema::build(QueryRoot, EmptyMutation, EmptySubscription).finish();
-    // Write schema to disk so UI can access it
-    // TODO read this path from config
-    graphql::export_schema(&schema, &config.schema_path)
+    // DB setup
+    let db_pool = PgPoolOptions::new()
+        .max_connections(5)
+        .connect(&config.database_url)
         .await
         .unwrap();
 
-    // DB setup
-    let _pool = PgPoolOptions::new()
-        .max_connections(5)
-        .connect(&config.database_url)
+    // GraphQL setup
+    let schema = Schema::build(QueryRoot, EmptyMutation, EmptySubscription)
+        // Make this data globally accessible
+        .data(db_pool)
+        .finish();
+    // Write schema to disk so UI can access it
+    // TODO read this path from config
+    graphql::export_schema(&schema, &config.schema_path)
         .await
         .unwrap();
 

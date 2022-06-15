@@ -1,7 +1,7 @@
 use crate::graphql::query::QueryRoot;
 use async_graphql::{EmptyMutation, EmptySubscription, Schema};
 use std::{io, path::Path};
-use tokio::{fs::File, io::AsyncWriteExt}; // for write_all()
+use tokio::{fs::File, io::AsyncWriteExt};
 
 pub mod query;
 
