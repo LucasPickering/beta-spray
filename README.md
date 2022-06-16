@@ -1,5 +1,7 @@
 # Beta Spray
 
+Available at [betaspray.net](https://betaspray.net)! Try it out, let me know what you think.
+
 ## Development
 
 Run the stack with:

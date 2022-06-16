@@ -25,18 +25,26 @@ resource "helm_release" "beta_spray" {
     value = data.terraform_remote_state.ci.outputs.static_assets_bucket
   }
 
-  # Secrets
-  set {
+  # Secret values - the actual secrets are created by helm in secrets.yml
+  set_sensitive {
     name  = "apiGcpKey"
     value = google_service_account_key.api_sa_key.private_key
   }
-  set {
+  set_sensitive {
     name  = "apiSecretKey"
     value = random_password.api_secret_key.result
   }
-  set {
+  set_sensitive {
     name  = "databasePassword"
     value = random_password.database_password.result
+  }
+  set_sensitive {
+    name  = "tlsCert"
+    value = cloudflare_origin_ca_certificate.main.certificate
+  }
+  set_sensitive {
+    name  = "tlsKey"
+    value = tls_private_key.main.private_key_pem
   }
 }
 

@@ -28,10 +28,7 @@ const CoreContent: React.FC = () => {
         <title>Beta Spray</title>
         <meta name="description" content="Create and share bouldering beta" />
         <meta property="og:type" content="website" />
-        <meta
-          property="og:url"
-          content="https://betaspray.lucaspickering.me/"
-        />
+        <meta property="og:url" content="https://betaspray.net/" />
       </Helmet>
 
       <RelayEnvironmentProvider environment={environment}>

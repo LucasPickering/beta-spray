@@ -1,5 +1,21 @@
+variable "cloudflare_api_token" {
+  description = "Cloudflare API token"
+  type        = string
+}
+
+variable "cloudflare_origin_ca_key" {
+  description = "Cloudflare Origin CA key (different from API token)"
+  type        = string
+}
+
+variable "cloudflare_zone" {
+  default     = "betaspray.net"
+  description = "Cloudflare DNS zone name"
+  type        = string
+}
+
 variable "hostname" {
-  default     = "betaspray.lucaspickering.me"
+  default     = "betaspray.net"
   description = "Address the webapp is hosted at"
   type        = string
 }

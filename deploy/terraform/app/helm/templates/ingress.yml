@@ -5,6 +5,7 @@ metadata:
   namespace: "{{ .Release.Namespace }}"
   annotations:
     kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
     nginx.ingress.kubernetes.io/upstream-vhost: "{{ .Values.staticAssetsHost }}"
     nginx.ingress.kubernetes.io/rewrite-target: "/{{ .Values.staticAssetsBucket }}/{{  .Values.versionSha  }}$uri"
@@ -15,6 +16,10 @@ metadata:
       rewrite ^/$ /index.html;
       rewrite /[^./]+$ /index.html;
 spec:
+  tls:
+    - hosts:
+        - "{{ .Values.hostname }}"
+      secretName: ssl-certificate
   rules:
     - host: "{{ .Values.hostname }}"
       http:
@@ -34,8 +39,14 @@ metadata:
   namespace: "{{ .Release.Namespace }}"
   annotations:
     kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
+    # API doesn't run HTTPS
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
 spec:
+  tls:
+    - hosts:
+        - "{{ .Values.hostname }}"
+      secretName: ssl-certificate
   rules:
     - host: "{{ .Values.hostname }}"
       http:
