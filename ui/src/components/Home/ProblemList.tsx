@@ -6,7 +6,7 @@ import BoulderImageUpload from "./BoulderImageUpload";
 import { ProblemList_problemConnection$key } from "./__generated__/ProblemList_problemConnection.graphql";
 import { ProblemList_deleteProblemMutation } from "./__generated__/ProblemList_deleteProblemMutation.graphql";
 import { ProblemList_updateProblemMutation } from "./__generated__/ProblemList_updateProblemMutation.graphql";
-import { ProblemList_createProblemMutation } from "./__generated__/ProblemList_createProblemMutation.graphql";
+import { ProblemList_createBoulderWithFriendsMutation } from "./__generated__/ProblemList_createBoulderWithFriendsMutation.graphql";
 import useMutation from "util/useMutation";
 import MutationError from "components/common/MutationError";
 import { ProblemListQuery } from "./__generated__/ProblemListQuery.graphql";
@@ -38,13 +38,13 @@ const ProblemList: React.FC<Props> = ({ problemConnectionKey }) => {
   const navigate = useNavigate();
 
   // For now, we enforce one problem per image, so auto-create the problem now
-  const { commit: createProblem, state: createState } =
-    useMutation<ProblemList_createProblemMutation>(graphql`
-      mutation ProblemList_createProblemMutation(
-        $input: CreateProblemMutationInput!
+  const { commit: createBoulderWithFriends, state: createState } =
+    useMutation<ProblemList_createBoulderWithFriendsMutation>(graphql`
+      mutation ProblemList_createBoulderWithFriendsMutation(
+        $input: CreateBoulderWithFriendsMutationInput!
         $connections: [ID!]!
       ) {
-        createProblem(input: $input) {
+        createBoulderWithFriends(input: $input) {
           problem
             @prependNode(
               connections: $connections
@@ -88,7 +88,7 @@ const ProblemList: React.FC<Props> = ({ problemConnectionKey }) => {
       <Grid item {...cardSizes}>
         <BoulderImageUpload
           onUpload={(file) => {
-            createProblem({
+            createBoulderWithFriends({
               variables: {
                 input: { imageFile: "boulderImage" },
                 connections: [problems.__id],
@@ -99,7 +99,7 @@ const ProblemList: React.FC<Props> = ({ problemConnectionKey }) => {
               // Optimistically create the new problem
               // Unfortunately no static typing here, but Relay checks at runtime
               optimisticResponse: {
-                createProblem: {
+                createBoulderWithFriends: {
                   problem: {
                     id: "",
                     name: "",
@@ -117,9 +117,11 @@ const ProblemList: React.FC<Props> = ({ problemConnectionKey }) => {
               // Redirect to the newly uploaded problem
               onCompleted(data) {
                 // This shouldn't ever be null if the mutation succeeded
-                if (data.createProblem) {
+                if (data.createBoulderWithFriends) {
                   // TODO pre-load editor query
-                  navigate(`/problems/${data.createProblem.problem.id}`);
+                  navigate(
+                    `/problems/${data.createBoulderWithFriends.problem.id}`
+                  );
                 }
               },
             });

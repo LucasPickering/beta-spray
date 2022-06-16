@@ -10,7 +10,10 @@ from core.schema.mutation.betamove import (
     InsertBetaMoveMutation,
     UpdateBetaMoveMutation,
 )
-from core.schema.mutation.boulder import CreateBoulderMutation
+from core.schema.mutation.boulder import (
+    CreateBoulderMutation,
+    CreateBoulderWithFriendsMutation,
+)
 from core.schema.mutation.hold import (
     CreateHoldMutation,
     DeleteHoldMutation,
@@ -30,6 +33,7 @@ import graphene
 
 class Mutation(graphene.ObjectType):
     create_boulder = CreateBoulderMutation.Field()
+    create_boulder_with_friends = CreateBoulderWithFriendsMutation.Field()
     create_hold = CreateHoldMutation.Field()
     relocate_hold = RelocateHoldMutation.Field()
     delete_hold = DeleteHoldMutation.Field()

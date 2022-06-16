@@ -1,26 +1,28 @@
-from core.models import Boulder, Problem
+from core.models import Problem
 from core.schema.query import BoulderNode, ProblemNode
-from core import util
 from graphene import relay
 import graphene
 
 
 class CreateProblemMutation(relay.ClientIDMutation):
     """
-    Create a new problem for a specific boulder. You can either specify an
-    existing boulder, or attach a new image to create a boulder (but not both).
+    Create a new problem for a specific boulder. If not given, a name will be
+    generated.
     """
 
     class Input:
+        boulder_id = graphene.ID(required=True)
         name = graphene.String()
-        boulder_id = graphene.ID()
-        image_file = graphene.String()
 
     problem = graphene.Field(ProblemNode, required=True)
 
     @classmethod
     def mutate_and_get_payload(
-        cls, root, info, name=None, boulder_id=None, image_file=None
+        cls,
+        root,
+        info,
+        boulder_id,
+        name=None,
     ):
         fields = {}
 
@@ -28,18 +30,13 @@ class CreateProblemMutation(relay.ClientIDMutation):
         if name is not None:
             fields["name"] = name
 
-        # TODO validate exactly one of boulder_id/image_file given
-        if boulder_id:
-            # Convert global ID to a PK
-            fields["boulder_id"] = BoulderNode.get_pk_from_global_id(
-                info, boulder_id
-            )
-        else:
-            file = util.get_request_file(info, image_file)
-            # Pass the whole object so it's pre-loaded for the return query
-            fields["boulder"] = Boulder.objects.create(image=file)
+        # Convert global ID to a PK
+        fields["boulder_id"] = BoulderNode.get_pk_from_global_id(
+            info, boulder_id
+        )
 
         problem = Problem.objects.create(**fields)
+
         return cls(problem=problem)
 
 

@@ -245,6 +245,15 @@ type Mutation {
   createBoulder(input: CreateBoulderMutationInput!): CreateBoulderMutationPayload
 
   """
+  Create a new boulder, problem, and beta together. Intended to streamline
+  the process of uploading a new boulder picture for the user.
+  
+  All initial data for the new problem and beta will be automatically
+  generated.
+  """
+  createBoulderWithFriends(input: CreateBoulderWithFriendsMutationInput!): CreateBoulderWithFriendsMutationPayload
+
+  """
   Add a hold to a boulder. Optionally, also bind the hold to a pre-existing
   problem.
   """
@@ -257,8 +266,8 @@ type Mutation {
   deleteHold(input: DeleteHoldMutationInput!): DeleteHoldMutationPayload
 
   """
-  Create a new problem for a specific boulder. You can either specify an
-  existing boulder, or attach a new image to create a boulder (but not both).
+  Create a new problem for a specific boulder. If not given, a name will be
+  generated.
   """
   createProblem(input: CreateProblemMutationInput!): CreateProblemMutationPayload
   updateProblem(input: UpdateProblemMutationInput!): UpdateProblemMutationPayload
@@ -296,6 +305,26 @@ type CreateBoulderMutationPayload {
 }
 
 input CreateBoulderMutationInput {
+  imageFile: String!
+  clientMutationId: String
+}
+
+"""
+Create a new boulder, problem, and beta together. Intended to streamline
+the process of uploading a new boulder picture for the user.
+
+All initial data for the new problem and beta will be automatically
+generated.
+"""
+type CreateBoulderWithFriendsMutationPayload {
+  boulder: BoulderNode!
+  problem: ProblemNode!
+  beta: BetaNode!
+  clientMutationId: String
+}
+
+input CreateBoulderWithFriendsMutationInput {
+  """Name of the field in the HTTP body containing the boulder image data"""
   imageFile: String!
   clientMutationId: String
 }
@@ -349,8 +378,8 @@ input DeleteHoldMutationInput {
 }
 
 """
-Create a new problem for a specific boulder. You can either specify an
-existing boulder, or attach a new image to create a boulder (but not both).
+Create a new problem for a specific boulder. If not given, a name will be
+generated.
 """
 type CreateProblemMutationPayload {
   problem: ProblemNode!
@@ -358,9 +387,8 @@ type CreateProblemMutationPayload {
 }
 
 input CreateProblemMutationInput {
+  boulderId: ID!
   name: String
-  boulderId: ID
-  imageFile: String
   clientMutationId: String
 }
 
