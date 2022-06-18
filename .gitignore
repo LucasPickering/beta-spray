@@ -5,6 +5,7 @@ __pycache__/
 build/
 node_modules/
 **/__generated__/
+.next/
 
 api/src/static/
 api/src/media/boulders/
