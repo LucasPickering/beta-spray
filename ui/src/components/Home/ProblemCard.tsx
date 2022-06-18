@@ -13,7 +13,7 @@ import {
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import { graphql, useFragment } from "react-relay";
-import { Link as RouterLink } from "react-router-dom";
+import RouterLink from "next/link";
 import {
   Edit as IconEdit,
   Delete as IconDelete,
@@ -70,23 +70,25 @@ const ProblemCard: React.FC<Props> = ({ problemKey, onEdit, onDelete }) => {
       })}
     >
       {/* TODO pre-load editor query on click */}
-      <CardActionArea component={RouterLink} to={`/problems/${problem.id}`}>
-        <CardMedia sx={{ height: 200 }}>
-          {problem.boulder.image.url ? (
-            <img
-              src={problem.boulder.image.url}
-              alt={`${problem.name} boulder`}
-              width="100%"
-              height="100%"
-              css={{ objectFit: "cover" }}
-            />
-          ) : (
-            // Empty URL indicates this object was optimistically inserted, and
-            // we're still waiting on the image URL from the server
-            <Skeleton variant="rectangular" width="100%" height="100%" />
-          )}
-        </CardMedia>
-      </CardActionArea>
+      <RouterLink href={`/problems/${problem.id}`} passHref>
+        <CardActionArea>
+          <CardMedia sx={{ height: 200 }}>
+            {problem.boulder.image.url ? (
+              <img
+                src={problem.boulder.image.url}
+                alt={`${problem.name} boulder`}
+                width="100%"
+                height="100%"
+                css={{ objectFit: "cover" }}
+              />
+            ) : (
+              // Empty URL indicates this object was optimistically inserted, and
+              // we're still waiting on the image URL from the server
+              <Skeleton variant="rectangular" width="100%" height="100%" />
+            )}
+          </CardMedia>
+        </CardActionArea>
+      </RouterLink>
 
       <CardContent>
         {editing ? (

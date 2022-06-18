@@ -1,5 +1,5 @@
-import { Link, Toolbar, Typography } from "@mui/material";
-import { Link as RouterLink } from "react-router-dom";
+import { Link, Toolbar } from "@mui/material";
+import RouterLink from "next/link";
 import React from "react";
 import Logo from "./common/Logo";
 
@@ -9,11 +9,11 @@ interface Props {
 
 const HeaderBar: React.FC<Props> = ({ children }) => (
   <Toolbar variant="dense">
-    <Typography component="h1" variant="h5">
-      <Link component={RouterLink} to="/" sx={{ textDecoration: "none" }}>
+    <RouterLink href="/" passHref>
+      <Link sx={{ textDecoration: "none" }}>
         <Logo />
       </Link>
-    </Typography>
+    </RouterLink>
 
     {children}
   </Toolbar>

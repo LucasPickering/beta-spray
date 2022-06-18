@@ -11,7 +11,7 @@ import useMutation from "util/useMutation";
 import MutationError from "components/common/MutationError";
 import { ProblemListQuery } from "./__generated__/ProblemListQuery.graphql";
 import withQuery from "util/withQuery";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/router";
 
 const cardSizes = { xs: 12, sm: 6, md: 4 };
 
@@ -35,7 +35,7 @@ const ProblemList: React.FC<Props> = ({ problemConnectionKey }) => {
     problemConnectionKey
   );
 
-  const navigate = useNavigate();
+  const router = useRouter();
 
   // For now, we enforce one problem per image, so auto-create the problem now
   const { commit: createBoulderWithFriends, state: createState } =
@@ -119,7 +119,7 @@ const ProblemList: React.FC<Props> = ({ problemConnectionKey }) => {
                 // This shouldn't ever be null if the mutation succeeded
                 if (data.createBoulderWithFriends) {
                   // TODO pre-load editor query
-                  navigate(
+                  router.push(
                     `/problems/${data.createBoulderWithFriends.problem.id}`
                   );
                 }
