@@ -22,6 +22,16 @@ const theme = createTheme({
         }),
       },
     },
+    MuiSvgIcon: {
+      styleOverrides: {
+        root: {
+          // SvgIcon specifies this for fill, but not stroke.
+          // See https://github.com/mui/material-ui/issues/32877
+          // (Can be removed if fixed in MUI)
+          stroke: "currentColor",
+        },
+      },
+    },
     MuiTooltip: {
       defaultProps: {
         enterTouchDelay: 0,
