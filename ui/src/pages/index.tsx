@@ -32,10 +32,9 @@ export const getServerSideProps: GetServerSideProps = async () => {
   return {
     props: {
       queryResponses: {
-        // TODO figure out why no type checking on vars
         problemList: await getPreloadedQuery<ProblemListQueryType>(
           ProblemListQuery,
-          { ass: 3 }
+          {}
         ),
       },
     },

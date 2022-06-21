@@ -60,17 +60,11 @@ export function createNetwork(): NetworkType {
     cacheConfig,
     uploadables
   ) => {
-    // Use cached value if possible
+    // Use cached value if possible, instead of going to the API again
     const forceFetch = cacheConfig?.force;
-    console.log("fetchResponse.cacheConfig", cacheConfig);
-    console.log("fetchResponse.operation", operation);
-    if (
-      !forceFetch &&
-      operation.cacheID &&
-      operation.operationKind === "query"
-    ) {
-      const fromCache = responseCache.get(operation.cacheID, variables);
-      console.log("fetchResponse.responseCache", responseCache, fromCache);
+    const queryID = operation.cacheID;
+    if (!forceFetch && queryID && operation.operationKind === "query") {
+      const fromCache = responseCache.get(queryID, variables);
       if (isDefined(fromCache)) {
         return Promise.resolve(fromCache);
       }

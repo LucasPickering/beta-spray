@@ -41,26 +41,26 @@ function transformProps(
   // Map query responses to the format that relay uses
   // This duplicates logic from useQueryLoader
   if (isDefined(queryResponses)) {
-    console.log("Hydrate.queryResponses", queryResponses);
     for (const [queryName, { params, variables, response }] of Object.entries(
       queryResponses
     )) {
-      const id = params.cacheID ?? "ass"; // TODO
-      environment.getNetwork().responseCache.set(id, variables, response);
-      console.log(
-        "Hydrate.responseCache",
-        environment.getNetwork().responseCache
-      );
-      // TODO: create using a function exported from react-relay package
-      queryRefs[queryName] = {
-        environment,
-        fetchKey: id,
-        fetchPolicy: "store-or-network",
-        isDisposed: false,
-        name: params.name,
-        kind: "PreloadedQuery",
-        variables,
-      };
+      const queryID = params.cacheID;
+      if (queryID) {
+        environment
+          .getNetwork()
+          .responseCache.set(queryID, variables, response);
+
+        // TODO: create using a function exported from react-relay package
+        queryRefs[queryName] = {
+          environment,
+          fetchKey: queryID,
+          fetchPolicy: "store-or-network",
+          isDisposed: false,
+          name: params.name,
+          kind: "PreloadedQuery",
+          variables,
+        };
+      }
     }
   }
 
