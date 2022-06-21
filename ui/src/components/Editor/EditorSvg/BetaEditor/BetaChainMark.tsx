@@ -5,12 +5,12 @@ import { EditorHighlightedMoveContext } from "util/context";
 import Positioned from "../Positioned";
 import BetaMoveIcon from "./BetaMoveIcon";
 import { graphql, useFragment } from "react-relay";
-import { BetaChainMark_betaMoveNode$key } from "./__generated__/BetaChainMark_betaMoveNode.graphql";
+import { BetaChainMark_betaMoveNode$key } from "__generated__/BetaChainMark_betaMoveNode.graphql";
 import useMutation from "util/useMutation";
 import MutationError from "components/common/MutationError";
-import { BetaChainMark_appendBetaMoveMutation } from "./__generated__/BetaChainMark_appendBetaMoveMutation.graphql";
-import { BetaChainMark_deleteBetaMoveMutation } from "./__generated__/BetaChainMark_deleteBetaMoveMutation.graphql";
-import { BetaChainMark_updateBetaMoveMutation } from "./__generated__/BetaChainMark_updateBetaMoveMutation.graphql";
+import { BetaChainMark_appendBetaMoveMutation } from "__generated__/BetaChainMark_appendBetaMoveMutation.graphql";
+import { BetaChainMark_deleteBetaMoveMutation } from "__generated__/BetaChainMark_deleteBetaMoveMutation.graphql";
+import { BetaChainMark_updateBetaMoveMutation } from "__generated__/BetaChainMark_updateBetaMoveMutation.graphql";
 import { useBetaMoveColors, useBetaMoveVisualPosition } from "util/svg";
 
 interface Props {

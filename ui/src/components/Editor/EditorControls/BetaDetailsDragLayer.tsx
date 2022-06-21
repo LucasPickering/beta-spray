@@ -2,7 +2,7 @@ import { Portal } from "@mui/material";
 import React from "react";
 import { useDragLayer } from "util/dnd";
 import BetaDetailsDragPreview from "./BetaDetailsDragPreview";
-import { BetaDetailsDragPreview_betaMoveNodeConnection$key } from "./__generated__/BetaDetailsDragPreview_betaMoveNodeConnection.graphql";
+import { BetaDetailsDragPreview_betaMoveNodeConnection$key } from "__generated__/BetaDetailsDragPreview_betaMoveNodeConnection.graphql";
 
 const layerStyles: React.CSSProperties = {
   position: "fixed",

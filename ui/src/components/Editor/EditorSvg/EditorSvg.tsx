@@ -6,7 +6,7 @@ import {
 } from "util/context";
 import { graphql, PreloadedQuery, useFragment } from "react-relay";
 import { useZoomPan } from "util/zoom";
-import { queriesProblemQuery } from "../__generated__/queriesProblemQuery.graphql";
+import { queriesProblemQuery } from ".__generated__/queriesProblemQuery.graphql";
 import NotFound from "components/common/NotFound";
 import BetaEditor from "./BetaEditor/BetaEditor";
 import BoulderImage from "./BoulderImage";
@@ -14,13 +14,13 @@ import SvgDragLayer from "./SvgDragLayer";
 import HoldEditor from "./HoldEditor/HoldEditor";
 import HoldMarks from "./HoldEditor/HoldMarks";
 import PanZone from "./PanZone";
-import { EditorSvg_problemNode$key } from "./__generated__/EditorSvg_problemNode.graphql";
+import { EditorSvg_problemNode$key } from "__generated__/EditorSvg_problemNode.graphql";
 import { usePinch } from "@use-gesture/react";
 import { isDefined } from "util/func";
 import { problemQuery } from "../queries";
 import withQuery from "util/withQuery";
 import Loading from "components/common/Loading";
-import { queriesBetaQuery } from "../__generated__/queriesBetaQuery.graphql";
+import { queriesBetaQuery } from ".__generated__/queriesBetaQuery.graphql";
 
 interface Props {
   problemKey: EditorSvg_problemNode$key;

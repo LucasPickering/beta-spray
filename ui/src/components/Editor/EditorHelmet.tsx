@@ -3,8 +3,8 @@ import { Helmet } from "react-helmet-async";
 import { graphql, useFragment } from "react-relay";
 import withQuery from "util/withQuery";
 import { problemQuery } from "./queries";
-import { EditorHelmet_problemNode$key } from "./__generated__/EditorHelmet_problemNode.graphql";
-import { queriesProblemQuery } from "./__generated__/queriesProblemQuery.graphql";
+import { EditorHelmet_problemNode$key } from "__generated__/EditorHelmet_problemNode.graphql";
+import { queriesProblemQuery } from "__generated__/queriesProblemQuery.graphql";
 
 interface Props {
   problemKey: EditorHelmet_problemNode$key;

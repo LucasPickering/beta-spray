@@ -1,18 +1,19 @@
 import { Grid, Typography } from "@mui/material";
-import React, { useEffect } from "react";
-import { useQueryLoader } from "react-relay";
+import React from "react";
+import { PreloadedQuery } from "react-relay";
+import type { ProblemListQuery as ProblemListQueryType } from "__generated__/ProblemListQuery.graphql";
+import ProblemListQuery from "__generated__/ProblemListQuery.graphql";
+import { getPreloadedQuery } from "util/environment";
+import { GetServerSideProps } from "next";
 import ProblemList from "components/Home/ProblemList";
-import type { ProblemListQuery as ProblemListQueryType } from "components/Home/__generated__/ProblemListQuery.graphql";
-import ProblemListQuery from "components/Home/__generated__/ProblemListQuery.graphql";
 
-const Index: React.FC = () => {
-  const [queryRef, loadQuery] =
-    useQueryLoader<ProblemListQueryType>(ProblemListQuery);
+interface Props {
+  queryRefs: {
+    problemList: PreloadedQuery<ProblemListQueryType>;
+  };
+}
 
-  useEffect(() => {
-    loadQuery({});
-  }, [loadQuery]);
-
+const Index: React.FC<Props> = ({ queryRefs }) => {
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
@@ -21,9 +22,24 @@ const Index: React.FC = () => {
         </Typography>
       </Grid>
 
-      <ProblemList queryRef={queryRef} />
+      <ProblemList queryRef={queryRefs.problemList} />
     </Grid>
   );
+};
+
+// TODO generic typing on this
+export const getServerSideProps: GetServerSideProps = async () => {
+  return {
+    props: {
+      queryResponses: {
+        // TODO figure out why no type checking on vars
+        problemList: await getPreloadedQuery<ProblemListQueryType>(
+          ProblemListQuery,
+          { ass: 3 }
+        ),
+      },
+    },
+  };
 };
 
 export default Index;

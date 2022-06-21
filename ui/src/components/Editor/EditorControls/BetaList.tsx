@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
 import { graphql, useFragment } from "react-relay";
-import { BetaList_problemNode$key } from "./__generated__/BetaList_problemNode.graphql";
-import { BetaList_createBetaMutation } from "./__generated__/BetaList_createBetaMutation.graphql";
-import { BetaList_deleteBetaMutation } from "./__generated__/BetaList_deleteBetaMutation.graphql";
+import { BetaList_problemNode$key } from "__generated__/BetaList_problemNode.graphql";
+import { BetaList_createBetaMutation } from "__generated__/BetaList_createBetaMutation.graphql";
+import { BetaList_deleteBetaMutation } from "__generated__/BetaList_deleteBetaMutation.graphql";
 import MutationError from "components/common/MutationError";
 import useMutation from "util/useMutation";
-import { queriesProblemQuery } from "../__generated__/queriesProblemQuery.graphql";
+import { queriesProblemQuery } from ".__generated__/queriesProblemQuery.graphql";
 import { problemQuery } from "../queries";
 import withQuery from "util/withQuery";
 import {
@@ -18,8 +18,8 @@ import {
 } from "@mui/material";
 import { Add as IconAdd } from "@mui/icons-material";
 import BetaListItem from "./BetaListItem";
-import { BetaList_copyBetaMutation } from "./__generated__/BetaList_copyBetaMutation.graphql";
-import { BetaList_updateBetaMutation } from "./__generated__/BetaList_updateBetaMutation.graphql";
+import { BetaList_copyBetaMutation } from "__generated__/BetaList_copyBetaMutation.graphql";
+import { BetaList_updateBetaMutation } from "__generated__/BetaList_updateBetaMutation.graphql";
 
 interface Props {
   problemKey: BetaList_problemNode$key;

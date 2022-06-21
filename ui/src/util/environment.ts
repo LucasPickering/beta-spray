@@ -4,15 +4,91 @@ import {
   RecordSource,
   Store,
   FetchFunction,
+  QueryResponseCache,
+  GraphQLResponse,
+  RequestParameters,
+  Variables,
+  UploadableMap,
+  ConcreteRequest,
+  OperationType,
+  VariablesOf,
 } from "relay-runtime";
+import { Network as NetworkType } from "relay-runtime/lib/network/RelayNetworkTypes";
 import { HTTPError } from "./error";
+import { isDefined } from "./func";
 
-const fetchQuery: FetchFunction = (
-  operation,
-  variables,
-  cacheConfig,
-  uploadables
-) => {
+const IS_SERVER = typeof window === typeof undefined;
+const HOST = IS_SERVER ? process.env.BETA_SPRAY_API_HOST ?? "" : "";
+// Enable if you're having a rough time
+const CLIENT_DEBUG = false;
+const SERVER_DEBUG = false;
+
+export interface QueryResponse {
+  params: ConcreteRequest["params"];
+  variables: Variables;
+  response: GraphQLResponse;
+}
+
+export function createEnvironment(): Environment {
+  const network = createNetwork();
+  const environment = new Environment({
+    network,
+    store: new Store(new RecordSource(), {}),
+    isServer: IS_SERVER,
+    log(event) {
+      if ((IS_SERVER && SERVER_DEBUG) || (!IS_SERVER && CLIENT_DEBUG)) {
+        // eslint-disable-next-line no-console
+        console.debug("[relay environment event]", event);
+      }
+    },
+  });
+
+  environment.getNetwork().responseCache = network.responseCache;
+
+  return environment;
+}
+
+export function createNetwork(): NetworkType {
+  const responseCache = new QueryResponseCache({
+    size: 100,
+    ttl: 60 * 1000, // 1 minute
+  });
+
+  const fetchResponse: FetchFunction = async (
+    operation,
+    variables,
+    cacheConfig,
+    uploadables
+  ) => {
+    // Use cached value if possible
+    const forceFetch = cacheConfig?.force;
+    console.log("fetchResponse.cacheConfig", cacheConfig);
+    console.log("fetchResponse.operation", operation);
+    if (
+      !forceFetch &&
+      operation.cacheID &&
+      operation.operationKind === "query"
+    ) {
+      const fromCache = responseCache.get(operation.cacheID, variables);
+      console.log("fetchResponse.responseCache", responseCache, fromCache);
+      if (isDefined(fromCache)) {
+        return Promise.resolve(fromCache);
+      }
+    }
+
+    return fetchQuery(operation, variables, uploadables);
+  };
+
+  const network = Network.create(fetchResponse);
+  network.responseCache = responseCache;
+  return network;
+}
+
+async function fetchQuery(
+  operation: RequestParameters,
+  variables: Variables,
+  uploadables?: UploadableMap | null
+): Promise<GraphQLResponse> {
   const request: RequestInit = {
     method: "POST",
     headers: {
@@ -41,28 +117,32 @@ const fetchQuery: FetchFunction = (
     });
   }
 
-  return fetch("/api/graphql", request)
-    .then((response) => {
-      // An HTTP error indicates something went wrong below GQL on the stack,
-      // so raise that as an exception
-      if (response.status >= 400) {
-        throw new HTTPError(response);
-      }
+  try {
+    const response = await fetch(`${HOST}/api/graphql`, request);
+    // An HTTP error indicates something went wrong below GQL on the stack,
+    // so raise that as an exception
+    if (response.status >= 400) {
+      throw new HTTPError(response);
+    }
 
-      return response.json();
-    })
-    .catch((error) => {
-      // eslint-disable-next-line no-console
-      console.error("API request error", error);
-      // Re-throw so this can be caught by useMutation. ErrorBoundary should
-      // catch for data queries
-      throw error;
-    });
-};
+    return response.json();
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error("API request error", error);
+    // Re-throw so this can be caught by useMutation. ErrorBoundary should
+    // catch for data queries
+    throw error;
+  }
+}
 
-const environment = new Environment({
-  network: Network.create(fetchQuery),
-  store: new Store(new RecordSource()),
-});
-
-export default environment;
+export async function getPreloadedQuery<TQuery extends OperationType>(
+  { params }: ConcreteRequest,
+  variables: VariablesOf<TQuery>
+): Promise<QueryResponse> {
+  const response = await fetchQuery(params, variables);
+  return {
+    params,
+    variables,
+    response,
+  };
+}

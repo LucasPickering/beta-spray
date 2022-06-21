@@ -13,7 +13,7 @@ import {
 import { formatBodyPart, useBetaMoveColors } from "util/svg";
 import { isDefined } from "util/func";
 import { graphql, useFragment } from "react-relay";
-import { BetaMoveListItem_betaMoveNode$key } from "./__generated__/BetaMoveListItem_betaMoveNode.graphql";
+import { BetaMoveListItem_betaMoveNode$key } from "__generated__/BetaMoveListItem_betaMoveNode.graphql";
 
 interface Props extends React.ComponentProps<typeof ListItem> {
   betaMoveKey: BetaMoveListItem_betaMoveNode$key;

@@ -19,7 +19,7 @@ import {
   Delete as IconDelete,
   Done as IconDone,
 } from "@mui/icons-material";
-import { ProblemCard_problemNode$key } from "./__generated__/ProblemCard_problemNode.graphql";
+import { ProblemCard_problemNode$key } from "__generated__/ProblemCard_problemNode.graphql";
 
 interface Props {
   problemKey: ProblemCard_problemNode$key;

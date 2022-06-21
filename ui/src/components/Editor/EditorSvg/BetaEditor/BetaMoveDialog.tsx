@@ -5,9 +5,9 @@ import useMutation from "util/useMutation";
 import { graphql, useFragment } from "react-relay";
 import MutationError from "components/common/MutationError";
 import { EditorSelectedHoldContext } from "util/context";
-import { BetaMoveDialog_appendBetaMoveMutation } from "./__generated__/BetaMoveDialog_appendBetaMoveMutation.graphql";
+import { BetaMoveDialog_appendBetaMoveMutation } from "__generated__/BetaMoveDialog_appendBetaMoveMutation.graphql";
 import { assertIsDefined } from "util/func";
-import { BetaMoveDialog_betaNode$key } from "./__generated__/BetaMoveDialog_betaNode.graphql";
+import { BetaMoveDialog_betaNode$key } from "__generated__/BetaMoveDialog_betaNode.graphql";
 
 interface Props {
   betaKey: BetaMoveDialog_betaNode$key;

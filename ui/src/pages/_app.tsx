@@ -1,12 +1,13 @@
-import React from "react";
+import React, { Suspense, useMemo } from "react";
 import { AppProps } from "next/app";
-import environment from "util/environment";
+import { createEnvironment } from "util/environment";
 import { RelayEnvironmentProvider } from "react-relay";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import theme from "util/theme";
 import { HelmetProvider, Helmet } from "react-helmet-async";
 import { NextPage } from "next";
 import PageLayout from "components/PageLayout";
+import Hydrate from "components/Hydrate";
 
 /**
  * Support additional metadata fields defined on page components
@@ -22,32 +23,32 @@ interface Props extends AppProps {
   Component: NextPageExtended;
 }
 
-const App: React.FC<Props> = ({ Component, pageProps }) => (
-  <HelmetProvider>
-    {/* Default metadata, overriden by some pages */}
-    <Helmet>
-      <title>Beta Spray</title>
-      <meta name="description" content="Create and share bouldering beta" />
-      <meta property="og:type" content="website" />
-      <meta property="og:url" content="https://betaspray.net/" />
-    </Helmet>
+const App: React.FC<Props> = ({ Component, pageProps }) => {
+  // Initialize relay environment
+  const environment = useMemo(() => createEnvironment(), []);
 
-    <RelayEnvironmentProvider environment={environment}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
+  return (
+    <HelmetProvider>
+      {/* Default metadata, overriden by some pages */}
+      <Helmet>
+        <title>Beta Spray</title>
+        <meta name="description" content="Create and share bouldering beta" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://betaspray.net/" />
+      </Helmet>
 
-        {/* Skip the page wrapper for fullscreen pages */}
-        {Component.isFullscreen ? (
-          <Component {...pageProps} />
-        ) : (
-          <PageLayout>
-            {" "}
-            <Component {...pageProps} />
-          </PageLayout>
-        )}
-      </ThemeProvider>
-    </RelayEnvironmentProvider>
-  </HelmetProvider>
-);
+      <Suspense fallback={null}>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <RelayEnvironmentProvider environment={environment}>
+            <PageLayout fullscreen={Component.isFullscreen}>
+              <Hydrate Component={Component} props={pageProps} />
+            </PageLayout>
+          </RelayEnvironmentProvider>
+        </ThemeProvider>
+      </Suspense>
+    </HelmetProvider>
+  );
+};
 
 export default App;

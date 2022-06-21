@@ -2,7 +2,7 @@ import React from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
 import HoldMark from "./HoldMark";
-import { HoldMarks_holdConnection$key } from "./__generated__/HoldMarks_holdConnection.graphql";
+import { HoldMarks_holdConnection$key } from "__generated__/HoldMarks_holdConnection.graphql";
 
 interface Props {
   holdConnectionKey: HoldMarks_holdConnection$key;

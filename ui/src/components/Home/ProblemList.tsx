@@ -3,13 +3,13 @@ import React from "react";
 import { graphql, useFragment } from "react-relay";
 import ProblemCard from "./ProblemCard";
 import BoulderImageUpload from "./BoulderImageUpload";
-import { ProblemList_problemConnection$key } from "./__generated__/ProblemList_problemConnection.graphql";
-import { ProblemList_deleteProblemMutation } from "./__generated__/ProblemList_deleteProblemMutation.graphql";
-import { ProblemList_updateProblemMutation } from "./__generated__/ProblemList_updateProblemMutation.graphql";
-import { ProblemList_createBoulderWithFriendsMutation } from "./__generated__/ProblemList_createBoulderWithFriendsMutation.graphql";
+import { ProblemList_problemConnection$key } from "__generated__/ProblemList_problemConnection.graphql";
+import { ProblemList_deleteProblemMutation } from "__generated__/ProblemList_deleteProblemMutation.graphql";
+import { ProblemList_updateProblemMutation } from "__generated__/ProblemList_updateProblemMutation.graphql";
+import { ProblemList_createBoulderWithFriendsMutation } from "__generated__/ProblemList_createBoulderWithFriendsMutation.graphql";
+import { ProblemListQuery } from "__generated__/ProblemListQuery.graphql";
 import useMutation from "util/useMutation";
 import MutationError from "components/common/MutationError";
-import { ProblemListQuery } from "./__generated__/ProblemListQuery.graphql";
 import withQuery from "util/withQuery";
 import { useRouter } from "next/router";
 

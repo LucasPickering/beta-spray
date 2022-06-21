@@ -21,7 +21,7 @@ import {
 } from "@mui/icons-material";
 import React, { useState } from "react";
 import { graphql, useFragment } from "react-relay";
-import { BetaListItem_betaNode$key } from "./__generated__/BetaListItem_betaNode.graphql";
+import { BetaListItem_betaNode$key } from "__generated__/BetaListItem_betaNode.graphql";
 
 interface Props {
   betaKey: BetaListItem_betaNode$key;

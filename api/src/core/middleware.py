@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 class ErrorMiddleware:
     """
-    Graphene middleware to properly forward errors. Note: this is *not* Django
+    *Graphene* middleware to properly forward errors. Note: this is *not* Django
     middleware!
     """
 
@@ -22,7 +22,7 @@ class ErrorMiddleware:
 
 class TimeDelayMiddleware:
     """
-    Development middleware to simulate latency in API calls. Useful for
+    *Django* development middleware to simulate latency in API calls. Useful for
     testing UI performance/layout shift, since throttle individual URLs isn't
     possible via browser tools.
     """

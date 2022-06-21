@@ -1,14 +1,14 @@
 import React, { useMemo } from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
-import { BetaEditor_betaNode$key } from "./__generated__/BetaEditor_betaNode.graphql";
+import { BetaEditor_betaNode$key } from "__generated__/BetaEditor_betaNode.graphql";
 import BetaMoveDialog from "./BetaMoveDialog";
 import { groupBy } from "util/func";
 import BodyState from "./BodyState";
 import BetaChainLine from "./BetaChainLine";
 import BetaChainMark from "./BetaChainMark";
 import withQuery from "util/withQuery";
-import { queriesBetaQuery } from "components/Editor/__generated__/queriesBetaQuery.graphql";
+import { queriesBetaQuery } from "__generated__/queriesBetaQuery.graphql";
 import { betaQuery } from "components/Editor/queries";
 import { getBetaMoveColors, getBetaMoveVisualPositions } from "util/svg";
 import { BetaContext } from "util/context";

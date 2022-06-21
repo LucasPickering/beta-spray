@@ -3,7 +3,7 @@ import React, { useContext } from "react";
 import { graphql, useFragment } from "react-relay";
 import { EditorHighlightedMoveContext } from "util/context";
 import { BodyPart, OverlayPosition, useBetaMoveVisualPosition } from "util/svg";
-import { BodyState_betaMoveNodeConnection$key } from "./__generated__/BodyState_betaMoveNodeConnection.graphql";
+import { BodyState_betaMoveNodeConnection$key } from "__generated__/BodyState_betaMoveNodeConnection.graphql";
 
 interface Props {
   betaMoveConnectionKey: BodyState_betaMoveNodeConnection$key;

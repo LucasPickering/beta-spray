@@ -2,7 +2,7 @@ import React from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
 import HoldMark from "./HoldMark";
-import { HoldOverlay_holdConnection$key } from "./__generated__/HoldOverlay_holdConnection.graphql";
+import { HoldOverlay_holdConnection$key } from "__generated__/HoldOverlay_holdConnection.graphql";
 
 interface Props
   extends Pick<

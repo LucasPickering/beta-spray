@@ -3,7 +3,7 @@ import { graphql, useFragment } from "react-relay";
 import { DragItemWithKind } from "util/dnd";
 import { assertIsDefined } from "util/func";
 import BetaMoveListItem from "./BetaMoveListItem";
-import { BetaDetailsDragPreview_betaMoveNodeConnection$key } from "./__generated__/BetaDetailsDragPreview_betaMoveNodeConnection.graphql";
+import { BetaDetailsDragPreview_betaMoveNodeConnection$key } from "__generated__/BetaDetailsDragPreview_betaMoveNodeConnection.graphql";
 
 interface Props {
   betaMoveConnectionKey: BetaDetailsDragPreview_betaMoveNodeConnection$key;

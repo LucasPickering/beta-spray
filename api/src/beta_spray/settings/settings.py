@@ -149,6 +149,10 @@ LOGGING = {
             "level": "DEBUG",
             "handlers": ["console"],
         },
+        "django.server": {
+            "level": "INFO",
+            "handlers": ["console"],
+        },
         "django.db.backends": {
             # Set to DEBUG to log DB queries
             "level": "INFO",

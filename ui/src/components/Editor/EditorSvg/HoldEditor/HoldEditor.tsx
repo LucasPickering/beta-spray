@@ -6,10 +6,10 @@ import useMutation from "util/useMutation";
 import { useDOMToSVGPosition } from "util/svg";
 import HoldEditorDropZone from "./HoldEditorDropZone";
 import HoldOverlay from "./HoldOverlay";
-import { HoldEditor_createHoldMutation } from "./__generated__/HoldEditor_createHoldMutation.graphql";
-import { HoldEditor_deleteHoldMutation } from "./__generated__/HoldEditor_deleteHoldMutation.graphql";
-import { HoldEditor_problemNode$key } from "./__generated__/HoldEditor_problemNode.graphql";
-import { HoldEditor_relocateHoldMutation } from "./__generated__/HoldEditor_relocateHoldMutation.graphql";
+import { HoldEditor_createHoldMutation } from "__generated__/HoldEditor_createHoldMutation.graphql";
+import { HoldEditor_deleteHoldMutation } from "__generated__/HoldEditor_deleteHoldMutation.graphql";
+import { HoldEditor_problemNode$key } from "__generated__/HoldEditor_problemNode.graphql";
+import { HoldEditor_relocateHoldMutation } from "__generated__/HoldEditor_relocateHoldMutation.graphql";
 
 interface Props {
   problemKey: HoldEditor_problemNode$key;

@@ -30,6 +30,7 @@ module.exports = {
     },
   },
   rules: {
+    eqeqeq: "error",
     "no-console": "warn",
     "no-unused-vars": "off",
     "object-shorthand": "error",

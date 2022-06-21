@@ -4,15 +4,15 @@ import BetaDetailsMove from "./BetaDetailsMove";
 import {
   BetaDetails_betaNode$data,
   BetaDetails_betaNode$key,
-} from "./__generated__/BetaDetails_betaNode.graphql";
-import { BetaDetails_deleteBetaMoveMutation } from "./__generated__/BetaDetails_deleteBetaMoveMutation.graphql";
+} from "__generated__/BetaDetails_betaNode.graphql";
+import { BetaDetails_deleteBetaMoveMutation } from "__generated__/BetaDetails_deleteBetaMoveMutation.graphql";
 import { FormLabel, List, Skeleton, Typography } from "@mui/material";
 import { moveArrayElement } from "util/func";
-import { BetaDetails_updateBetaMoveMutation } from "./__generated__/BetaDetails_updateBetaMoveMutation.graphql";
+import { BetaDetails_updateBetaMoveMutation } from "__generated__/BetaDetails_updateBetaMoveMutation.graphql";
 import { BetaContext, EditorModeContext } from "util/context";
 import useMutation from "util/useMutation";
 import MutationError from "components/common/MutationError";
-import { queriesBetaQuery } from "../__generated__/queriesBetaQuery.graphql";
+import { queriesBetaQuery } from ".__generated__/queriesBetaQuery.graphql";
 import { betaQuery } from "../queries";
 import withQuery from "util/withQuery";
 import { getBetaMoveColors } from "util/svg";

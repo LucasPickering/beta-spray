@@ -2,8 +2,8 @@ import { Grid, Typography } from "@mui/material";
 import React, { useEffect } from "react";
 import { useQueryLoader } from "react-relay";
 import ProblemList from "./ProblemList";
-import type { ProblemListQuery as ProblemListQueryType } from "./__generated__/ProblemListQuery.graphql";
-import ProblemListQuery from "./__generated__/ProblemListQuery.graphql";
+import type { ProblemListQuery as ProblemListQueryType } from "__generated__/ProblemListQuery.graphql";
+import ProblemListQuery from "__generated__/ProblemListQuery.graphql";
 
 const Home: React.FC = () => {
   const [queryRef, loadQuery] =
