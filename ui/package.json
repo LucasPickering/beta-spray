@@ -26,7 +26,6 @@
     "babel-loader": "^8.2.5",
     "babel-plugin-relay": "^14.0.0",
     "browser-image-compression": "^2.0.0",
-    "dayjs": "^1.11.3",
     "eslint": "^8.17.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-config-react": "^1.1.7",

@@ -10,7 +10,6 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import { graphql, useFragment } from "react-relay";
 import RouterLink from "next/link";
@@ -105,7 +104,11 @@ const ProblemCard: React.FC<Props> = ({ problemKey, onEdit, onDelete }) => {
           </Typography>
         )}
         <Typography variant="subtitle1" component="span" color="text.secondary">
-          {dayjs(problem.createdAt).format("LLL")}
+          {new Date(problem.createdAt).toLocaleDateString(
+            // TODO read locale from HTTP header for SSR
+            undefined,
+            { dateStyle: "long" }
+          )}
         </Typography>
       </CardContent>
 

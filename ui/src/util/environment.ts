@@ -18,7 +18,7 @@ import { HTTPError } from "./error";
 import { isDefined } from "./func";
 
 const IS_SERVER = typeof window === typeof undefined;
-const HOST = IS_SERVER ? process.env.BETA_SPRAY_API_HOST ?? "" : "";
+const HOST = process.env.BETA_SPRAY_API_HOST ?? "";
 // Enable if you're having a rough time
 const CLIENT_DEBUG = false;
 const SERVER_DEBUG = false;
