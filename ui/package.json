@@ -46,8 +46,8 @@
     "start:prd": "next start",
     "prebuild": "npm run clean && npm run relay",
     "build": "next build",
+    "build:analyze": "ANALYZE=true next build",
     "check": "npm run type-check && npm run lint",
-    "analyze": "WEBPACK_BUNDLE_ANALYZER_MODE=server npm run build",
     "lint": "eslint src/**/*.{ts,tsx}",
     "lint:fix": "npm run lint -- --fix",
     "clean": "rm -rf build/",
@@ -68,5 +68,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@next/bundle-analyzer": "^12.1.6"
   }
 }

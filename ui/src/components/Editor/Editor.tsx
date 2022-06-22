@@ -74,12 +74,11 @@ const Editor: React.FC<Props> = ({ problemId, betaId, queryRefs }) => {
     (betaId: string | undefined) => {
       setSelectedBeta(betaId);
       // Navigation doesn't really change the page, so overwrite in history
-      // TODO uncomment
-      // router.replace(
-      //   betaId
-      //     ? `/problems/${problemId}/beta/${betaId}`
-      //     : `/problems/${problemId}`
-      // );
+      router.replace(
+        betaId
+          ? `/problems/${problemId}/beta/${betaId}`
+          : `/problems/${problemId}`
+      );
     },
     [router, problemId]
   );

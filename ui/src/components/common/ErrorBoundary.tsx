@@ -10,6 +10,7 @@ interface State {
   error?: Error;
 }
 
+// TODO use this
 class ErrorBoundary extends React.Component<Props, State> {
   static defaultProps: Partial<Props> = {
     fallback: <ErrorMessage />,

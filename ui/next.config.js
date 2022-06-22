@@ -1,24 +1,26 @@
-// @ts-check
+const withBundleAnalyzer = require("@next/bundle-analyzer")({
+  enabled: process.env.ANALYZE === "true",
+});
 
-/**
- * @type {import('next').NextConfig}
- **/
 const nextConfig = {
   reactStrictMode: true,
   compiler: {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore 2322
     relay: require("./relay.config"),
   },
   async rewrites() {
-    return [
-      // Proxy API requests
-      {
-        source: "/api/:path*",
-        destination: `${process.env.BETA_SPRAY_API_HOST}/api/:path*`, // Proxy to Backend
-      },
-    ];
+    // Only proxy requests to API host if defined. We don't want to do this in
+    // prod because nginx takes care of it there
+    const apiHost = process.env.BETA_SPRAY_API_HOST;
+    return apiHost
+      ? [
+          // Proxy API requests
+          {
+            source: "/api/:path*",
+            destination: `${apiHost}/api/:path*`, // Proxy to Backend
+          },
+        ]
+      : [];
   },
 };
 
-module.exports = nextConfig;
+module.exports = withBundleAnalyzer(nextConfig);
