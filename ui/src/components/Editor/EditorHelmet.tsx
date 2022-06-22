@@ -1,10 +1,10 @@
 import React from "react";
-import { Helmet } from "react-helmet-async";
 import { graphql, useFragment } from "react-relay";
 import withQuery from "util/withQuery";
 import { problemQuery } from "./queries";
 import { EditorHelmet_problemNode$key } from "__generated__/EditorHelmet_problemNode.graphql";
 import { queriesProblemQuery } from "__generated__/queriesProblemQuery.graphql";
+import Head from "next/head";
 
 interface Props {
   problemKey: EditorHelmet_problemNode$key;
@@ -13,7 +13,7 @@ interface Props {
 /**
  * Invisible element to update HTML head tag for the editor
  */
-const EditorHelmet: React.FC<Props> = ({ problemKey }) => {
+const EditorHead: React.FC<Props> = ({ problemKey }) => {
   const problem = useFragment(
     graphql`
       fragment EditorHelmet_problemNode on ProblemNode {
@@ -29,10 +29,10 @@ const EditorHelmet: React.FC<Props> = ({ problemKey }) => {
   );
 
   return (
-    <Helmet>
+    <Head>
       <title>{problem.name} | Beta Spray</title>
       <meta property="og:image" content={problem.boulder.image.url} />
-    </Helmet>
+    </Head>
   );
 };
 
@@ -41,4 +41,4 @@ export default withQuery<queriesProblemQuery, Props>({
   dataToProps: (data) => data.problem && { problemKey: data.problem },
   // This component doesn't render anything visible
   fallbackElement: null,
-})(EditorHelmet);
+})(EditorHead);

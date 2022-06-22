@@ -17,7 +17,7 @@ import BetaList from "./EditorControls/BetaList";
 import EditorControls from "./EditorControls/EditorControls";
 import EditorSvg from "./EditorSvg/EditorSvg";
 import HelpText from "./EditorSvg/HelpText";
-import EditorHelmet from "./EditorHelmet";
+import EditorHead from "./EditorHelmet";
 import ProblemName from "./EditorControls/ProblemName";
 import ModeButton from "./EditorControls/ModeButton";
 import { PreloadedQuery } from "react-relay";
@@ -99,7 +99,7 @@ const Editor: React.FC<Props> = ({ problemId, betaId, queryRefs }) => {
       backend={TouchBackend}
       options={{ enableTouchEvents: true, enableMouseEvents: true }}
     >
-      <EditorHelmet queryRef={queryRefs.problem} />
+      <EditorHead queryRef={queryRefs.problem} />
 
       <EditorModeContext.Provider value={editorModeState}>
         <EditorSelectedHoldContext.Provider value={selectedHoldState}>

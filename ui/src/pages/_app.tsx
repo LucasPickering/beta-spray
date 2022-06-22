@@ -4,11 +4,11 @@ import { createEnvironment } from "util/environment";
 import { RelayEnvironmentProvider } from "react-relay";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import theme from "util/theme";
-import { HelmetProvider, Helmet } from "react-helmet-async";
 import { NextPage } from "next";
 import PageLayout from "components/PageLayout";
 import Hydrate from "components/Hydrate";
 import { PageQueryRefProps } from "util/relay";
+import Head from "next/head";
 
 /**
  * Support additional metadata fields defined on page components
@@ -29,14 +29,15 @@ const App: React.FC<Props> = ({ Component, pageProps }) => {
   const environment = useMemo(() => createEnvironment(), []);
 
   return (
-    <HelmetProvider>
+    <>
       {/* Default metadata, overriden by some pages */}
-      <Helmet>
+      <Head>
         <title>Beta Spray</title>
+        {/* TODO make sure this is comprehensive */}
         <meta name="description" content="Create and share bouldering beta" />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://betaspray.net/" />
-      </Helmet>
+      </Head>
 
       <Suspense fallback={null}>
         <ThemeProvider theme={theme}>
@@ -48,7 +49,7 @@ const App: React.FC<Props> = ({ Component, pageProps }) => {
           </RelayEnvironmentProvider>
         </ThemeProvider>
       </Suspense>
-    </HelmetProvider>
+    </>
   );
 };
 

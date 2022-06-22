@@ -45,6 +45,7 @@ const BetaListItem: React.FC<Props> = ({
         name
         moves {
           edges {
+            # TODO extend connection type to include a totalLength field
             cursor
           }
         }

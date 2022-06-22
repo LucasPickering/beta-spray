@@ -50,6 +50,7 @@ const EditorSvg: React.FC<Props> = ({
         }
         ...HoldEditor_problemNode
         holds {
+          # TODO extend connection type to include a totalLength field
           edges {
             cursor
           }
