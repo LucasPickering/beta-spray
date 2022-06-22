@@ -49,6 +49,7 @@ const Editor: React.FC<Props> = ({ problemId, betaId, queryRefs }) => {
   const router = useRouter();
 
   // Read initial state values from route
+  // TODO can we eliminate this since we're only controlled by route now?
   const [selectedBeta, setSelectedBeta] = useState<string | undefined>(betaId);
 
   // ===
