@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import type { queriesProblemQuery as queriesProblemQueryType } from "__generated__/queriesProblemQuery.graphql";
 import type { queriesBetaQuery as queriesBetaQueryType } from "__generated__/queriesBetaQuery.graphql";
 import { Box, IconButton, Paper } from "@mui/material";
@@ -48,10 +48,6 @@ interface Props {
 const Editor: React.FC<Props> = ({ problemId, betaId, queryRefs }) => {
   const router = useRouter();
 
-  // Read initial state values from route
-  // TODO can we eliminate this since we're only controlled by route now?
-  const [selectedBeta, setSelectedBeta] = useState<string | undefined>(betaId);
-
   // ===
   // All 3 of these *don't* unpack the array, so they can be passed to context
   // without unnecessarily creating a new array object (and thus re-render)
@@ -63,17 +59,8 @@ const Editor: React.FC<Props> = ({ problemId, betaId, queryRefs }) => {
   // Link hovering between move list and overlay
   const highlightedMoveState = useState<string | undefined>();
 
-  // Make sure state stays in sync with the URL
-  // In most cases we should update both of these simultaneously so this hook
-  // generally doesn't do anything, but it's a backup (e.g. if user externally
-  // navigates to a different beta via bookmark, back button, etc.)
-  useEffect(() => {
-    setSelectedBeta(betaId);
-  }, [betaId]);
-
   const onSelectBeta = useCallback(
     (betaId: string | undefined) => {
-      setSelectedBeta(betaId);
       // Navigation doesn't really change the page, so overwrite in history
       router.replace(
         betaId
@@ -90,7 +77,7 @@ const Editor: React.FC<Props> = ({ problemId, betaId, queryRefs }) => {
       case "holds":
         return "editHolds";
       case "beta":
-        return selectedBeta ? "editBeta" : "noBeta";
+        return betaId ? "editBeta" : "noBeta";
     }
   })();
 
@@ -128,7 +115,7 @@ const Editor: React.FC<Props> = ({ problemId, betaId, queryRefs }) => {
                   <EditorSvg
                     queryRef={queryRefs.problem}
                     betaQueryRef={queryRefs.beta}
-                    selectedBeta={selectedBeta}
+                    selectedBeta={betaId}
                   />
                 </Box>
 
@@ -154,7 +141,7 @@ const Editor: React.FC<Props> = ({ problemId, betaId, queryRefs }) => {
                   <ModeButton />
                   <BetaList
                     queryRef={queryRefs.problem}
-                    selectedBeta={selectedBeta}
+                    selectedBeta={betaId}
                     onSelectBeta={onSelectBeta}
                   />
                   <BetaDetails queryRef={queryRefs.beta} />
