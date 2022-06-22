@@ -6,6 +6,7 @@ import ProblemListQuery from "__generated__/ProblemListQuery.graphql";
 import { getPreloadedQuery } from "util/environment";
 import { GetServerSideProps } from "next";
 import ProblemList from "components/Home/ProblemList";
+import { NextPageExtended } from "./_app";
 
 interface Props {
   queryRefs: {
@@ -13,7 +14,7 @@ interface Props {
   };
 }
 
-const Index: React.FC<Props> = ({ queryRefs }) => {
+const Index: NextPageExtended<Props> = ({ queryRefs }) => {
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>

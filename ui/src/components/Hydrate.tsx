@@ -1,12 +1,12 @@
 import React, { useMemo } from "react";
-import { NextComponentType, NextPageContext } from "next";
 import { useRelayEnvironment } from "react-relay";
 import { Environment } from "relay-runtime";
 import { QueryResponse } from "util/environment";
 import { isDefined } from "util/func";
+import { NextPageExtended } from "pages/_app";
 
 interface Props {
-  Component: NextComponentType<NextPageContext, unknown, unknown>;
+  Component: NextPageExtended<unknown>;
   props: PageQueryProps;
 }
 
@@ -15,7 +15,7 @@ export interface PageQueryProps {
 }
 
 interface OutputProps {
-  queryRefs: Record<string, unknown>;
+  queryRefs?: Record<string, unknown>;
 }
 
 // TODO comment

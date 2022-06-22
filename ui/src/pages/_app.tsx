@@ -12,7 +12,7 @@ import Hydrate from "components/Hydrate";
 /**
  * Support additional metadata fields defined on page components
  */
-type NextPageExtended = NextPage & {
+export type NextPageExtended<Props> = NextPage<Props> & {
   /**
    * If true, don't render the typicaly page layout wrapper
    */
@@ -20,7 +20,7 @@ type NextPageExtended = NextPage & {
 };
 
 interface Props extends AppProps {
-  Component: NextPageExtended;
+  Component: NextPageExtended<unknown>;
 }
 
 const App: React.FC<Props> = ({ Component, pageProps }) => {

@@ -6,6 +6,7 @@ import { getPreloadedQuery } from "util/environment";
 import { useRouter } from "next/router";
 import Editor from "components/Editor/Editor";
 import { PreloadedQuery } from "react-relay";
+import { NextPageExtended } from "pages/_app";
 
 interface RouteQuery {
   problemId: string;
@@ -18,12 +19,14 @@ interface Props {
 }
 
 // TODO comment
-const EditorWithProblemId: React.FC<Props> = ({ queryRefs }) => {
+const EditorWithProblemId: NextPageExtended<Props> = ({ queryRefs }) => {
   const router = useRouter();
   const { problemId } = router.query as RouteQuery;
 
   return <Editor problemId={problemId} queryRefs={queryRefs} />;
 };
+
+EditorWithProblemId.isFullscreen = true;
 
 export const getServerSideProps: GetServerSideProps<
   Props,

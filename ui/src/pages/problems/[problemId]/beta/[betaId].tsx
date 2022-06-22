@@ -8,6 +8,7 @@ import { getPreloadedQuery } from "util/environment";
 import { useRouter } from "next/router";
 import Editor from "components/Editor/Editor";
 import { PreloadedQuery } from "react-relay";
+import { NextPageExtended } from "pages/_app";
 
 interface RouteQuery {
   problemId: string;
@@ -22,30 +23,30 @@ interface Props {
 }
 
 // TODO comment
-const EditorWithBetaId: React.FC<Props> = ({ queryRefs }) => {
+const EditorWithBetaId: NextPageExtended<Props> = ({ queryRefs }) => {
   const router = useRouter();
   const { problemId, betaId } = router.query as RouteQuery;
 
   return <Editor problemId={problemId} betaId={betaId} queryRefs={queryRefs} />;
 };
 
+EditorWithBetaId.isFullscreen = true;
+
 export const getServerSideProps: GetServerSideProps<
   Props,
   RouteQuery
-> = async ({ params }) => {
-  return {
-    props: {
-      queryResponses: {
-        problem: await getPreloadedQuery<queriesProblemQueryType>(
-          queriesProblemQuery,
-          { problemId: params?.problemId }
-        ),
-        beta: await getPreloadedQuery<queriesBetaQueryType>(queriesBetaQuery, {
-          betaId: params?.betaId,
-        }),
-      },
+> = async ({ params }) => ({
+  props: {
+    queryResponses: {
+      problem: await getPreloadedQuery<queriesProblemQueryType>(
+        queriesProblemQuery,
+        { problemId: params?.problemId }
+      ),
+      beta: await getPreloadedQuery<queriesBetaQueryType>(queriesBetaQuery, {
+        betaId: params?.betaId,
+      }),
     },
-  };
-};
+  },
+});
 
 export default EditorWithBetaId;
