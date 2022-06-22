@@ -44,7 +44,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "core.middleware.TimeDelayMiddleware",
+    # Uncomment to test UI loading state
+    # "core.middleware.TimeDelayMiddleware",
 ]
 
 ROOT_URLCONF = "beta_spray.urls"
@@ -126,7 +127,7 @@ GRAPHENE = {
     "SCHEMA": "core.schema.schema",
     "SCHEMA_OUTPUT": "schema.graphql",
     "SCHEMA_INDENT": 2,
-    "MIDDLEWARE": ["core.middleware.ErrorMiddleware"],
+    "MIDDLEWARE": ["core.middleware.LogMiddleware"],
 }
 
 APPEND_SLASH = False
@@ -138,15 +139,26 @@ LOGGING = {
             "()": "django.utils.log.RequireDebugTrue",
         }
     },
+    "formatters": {
+        "simple": {
+            "format": "{levelname} {name} {message}",
+            "style": "{",
+        },
+    },
     "handlers": {
         "console": {
             "level": "DEBUG",
             "class": "logging.StreamHandler",
+            "formatter": "simple",
         },
     },
     "loggers": {
         "django.request": {
             "level": "DEBUG",
+            "handlers": ["console"],
+        },
+        "django.server": {
+            "level": "INFO",
             "handlers": ["console"],
         },
         "django.db.backends": {
@@ -168,7 +180,3 @@ if GS_BUCKET_NAME:
     DEFAULT_FILE_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
     # See https://django-storages.readthedocs.io/en/latest/backends/gcloud.html
     GS_DEFAULT_ACL = "publicRead"  # Use unsigned URLs for public access
-
-# Time delay setting for TimeDelayMiddleware. Useful for testing loading states
-# in the UI. Set to None/0 for no delay
-REQUEST_TIME_DELAY = None
