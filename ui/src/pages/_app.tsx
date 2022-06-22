@@ -8,6 +8,7 @@ import { HelmetProvider, Helmet } from "react-helmet-async";
 import { NextPage } from "next";
 import PageLayout from "components/PageLayout";
 import Hydrate from "components/Hydrate";
+import { PageQueryRefProps } from "util/relay";
 
 /**
  * Support additional metadata fields defined on page components
@@ -20,7 +21,7 @@ export type NextPageExtended<Props> = NextPage<Props> & {
 };
 
 interface Props extends AppProps {
-  Component: NextPageExtended<unknown>;
+  Component: NextPageExtended<PageQueryRefProps>;
 }
 
 const App: React.FC<Props> = ({ Component, pageProps }) => {

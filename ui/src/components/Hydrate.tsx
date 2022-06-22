@@ -1,21 +1,17 @@
 import React, { useMemo } from "react";
 import { useRelayEnvironment } from "react-relay";
 import { Environment } from "relay-runtime";
-import { QueryResponse } from "util/environment";
 import { isDefined } from "util/func";
 import { NextPageExtended } from "pages/_app";
+import {
+  PageQueryRefProps,
+  PageQueryResponseProps,
+  ResponsesToRefs,
+} from "util/relay";
 
 interface Props {
-  Component: NextPageExtended<unknown>;
-  props: PageQueryProps;
-}
-
-export interface PageQueryProps {
-  queryResponses?: Record<string, QueryResponse>;
-}
-
-interface OutputProps {
-  queryRefs?: Record<string, unknown>;
+  Component: NextPageExtended<PageQueryRefProps>;
+  props: PageQueryResponseProps;
 }
 
 // TODO comment
@@ -31,12 +27,12 @@ const Hydrate: React.FC<Props> = ({ Component, props }) => {
   return <Component {...transformedProps} />;
 };
 
-function transformProps(
+function transformProps<P extends PageQueryResponseProps>(
   environment: Environment,
-  props: PageQueryProps | undefined
-): OutputProps {
+  props: P | undefined
+): ResponsesToRefs<P> {
   const queryResponses = props?.queryResponses;
-  const queryRefs: OutputProps["queryRefs"] = {};
+  const queryRefs: PageQueryRefProps["queryRefs"] = {};
 
   // Map query responses to the format that relay uses
   // This duplicates logic from useQueryLoader
@@ -66,7 +62,7 @@ function transformProps(
 
   // TODO comment
 
-  return { queryRefs };
+  return { queryRefs: queryRefs as ResponsesToRefs<P>["queryRefs"] };
 }
 
 export default Hydrate;

@@ -1,16 +1,17 @@
 import React from "react";
 import type { queriesProblemQuery as queriesProblemQueryType } from "__generated__/queriesProblemQuery.graphql";
 import queriesProblemQuery from "__generated__/queriesProblemQuery.graphql";
-import { GetServerSideProps } from "next";
 import { getPreloadedQuery } from "util/environment";
 import { useRouter } from "next/router";
 import Editor from "components/Editor/Editor";
 import { PreloadedQuery } from "react-relay";
 import { NextPageExtended } from "pages/_app";
+import { assertIsDefined } from "util/func";
+import { getQueryProps, GetServerSideQueryProps } from "util/relay";
 
-interface RouteQuery {
+type RouteQuery = {
   problemId: string;
-}
+};
 
 interface Props {
   queryRefs: {
@@ -28,18 +29,16 @@ const EditorWithProblemId: NextPageExtended<Props> = ({ queryRefs }) => {
 
 EditorWithProblemId.isFullscreen = true;
 
-export const getServerSideProps: GetServerSideProps<
+export const getServerSideProps: GetServerSideQueryProps<
   Props,
   RouteQuery
-> = async ({ params }) => ({
-  props: {
-    queryResponses: {
-      problem: await getPreloadedQuery<queriesProblemQueryType>(
-        queriesProblemQuery,
-        { problemId: params?.problemId }
-      ),
-    },
-  },
-});
+> = async ({ params }) => {
+  assertIsDefined(params);
+  return getQueryProps({
+    problem: getPreloadedQuery<queriesProblemQueryType>(queriesProblemQuery, {
+      problemId: params.problemId,
+    }),
+  });
+};
 
 export default EditorWithProblemId;

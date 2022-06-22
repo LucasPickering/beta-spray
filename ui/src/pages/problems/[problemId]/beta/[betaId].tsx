@@ -3,17 +3,18 @@ import type { queriesProblemQuery as queriesProblemQueryType } from "__generated
 import type { queriesBetaQuery as queriesBetaQueryType } from "__generated__/queriesBetaQuery.graphql";
 import queriesBetaQuery from "__generated__/queriesBetaQuery.graphql";
 import queriesProblemQuery from "__generated__/queriesProblemQuery.graphql";
-import { GetServerSideProps } from "next";
 import { getPreloadedQuery } from "util/environment";
 import { useRouter } from "next/router";
 import Editor from "components/Editor/Editor";
 import { PreloadedQuery } from "react-relay";
 import { NextPageExtended } from "pages/_app";
+import { getQueryProps, GetServerSideQueryProps } from "util/relay";
+import { assertIsDefined } from "util/func";
 
-interface RouteQuery {
+type RouteQuery = {
   problemId: string;
   betaId: string;
-}
+};
 
 interface Props {
   queryRefs: {
@@ -32,21 +33,19 @@ const EditorWithBetaId: NextPageExtended<Props> = ({ queryRefs }) => {
 
 EditorWithBetaId.isFullscreen = true;
 
-export const getServerSideProps: GetServerSideProps<
+export const getServerSideProps: GetServerSideQueryProps<
   Props,
   RouteQuery
-> = async ({ params }) => ({
-  props: {
-    queryResponses: {
-      problem: await getPreloadedQuery<queriesProblemQueryType>(
-        queriesProblemQuery,
-        { problemId: params?.problemId }
-      ),
-      beta: await getPreloadedQuery<queriesBetaQueryType>(queriesBetaQuery, {
-        betaId: params?.betaId,
-      }),
-    },
-  },
-});
+> = async ({ params }) => {
+  assertIsDefined(params);
+  return getQueryProps({
+    problem: getPreloadedQuery<queriesProblemQueryType>(queriesProblemQuery, {
+      problemId: params.problemId,
+    }),
+    beta: getPreloadedQuery<queriesBetaQueryType>(queriesBetaQuery, {
+      betaId: params.betaId,
+    }),
+  });
+};
 
 export default EditorWithBetaId;

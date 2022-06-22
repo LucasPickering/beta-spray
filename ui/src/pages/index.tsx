@@ -4,9 +4,9 @@ import { PreloadedQuery } from "react-relay";
 import type { ProblemListQuery as ProblemListQueryType } from "__generated__/ProblemListQuery.graphql";
 import ProblemListQuery from "__generated__/ProblemListQuery.graphql";
 import { getPreloadedQuery } from "util/environment";
-import { GetServerSideProps } from "next";
 import ProblemList from "components/Home/ProblemList";
 import { NextPageExtended } from "./_app";
+import { getQueryProps, GetServerSideQueryProps } from "util/relay";
 
 interface Props {
   queryRefs: {
@@ -28,16 +28,9 @@ const Index: NextPageExtended<Props> = ({ queryRefs }) => {
   );
 };
 
-// TODO generic typing on this
-export const getServerSideProps: GetServerSideProps<Props> = async () => ({
-  props: {
-    queryResponses: {
-      problemList: await getPreloadedQuery<ProblemListQueryType>(
-        ProblemListQuery,
-        {}
-      ),
-    },
-  },
-});
+export const getServerSideProps: GetServerSideQueryProps<Props> = async () =>
+  getQueryProps({
+    problemList: getPreloadedQuery<ProblemListQueryType>(ProblemListQuery),
+  });
 
 export default Index;

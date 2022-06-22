@@ -131,7 +131,7 @@ async function fetchQuery(
 
 export async function getPreloadedQuery<TQuery extends OperationType>(
   { params }: ConcreteRequest,
-  variables: VariablesOf<TQuery>
+  variables: VariablesOf<TQuery> = {}
 ): Promise<QueryResponse> {
   const response = await fetchQuery(params, variables);
   return {
