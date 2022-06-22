@@ -1,10 +1,10 @@
 type Query {
-  boulders(offset: Int = null, before: String = null, after: String = null, first: Int = null, last: Int = null): BoulderNodeConnection
+  boulders(offset: Int, before: String, after: String, first: Int, last: Int): BoulderNodeConnection
   boulder(
     """The ID of the object"""
     id: ID!
   ): BoulderNode
-  problems(offset: Int = null, before: String = null, after: String = null, first: Int = null, last: Int = null): ProblemNodeConnection
+  problems(offset: Int, before: String, after: String, first: Int, last: Int): ProblemNodeConnection
   problem(
     """The ID of the object"""
     id: ID!
@@ -51,8 +51,8 @@ type BoulderNodeEdge {
 
 type BoulderNode implements Node {
   createdAt: DateTime!
-  holds(offset: Int = null, before: String = null, after: String = null, first: Int = null, last: Int = null): HoldNodeConnection!
-  problems(offset: Int = null, before: String = null, after: String = null, first: Int = null, last: Int = null): ProblemNodeConnection!
+  holds(offset: Int, before: String, after: String, first: Int, last: Int): HoldNodeConnection!
+  problems(offset: Int, before: String, after: String, first: Int, last: Int): ProblemNodeConnection!
 
   """The ID of the object"""
   id: ID!
@@ -137,10 +137,10 @@ type ProblemNodeEdge {
 
 type ProblemNode implements Node {
   name: String!
-  holds(offset: Int = null, before: String = null, after: String = null, first: Int = null, last: Int = null): HoldNodeConnection!
+  holds(offset: Int, before: String, after: String, first: Int, last: Int): HoldNodeConnection!
   boulder: BoulderNode!
   createdAt: DateTime!
-  betas(offset: Int = null, before: String = null, after: String = null, first: Int = null, last: Int = null): BetaNodeConnection!
+  betas(offset: Int, before: String, after: String, first: Int, last: Int): BetaNodeConnection!
 
   """The ID of the object"""
   id: ID!
@@ -167,7 +167,7 @@ type BetaNode implements Node {
   name: String!
   problem: ProblemNode!
   createdAt: DateTime!
-  moves(offset: Int = null, before: String = null, after: String = null, first: Int = null, last: Int = null): BetaMoveNodeConnection!
+  moves(offset: Int, before: String, after: String, first: Int, last: Int): BetaMoveNodeConnection!
 
   """The ID of the object"""
   id: ID!

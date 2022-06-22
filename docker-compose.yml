@@ -16,6 +16,7 @@ services:
     build: ./api/
     command: ./scripts/cmd_dev.sh
     init: true # Fixes slow shutdown
+    tty: true # Colors!
     environment:
       - BETA_SPRAY_DB_NAME=beta_spray
       - BETA_SPRAY_DB_USER=beta_spray

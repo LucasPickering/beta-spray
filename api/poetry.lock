@@ -284,7 +284,7 @@ grpc = ["grpcio (>=1.0.0)"]
 
 [[package]]
 name = "graphene"
-version = "3.0"
+version = "3.1"
 description = "GraphQL Framework for Python"
 category = "main"
 optional = false
@@ -293,18 +293,18 @@ develop = false
 
 [package.dependencies]
 aniso8601 = ">=8,<10"
-graphql-core = ">=3.1.2,<3.2.0"
-graphql-relay = ">=3.0,<4"
+graphql-core = ">=3.1,<3.3"
+graphql-relay = ">=3.1,<3.3"
 
 [package.extras]
-dev = ["black (==19.10b0)", "flake8 (>=3.7,<4)", "pytest (>=6,<7)", "pytest-benchmark (>=3.4,<4)", "pytest-cov (>=3,<4)", "pytest-mock (>=3,<4)", "pytest-asyncio (>=0.16,<2)", "snapshottest (>=0.6,<1)", "coveralls (>=3.3,<4)", "promise (>=2.3,<3)", "mock (>=4.0,<5)", "pytz (==2021.3)", "iso8601 (>=1,<2)"]
-test = ["pytest (>=6,<7)", "pytest-benchmark (>=3.4,<4)", "pytest-cov (>=3,<4)", "pytest-mock (>=3,<4)", "pytest-asyncio (>=0.16,<2)", "snapshottest (>=0.6,<1)", "coveralls (>=3.3,<4)", "promise (>=2.3,<3)", "mock (>=4.0,<5)", "pytz (==2021.3)", "iso8601 (>=1,<2)"]
+dev = ["black (==22.3.0)", "flake8 (>=4,<5)", "pytest (>=6,<7)", "pytest-benchmark (>=3.4,<4)", "pytest-cov (>=3,<4)", "pytest-mock (>=3,<4)", "pytest-asyncio (>=0.16,<2)", "snapshottest (>=0.6,<1)", "coveralls (>=3.3,<4)", "promise (>=2.3,<3)", "mock (>=4,<5)", "pytz (==2022.1)", "iso8601 (>=1,<2)"]
+test = ["pytest (>=6,<7)", "pytest-benchmark (>=3.4,<4)", "pytest-cov (>=3,<4)", "pytest-mock (>=3,<4)", "pytest-asyncio (>=0.16,<2)", "snapshottest (>=0.6,<1)", "coveralls (>=3.3,<4)", "promise (>=2.3,<3)", "mock (>=4,<5)", "pytz (==2022.1)", "iso8601 (>=1,<2)"]
 
 [package.source]
 type = "git"
 url = "https://github.com/LucasPickering/graphene.git"
-reference = "f6e0d0ae21d144748dd001e0d26d9b298faa00f4"
-resolved_reference = "f6e0d0ae21d144748dd001e0d26d9b298faa00f4"
+reference = "master"
+resolved_reference = "cc7e734d7e3a8bab0cb89a3dab48290162d0008e"
 
 [[package]]
 name = "graphene-django"
@@ -577,7 +577,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "53064a78b23a6f01defa9607a16e3f296d70c15eaee2281de8c450fa5fe76365"
+content-hash = "74ccf0bef5ff8b7b9d2b2b60e940dd887037336e0c428cc8dcb83b81d74aed6c"
 
 [metadata.files]
 aniso8601 = [
