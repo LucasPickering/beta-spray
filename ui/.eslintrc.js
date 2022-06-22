@@ -18,6 +18,7 @@ module.exports = {
     "plugin:react/recommended",
     "plugin:prettier/recommended",
     "plugin:jsx-a11y/recommended",
+    "plugin:@next/next/recommended",
   ],
   globals: {
     Atomics: "readonly",

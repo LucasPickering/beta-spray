@@ -1,4 +1,4 @@
 build/
 node_modules/
 public/
-**/__generated__/
+src/__generated__/

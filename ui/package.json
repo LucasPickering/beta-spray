@@ -48,7 +48,7 @@
     "build": "next build",
     "build:analyze": "ANALYZE=true next build",
     "check": "npm run type-check && npm run lint",
-    "lint": "eslint src/**/*.{ts,tsx}",
+    "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "lint:fix": "npm run lint -- --fix",
     "clean": "rm -rf build/",
     "test": "jest",
@@ -70,6 +70,7 @@
     ]
   },
   "devDependencies": {
-    "@next/bundle-analyzer": "^12.1.6"
+    "@next/bundle-analyzer": "^12.1.6",
+    "@next/eslint-plugin-next": "^12.1.6"
   }
 }
