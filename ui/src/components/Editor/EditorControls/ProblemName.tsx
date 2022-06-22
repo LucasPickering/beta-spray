@@ -2,7 +2,7 @@ import { Skeleton, Typography, TypographyProps } from "@mui/material";
 import React from "react";
 import withQuery from "util/withQuery";
 import { problemQuery } from "../queries";
-import { queriesProblemQuery } from ".__generated__/queriesProblemQuery.graphql";
+import { queriesProblemQuery } from "__generated__/queriesProblemQuery.graphql";
 import { graphql, useFragment } from "react-relay";
 import { ProblemName_problemNode$key } from "__generated__/ProblemName_problemNode.graphql";
 

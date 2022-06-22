@@ -1,11 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { useQueryLoader } from "react-relay";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { assertIsDefined } from "util/func";
 import type { queriesProblemQuery as queriesProblemQueryType } from "__generated__/queriesProblemQuery.graphql";
-import queriesProblemQuery from "__generated__/queriesProblemQuery.graphql";
 import type { queriesBetaQuery as queriesBetaQueryType } from "__generated__/queriesBetaQuery.graphql";
-import queriesBetaQuery from "__generated__/queriesBetaQuery.graphql";
 import { Box, IconButton, Paper } from "@mui/material";
 import { DndProvider } from "react-dnd";
 import { TouchBackend } from "react-dnd-touch-backend";
@@ -25,6 +20,18 @@ import HelpText from "./EditorSvg/HelpText";
 import EditorHelmet from "./EditorHelmet";
 import ProblemName from "./EditorControls/ProblemName";
 import ModeButton from "./EditorControls/ModeButton";
+import { PreloadedQuery } from "react-relay";
+import { useRouter } from "next/router";
+import RouterLink from "next/link";
+
+interface Props {
+  problemId: string;
+  betaId?: string;
+  queryRefs: {
+    problem: PreloadedQuery<queriesProblemQueryType>;
+    beta?: PreloadedQuery<queriesBetaQueryType>;
+  };
+}
 
 /**
  * Main app component, for viewing+editing boulders/problems/betas. This is
@@ -38,18 +45,11 @@ import ModeButton from "./EditorControls/ModeButton";
  * and only block certain parts of the UI as needed. Much better than having
  * one fat loading icon.
  */
-const Editor: React.FC = () => {
-  const { problemId, betaId } = useParams();
-  assertIsDefined(problemId); // Only undefined if routing isn't hooked up right
-
-  const navigate = useNavigate();
+const Editor: React.FC<Props> = ({ problemId, betaId, queryRefs }) => {
+  const router = useRouter();
 
   // Read initial state values from route
   const [selectedBeta, setSelectedBeta] = useState<string | undefined>(betaId);
-  const [problemQueryRef, loadProblemQuery] =
-    useQueryLoader<queriesProblemQueryType>(queriesProblemQuery);
-  const [betaQueryRef, loadBetaQuery, disposeBetaQuery] =
-    useQueryLoader<queriesBetaQueryType>(queriesBetaQuery);
 
   // ===
   // All 3 of these *don't* unpack the array, so they can be passed to context
@@ -62,26 +62,6 @@ const Editor: React.FC = () => {
   // Link hovering between move list and overlay
   const highlightedMoveState = useState<string | undefined>();
 
-  const refreshBetaQuery = useCallback(
-    (betaId: string | undefined) => {
-      if (betaId) {
-        loadBetaQuery({ betaId });
-      } else {
-        // Beta is no longer selected, wipe out the query
-        disposeBetaQuery();
-      }
-    },
-    [loadBetaQuery, disposeBetaQuery]
-  );
-
-  // Load image data
-  useEffect(() => {
-    loadProblemQuery({ problemId });
-  }, [loadProblemQuery, problemId]);
-  useEffect(() => {
-    refreshBetaQuery(selectedBeta);
-  }, [refreshBetaQuery, selectedBeta]);
-
   // Make sure state stays in sync with the URL
   // In most cases we should update both of these simultaneously so this hook
   // generally doesn't do anything, but it's a backup (e.g. if user externally
@@ -93,17 +73,15 @@ const Editor: React.FC = () => {
   const onSelectBeta = useCallback(
     (betaId: string | undefined) => {
       setSelectedBeta(betaId);
-      // Start beta query ASAP (gotta go fast)
-      refreshBetaQuery(betaId);
-      navigate(
-        betaId
-          ? `/problems/${problemId}/beta/${betaId}`
-          : `/problems/${problemId}`,
-        // Navigation doesn't really change the page
-        { replace: true }
-      );
+      // Navigation doesn't really change the page, so overwrite in history
+      // TODO uncomment
+      // router.replace(
+      //   betaId
+      //     ? `/problems/${problemId}/beta/${betaId}`
+      //     : `/problems/${problemId}`
+      // );
     },
-    [refreshBetaQuery, navigate, problemId]
+    [router, problemId]
   );
 
   // Figure out which help text to show based on editor state
@@ -121,7 +99,7 @@ const Editor: React.FC = () => {
       backend={TouchBackend}
       options={{ enableTouchEvents: true, enableMouseEvents: true }}
     >
-      <EditorHelmet queryRef={problemQueryRef} />
+      <EditorHelmet queryRef={queryRefs.problem} />
 
       <EditorModeContext.Provider value={editorModeState}>
         <EditorSelectedHoldContext.Provider value={selectedHoldState}>
@@ -148,8 +126,8 @@ const Editor: React.FC = () => {
                   })}
                 >
                   <EditorSvg
-                    queryRef={problemQueryRef}
-                    betaQueryRef={betaQueryRef}
+                    queryRef={queryRefs.problem}
+                    betaQueryRef={queryRefs.beta}
                     selectedBeta={selectedBeta}
                   />
                 </Box>
@@ -158,9 +136,11 @@ const Editor: React.FC = () => {
                 <Paper
                   sx={{ position: "absolute", top: 0, left: 0, margin: 1 }}
                 >
-                  <IconButton component={Link} to="/">
-                    <IconHome />
-                  </IconButton>
+                  <RouterLink href="/" passHref>
+                    <IconButton>
+                      <IconHome />
+                    </IconButton>
+                  </RouterLink>
 
                   <HelpText helpMode={helpMode} />
                 </Paper>
@@ -170,14 +150,14 @@ const Editor: React.FC = () => {
 
                 {/* Controls sidebar/drawer */}
                 <EditorControls>
-                  <ProblemName queryRef={problemQueryRef} />
+                  <ProblemName queryRef={queryRefs.problem} />
                   <ModeButton />
                   <BetaList
-                    queryRef={problemQueryRef}
+                    queryRef={queryRefs.problem}
                     selectedBeta={selectedBeta}
                     onSelectBeta={onSelectBeta}
                   />
-                  <BetaDetails queryRef={betaQueryRef} />
+                  <BetaDetails queryRef={queryRefs.beta} />
                 </EditorControls>
               </Box>
             </ZoomPanProvider>

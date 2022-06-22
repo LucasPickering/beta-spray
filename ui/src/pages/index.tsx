@@ -28,17 +28,15 @@ const Index: React.FC<Props> = ({ queryRefs }) => {
 };
 
 // TODO generic typing on this
-export const getServerSideProps: GetServerSideProps = async () => {
-  return {
-    props: {
-      queryResponses: {
-        problemList: await getPreloadedQuery<ProblemListQueryType>(
-          ProblemListQuery,
-          {}
-        ),
-      },
+export const getServerSideProps: GetServerSideProps<Props> = async () => ({
+  props: {
+    queryResponses: {
+      problemList: await getPreloadedQuery<ProblemListQueryType>(
+        ProblemListQuery,
+        {}
+      ),
     },
-  };
-};
+  },
+});
 
 export default Index;

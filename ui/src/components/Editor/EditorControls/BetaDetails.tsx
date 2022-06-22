@@ -12,7 +12,7 @@ import { BetaDetails_updateBetaMoveMutation } from "__generated__/BetaDetails_up
 import { BetaContext, EditorModeContext } from "util/context";
 import useMutation from "util/useMutation";
 import MutationError from "components/common/MutationError";
-import { queriesBetaQuery } from ".__generated__/queriesBetaQuery.graphql";
+import { queriesBetaQuery } from "__generated__/queriesBetaQuery.graphql";
 import { betaQuery } from "../queries";
 import withQuery from "util/withQuery";
 import { getBetaMoveColors } from "util/svg";
