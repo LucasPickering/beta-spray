@@ -1,4 +1,5 @@
 import {
+  Box,
   Card,
   CardActionArea,
   CardActions,
@@ -19,6 +20,8 @@ import {
   Done as IconDone,
 } from "@mui/icons-material";
 import { ProblemCard_problemNode$key } from "__generated__/ProblemCard_problemNode.graphql";
+import Image from "next/image";
+import { useImageSizes } from "util/useImageSizes";
 
 interface Props {
   problemKey: ProblemCard_problemNode$key;
@@ -38,6 +41,8 @@ const ProblemCard: React.FC<Props> = ({ problemKey, onEdit, onDelete }) => {
         boulder {
           image {
             url
+            pixelWidth
+            pixelHeight
           }
         }
       }
@@ -45,6 +50,7 @@ const ProblemCard: React.FC<Props> = ({ problemKey, onEdit, onDelete }) => {
     problemKey
   );
 
+  const imageSizes = useImageSizes({ md: "33vw", sm: "50vw" });
   const [editing, setEditing] = useState<boolean>(false);
   const [problemName, setProblemName] = useState<string>(problem.name);
 
@@ -73,13 +79,16 @@ const ProblemCard: React.FC<Props> = ({ problemKey, onEdit, onDelete }) => {
         <CardActionArea>
           <CardMedia sx={{ height: 200 }}>
             {problem.boulder.image.url ? (
-              <img
-                src={problem.boulder.image.url}
-                alt={`${problem.name} boulder`}
-                width="100%"
-                height="100%"
-                css={{ objectFit: "cover" }}
-              />
+              // Box is needed to suppress a next.js warning about positioning
+              <Box position="relative" width="100%" height="100%">
+                <Image
+                  src={problem.boulder.image.url}
+                  alt={`${problem.name} boulder`}
+                  sizes={imageSizes}
+                  layout="fill"
+                  objectFit="cover"
+                />
+              </Box>
             ) : (
               // Empty URL indicates this object was optimistically inserted, and
               // we're still waiting on the image URL from the server

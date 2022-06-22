@@ -13,4 +13,7 @@ STATIC_ROOT = BASE_DIR / "static"  # noqa F405
 STATIC_URL = "/api/static/"
 
 MEDIA_ROOT = BASE_DIR / "media"  # noqa F405
-MEDIA_URL = "/api/media/"
+# We need to attach the host for local images, even though the path is
+# accessible via proxy, otherwise next.js freaks the fuck out when trying to
+# optimize images
+MEDIA_URL = f"{BETA_SPRAY_HOST}/api/media/"  # noqa F405

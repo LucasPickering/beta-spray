@@ -17,6 +17,7 @@ services:
     command: ./scripts/cmd_dev.sh
     init: true # Fixes slow shutdown
     environment:
+      - BETA_SPRAY_HOST=http://localhost:3000
       - BETA_SPRAY_DB_NAME=beta_spray
       - BETA_SPRAY_DB_USER=beta_spray
       - BETA_SPRAY_DB_PASSWORD=beta_spray
@@ -38,7 +39,7 @@ services:
   #     - BETA_SPRAY_DB_NAME=beta_spray
   #     - BETA_SPRAY_DB_USER=beta_spray
   #     - BETA_SPRAY_DB_PASSWORD=beta_spray
-  #     - BETA_SPRAY_HOSTNAME=localhost
+  #     - BETA_SPRAY_HOST=http://localhost
   #     - BETA_SPRAY_SECRET_KEY=bad-secret-key
   #     - BETA_SPRAY_MEDIA_BUCKET=bad-bucket-name
   #     - DJANGO_SETTINGS_MODULE=beta_spray.settings.settings_prd

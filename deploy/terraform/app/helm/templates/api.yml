@@ -27,8 +27,8 @@ spec:
               cpu: 50m
               memory: 150Mi
           env:
-            - name: BETA_SPRAY_HOSTNAME
-              value: "{{ .Values.hostname }}"
+            - name: BETA_SPRAY_HOST
+              value: "https://{{ .Values.hostname }}"
             - name: BETA_SPRAY_DB_HOST
               value: db
             - name: BETA_SPRAY_DB_NAME

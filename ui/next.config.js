@@ -7,6 +7,12 @@ const nextConfig = {
   compiler: {
     relay: require("./relay.config"),
   },
+  images: {
+    domains: ["localhost", "storage.googleapis.com"],
+    // Match MUI breakpoints
+    // https://mui.com/material-ui/customization/breakpoints/#default-breakpoints
+    deviceSizes: [600, 900, 1200, 1536],
+  },
   async rewrites() {
     // Only proxy requests to API host if defined. We don't want to do this in
     // prod because nginx takes care of it there

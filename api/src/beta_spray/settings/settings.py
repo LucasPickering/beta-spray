@@ -13,6 +13,10 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 import os
 from pathlib import Path
 
+# The hostname that the webapp frontend is hosted off. Should *include* the
+# protocol specifier (and port if necessary)
+BETA_SPRAY_HOST = os.environ["BETA_SPRAY_HOST"]
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
