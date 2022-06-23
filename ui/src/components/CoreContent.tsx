@@ -12,6 +12,7 @@ import PageLayout from "components/PageLayout";
 import ErrorBoundary from "components/common/ErrorBoundary";
 import Home from "components/Home/Home";
 import { Helmet, HelmetProvider } from "react-helmet-async";
+import Why from "./Why";
 
 // Code splitting! Don't split the home page since it's tiny
 const Editor = React.lazy(() => import("components/Editor/Editor"));
@@ -54,6 +55,7 @@ const CoreContent: React.FC = () => {
                     }
                   >
                     <Route index element={<Home />} />
+                    <Route path="/why" element={<Why />} />
                     <Route path="*" element={<NotFound />} />
                   </Route>
                 </Routes>

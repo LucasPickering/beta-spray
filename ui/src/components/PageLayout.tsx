@@ -1,4 +1,4 @@
-import { AppBar, Box } from "@mui/material";
+import { AppBar, Box, useTheme } from "@mui/material";
 import React, { Suspense } from "react";
 import Loading from "./common/Loading";
 import Footer from "./Footer";
@@ -8,17 +8,31 @@ interface Props {
   children?: React.ReactNode;
 }
 
-const PageLayout: React.FC<Props> = ({ children }) => (
-  <Box display="flex" flexDirection="column" minHeight="100vh">
-    <AppBar position="static">
-      <HeaderBar />
-    </AppBar>
-    <Box margin={2}>
-      {/* Generally each page should provide its own suspenses, this is a backup */}
-      <Suspense fallback={<Loading />}>{children}</Suspense>
+const PageLayout: React.FC<Props> = ({ children }) => {
+  const { breakpoints } = useTheme();
+
+  return (
+    <Box
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      minHeight="100vh"
+    >
+      <AppBar position="static">
+        <HeaderBar />
+      </AppBar>
+      <Box
+        padding={2}
+        // Always fill the screen, but not wider than MUI's largest breakpoint.
+        // Otherwise, content gets too big to be digestible on large screens.
+        width={`min(${breakpoints.values.xl}${breakpoints.unit}, 100vw)`}
+      >
+        {/* Generally each page should provide its own suspenses, this is a backup */}
+        <Suspense fallback={<Loading />}>{children}</Suspense>
+      </Box>
+      <Footer />
     </Box>
-    <Footer />
-  </Box>
-);
+  );
+};
 
 export default PageLayout;

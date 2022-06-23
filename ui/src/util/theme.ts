@@ -1,4 +1,5 @@
 import { createTheme } from "@mui/material/styles";
+import LinkBehavior from "components/common/LinkBehavior";
 
 const theme = createTheme({
   palette: {
@@ -15,6 +16,21 @@ const theme = createTheme({
     },
   },
   components: {
+    MuiLink: {
+      defaultProps: {
+        // I really can't figure out the typing here, pretty sure it's an MUI
+        // bug that they closed as fixed but didn't really fix
+        // https://github.com/mui/material-ui/issues/16846
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore 2322
+        component: LinkBehavior,
+      },
+    },
+    MuiButtonBase: {
+      defaultProps: {
+        LinkComponent: LinkBehavior,
+      },
+    },
     MuiIconButton: {
       styleOverrides: {
         root: ({ theme }) => ({

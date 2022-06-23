@@ -13,13 +13,13 @@ import {
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import { graphql, useFragment } from "react-relay";
-import { Link as RouterLink } from "react-router-dom";
 import {
   Edit as IconEdit,
   Delete as IconDelete,
   Done as IconDone,
 } from "@mui/icons-material";
 import { ProblemCard_problemNode$key } from "./__generated__/ProblemCard_problemNode.graphql";
+import LinkBehavior from "components/common/LinkBehavior";
 
 interface Props {
   problemKey: ProblemCard_problemNode$key;
@@ -70,7 +70,7 @@ const ProblemCard: React.FC<Props> = ({ problemKey, onEdit, onDelete }) => {
       })}
     >
       {/* TODO pre-load editor query on click */}
-      <CardActionArea component={RouterLink} to={`/problems/${problem.id}`}>
+      <CardActionArea component={LinkBehavior} href={`/problems/${problem.id}`}>
         <CardMedia sx={{ height: 200 }}>
           {problem.boulder.image.url ? (
             <img
