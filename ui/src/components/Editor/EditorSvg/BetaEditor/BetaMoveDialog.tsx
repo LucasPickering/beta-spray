@@ -19,8 +19,8 @@ interface Props {
 const bodyParts: BodyPart[] = [
   "LEFT_HAND",
   "RIGHT_HAND",
-  "RIGHT_FOOT",
   "LEFT_FOOT",
+  "RIGHT_FOOT",
 ];
 
 /**
