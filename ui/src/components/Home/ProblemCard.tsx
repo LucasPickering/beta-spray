@@ -41,6 +41,14 @@ const ProblemCard: React.FC<Props> = ({ problemKey, onEdit, onDelete }) => {
             url
           }
         }
+        # We only need one beta, to pre-select it
+        betas(first: 1) {
+          edges {
+            node {
+              id
+            }
+          }
+        }
       }
     `,
     problemKey
@@ -54,6 +62,12 @@ const ProblemCard: React.FC<Props> = ({ problemKey, onEdit, onDelete }) => {
   useEffect(() => {
     setProblemName(problem.name);
   }, [problem.name]);
+
+  // Pre-select first beta, if possible
+  let linkPath = `/problems/${problem.id}`;
+  if (problem.betas.edges.length > 0) {
+    linkPath += `/beta/${problem.betas.edges[0].node.id}`;
+  }
 
   return (
     <Card
@@ -69,8 +83,8 @@ const ProblemCard: React.FC<Props> = ({ problemKey, onEdit, onDelete }) => {
         },
       })}
     >
-      {/* TODO pre-load editor query on click */}
-      <CardActionArea component={LinkBehavior} href={`/problems/${problem.id}`}>
+      {/* TODO pre-load editor queries on click */}
+      <CardActionArea component={LinkBehavior} href={linkPath}>
         <CardMedia sx={{ height: 200 }}>
           {problem.boulder.image.url ? (
             <img

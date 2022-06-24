@@ -53,6 +53,9 @@ const ProblemList: React.FC<Props> = ({ problemConnectionKey }) => {
             id
             ...ProblemCard_problemNode
           }
+          beta {
+            id
+          }
         }
       }
     `);
@@ -107,21 +110,21 @@ const ProblemList: React.FC<Props> = ({ problemConnectionKey }) => {
                     boulder: {
                       id: "",
                       // Card should detect empty URL and render a placeholder
-                      image: {
-                        url: "",
-                      },
+                      image: { url: "" },
                     },
+                    betas: { edges: [] },
                   },
+                  beta: { id: "" },
                 },
               },
               // Redirect to the newly uploaded problem
               onCompleted(data) {
                 // This shouldn't ever be null if the mutation succeeded
                 if (data.createBoulderWithFriends) {
-                  // TODO pre-load editor query
-                  navigate(
-                    `/problems/${data.createBoulderWithFriends.problem.id}`
-                  );
+                  const { problem, beta } = data.createBoulderWithFriends;
+                  // Pre-select the created beta, to avoid waterfalled requests
+                  // TODO pre-load editor queries
+                  navigate(`/problems/${problem.id}/beta/${beta.id}`);
                 }
               },
             });
