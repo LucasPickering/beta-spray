@@ -83,7 +83,6 @@ const ProblemCard: React.FC<Props> = ({ problemKey, onEdit, onDelete }) => {
         },
       })}
     >
-      {/* TODO pre-load editor queries on click */}
       <CardActionArea component={LinkBehavior} href={linkPath}>
         <CardMedia sx={{ height: 200 }}>
           {problem.boulder.image.url ? (

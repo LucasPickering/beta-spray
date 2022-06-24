@@ -123,7 +123,6 @@ const ProblemList: React.FC<Props> = ({ problemConnectionKey }) => {
                 if (data.createBoulderWithFriends) {
                   const { problem, beta } = data.createBoulderWithFriends;
                   // Pre-select the created beta, to avoid waterfalled requests
-                  // TODO pre-load editor queries
                   navigate(`/problems/${problem.id}/beta/${beta.id}`);
                 }
               },
