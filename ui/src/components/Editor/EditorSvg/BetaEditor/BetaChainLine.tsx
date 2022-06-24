@@ -82,14 +82,34 @@ const BetaChainLine: React.FC<Props> = ({ startMoveKey, endMoveKey }) => {
     },
   });
 
-  // Color is based on the end move
-  const colors = useBetaMoveColors()(endMove.id);
   const getPosition = useBetaMoveVisualPosition();
   const startPos = getPosition(startMove.id);
   const endPos = getPosition(endMove.id);
+  const coords = {
+    x1: startPos.x,
+    y1: startPos.y,
+    x2: endPos.x,
+    y2: endPos.y,
+  };
+
+  // Color will be a gradient between the two moves
+  const gradientId = `${startMove.id}_${endMove.id}`;
+  const getColors = useBetaMoveColors();
+  const startColor = getColors(startMove.id).primary;
+  const endColor = getColors(endMove.id).primary;
 
   return (
     <>
+      <defs>
+        <linearGradient
+          id={gradientId}
+          gradientUnits="userSpaceOnUse"
+          {...coords}
+        >
+          <stop stopColor={startColor} offset="0" />
+          <stop stopColor={endColor} offset="1" />
+        </linearGradient>
+      </defs>
       <line
         ref={drag}
         css={[
@@ -97,11 +117,8 @@ const BetaChainLine: React.FC<Props> = ({ startMoveKey, endMoveKey }) => {
           styleDraggable,
           isDragging && styleDragging,
         ]}
-        stroke={colors.primary}
-        x1={startPos.x}
-        y1={startPos.y}
-        x2={endPos.x}
-        y2={endPos.y}
+        stroke={`url(#${gradientId})`}
+        {...coords}
       />
       <MutationError message="Error adding move" state={insertState} />
     </>
