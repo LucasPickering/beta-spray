@@ -4,14 +4,6 @@ import React from "react";
 const Why: React.FC = () => (
   <>
     <Typography component="h3" variant="h4">
-      What is Beta Spray?
-    </Typography>
-    <Typography>
-      Beta spray is unsolicited climing advice. That&apos;s bad. Don&apos;t do
-      that. <em>Beta Spray</em>, on the other hand, is a site where you can
-      update photos of boulder problems and share beta.
-    </Typography>
-    <Typography component="h3" variant="h4">
       Why?
     </Typography>
     <Typography>
