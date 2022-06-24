@@ -18,6 +18,8 @@ graphene-django = {git = "https://github.com/graphql-python/graphene-django.git"
 gunicorn = "^20.1.0"
 psycopg2 = "^2.9.3"
 python = "^3.9"
+django-debug-toolbar = "^3.5.0"
+django-graphiql-debug-toolbar = "^0.2.0"
 
 [tool.poetry.dev-dependencies]
 flake8-black = "^0.3.2"

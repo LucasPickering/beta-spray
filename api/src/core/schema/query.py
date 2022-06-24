@@ -2,6 +2,7 @@ import graphene
 from graphene import ObjectType, relay
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
+from graphene_django.debug import DjangoDebug
 import graphql_relay
 
 from core.models import Beta, BetaMove, BodyPart, Boulder, Hold, Problem
@@ -197,3 +198,5 @@ class Query(graphene.ObjectType):
     problems = DjangoFilterConnectionField(ProblemNode)
     problem = relay.Node.Field(ProblemNode)
     beta = relay.Node.Field(BetaNode)
+    # This just returns null if the debug middleware isn't enabled
+    debug = graphene.Field(DjangoDebug, name="_debug")
