@@ -34,30 +34,11 @@ https://docs.djangoproject.com/en/4.0/topics/migrations/
 
 ## Production
 
-Deployed via Kubernetes on GKE. To set up a new cluster, first you'll need to create the GKE resources, then deploy the Kubernetes stack.
-
-### Create GKE cluster
-
-First, create a new file at `deploy/terraform/gke/terraform.tfvars`, and populate the following fields:
-
-- `project_id`
-- `region`
-- `cloudflare_zone_id`
-- `cloudflare_email`
-- `cloudflare_api_token`
-
-Then:
-
-```sh
-cd deploy/terraform/gke
-terraform apply
-```
-
-If something goes wrong, figure it out.
+Deployed via Kubernetes on the [Keskne](https://github.com/LucasPickering/keskne) cluster.
 
 ### Kubernetes Deploy
 
-Deployment is managed via Terraform, which underneath uses Helm to manage the Kubernetes resources. See the README files in each `terraform` sub-directory for more info. To deploy the latest version:
+Deployment is managed via Terraform, which underneath uses Helm to manage the Kubernetes resources. See the README in the `terraform` sub-directory for more info. To deploy the latest version:
 
 ```sh
 ./deploy/deploy.sh

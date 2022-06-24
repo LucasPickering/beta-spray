@@ -1,3 +1,22 @@
+# Import data from other tf states
+data "terraform_remote_state" "ci" {
+  backend = "gcs"
+
+  config = {
+    bucket = "beta-spray-tfstate"
+    prefix = "ci"
+  }
+}
+
+data "terraform_remote_state" "server" {
+  backend = "gcs"
+
+  config = {
+    bucket = "beta-spray-tfstate"
+    prefix = "server"
+  }
+}
+
 resource "helm_release" "beta_spray" {
   name             = "beta-spray"
   chart            = "./helm"
@@ -6,7 +25,7 @@ resource "helm_release" "beta_spray" {
 
   set {
     name  = "hostname"
-    value = var.hostname
+    value = data.terraform_remote_state.server.outputs.hostname
   }
   set {
     name  = "versionSha"
@@ -14,7 +33,7 @@ resource "helm_release" "beta_spray" {
   }
   set {
     name  = "mediaBucket"
-    value = google_storage_bucket.media.name
+    value = data.terraform_remote_state.server.outputs.media_bucket
   }
   set {
     name  = "staticAssetsHost"
@@ -28,7 +47,7 @@ resource "helm_release" "beta_spray" {
   # Secret values - the actual secrets are created by helm in secrets.yml
   set_sensitive {
     name  = "apiGcpKey"
-    value = google_service_account_key.api_sa_key.private_key
+    value = data.terraform_remote_state.server.outputs.api_gcp_key
   }
   set_sensitive {
     name  = "apiSecretKey"
@@ -40,23 +59,14 @@ resource "helm_release" "beta_spray" {
   }
   set_sensitive {
     name  = "tlsCert"
-    value = cloudflare_origin_ca_certificate.main.certificate
+    value = data.terraform_remote_state.server.outputs.tls_cert
   }
   set_sensitive {
     name  = "tlsKey"
-    value = tls_private_key.main.private_key_pem
+    value = data.terraform_remote_state.server.outputs.tls_key
   }
 }
 
-# Import data from CI tf
-data "terraform_remote_state" "ci" {
-  backend = "gcs"
-
-  config = {
-    bucket = "beta-spray-tfstate"
-    prefix = "ci"
-  }
-}
 
 # TODO encrypt tfstate https://www.terraform.io/language/settings/backends/gcs#encryption_key
 

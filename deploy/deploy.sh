@@ -2,10 +2,10 @@
 
 set -e
 
-GIT_TAG=latest
+GIT_TAG=deployed
 REPO_ROOT=$(git rev-parse --show-toplevel)
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
-DEPLOYED_VERSION_SHA=$(git rev-parse latest)
+DEPLOYED_VERSION_SHA=$(git rev-parse $GIT_TAG)
 
 # If on the master branch, deploy the new code, otherwise deploy the pre-existing
 # latest. If deploying from any branch other than master, let's just assume that
