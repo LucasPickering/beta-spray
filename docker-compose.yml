@@ -2,6 +2,7 @@ version: "3"
 
 volumes:
   api_poetry_cache:
+  node_api_node_modules:
   ui_node_modules:
 
 services:
@@ -28,6 +29,23 @@ services:
     volumes:
       - ./api:/app
       - api_poetry_cache:/root/.cache/poetry
+
+  node-api:
+    build: ./node-api/
+    command: sh -c "npm install && npm run start"
+    init: true # Fixes slow shutdown
+    tty: true # Colors!
+    environment:
+      - BETA_SPRAY_DB_NAME=beta_spray
+      - BETA_SPRAY_DB_USER=beta_spray
+      - BETA_SPRAY_DB_PASSWORD=beta_spray
+    depends_on:
+      - db
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./node-api:/app
+      - node_api_node_modules:/app/node_modules
 
   # Jank way of testing prd image
   # api:

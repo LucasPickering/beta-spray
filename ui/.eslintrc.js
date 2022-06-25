@@ -49,7 +49,6 @@ module.exports = {
       "error",
       { ignoreParameters: true },
     ],
-    "@typescript-eslint/camelcase": "off",
     "no-restricted-syntax": [
       "error",
       {
