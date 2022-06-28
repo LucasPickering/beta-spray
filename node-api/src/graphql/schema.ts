@@ -1,18 +1,10 @@
-import { queryType, stringArg, makeSchema } from "nexus";
-
-const Query = queryType({
-  definition(t) {
-    t.string("hello", {
-      args: { name: stringArg() },
-      resolve: (parent, { name }) => `Hello ${name || "World"}!`,
-    });
-  },
-});
+import { makeSchema } from "nexus";
+import * as types from "./types";
 
 export const schema = makeSchema({
-  types: [Query],
+  types,
   outputs: {
-    schema: __dirname + "/generated/schema.graphql",
-    typegen: __dirname + "/generated/typings.ts",
+    schema: "./schema.graphql",
+    typegen: __dirname + "/__generated__/typings.ts",
   },
 });

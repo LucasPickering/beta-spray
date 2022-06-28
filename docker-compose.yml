@@ -13,6 +13,13 @@ services:
       - POSTGRES_USER=beta_spray
       - POSTGRES_PASSWORD=beta_spray
 
+  node-db:
+    image: postgres:14-alpine
+    environment:
+      - POSTGRES_DB=beta_spray
+      - POSTGRES_USER=beta_spray
+      - POSTGRES_PASSWORD=beta_spray
+
   api:
     build: ./api/
     command: ./scripts/cmd_dev.sh
@@ -32,13 +39,11 @@ services:
 
   node-api:
     build: ./node-api/
-    command: sh -c "npm install && npm run start"
+    command: sh -c "npm install && npm run watch"
     init: true # Fixes slow shutdown
     tty: true # Colors!
     environment:
-      - BETA_SPRAY_DB_NAME=beta_spray
-      - BETA_SPRAY_DB_USER=beta_spray
-      - BETA_SPRAY_DB_PASSWORD=beta_spray
+      - DATABASE_URL=postgresql://beta_spray:beta_spray@node-db/beta_spray
     depends_on:
       - db
     ports:
