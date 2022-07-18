@@ -12,7 +12,7 @@ import BetaEditor from "./BetaEditor/BetaEditor";
 import BoulderImage from "./BoulderImage";
 import SvgDragLayer from "./SvgDragLayer";
 import HoldEditor from "./HoldEditor/HoldEditor";
-import HoldMarks from "./HoldEditor/HoldMarks";
+import HoldOverlay from "./HoldEditor/HoldOverlay";
 import PanZone from "./PanZone";
 import { EditorSvg_problemNode$key } from "./__generated__/EditorSvg_problemNode.graphql";
 import { usePinch } from "@use-gesture/react";
@@ -53,7 +53,7 @@ const EditorSvg: React.FC<Props> = ({
           edges {
             cursor
           }
-          ...HoldMarks_holdConnection
+          ...HoldOverlay_holdConnection
         }
       }
     `,
@@ -96,7 +96,7 @@ const EditorSvg: React.FC<Props> = ({
             {/* Hold editor extends PanZone so it renders it itself, beta editor
                 doesn't so we need to provide it */}
             <PanZone />
-            <HoldMarks
+            <HoldOverlay
               holdConnectionKey={problem.holds}
               // Selecting a hold opens the move modal, which shouldn't be
               // possible if no beta is selected. We still want to show a
