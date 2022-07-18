@@ -20,6 +20,8 @@ interface Props extends React.SVGProps<SVGRectElement> {
  * actions across the entire editor pane, *use this component rather than
  * adding another*. Otherwise, whichever element is on top will eat events from
  * the other.
+ *
+ * There should always be exactly one PanZone in the component tree!
  */
 const PanZone = React.forwardRef<SVGRectElement, Props>(
   ({ css: parentCss, ...rest }, ref) => {

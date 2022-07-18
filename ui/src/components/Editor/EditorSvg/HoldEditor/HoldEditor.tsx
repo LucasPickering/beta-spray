@@ -1,7 +1,8 @@
 import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
-import React from "react";
+import React, { useContext } from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
+import { EditorSelectedHoldContext } from "util/context";
 import useMutation from "util/useMutation";
 import HoldEditorDropZone from "./HoldEditorDropZone";
 import HoldOverlay from "./HoldOverlay";
@@ -83,6 +84,8 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
       }
     `);
 
+  const [, setSelectedHold] = useContext(EditorSelectedHoldContext);
+
   return (
     <>
       {/* Invisible layer to capture clicks for new holds */}
@@ -128,6 +131,22 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
         // Always render all holds, but if we're editing a specific problem,
         // highlight those holds
         holdConnectionKey={problem.holds}
+        // Selecting a hold opens the move modal, which shouldn't be
+        // possible if no beta is selected. We still want to show a
+        // warning in this case though, so the user knows to create a
+        // beta.
+        // TODO we should just auto-create a beta in this case, but the
+        // graphql stuff for that is hard so I'm punting for now.
+        onClick={
+          setSelectedHold
+          // TODO contextual
+          // selectedBeta
+          //   ? setSelectedHold
+          //   : () =>
+          //       alert(
+          //         "Click the Add button on the right to start spraying beta"
+          //       )
+        }
         // Double click = delete
         onDoubleClick={(holdId) => {
           deleteHold({

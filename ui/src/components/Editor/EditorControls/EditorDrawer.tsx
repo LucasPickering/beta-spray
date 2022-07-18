@@ -1,7 +1,6 @@
 import { Box, Drawer, IconButton, Paper, Stack } from "@mui/material";
 import { Menu as IconMenu } from "@mui/icons-material";
 import React, { useState } from "react";
-import ModeButton from "./ModeButton";
 
 interface Props {
   children?: React.ReactNode;
@@ -17,9 +16,6 @@ const EditorDrawer: React.FC<Props> = ({ children }) => {
     <>
       {/* Top-right overlay buttons */}
       <Paper sx={{ position: "absolute", top: 0, right: 0, margin: 1 }}>
-        {/* Add an additional button to switch editor modes, because opening
-            the drawer is annoying */}
-        <ModeButton iconOnly />
         <IconButton aria-label="Open drawer" onClick={() => setIsOpen(true)}>
           <IconMenu />
         </IconButton>

@@ -1,9 +1,5 @@
-import React, { useContext, useEffect, useRef } from "react";
-import {
-  EditorModeContext,
-  EditorSelectedHoldContext,
-  SvgContext,
-} from "util/context";
+import React, { useContext, useRef } from "react";
+import { SvgContext } from "util/context";
 import { graphql, PreloadedQuery, useFragment } from "react-relay";
 import { useZoomPan } from "util/zoom";
 import { queriesProblemQuery } from "../__generated__/queriesProblemQuery.graphql";
@@ -12,8 +8,6 @@ import BetaEditor from "./BetaEditor/BetaEditor";
 import BoulderImage from "./BoulderImage";
 import SvgDragLayer from "./SvgDragLayer";
 import HoldEditor from "./HoldEditor/HoldEditor";
-import HoldOverlay from "./HoldEditor/HoldOverlay";
-import PanZone from "./PanZone";
 import { EditorSvg_problemNode$key } from "./__generated__/EditorSvg_problemNode.graphql";
 import { usePinch } from "@use-gesture/react";
 import { isDefined } from "util/func";
@@ -60,20 +54,7 @@ const EditorSvg: React.FC<Props> = ({
     problemKey
   );
 
-  const [mode, setMode] = useContext(EditorModeContext);
-  const [, setSelectedHold] = useContext(EditorSelectedHoldContext);
   const ref = useRef<SVGSVGElement | null>(null);
-
-  // On first load, we'll be editing beta by default. If there are no holds
-  // though, edit holds instead since you can't create any beta yet.
-  useEffect(() => {
-    if (problem.holds.edges.length === 0) {
-      setMode("holds");
-    }
-    // Intentionally ignore all changes, we really really only want to do this
-    // on first mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const dimensions = {
     width: problem.boulder.image.svgWidth,
@@ -89,33 +70,8 @@ const EditorSvg: React.FC<Props> = ({
             events from other components */}
         <SvgDragLayer />
 
-        {mode === "holds" && <HoldEditor problemKey={problem} />}
-
-        {mode === "beta" && (
-          <>
-            {/* Hold editor extends PanZone so it renders it itself, beta editor
-                doesn't so we need to provide it */}
-            <PanZone />
-            <HoldOverlay
-              holdConnectionKey={problem.holds}
-              // Selecting a hold opens the move modal, which shouldn't be
-              // possible if no beta is selected. We still want to show a
-              // warning in this case though, so the user knows to create a
-              // beta.
-              // TODO we should just auto-create a beta in this case, but the
-              // graphql stuff for that is hard so I'm punting for now.
-              onClick={
-                selectedBeta
-                  ? setSelectedHold
-                  : () =>
-                      alert(
-                        "Click the Add button on the right to start spraying beta"
-                      )
-              }
-            />
-            <BetaEditor queryRef={betaQueryRef} />
-          </>
-        )}
+        <HoldEditor problemKey={problem} />
+        <BetaEditor queryRef={betaQueryRef} />
       </EditorSvgInner>
     </SvgContext.Provider>
   );

@@ -9,7 +9,9 @@ interface Props extends Omit<React.ComponentProps<typeof PanZone>, "onDrop"> {
 }
 
 /**
- * A layer to catch clicks and drops on the hold editor.
+ * A layer to catch holds being dropped onto the editor. Uses PanZone underneath
+ * to support panning in addition to the drops, since the two need to
+ * coordinate on cursor events.
  */
 const HoldEditorDropZone: React.FC<Props> = ({ onDrop, ...rest }) => {
   const domToSVGPosition = useDOMToSVGPosition();

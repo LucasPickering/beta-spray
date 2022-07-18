@@ -2,12 +2,6 @@ import React from "react";
 import { noop } from "./func";
 import { ColorPair, Dimensions, OverlayPosition } from "./svg";
 
-/**
- * The different interaction moves that the editor can be in. This defines
- * the actions available to the user.
- */
-export type EditorMode = "holds" | "beta";
-
 export interface SvgContextType {
   svgRef: React.RefObject<SVGSVGElement | null>;
   dimensions: Dimensions;
@@ -28,11 +22,6 @@ export const SvgContext = React.createContext<SvgContextType>(
  * and not worry about unnecessary re-renders.
  */
 export type StateContext<T> = [T, React.Dispatch<React.SetStateAction<T>>];
-
-export const EditorModeContext = React.createContext<StateContext<EditorMode>>([
-  "holds",
-  noop,
-]);
 
 export const EditorSelectedHoldContext = React.createContext<
   StateContext<string | undefined>
