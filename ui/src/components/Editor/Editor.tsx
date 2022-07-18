@@ -26,6 +26,7 @@ import HelpText from "./EditorSvg/HelpText";
 import EditorHelmet from "./EditorHelmet";
 import ProblemName from "./EditorControls/ProblemName";
 import ModeButton from "./EditorControls/ModeButton";
+import EditorPalette from "./EditorPalette/EditorPalette";
 
 /**
  * Main app component, for viewing+editing boulders/problems/betas. This is
@@ -168,6 +169,8 @@ const Editor: React.FC = () => {
 
                     <HelpText helpMode={helpMode} />
                   </Paper>
+
+                  <EditorPalette />
 
                   {/* Top-right overlay buttons are mobile-only, so they live in
                     EditorDrawer */}

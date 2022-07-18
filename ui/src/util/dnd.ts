@@ -23,7 +23,7 @@ import { DistributivePick } from "./types";
 export type DragType =
   | {
       kind: "holdOverlay";
-      item: { holdId: string };
+      item: { holdId?: string };
       drop: { position: OverlayPosition };
     }
   | {
@@ -87,12 +87,20 @@ export type DropHandler<K extends DragKind> = (
 ) => void;
 
 /**
+ * Type of the object argument passed to useDrag.
+ */
+export type DragSpec<
+  K extends DragKind,
+  CollectedProps = unknown
+> = FactoryOrInstance<
+  DragSourceHookSpec<DragItem<K>, DropResult<K>, CollectedProps>
+> & { type: K };
+
+/**
  * Wrapper around react-dnd's useDrag that enforces better typing.
  */
 export function useDrag<K extends DragKind, CollectedProps = unknown>(
-  specArg: FactoryOrInstance<
-    DragSourceHookSpec<DragItem<K>, DropResult<K>, CollectedProps>
-  > & { type: K },
+  specArg: DragSpec<K, CollectedProps>,
   deps?: unknown[]
 ): [CollectedProps, ConnectDragSource, ConnectDragPreview] {
   return useDragBase(specArg, deps);

@@ -3,7 +3,6 @@ import React from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
 import useMutation from "util/useMutation";
-import { useDOMToSVGPosition } from "util/svg";
 import HoldEditorDropZone from "./HoldEditorDropZone";
 import HoldOverlay from "./HoldOverlay";
 import { HoldEditor_createHoldMutation } from "./__generated__/HoldEditor_createHoldMutation.graphql";
@@ -39,7 +38,6 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
     `,
     problemKey
   );
-  const domToSVGPosition = useDOMToSVGPosition();
 
   const { commit: createHold, state: createState } =
     useMutation<HoldEditor_createHoldMutation>(graphql`
@@ -89,25 +87,39 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
     <>
       {/* Invisible layer to capture clicks for new holds */}
       <HoldEditorDropZone
-        onDoubleClick={(e) => {
-          // Convert DOM position to SVG coords
-          const svgPosition = domToSVGPosition({ x: e.clientX, y: e.clientY });
-          createHold({
-            variables: {
-              input: {
-                boulderId: problem.boulder.id,
-                problemId: problem.id,
-                position: svgPosition,
+        // Drag and drop = move or create hold
+        onDrop={(item, result) => {
+          // If the dragged hold has an ID, that means it's an existing hold,
+          // so move it. If not, it's a new hold from the palette.
+          if (item.holdId) {
+            relocateHold({
+              variables: {
+                input: { holdId: item.holdId, position: result.position },
               },
-              // *Don't* add to the problem, just to the image
-              connections: [problem.holds.__id],
-            },
-            optimisticResponse: {
-              createHold: {
-                hold: { id: "", position: svgPosition },
+              optimisticResponse: {
+                relocateHold: {
+                  hold: { id: item.holdId, position: result.position },
+                },
               },
-            },
-          });
+            });
+          } else {
+            createHold({
+              variables: {
+                input: {
+                  boulderId: problem.boulder.id,
+                  problemId: problem.id,
+                  position: result.position,
+                },
+                // *Don't* add to the image, just to the problem
+                connections: [problem.holds.__id],
+              },
+              optimisticResponse: {
+                createHold: {
+                  hold: { id: "", position: result.position },
+                },
+              },
+            });
+          }
         }}
       />
 
@@ -133,16 +145,35 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
         }}
         // Drag and drop = move hold
         onDrop={(item, result) => {
-          relocateHold({
-            variables: {
-              input: { holdId: item.holdId, position: result.position },
-            },
-            optimisticResponse: {
-              relocateHold: {
-                hold: { id: item.holdId, position: result.position },
+          if (item.holdId) {
+            relocateHold({
+              variables: {
+                input: { holdId: item.holdId, position: result.position },
               },
-            },
-          });
+              optimisticResponse: {
+                relocateHold: {
+                  hold: { id: item.holdId, position: result.position },
+                },
+              },
+            });
+          } else {
+            createHold({
+              variables: {
+                input: {
+                  boulderId: problem.boulder.id,
+                  problemId: problem.id,
+                  position: result.position,
+                },
+                // *Don't* add to the image, just to the problem
+                connections: [problem.holds.__id],
+              },
+              optimisticResponse: {
+                createHold: {
+                  hold: { id: "", position: result.position },
+                },
+              },
+            });
+          }
         }}
       />
 
