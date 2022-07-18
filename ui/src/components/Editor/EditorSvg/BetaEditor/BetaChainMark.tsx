@@ -9,10 +9,6 @@ import Positioned from "../Positioned";
 import BetaMoveIcon from "./BetaMoveIcon";
 import { graphql, useFragment } from "react-relay";
 import { BetaChainMark_betaMoveNode$key } from "./__generated__/BetaChainMark_betaMoveNode.graphql";
-import useMutation from "util/useMutation";
-import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
-import { BetaChainMark_appendBetaMoveMutation } from "./__generated__/BetaChainMark_appendBetaMoveMutation.graphql";
-import { BetaChainMark_updateBetaMoveMutation } from "./__generated__/BetaChainMark_updateBetaMoveMutation.graphql";
 import { useBetaMoveColors, useBetaMoveVisualPosition } from "util/svg";
 
 interface Props {
@@ -42,37 +38,6 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey }) => {
   const colors = useBetaMoveColors()(moveId);
   const position = useBetaMoveVisualPosition()(moveId);
 
-  const { commit: appendBetaMove, state: appendState } =
-    useMutation<BetaChainMark_appendBetaMoveMutation>(graphql`
-      mutation BetaChainMark_appendBetaMoveMutation(
-        $input: AppendBetaMoveMutationInput!
-      ) {
-        appendBetaMove(input: $input) {
-          betaMove {
-            beta {
-              ...BetaEditor_betaNode # Refetch to update UI
-            }
-          }
-        }
-      }
-    `);
-  const { commit: updateBetaMove, state: updateState } =
-    useMutation<BetaChainMark_updateBetaMoveMutation>(graphql`
-      mutation BetaChainMark_updateBetaMoveMutation(
-        $input: UpdateBetaMoveMutationInput!
-      ) {
-        updateBetaMove(input: $input) {
-          betaMove {
-            id
-            # These are the only fields we modify
-            hold {
-              id
-            }
-          }
-        }
-      }
-    `);
-
   const ref = useRef<SVGCircleElement>(null);
 
   const [{ isDragging }, drag] = useDrag<
@@ -81,7 +46,7 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey }) => {
   >({
     type: "betaMoveOverlay",
     item: {
-      kind: "move",
+      action: "relocate",
       betaMoveId: moveId,
       bodyPart: betaMove.bodyPart,
     },
@@ -89,36 +54,6 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey }) => {
       return {
         isDragging: Boolean(monitor.isDragging()),
       };
-    },
-    end(item, monitor) {
-      const result = monitor.getDropResult();
-      if (result) {
-        // Dragging the last move in a chain adds a new move
-        if (betaMove.isLastInChain) {
-          appendBetaMove({
-            variables: {
-              input: {
-                betaId: betaMove.beta.id,
-                bodyPart: item.bodyPart,
-                holdId: result.holdId,
-              },
-            },
-            // Punting on optimistic update because ordering is hard
-          });
-        } else {
-          // Dragging an intermediate move just moves it to another spot
-          updateBetaMove({
-            variables: {
-              input: { betaMoveId: moveId, holdId: result.holdId },
-            },
-            optimisticResponse: {
-              updateBetaMove: {
-                betaMove: { id: moveId, hold: { id: result.holdId } },
-              },
-            },
-          });
-        }
-      }
     },
   });
 
@@ -185,12 +120,6 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey }) => {
           </Tooltip>
         </Portal>
       )}
-
-      <MutationErrorSnackbar message="Error adding move" state={appendState} />
-      <MutationErrorSnackbar
-        message="Error updating move"
-        state={updateState}
-      />
     </>
   );
 };

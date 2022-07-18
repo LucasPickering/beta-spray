@@ -89,36 +89,39 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
       <HoldEditorDropZone
         // Drag and drop = move or create hold
         onDrop={(item, result) => {
-          // If the dragged hold has an ID, that means it's an existing hold,
-          // so move it. If not, it's a new hold from the palette.
-          if (item.holdId) {
-            relocateHold({
-              variables: {
-                input: { holdId: item.holdId, position: result.position },
-              },
-              optimisticResponse: {
-                relocateHold: {
-                  hold: { id: item.holdId, position: result.position },
+          const position = result.position;
+
+          // Apply mutation based on what type of hold was being dragged - existing or new?
+          switch (item.action) {
+            case "create":
+              createHold({
+                variables: {
+                  input: {
+                    boulderId: problem.boulder.id,
+                    problemId: problem.id,
+                    position,
+                  },
+                  // *Don't* add to the image, just to the problem
+                  // TODO explain why?
+                  connections: [problem.holds.__id],
                 },
-              },
-            });
-          } else {
-            createHold({
-              variables: {
-                input: {
-                  boulderId: problem.boulder.id,
-                  problemId: problem.id,
-                  position: result.position,
+                // We'll create a phantom hold with no ID until the real one
+                // comes in
+                optimisticResponse: {
+                  createHold: { hold: { id: "", position } },
                 },
-                // *Don't* add to the image, just to the problem
-                connections: [problem.holds.__id],
-              },
-              optimisticResponse: {
-                createHold: {
-                  hold: { id: "", position: result.position },
+              });
+              break;
+            case "relocate":
+              relocateHold({
+                variables: {
+                  input: { holdId: item.holdId, position },
                 },
-              },
-            });
+                optimisticResponse: {
+                  relocateHold: { hold: { id: item.holdId, position } },
+                },
+              });
+              break;
           }
         }}
       />

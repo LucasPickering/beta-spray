@@ -151,7 +151,7 @@ const Editor: React.FC = () => {
                 <HelpText helpMode={helpMode} />
               </Paper>
 
-              <EditorPalette />
+              <EditorPalette selectedBeta={selectedBeta} />
 
               {/* Top-right overlay buttons are mobile-only, so they live in
                     EditorDrawer */}

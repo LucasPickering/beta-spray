@@ -5,10 +5,6 @@ import { graphql } from "relay-runtime";
 import { useFragment } from "react-relay";
 import { BetaChainLine_startBetaMoveNode$key } from "./__generated__/BetaChainLine_startBetaMoveNode.graphql";
 import { BetaChainLine_endBetaMoveNode$key } from "./__generated__/BetaChainLine_endBetaMoveNode.graphql";
-import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
-import { BetaChainLine_insertBetaMoveMutation } from "./__generated__/BetaChainLine_insertBetaMoveMutation.graphql";
-import { isDefined } from "util/func";
-import useMutation from "util/useMutation";
 import { useBetaMoveColors, useBetaMoveVisualPosition } from "util/svg";
 
 interface Props {
@@ -38,48 +34,19 @@ const BetaChainLine: React.FC<Props> = ({ startMoveKey, endMoveKey }) => {
     endMoveKey
   );
 
-  const { commit: insertBetaMove, state: insertState } =
-    useMutation<BetaChainLine_insertBetaMoveMutation>(graphql`
-      mutation BetaChainLine_insertBetaMoveMutation(
-        $input: InsertBetaMoveMutationInput!
-      ) {
-        insertBetaMove(input: $input) {
-          betaMove {
-            beta {
-              ...BetaEditor_betaNode # Refetch to update UI
-            }
-          }
-        }
-      }
-    `);
-
   const [{ isDragging }, drag] = useDrag<
     "betaMoveOverlay",
     { isDragging: boolean }
   >({
     type: "betaMoveOverlay",
     item: {
-      kind: "line",
+      action: "insertAfter",
       betaMoveId: startMove.id,
       bodyPart: startMove.bodyPart,
     },
     collect: (monitor) => ({
       isDragging: Boolean(monitor.isDragging()),
     }),
-    end: (item, monitor) => {
-      const result = monitor.getDropResult();
-      if (isDefined(result)) {
-        insertBetaMove({
-          variables: {
-            input: {
-              previousBetaMoveId: startMove.id,
-              holdId: result.holdId,
-            },
-          },
-          // Punting on optimistic update because ordering is hard
-        });
-      }
-    },
   });
 
   const getPosition = useBetaMoveVisualPosition();
@@ -120,7 +87,6 @@ const BetaChainLine: React.FC<Props> = ({ startMoveKey, endMoveKey }) => {
         stroke={`url(#${gradientId})`}
         {...coords}
       />
-      <MutationErrorSnackbar message="Error adding move" state={insertState} />
     </>
   );
 };

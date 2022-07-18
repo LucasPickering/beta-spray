@@ -23,14 +23,23 @@ import { DistributivePick } from "./types";
 export type DragType =
   | {
       kind: "holdOverlay";
-      item: { holdId?: string };
+      item: { action: "create" } | { action: "relocate"; holdId: string };
       drop: { position: OverlayPosition };
     }
   | {
       kind: "betaMoveOverlay";
+      // TODO update comment
       // Dragging either a move or a line around, to add a new move. In the case
       // of lines, the move should be the *start* of the line
-      item: { kind: "move" | "line"; betaMoveId: string; bodyPart: BodyPart };
+      item: {
+        bodyPart: BodyPart;
+      } & ( // Create a new move (dragging from palette)
+        | { action: "create"; betaId: string }
+        // Relocate an existing move to a new hold/position
+        | { action: "relocate"; betaMoveId: string }
+        // Insert a new move *after* the dragged one (dragging a line)
+        | { action: "insertAfter"; betaMoveId: string }
+      );
       drop: { kind: "hold"; holdId: string };
     }
   | {
