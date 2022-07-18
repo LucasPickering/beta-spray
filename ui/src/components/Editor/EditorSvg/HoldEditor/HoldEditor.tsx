@@ -1,8 +1,7 @@
 import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
-import React, { useContext } from "react";
+import React from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
-import { EditorSelectedHoldContext } from "util/context";
 import useMutation from "util/useMutation";
 import HoldEditorDropZone from "./HoldEditorDropZone";
 import HoldOverlay from "./HoldOverlay";
@@ -84,11 +83,9 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
       }
     `);
 
-  const [, setSelectedHold] = useContext(EditorSelectedHoldContext);
-
   return (
     <>
-      {/* Invisible layer to capture clicks for new holds */}
+      {/* Invisible layer to capture holds being dropped */}
       <HoldEditorDropZone
         // Drag and drop = move or create hold
         onDrop={(item, result) => {
@@ -131,22 +128,6 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
         // Always render all holds, but if we're editing a specific problem,
         // highlight those holds
         holdConnectionKey={problem.holds}
-        // Selecting a hold opens the move modal, which shouldn't be
-        // possible if no beta is selected. We still want to show a
-        // warning in this case though, so the user knows to create a
-        // beta.
-        // TODO we should just auto-create a beta in this case, but the
-        // graphql stuff for that is hard so I'm punting for now.
-        onClick={
-          setSelectedHold
-          // TODO contextual
-          // selectedBeta
-          //   ? setSelectedHold
-          //   : () =>
-          //       alert(
-          //         "Click the Add button on the right to start spraying beta"
-          //       )
-        }
         // Double click = delete
         onDoubleClick={(holdId) => {
           deleteHold({
@@ -161,38 +142,6 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
               },
             },
           });
-        }}
-        // Drag and drop = move hold
-        onDrop={(item, result) => {
-          if (item.holdId) {
-            relocateHold({
-              variables: {
-                input: { holdId: item.holdId, position: result.position },
-              },
-              optimisticResponse: {
-                relocateHold: {
-                  hold: { id: item.holdId, position: result.position },
-                },
-              },
-            });
-          } else {
-            createHold({
-              variables: {
-                input: {
-                  boulderId: problem.boulder.id,
-                  problemId: problem.id,
-                  position: result.position,
-                },
-                // *Don't* add to the image, just to the problem
-                connections: [problem.holds.__id],
-              },
-              optimisticResponse: {
-                createHold: {
-                  hold: { id: "", position: result.position },
-                },
-              },
-            });
-          }
         }}
       />
 

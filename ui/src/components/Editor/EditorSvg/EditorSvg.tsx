@@ -19,18 +19,13 @@ import { queriesBetaQuery } from "../__generated__/queriesBetaQuery.graphql";
 interface Props {
   problemKey: EditorSvg_problemNode$key;
   betaQueryRef: PreloadedQuery<queriesBetaQuery> | null | undefined;
-  selectedBeta: string | undefined;
 }
 
 /**
  * Main component of the editor. Render the boulder image as well as all overlay
  * components on top.
  */
-const EditorSvg: React.FC<Props> = ({
-  problemKey,
-  betaQueryRef,
-  selectedBeta,
-}) => {
+const EditorSvg: React.FC<Props> = ({ problemKey, betaQueryRef }) => {
   const problem = useFragment(
     graphql`
       fragment EditorSvg_problemNode on ProblemNode {

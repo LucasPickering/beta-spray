@@ -23,9 +23,7 @@ export const SvgContext = React.createContext<SvgContextType>(
  */
 export type StateContext<T> = [T, React.Dispatch<React.SetStateAction<T>>];
 
-export const EditorSelectedHoldContext = React.createContext<
-  StateContext<string | undefined>
->([undefined, noop]);
+// TODO describe difference between these two
 
 export const EditorHighlightedMoveContext = React.createContext<
   StateContext<string | undefined>

@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { DropHandler, useDrag, useDrop } from "util/dnd";
+import { useDrag, useDrop } from "util/dnd";
 import { graphql, useFragment } from "react-relay";
 import { HoldMark_holdNode$key } from "./__generated__/HoldMark_holdNode.graphql";
 import Positioned from "../Positioned";
@@ -10,15 +10,12 @@ interface Props {
   draggable?: boolean;
   onClick?: (holdId: string) => void;
   onDoubleClick?: (holdId: string) => void;
-  onDrop?: DropHandler<"holdOverlay">;
 }
 
-const HoldMark: React.FC<Props> = ({
-  holdKey,
-  onClick,
-  onDoubleClick,
-  onDrop,
-}) => {
+/**
+ * An editable hold, in the context of the full interface editor.
+ */
+const HoldMark: React.FC<Props> = ({ holdKey, onClick, onDoubleClick }) => {
   const hold = useFragment(
     graphql`
       fragment HoldMark_holdNode on HoldNode {
@@ -40,19 +37,9 @@ const HoldMark: React.FC<Props> = ({
   >({
     type: "holdOverlay",
     item: { holdId: hold.id },
-    canDrag() {
-      // Don't allow drag when holds aren't editable
-      return Boolean(onDrop);
-    },
     collect: (monitor) => ({
       isDragging: Boolean(monitor.isDragging()),
     }),
-    end: (item, monitor) => {
-      const result = monitor.getDropResult();
-      if (result && onDrop) {
-        onDrop(item, result);
-      }
-    },
   });
 
   // Drop *moves* onto this hold
@@ -61,8 +48,6 @@ const HoldMark: React.FC<Props> = ({
     collect: (monitor) => ({
       isOver: Boolean(monitor.isOver()),
     }),
-    // Tell the dragger which hold they just dropped onto
-    drop: () => ({ kind: "hold", holdId: hold.id }),
   });
 
   drag(drop(ref));
@@ -73,12 +58,7 @@ const HoldMark: React.FC<Props> = ({
       onClick={onClick && (() => onClick(hold.id))}
       onDoubleClick={onDoubleClick && (() => onDoubleClick(hold.id))}
     >
-      <HoldIcon
-        clickable={Boolean(onClick)}
-        draggable={Boolean(onDrop)}
-        isDragging={isDragging}
-        isOver={isOver}
-      />
+      <HoldIcon draggable isDragging={isDragging} isOver={isOver} />
     </Positioned>
   );
 };

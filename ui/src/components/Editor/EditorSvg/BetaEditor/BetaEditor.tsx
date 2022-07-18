@@ -2,7 +2,6 @@ import React, { useMemo } from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
 import { BetaEditor_betaNode$key } from "./__generated__/BetaEditor_betaNode.graphql";
-import NewBetaMoveDialog from "./NewBetaMoveDialog";
 import { groupBy } from "util/func";
 import BodyState from "./BodyState";
 import BetaChainLine from "./BetaChainLine";
@@ -26,7 +25,6 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
     graphql`
       fragment BetaEditor_betaNode on BetaNode {
         id
-        ...NewBetaMoveDialog_betaNode
         ...EditBetaMoveDialog_betaNode
         moves {
           ...BodyState_betaMoveNodeConnection
@@ -104,8 +102,6 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
         <BetaChainMark key={move.id} betaMoveKey={move} />
       ))}
 
-      {/* After clicking a hold, show a modal to add a move to it */}
-      <NewBetaMoveDialog betaKey={beta} />
       {/* After clicking a move, show a modal to edit it */}
       <EditBetaMoveDialog betaKey={beta} />
     </BetaContext.Provider>
