@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useContext, useMemo } from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
 import { BetaEditor_betaNode$key } from "./__generated__/BetaEditor_betaNode.graphql";
@@ -10,7 +10,8 @@ import withQuery from "util/withQuery";
 import { queriesBetaQuery } from "components/Editor/__generated__/queriesBetaQuery.graphql";
 import { betaQuery } from "components/Editor/queries";
 import { getBetaMoveColors, getBetaMoveVisualPositions } from "util/svg";
-import { BetaContext } from "util/context";
+import { BetaContext, EditorHighlightedMoveContext } from "util/context";
+import { comparator } from "util/func";
 import EditBetaMoveDialog from "./EditBetaMoveDialog";
 
 interface Props {
@@ -75,6 +76,28 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
     [moves]
   );
 
+  // We need to reorder moves slightly, to put the highlighted move at the end.
+  // This forces it to render on top (SVG doesn't have any z-index equivalent).
+  // We need to do this to the underlying array rather than just rendering a
+  // separate element for the highlighted move at the end, because then the
+  // element gets deleted and re-added by react when highlighting/unhighlighting,
+  // which makes it impossible to drag.
+  const [highlightedMoveId] = useContext(EditorHighlightedMoveContext);
+  const movesRenderOrder = useMemo(
+    () =>
+      highlightedMoveId
+        ? [...moves].sort(
+            // Sort the highlighted move at the end
+            comparator((move) =>
+              move.id === highlightedMoveId
+                ? Number.MAX_SAFE_INTEGER
+                : move.order
+            )
+          )
+        : moves,
+    [moves, highlightedMoveId]
+  );
+
   // Render one "chain" of moves per body part
   return (
     <BetaContext.Provider value={{ betaMoveColors, betaMoveVisualPositions }}>
@@ -97,8 +120,10 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
           move marks so it's not intrusive. */}
       <BodyState betaMoveConnectionKey={beta.moves} />
 
-      {/* Draw the actual move marks */}
-      {moves.map((move) => (
+      {/* Draw the actual move marks. We want to render the highlighted move
+          on top, which we can only do in SVG via ordering, so we need to make
+          sure that's rendered last (if there is a highlighted move) */}
+      {movesRenderOrder.map((move) => (
         <BetaChainMark key={move.id} betaMoveKey={move} />
       ))}
 
