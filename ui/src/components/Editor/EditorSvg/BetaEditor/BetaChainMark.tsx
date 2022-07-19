@@ -113,7 +113,7 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey }) => {
           <Tooltip
             open={isHighlighted}
             title={betaMove.annotation}
-            placement="top-end"
+            placement="bottom"
             PopperProps={{ anchorEl: ref.current }}
           >
             <span />

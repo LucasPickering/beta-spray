@@ -1,5 +1,5 @@
 import React from "react";
-import { BodyPart } from "util/svg";
+import { BodyPart, OverlayPosition } from "util/svg";
 import {
   styleDraggable,
   styleDraggableHighlight,
@@ -7,7 +7,7 @@ import {
 } from "styles/svg";
 import { Interpolation, Theme } from "@emotion/react";
 import { IconBodyPartRaw, IconNotesRaw } from "components/common/icons";
-import { isDefined } from "util/func";
+import { assertUnreachable, isDefined } from "util/func";
 import Positioned from "../Positioned";
 
 interface Props extends React.SVGProps<SVGGElement> {
@@ -80,8 +80,7 @@ const BetaMoveIcon = React.forwardRef<SVGGElement, Props>(
       )}
 
       {hasAnnotation && (
-        <Positioned position={{ x: 2, y: -2 }}>
-          <circle css={{ r: 1.5, fill: primaryColor }} />
+        <Positioned position={getAnnotationPosition(bodyPart)}>
           <IconNotesRaw />
         </Positioned>
       )}
@@ -90,5 +89,21 @@ const BetaMoveIcon = React.forwardRef<SVGGElement, Props>(
 );
 
 BetaMoveIcon.displayName = "BetaMoveIcon";
+
+function getAnnotationPosition(bodyPart: BodyPart): OverlayPosition {
+  switch (bodyPart) {
+    case "LEFT_HAND":
+      return { x: -0.2, y: 2.2 };
+    case "RIGHT_HAND":
+      return { x: 0.2, y: 2.2 };
+    case "LEFT_FOOT":
+      return { x: -2.2, y: 2.2 };
+    case "RIGHT_FOOT":
+      return { x: 2.2, y: 2.2 };
+    // NOTE: Don't use default, to force a type error if a variant is added
+    case "%future added value":
+      assertUnreachable();
+  }
+}
 
 export default BetaMoveIcon;
