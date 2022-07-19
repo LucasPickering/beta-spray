@@ -228,7 +228,6 @@ const BetaList: React.FC<Props> = ({
 
         <Button
           size="small"
-          variant="outlined"
           startIcon={<IconAdd />}
           onClick={() => onCreateNew()}
           sx={{ width: "100%" }}

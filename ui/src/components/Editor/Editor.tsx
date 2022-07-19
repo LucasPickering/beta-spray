@@ -6,10 +6,10 @@ import type { queriesProblemQuery as queriesProblemQueryType } from "./__generat
 import queriesProblemQuery from "./__generated__/queriesProblemQuery.graphql";
 import type { queriesBetaQuery as queriesBetaQueryType } from "./__generated__/queriesBetaQuery.graphql";
 import queriesBetaQuery from "./__generated__/queriesBetaQuery.graphql";
-import { Box, IconButton, Paper } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { DndProvider } from "react-dnd";
 import { TouchBackend } from "react-dnd-touch-backend";
-import { Home as IconHome } from "@mui/icons-material";
+import { ArrowBack as IconArrowBack } from "@mui/icons-material";
 import {
   EditorSelectedMoveContext,
   EditorHighlightedMoveContext,
@@ -19,7 +19,6 @@ import BetaDetails from "./EditorControls/BetaDetails";
 import BetaList from "./EditorControls/BetaList";
 import EditorControls from "./EditorControls/EditorControls";
 import EditorSvg from "./EditorSvg/EditorSvg";
-import HelpText from "./EditorSvg/HelpText";
 import EditorHelmet from "./EditorHelmet";
 import ProblemName from "./EditorControls/ProblemName";
 import EditorPalette from "./EditorPalette/EditorPalette";
@@ -102,10 +101,6 @@ const Editor: React.FC = () => {
     [refreshBetaQuery, navigate, problemId]
   );
 
-  // Figure out which help text to show based on editor state
-  // TODO update help text
-  const helpMode = selectedBeta ? "editBeta" : "noBeta";
-
   return (
     <DndProvider
       backend={TouchBackend}
@@ -128,7 +123,7 @@ const Editor: React.FC = () => {
               sx={{ overflow: "hidden" }}
             >
               {/* Wrapper for the SVG, to provide background color and spacing
-                    during loading */}
+                  during loading */}
               <Box
                 width="100%"
                 height="100%"
@@ -143,21 +138,18 @@ const Editor: React.FC = () => {
               </Box>
 
               {/* Top-left overlay buttons */}
-              <Paper sx={{ position: "absolute", top: 0, left: 0, margin: 1 }}>
-                <IconButton component={Link} to="/">
-                  <IconHome />
-                </IconButton>
-
-                <HelpText helpMode={helpMode} />
-              </Paper>
-
-              <EditorPalette selectedBeta={selectedBeta} />
+              <Box sx={{ position: "absolute", top: 0, left: 0, margin: 1 }}>
+                <EditorPalette selectedBeta={selectedBeta} />
+              </Box>
 
               {/* Top-right overlay buttons are mobile-only, so they live in
-                    EditorDrawer */}
+                  EditorDrawer */}
 
               {/* Controls sidebar/drawer */}
               <EditorControls>
+                <Button component={Link} to="/" startIcon={<IconArrowBack />}>
+                  Back
+                </Button>
                 <ProblemName queryRef={problemQueryRef} />
                 <BetaList
                   queryRef={problemQueryRef}

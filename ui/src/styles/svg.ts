@@ -24,6 +24,7 @@ export const styleDraggableHighlight = css({
   // I can't figure out the correct incantation to make this rule only apply to
   // `line` elements, but fortunately it doesn't seem to impact any other
   // elements so we can apply to all.
+  // TODO make this only apply to lines so it doesn't affect holds
   strokeWidth: 2.5,
 });
 

@@ -1,27 +1,31 @@
-import { IconButton, IconButtonProps } from "@mui/material";
+import { IconButton, IconButtonProps, Tooltip } from "@mui/material";
 import React from "react";
 import { DragKind, DragSpec, useDrag } from "util/dnd";
 
 interface Props<K extends DragKind> extends IconButtonProps {
   dragSpec: DragSpec<K>;
+  title: string;
   children: React.ReactNode;
 }
 
 /**
- * TODO
+ * A button in the palette, which the user can drag out to add an item to the
+ * editor.
  */
 function EditorPaletteButton<K extends DragKind>({
   dragSpec,
+  title,
   children,
   ...rest
 }: Props<K>): React.ReactElement {
   const [, drag] = useDrag(dragSpec);
 
-  // TODO accessibility and better css
   return (
-    <IconButton ref={drag} {...rest}>
-      {children}
-    </IconButton>
+    <Tooltip title={title} arrow>
+      <IconButton ref={drag} component="span" sx={{ cursor: "grab" }} {...rest}>
+        {children}
+      </IconButton>
+    </Tooltip>
   );
 }
 

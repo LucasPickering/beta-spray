@@ -23,7 +23,8 @@ export const SvgContext = React.createContext<SvgContextType>(
  */
 export type StateContext<T> = [T, React.Dispatch<React.SetStateAction<T>>];
 
-// TODO describe difference between these two
+// Highlighted move is on hover (or tap for mobile)
+// Selected move is on double tap, which opens the modal
 
 export const EditorHighlightedMoveContext = React.createContext<
   StateContext<string | undefined>

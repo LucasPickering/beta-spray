@@ -21,6 +21,23 @@ const theme = createTheme({
         variant: "filled",
       },
     },
+    MuiButtonBase: {
+      defaultProps: {
+        LinkComponent: LinkBehavior,
+      },
+    },
+    MuiButton: {
+      defaultProps: {
+        variant: "outlined",
+      },
+    },
+    MuiIconButton: {
+      styleOverrides: {
+        root: ({ theme }) => ({
+          borderRadius: theme.shape.borderRadius,
+        }),
+      },
+    },
     MuiLink: {
       defaultProps: {
         // I really can't figure out the typing here, pretty sure it's an MUI
@@ -29,18 +46,6 @@ const theme = createTheme({
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore 2322
         component: LinkBehavior,
-      },
-    },
-    MuiButtonBase: {
-      defaultProps: {
-        LinkComponent: LinkBehavior,
-      },
-    },
-    MuiIconButton: {
-      styleOverrides: {
-        root: ({ theme }) => ({
-          borderRadius: theme.shape.borderRadius,
-        }),
       },
     },
     MuiSnackbar: {
