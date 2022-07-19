@@ -8,8 +8,10 @@ import {
   Circle as IconCircle,
   Visibility as IconVisibility,
   VisibilityOff as IconVisibilityOff,
+  PlayArrow as IconPlayArrow,
+  Pause as IconPause,
 } from "@mui/icons-material";
-import { EditorVisibilityContext } from "util/context";
+import { EditorPlayPauseContext, EditorVisibilityContext } from "util/context";
 
 // Body parts, order top-left to bottom-right
 const bodyParts: BodyPart[] = [
@@ -31,6 +33,7 @@ interface Props {
  */
 const EditorPalette: React.FC<Props> = ({ selectedBeta }) => {
   const [visibility, setVisibility] = useContext(EditorVisibilityContext);
+  const [playPause, setPlayPause] = useContext(EditorPlayPauseContext);
 
   return (
     <Paper>
@@ -48,6 +51,16 @@ const EditorPalette: React.FC<Props> = ({ selectedBeta }) => {
               onClick={() => setVisibility((prev) => !prev)}
             >
               {visibility ? <IconVisibilityOff /> : <IconVisibility />}
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title={playPause === "pause" ? "Play" : "Pause"}>
+            <IconButton
+              onClick={() =>
+                setPlayPause((prev) => (prev === "play" ? "pause" : "play"))
+              }
+            >
+              {playPause === "pause" ? <IconPlayArrow /> : <IconPause />}
             </IconButton>
           </Tooltip>
         </Stack>

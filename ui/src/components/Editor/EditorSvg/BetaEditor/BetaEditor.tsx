@@ -13,6 +13,7 @@ import { getBetaMoveColors, getBetaMoveVisualPositions } from "util/svg";
 import { BetaContext, EditorHighlightedMoveContext } from "util/context";
 import { comparator } from "util/func";
 import EditBetaMoveDialog from "./EditBetaMoveDialog";
+import usePlayPause from "./usePlayPause";
 
 interface Props {
   betaKey: BetaEditor_betaNode$key;
@@ -65,16 +66,18 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
   // Calculate some derived data based on the full list of moves. It's better
   // to do this in a single memoized object instead of separate ones, to save
   // React memoization checks on each render
-  const { movesByBodyPart, betaMoveColors, betaMoveVisualPositions } = useMemo(
-    () => ({
-      movesByBodyPart: groupBy(moves, (move) => move.bodyPart),
-      // Group the moves by body part so we can draw chains. We assume the API
-      // response is ordered by `order`, so these should naturally be as well.
-      betaMoveColors: getBetaMoveColors(moves),
-      betaMoveVisualPositions: getBetaMoveVisualPositions(moves),
-    }),
-    [moves]
-  );
+  const { moveIDs, movesByBodyPart, betaMoveColors, betaMoveVisualPositions } =
+    useMemo(
+      () => ({
+        moveIDs: moves.map((move) => move.id),
+        movesByBodyPart: groupBy(moves, (move) => move.bodyPart),
+        // Group the moves by body part so we can draw chains. We assume the API
+        // response is ordered by `order`, so these should naturally be as well.
+        betaMoveColors: getBetaMoveColors(moves),
+        betaMoveVisualPositions: getBetaMoveVisualPositions(moves),
+      }),
+      [moves]
+    );
 
   // We need to reorder moves slightly, to put the highlighted move at the end.
   // This forces it to render on top (SVG doesn't have any z-index equivalent).
@@ -97,6 +100,8 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
         : moves,
     [moves, highlightedMoveId]
   );
+
+  usePlayPause(moveIDs);
 
   // Render one "chain" of moves per body part
   return (

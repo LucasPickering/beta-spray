@@ -14,6 +14,7 @@ import {
   EditorSelectedMoveContext,
   EditorHighlightedMoveContext,
   EditorVisibilityContext,
+  EditorPlayPauseContext,
 } from "util/context";
 import { ZoomPanProvider } from "util/zoom";
 import BetaDetails from "./EditorControls/BetaDetails";
@@ -56,6 +57,8 @@ const Editor: React.FC = () => {
   // ===
   // TODO
   const visibilityState = useState<boolean>(true);
+  // Which move is being emphasized
+  const playPauseState = useState<"play" | "pause">("pause");
   // Which move is being emphasized
   const highlightedMoveState = useState<string>();
   // Which move is being edited
@@ -113,67 +116,75 @@ const Editor: React.FC = () => {
       <EditorHelmet queryRef={problemQueryRef} />
 
       <EditorVisibilityContext.Provider value={visibilityState}>
-        <EditorHighlightedMoveContext.Provider value={highlightedMoveState}>
-          <EditorSelectedMoveContext.Provider value={selectedMoveState}>
-            <ZoomPanProvider>
-              {/* The maximum possible display area (the full screen) */}
-              <Box
-                display="flex"
-                justifyContent="center"
-                // Anchor for overlay button positioning
-                position="relative"
-                width="100vw"
-                height="100vh"
-                // Hide the image when it grows bigger than the viewport
-                sx={{ overflow: "hidden" }}
-              >
-                {/* Wrapper for the SVG, to provide background color and spacing
+        <EditorPlayPauseContext.Provider value={playPauseState}>
+          <EditorHighlightedMoveContext.Provider value={highlightedMoveState}>
+            <EditorSelectedMoveContext.Provider value={selectedMoveState}>
+              <ZoomPanProvider>
+                {/* The maximum possible display area (the full screen) */}
+                <Box
+                  display="flex"
+                  justifyContent="center"
+                  // Anchor for overlay button positioning
+                  position="relative"
+                  width="100vw"
+                  height="100vh"
+                  // Hide the image when it grows bigger than the viewport
+                  sx={{ overflow: "hidden" }}
+                >
+                  {/* Wrapper for the SVG, to provide background color and spacing
                   during loading */}
-                <Box
-                  width="100%"
-                  height="100%"
-                  sx={({ palette }) => ({
-                    backgroundColor: palette.background.paper,
-                  })}
-                >
-                  <EditorSvg
-                    queryRef={problemQueryRef}
-                    betaQueryRef={betaQueryRef}
-                  />
-                </Box>
+                  <Box
+                    width="100%"
+                    height="100%"
+                    sx={({ palette }) => ({
+                      backgroundColor: palette.background.paper,
+                    })}
+                  >
+                    <EditorSvg
+                      queryRef={problemQueryRef}
+                      betaQueryRef={betaQueryRef}
+                    />
+                  </Box>
 
-                {/* Top-left overlay buttons */}
-                <Box sx={{ position: "absolute", top: 0, left: 0, margin: 1 }}>
-                  <EditorPalette selectedBeta={selectedBeta} />
-                </Box>
+                  {/* Top-left overlay buttons */}
+                  <Box
+                    sx={{ position: "absolute", top: 0, left: 0, margin: 1 }}
+                  >
+                    <EditorPalette selectedBeta={selectedBeta} />
+                  </Box>
 
-                <Box
-                  sx={{ position: "absolute", bottom: 0, left: 0, margin: 1 }}
-                >
-                  <ItemTrashCan queryRef={problemQueryRef} />
-                </Box>
+                  <Box
+                    sx={{ position: "absolute", bottom: 0, left: 0, margin: 1 }}
+                  >
+                    <ItemTrashCan queryRef={problemQueryRef} />
+                  </Box>
 
-                {/* Top-right drawer button is mobile-only, rendered by
+                  {/* Top-right drawer button is mobile-only, rendered by
                     ToggleDrawer */}
 
-                {/* Controls sidebar/drawer */}
-                <EditorControls>
-                  <Button component={Link} to="/" startIcon={<IconArrowBack />}>
-                    Back
-                  </Button>
-                  <Divider />
-                  <ProblemName queryRef={problemQueryRef} />
-                  <BetaList
-                    queryRef={problemQueryRef}
-                    selectedBeta={selectedBeta}
-                    onSelectBeta={onSelectBeta}
-                  />
-                  <BetaDetails queryRef={betaQueryRef} />
-                </EditorControls>
-              </Box>
-            </ZoomPanProvider>
-          </EditorSelectedMoveContext.Provider>
-        </EditorHighlightedMoveContext.Provider>
+                  {/* Controls sidebar/drawer */}
+                  <EditorControls>
+                    <Button
+                      component={Link}
+                      to="/"
+                      startIcon={<IconArrowBack />}
+                    >
+                      Back
+                    </Button>
+                    <Divider />
+                    <ProblemName queryRef={problemQueryRef} />
+                    <BetaList
+                      queryRef={problemQueryRef}
+                      selectedBeta={selectedBeta}
+                      onSelectBeta={onSelectBeta}
+                    />
+                    <BetaDetails queryRef={betaQueryRef} />
+                  </EditorControls>
+                </Box>
+              </ZoomPanProvider>
+            </EditorSelectedMoveContext.Provider>
+          </EditorHighlightedMoveContext.Provider>
+        </EditorPlayPauseContext.Provider>
       </EditorVisibilityContext.Provider>
     </DndProvider>
   );
