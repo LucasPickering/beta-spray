@@ -1,9 +1,9 @@
-import { Paper, Stack } from "@mui/material";
+import { Divider, Paper, Stack } from "@mui/material";
 import { IconBodyPart } from "components/common/icons";
 import React from "react";
 import { BodyPart, formatBodyPart } from "util/svg";
-import HelpText from "../EditorSvg/HelpText";
-import EditorPaletteButton from "./EditorPaletteButton";
+import HelpText from "./HelpText";
+import DragSourceButton from "./DragSourceButton";
 import { Circle as IconCircle } from "@mui/icons-material";
 
 // Body parts, order top-left to bottom-right
@@ -27,16 +27,18 @@ const EditorPalette: React.FC<Props> = ({ selectedBeta }) => (
     <Stack direction="row">
       <HelpText />
 
-      <EditorPaletteButton
+      <Divider orientation="vertical" flexItem />
+
+      <DragSourceButton
         title="Hold"
         dragSpec={{ type: "holdOverlay", item: { action: "create" } }}
       >
         <IconCircle />
-      </EditorPaletteButton>
+      </DragSourceButton>
 
       {/* One button per body part */}
       {bodyParts.map((bodyPart) => (
-        <EditorPaletteButton
+        <DragSourceButton
           key={bodyPart}
           // TODO auto-create a beta server-side when adding a move, if necessary
           disabled={!selectedBeta}
@@ -54,7 +56,7 @@ const EditorPalette: React.FC<Props> = ({ selectedBeta }) => (
           }}
         >
           <IconBodyPart bodyPart={bodyPart} />
-        </EditorPaletteButton>
+        </DragSourceButton>
       ))}
     </Stack>
   </Paper>

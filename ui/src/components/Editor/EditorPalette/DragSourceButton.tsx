@@ -12,7 +12,7 @@ interface Props<K extends DragKind> extends IconButtonProps {
  * A button in the palette, which the user can drag out to add an item to the
  * editor.
  */
-function EditorPaletteButton<K extends DragKind>({
+function DragSourceButton<K extends DragKind>({
   dragSpec,
   title,
   children,
@@ -29,4 +29,4 @@ function EditorPaletteButton<K extends DragKind>({
   );
 }
 
-export default EditorPaletteButton;
+export default DragSourceButton;
