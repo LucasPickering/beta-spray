@@ -32,6 +32,7 @@ const BetaMoveListItem = React.forwardRef<SVGSVGElement, Props>(
           id
           bodyPart
           order
+          annotation
         }
       `,
       betaMoveKey
@@ -47,6 +48,8 @@ const BetaMoveListItem = React.forwardRef<SVGSVGElement, Props>(
         </ListItemIcon>
 
         <ListItemText
+          primary={`${betaMove.order} ${formatBodyPart(betaMove.bodyPart)}`}
+          secondary={betaMove.annotation}
           sx={[
             { color: colors.primary },
             // Show stroke color as an underline. This is a little ugly but it
@@ -56,9 +59,7 @@ const BetaMoveListItem = React.forwardRef<SVGSVGElement, Props>(
               textDecorationColor: colors.secondary,
             },
           ]}
-        >
-          {betaMove.order} {formatBodyPart(betaMove.bodyPart)}
-        </ListItemText>
+        />
 
         {/* Preview version of the element shouldn't show this button. Note: this
             actually impacts the DOM layout! When this element isn't present, MUI
