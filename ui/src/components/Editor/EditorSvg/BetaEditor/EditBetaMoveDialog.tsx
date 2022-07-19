@@ -102,6 +102,7 @@ const EditBetaMoveDialog: React.FC<Props> = ({ betaKey }) => {
                     },
                   },
                 },
+                onCompleted: onClose,
               })
             }
             onDelete={() =>
