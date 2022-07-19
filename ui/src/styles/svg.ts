@@ -21,11 +21,13 @@ export const styleDraggableHighlight = css({
     transform: "scale(1.5)",
   },
 
-  // I can't figure out the correct incantation to make this rule only apply to
-  // `line` elements, but fortunately it doesn't seem to impact any other
-  // elements so we can apply to all.
-  // TODO make this only apply to lines so it doesn't affect holds
-  strokeWidth: 2.5,
+  // This is really dumb, but I can't figure out how else to select only `line`
+  // elements
+  "&:not(:not(line))": {
+    // This is a bit hacky to hard-code the stroke width, but we only have one
+    // line type right now so it's fine
+    strokeWidth: 2.5,
+  },
 });
 
 /**

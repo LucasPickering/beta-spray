@@ -101,8 +101,8 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
                     problemId: problem.id,
                     position,
                   },
-                  // *Don't* add to the image, just to the problem
-                  // TODO explain why?
+                  // We only need to add to the problem holds here, because the
+                  // boulder holds aren't accessed directly in the UI
                   connections: [problem.holds.__id],
                 },
                 // We'll create a phantom hold with no ID until the real one

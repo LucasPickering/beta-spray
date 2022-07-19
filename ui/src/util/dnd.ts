@@ -28,9 +28,6 @@ export type DragType =
     }
   | {
       kind: "betaMoveOverlay";
-      // TODO update comment
-      // Dragging either a move or a line around, to add a new move. In the case
-      // of lines, the move should be the *start* of the line
       item: {
         bodyPart: BodyPart;
       } & ( // Create a new move (dragging from palette)

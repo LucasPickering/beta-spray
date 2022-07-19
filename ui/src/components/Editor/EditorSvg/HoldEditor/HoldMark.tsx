@@ -119,7 +119,8 @@ const HoldMark: React.FC<Props> = ({ holdKey, onClick, onDoubleClick }) => {
               },
             },
             // Punting on optimistic update because ordering is hard
-            // TODO maybe it'd be easy for this one? need to think more
+            // We could hypothetically add this, but we'd need to pipe down
+            // the total number of moves so we can do n+1 here
           });
           break;
         // Dragged a line between two moves (insert after the starting move)

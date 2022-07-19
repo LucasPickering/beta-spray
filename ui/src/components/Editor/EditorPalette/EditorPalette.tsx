@@ -1,10 +1,10 @@
-import { Paper, Stack, SvgIcon } from "@mui/material";
+import { Paper, Stack } from "@mui/material";
 import { IconBodyPart } from "components/common/icons";
 import React from "react";
 import { BodyPart, formatBodyPart } from "util/svg";
 import HelpText from "../EditorSvg/HelpText";
-import HoldIcon from "../EditorSvg/HoldEditor/HoldIcon";
 import EditorPaletteButton from "./EditorPaletteButton";
+import { Circle as IconCircle } from "@mui/icons-material";
 
 // Body parts, order top-left to bottom-right
 const bodyParts: BodyPart[] = [
@@ -19,7 +19,8 @@ interface Props {
 }
 
 /**
- * TODO
+ * A collection of items that can be dragged onto the editor to create new
+ * holds/moves.
  */
 const EditorPalette: React.FC<Props> = ({ selectedBeta }) => (
   <Paper>
@@ -30,18 +31,14 @@ const EditorPalette: React.FC<Props> = ({ selectedBeta }) => (
         title="Hold"
         dragSpec={{ type: "holdOverlay", item: { action: "create" } }}
       >
-        {/* TODO clean up this icon */}
-        <SvgIcon viewBox="-7 -7 14 14">
-          <HoldIcon />
-        </SvgIcon>
+        <IconCircle />
       </EditorPaletteButton>
 
       {/* One button per body part */}
       {bodyParts.map((bodyPart) => (
         <EditorPaletteButton
           key={bodyPart}
-          // TODO add a tooltip that explains why this is disabled
-          // OR even better, just auto-create a beta server-side
+          // TODO auto-create a beta server-side when adding a move, if necessary
           disabled={!selectedBeta}
           title={formatBodyPart(bodyPart)}
           dragSpec={{
