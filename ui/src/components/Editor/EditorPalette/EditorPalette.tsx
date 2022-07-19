@@ -10,6 +10,9 @@ import {
   VisibilityOff as IconVisibilityOff,
 } from "@mui/icons-material";
 import { EditorVisibilityContext } from "util/context";
+import { PreloadedQuery } from "react-relay";
+import { queriesBetaQuery } from "../__generated__/queriesBetaQuery.graphql";
+import PlayPauseControls from "./PlayPauseControls";
 
 // Body parts, order top-left to bottom-right
 const bodyParts: BodyPart[] = [
@@ -21,6 +24,7 @@ const bodyParts: BodyPart[] = [
 
 interface Props {
   selectedBeta: string | undefined;
+  betaQueryRef: PreloadedQuery<queriesBetaQuery> | null | undefined;
 }
 
 /**
@@ -29,7 +33,7 @@ interface Props {
  *
  * Appears in the top-left corner.
  */
-const EditorPalette: React.FC<Props> = ({ selectedBeta }) => {
+const EditorPalette: React.FC<Props> = ({ betaQueryRef, selectedBeta }) => {
   const [visibility, setVisibility] = useContext(EditorVisibilityContext);
 
   return (
@@ -42,7 +46,10 @@ const EditorPalette: React.FC<Props> = ({ selectedBeta }) => {
         <Stack direction="column">
           <HelpText />
 
-          <Tooltip title={visibility ? "Hide Overlay" : "Show Overlay"}>
+          <Tooltip
+            title={visibility ? "Hide Overlay" : "Show Overlay"}
+            placement="right"
+          >
             <IconButton
               color={visibility ? "default" : "primary"}
               onClick={() => setVisibility((prev) => !prev)}
@@ -50,6 +57,8 @@ const EditorPalette: React.FC<Props> = ({ selectedBeta }) => {
               {visibility ? <IconVisibilityOff /> : <IconVisibility />}
             </IconButton>
           </Tooltip>
+
+          <PlayPauseControls queryRef={betaQueryRef} />
         </Stack>
 
         {/* Draggable items */}

@@ -6,7 +6,7 @@ import React from "react";
  * An overlay to show contextual help on top of the editor.
  */
 const HelpText: React.FC = () => (
-  <Tooltip title={<HelpTextContent />} describeChild>
+  <Tooltip title={<HelpTextContent />} placement="right" describeChild>
     <IconButton>
       <IconHelp />
     </IconButton>

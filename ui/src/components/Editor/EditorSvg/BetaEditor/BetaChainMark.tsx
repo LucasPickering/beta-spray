@@ -1,6 +1,6 @@
 import React, { useContext, useRef } from "react";
 import { useDrag, useDragLayer } from "util/dnd";
-import { ClickAwayListener, Portal, Tooltip } from "@mui/material";
+import { Portal, Tooltip } from "@mui/material";
 import {
   EditorHighlightedMoveContext,
   EditorSelectedMoveContext,
@@ -75,38 +75,30 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey }) => {
   drag(ref);
   return (
     <>
-      <ClickAwayListener
-        // Listen for leading edge of event, to catch drags as well
-        mouseEvent="onMouseDown"
-        touchEvent="onTouchStart"
-        // Click away => unhighlight move
-        onClickAway={() => setHighlightedMove(undefined)}
-      >
-        <Positioned position={position}>
-          <BetaMoveIcon
-            ref={ref}
-            bodyPart={betaMove.bodyPart}
-            order={betaMove.order}
-            hasAnnotation={Boolean(betaMove.annotation)}
-            primaryColor={colors.primary}
-            secondaryColor={colors.secondary}
-            isDragging={isDragging}
-            isHighlighted={isHighlighted}
-            // Don't block drop events when another element is being dragged
-            css={isDraggingOther && { pointerEvents: "none" }}
-            // Click => toggle highlight on move
-            onClick={() =>
-              // If we already "own" the selection, then toggle off
-              setHighlightedMove((old) => (old === moveId ? undefined : moveId))
-            }
-            // Double click => delete move
-            onDoubleClick={() => setSelectedMove(moveId)}
-            // Hover => highlight move
-            onMouseEnter={() => setHighlightedMove(moveId)}
-            onMouseLeave={() => setHighlightedMove(undefined)}
-          />
-        </Positioned>
-      </ClickAwayListener>
+      <Positioned position={position}>
+        <BetaMoveIcon
+          ref={ref}
+          bodyPart={betaMove.bodyPart}
+          order={betaMove.order}
+          hasAnnotation={Boolean(betaMove.annotation)}
+          primaryColor={colors.primary}
+          secondaryColor={colors.secondary}
+          isDragging={isDragging}
+          isHighlighted={isHighlighted}
+          // Don't block drop events when another element is being dragged
+          css={isDraggingOther && { pointerEvents: "none" }}
+          // Click => toggle highlight on move
+          onClick={() =>
+            // If we already "own" the selection, then toggle off
+            setHighlightedMove((old) => (old === moveId ? undefined : moveId))
+          }
+          // Double click => delete move
+          onDoubleClick={() => setSelectedMove(moveId)}
+          // Hover => highlight move
+          onMouseEnter={() => setHighlightedMove(moveId)}
+          onMouseLeave={() => setHighlightedMove(undefined)}
+        />
+      </Positioned>
 
       {betaMove.annotation && (
         <Portal>

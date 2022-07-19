@@ -12,6 +12,7 @@ interface Options<
     data: Query["response"]
   ) => Pick<Props, DataKeys> | null | undefined;
   fallbackElement: React.ReactElement | null;
+  preloadElement?: React.ReactElement | null;
   noDataElement?: React.ReactElement | null;
 }
 
@@ -65,8 +66,10 @@ type SuspenseProps<
  * @param dataToProps Function to map the query response to the child component's
  *  props. Return null/undefined if data is missing, which will render the
  *  no-data element instead of the child component
- * @param fallbackElement Element to show while query is loading (via Suspense)
- * @param noDataElement Child to render when needed data is not present
+ * @param fallbackElement Element to render while query is loading (via Suspense)
+ * @param preloadElement Element to render before the first load is requested
+ * @param noDataElement Element to render when the API didn't return the
+ *  requested data (typically indicating a 404-type error)
  * @returns Wrapped component
  */
 function withQuery<
@@ -77,6 +80,7 @@ function withQuery<
   query,
   dataToProps,
   fallbackElement,
+  preloadElement = null,
   noDataElement = null,
 }: Options<Query, Props, DataKeys>): (
   Component: React.FC<Props>
@@ -112,14 +116,16 @@ function withQuery<
     const SuspenseComponent: React.FC<
       SuspenseProps<Query, Props, DataKeys>
     > = ({ queryRef, ...rest }) => {
+      if (!queryRef) {
+        return preloadElement;
+      }
+
       return (
         <Suspense fallback={fallbackElement}>
-          {queryRef && (
-            <LoaderComponent
-              queryRef={queryRef}
-              {...(rest as unknown as Props)}
-            />
-          )}
+          <LoaderComponent
+            queryRef={queryRef}
+            {...(rest as unknown as Props)}
+          />
         </Suspense>
       );
     };

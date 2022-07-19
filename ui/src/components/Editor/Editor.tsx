@@ -144,7 +144,10 @@ const Editor: React.FC = () => {
 
                 {/* Top-left overlay buttons */}
                 <Box sx={{ position: "absolute", top: 0, left: 0, margin: 1 }}>
-                  <EditorPalette selectedBeta={selectedBeta} />
+                  <EditorPalette
+                    selectedBeta={selectedBeta}
+                    betaQueryRef={betaQueryRef}
+                  />
                 </Box>
 
                 <Box
