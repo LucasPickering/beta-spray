@@ -22,6 +22,7 @@ import EditorSvg from "./EditorSvg/EditorSvg";
 import EditorHelmet from "./EditorHelmet";
 import ProblemName from "./EditorControls/ProblemName";
 import EditorPalette from "./EditorPalette/EditorPalette";
+import ItemTrashCan from "./EditorPalette/ItemTrashCan";
 
 /**
  * Main app component, for viewing+editing boulders/problems/betas. This is
@@ -140,6 +141,10 @@ const Editor: React.FC = () => {
               {/* Top-left overlay buttons */}
               <Box sx={{ position: "absolute", top: 0, left: 0, margin: 1 }}>
                 <EditorPalette selectedBeta={selectedBeta} />
+              </Box>
+
+              <Box sx={{ position: "absolute", bottom: 0, left: 0, margin: 1 }}>
+                <ItemTrashCan queryRef={problemQueryRef} />
               </Box>
 
               {/* Top-right overlay buttons are mobile-only, so they live in

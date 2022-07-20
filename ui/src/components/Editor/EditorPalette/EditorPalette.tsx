@@ -1,6 +1,6 @@
+import React from "react";
 import { Divider, Paper, Stack } from "@mui/material";
 import { IconBodyPart } from "components/common/icons";
-import React from "react";
 import { BodyPart, formatBodyPart } from "util/svg";
 import HelpText from "./HelpText";
 import DragSourceButton from "./DragSourceButton";
@@ -21,14 +21,18 @@ interface Props {
 /**
  * A collection of items that can be dragged onto the editor to create new
  * holds/moves.
+ *
+ * Appears in the top-left corner.
  */
 const EditorPalette: React.FC<Props> = ({ selectedBeta }) => (
   <Paper>
     <Stack direction="row">
+      {/* Misc utils */}
       <HelpText />
 
       <Divider orientation="vertical" flexItem />
 
+      {/* Draggable items */}
       <DragSourceButton
         title="Hold"
         dragSpec={{ type: "holdOverlay", item: { action: "create" } }}

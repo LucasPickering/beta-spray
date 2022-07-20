@@ -57,11 +57,11 @@ const BetaDetailsMove: React.FC<Props> = ({
         isDragging: Boolean(monitor.isDragging()),
       };
     },
-    end(item) {
+    end(item, monitor) {
       if (onDrop) {
         // Second param is `result` which we don't use in this case, but let's
-        // pass something just for consistency with other DnD use cases
-        onDrop(item, undefined);
+        // pass it just for consistency with other DnD use cases
+        onDrop(item, monitor.getDropResult() ?? undefined);
       }
     },
   });

@@ -2,6 +2,7 @@ import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
 import React from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
+import { assertUnreachable } from "util/func";
 import useMutation from "util/useMutation";
 import HoldEditorDropZone from "./HoldEditorDropZone";
 import HoldOverlay from "./HoldOverlay";
@@ -89,6 +90,12 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
       <HoldEditorDropZone
         // Drag and drop = move or create hold
         onDrop={(item, result) => {
+          // This is the drop zone drop handler, so it'd be really weird if we
+          // dropped onto something other than the drop zone... drop drop drop
+          if (result.kind !== "dropZone") {
+            assertUnreachable();
+          }
+
           const position = result.position;
 
           // Apply mutation based on what type of hold was being dragged - existing or new?

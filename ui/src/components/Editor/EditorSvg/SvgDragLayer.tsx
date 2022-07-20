@@ -1,11 +1,12 @@
 import React from "react";
-import { useDragLayer } from "util/dnd";
+import { getItemWithKind, useDragLayer } from "util/dnd";
 import { useDOMToSVGPosition } from "util/svg";
 import DragPreview from "./SvgDragPreview";
 import Positioned from "./Positioned";
 
 const SvgDragLayer: React.FC = () => {
   const { itemWithKind, currentOffset } = useDragLayer((monitor) => ({
+    itemWithKind: getItemWithKind(monitor),
     currentOffset: monitor.getClientOffset(),
   }));
 

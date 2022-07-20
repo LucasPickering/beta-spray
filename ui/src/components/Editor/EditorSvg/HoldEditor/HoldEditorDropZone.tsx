@@ -25,7 +25,10 @@ const HoldEditorDropZone: React.FC<Props> = ({ onDrop, ...rest }) => {
       assertIsDefined(mousePos);
 
       // Call provided drop handler, if given
-      const result = { position: domToSVGPosition(mousePos) };
+      const result = {
+        kind: "dropZone" as const,
+        position: domToSVGPosition(mousePos),
+      };
       if (onDrop) {
         onDrop(item, result);
       }

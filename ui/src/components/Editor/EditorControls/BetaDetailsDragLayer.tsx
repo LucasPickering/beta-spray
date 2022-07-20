@@ -1,6 +1,6 @@
 import { Portal } from "@mui/material";
 import React from "react";
-import { useDragLayer } from "util/dnd";
+import { getItemWithKind, useDragLayer } from "util/dnd";
 import BetaDetailsDragPreview from "./BetaDetailsDragPreview";
 import { BetaDetailsDragPreview_betaMoveNodeConnection$key } from "./__generated__/BetaDetailsDragPreview_betaMoveNodeConnection.graphql";
 
@@ -25,8 +25,7 @@ interface Props {
 const BetaDetailsDragLayer: React.FC<Props> = ({ betaMoveConnectionKey }) => {
   const { itemWithKind, initialOffset, offsetDifference } = useDragLayer(
     (monitor) => ({
-      itemType: monitor.getItemType(),
-      item: monitor.getItem(),
+      itemWithKind: getItemWithKind(monitor),
       initialOffset: monitor.getInitialSourceClientOffset(),
       offsetDifference: monitor.getDifferenceFromInitialOffset(),
     })
