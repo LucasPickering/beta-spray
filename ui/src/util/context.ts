@@ -23,6 +23,10 @@ export const SvgContext = React.createContext<SvgContextType>(
  */
 export type StateContext<T> = [T, React.Dispatch<React.SetStateAction<T>>];
 
+export const EditorVisibilityContext = React.createContext<
+  StateContext<boolean>
+>([true, noop]);
+
 // Highlighted move is on hover (or tap for mobile)
 // Selected move is on double tap, which opens the modal
 

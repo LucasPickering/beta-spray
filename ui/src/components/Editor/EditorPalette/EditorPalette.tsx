@@ -1,10 +1,15 @@
-import React from "react";
-import { Divider, Paper, Stack } from "@mui/material";
+import React, { useContext } from "react";
+import { Divider, IconButton, Paper, Stack, Tooltip } from "@mui/material";
 import { IconBodyPart } from "components/common/icons";
 import { BodyPart, formatBodyPart } from "util/svg";
 import HelpText from "./HelpText";
 import DragSourceButton from "./DragSourceButton";
-import { Circle as IconCircle } from "@mui/icons-material";
+import {
+  Circle as IconCircle,
+  Visibility as IconVisibility,
+  VisibilityOff as IconVisibilityOff,
+} from "@mui/icons-material";
+import { EditorVisibilityContext } from "util/context";
 
 // Body parts, order top-left to bottom-right
 const bodyParts: BodyPart[] = [
@@ -24,46 +29,62 @@ interface Props {
  *
  * Appears in the top-left corner.
  */
-const EditorPalette: React.FC<Props> = ({ selectedBeta }) => (
-  <Paper>
-    <Stack direction="row">
-      {/* Misc utils */}
-      <HelpText />
+const EditorPalette: React.FC<Props> = ({ selectedBeta }) => {
+  const [visibility, setVisibility] = useContext(EditorVisibilityContext);
 
-      <Divider orientation="vertical" flexItem />
+  return (
+    <Paper>
+      <Stack direction="column" divider={<Divider />}>
+        {/* Misc utils */}
+        <Stack direction="row">
+          <HelpText />
 
-      {/* Draggable items */}
-      <DragSourceButton
-        title="Hold"
-        dragSpec={{ type: "holdOverlay", item: { action: "create" } }}
-      >
-        <IconCircle />
-      </DragSourceButton>
+          <Tooltip title={visibility ? "Hide Overlay" : "Show Overlay"}>
+            <IconButton
+              onMouseDown={() => setVisibility(false)}
+              onMouseUp={() => setVisibility(true)}
+              // onClick={() => setVisibility((prev) => !prev)}
+            >
+              {visibility ? <IconVisibilityOff /> : <IconVisibility />}
+            </IconButton>
+          </Tooltip>
+        </Stack>
 
-      {/* One button per body part */}
-      {bodyParts.map((bodyPart) => (
-        <DragSourceButton
-          key={bodyPart}
-          // TODO auto-create a beta server-side when adding a move, if necessary
-          disabled={!selectedBeta}
-          title={formatBodyPart(bodyPart)}
-          dragSpec={{
-            type: "betaMoveOverlay",
-            item: {
-              action: "create",
-              bodyPart,
-              // Assertion is safe because the button is disabled when beta is not
-              // selected
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              betaId: selectedBeta!,
-            },
-          }}
-        >
-          <IconBodyPart bodyPart={bodyPart} />
-        </DragSourceButton>
-      ))}
-    </Stack>
-  </Paper>
-);
+        {/* Draggable items */}
+        <Stack direction="row">
+          <DragSourceButton
+            title="Hold"
+            dragSpec={{ type: "holdOverlay", item: { action: "create" } }}
+          >
+            <IconCircle />
+          </DragSourceButton>
+
+          {/* One button per body part */}
+          {bodyParts.map((bodyPart) => (
+            <DragSourceButton
+              key={bodyPart}
+              // TODO auto-create a beta server-side when adding a move, if necessary
+              disabled={!selectedBeta}
+              title={formatBodyPart(bodyPart)}
+              dragSpec={{
+                type: "betaMoveOverlay",
+                item: {
+                  action: "create",
+                  bodyPart,
+                  // Assertion is safe because the button is disabled when beta is not
+                  // selected
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                  betaId: selectedBeta!,
+                },
+              }}
+            >
+              <IconBodyPart bodyPart={bodyPart} />
+            </DragSourceButton>
+          ))}
+        </Stack>
+      </Stack>
+    </Paper>
+  );
+};
 
 export default EditorPalette;

@@ -1,5 +1,5 @@
 import React, { useContext, useRef } from "react";
-import { SvgContext } from "util/context";
+import { EditorVisibilityContext, SvgContext } from "util/context";
 import { graphql, PreloadedQuery, useFragment } from "react-relay";
 import { useZoomPan } from "util/zoom";
 import { queriesProblemQuery } from "../__generated__/queriesProblemQuery.graphql";
@@ -50,6 +50,7 @@ const EditorSvg: React.FC<Props> = ({ problemKey, betaQueryRef }) => {
   );
 
   const ref = useRef<SVGSVGElement | null>(null);
+  const [visibility] = useContext(EditorVisibilityContext);
 
   const dimensions = {
     width: problem.boulder.image.svgWidth,
@@ -65,8 +66,12 @@ const EditorSvg: React.FC<Props> = ({ problemKey, betaQueryRef }) => {
             events from other components */}
         <SvgDragLayer />
 
-        <HoldEditor problemKey={problem} />
-        <BetaEditor queryRef={betaQueryRef} />
+        {visibility && (
+          <>
+            <HoldEditor problemKey={problem} />
+            <BetaEditor queryRef={betaQueryRef} />
+          </>
+        )}
       </EditorSvgInner>
     </SvgContext.Provider>
   );
