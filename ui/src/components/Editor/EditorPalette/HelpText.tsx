@@ -26,10 +26,10 @@ const HelpTextContent: React.FC = () => {
         <strong>Drag a line</strong> to add an intermediate move
       </div>
       <div>
-        <strong>Double click a hold</strong> to delete
+        <strong>Drag a hold or move to the trash</strong> to delete
       </div>
       <div>
-        <strong>Double click a move</strong> to edit or delete
+        <strong>Double click a move</strong> to edit
       </div>
       <div>
         <strong>Reorder moves</strong> in the list at right
