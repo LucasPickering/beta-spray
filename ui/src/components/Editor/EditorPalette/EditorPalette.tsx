@@ -34,9 +34,12 @@ const EditorPalette: React.FC<Props> = ({ selectedBeta }) => {
 
   return (
     <Paper>
-      <Stack direction="column" divider={<Divider />}>
+      <Stack
+        direction="row"
+        divider={<Divider orientation="vertical" flexItem />}
+      >
         {/* Misc utils */}
-        <Stack direction="row">
+        <Stack direction="column">
           <HelpText />
 
           <Tooltip title={visibility ? "Hide Overlay" : "Show Overlay"}>
@@ -50,7 +53,7 @@ const EditorPalette: React.FC<Props> = ({ selectedBeta }) => {
         </Stack>
 
         {/* Draggable items */}
-        <Stack direction="row">
+        <Stack direction="column">
           <DragSourceButton
             title="Hold"
             disabled={!visibility}
