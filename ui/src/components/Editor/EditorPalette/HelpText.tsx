@@ -7,7 +7,7 @@ import React from "react";
  */
 const HelpText: React.FC = () => (
   <Tooltip title={<HelpTextContent />} arrow describeChild>
-    <IconButton color="secondary">
+    <IconButton>
       <IconHelp />
     </IconButton>
   </Tooltip>

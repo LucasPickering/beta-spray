@@ -41,9 +41,8 @@ const EditorPalette: React.FC<Props> = ({ selectedBeta }) => {
 
           <Tooltip title={visibility ? "Hide Overlay" : "Show Overlay"}>
             <IconButton
-              onMouseDown={() => setVisibility(false)}
-              onMouseUp={() => setVisibility(true)}
-              // onClick={() => setVisibility((prev) => !prev)}
+              color={visibility ? "default" : "primary"}
+              onClick={() => setVisibility((prev) => !prev)}
             >
               {visibility ? <IconVisibilityOff /> : <IconVisibility />}
             </IconButton>
@@ -54,6 +53,7 @@ const EditorPalette: React.FC<Props> = ({ selectedBeta }) => {
         <Stack direction="row">
           <DragSourceButton
             title="Hold"
+            disabled={!visibility}
             dragSpec={{ type: "holdOverlay", item: { action: "create" } }}
           >
             <IconCircle />
@@ -64,7 +64,7 @@ const EditorPalette: React.FC<Props> = ({ selectedBeta }) => {
             <DragSourceButton
               key={bodyPart}
               // TODO auto-create a beta server-side when adding a move, if necessary
-              disabled={!selectedBeta}
+              disabled={!visibility || !selectedBeta}
               title={formatBodyPart(bodyPart)}
               dragSpec={{
                 type: "betaMoveOverlay",
