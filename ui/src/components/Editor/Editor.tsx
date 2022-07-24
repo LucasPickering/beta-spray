@@ -6,7 +6,7 @@ import type { queriesProblemQuery as queriesProblemQueryType } from "./__generat
 import queriesProblemQuery from "./__generated__/queriesProblemQuery.graphql";
 import type { queriesBetaQuery as queriesBetaQueryType } from "./__generated__/queriesBetaQuery.graphql";
 import queriesBetaQuery from "./__generated__/queriesBetaQuery.graphql";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Divider } from "@mui/material";
 import { DndProvider } from "react-dnd";
 import { TouchBackend } from "react-dnd-touch-backend";
 import { ArrowBack as IconArrowBack } from "@mui/icons-material";
@@ -161,6 +161,7 @@ const Editor: React.FC = () => {
                   <Button component={Link} to="/" startIcon={<IconArrowBack />}>
                     Back
                   </Button>
+                  <Divider />
                   <ProblemName queryRef={problemQueryRef} />
                   <BetaList
                     queryRef={problemQueryRef}
