@@ -21,7 +21,7 @@ function DragSourceButton<K extends DragKind>({
   const [, drag] = useDrag(dragSpec);
 
   return (
-    <Tooltip title={title} arrow>
+    <Tooltip title={title} placement="right">
       <IconButton ref={drag} component="span" sx={{ cursor: "grab" }} {...rest}>
         {children}
       </IconButton>

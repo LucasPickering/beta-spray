@@ -99,7 +99,7 @@ export const ItemTrashCan: React.FC<Props> = ({ problemKey }) => {
 
   return (
     <>
-      <Tooltip title="Drag Here to Delete" arrow>
+      <Tooltip title="Drag Here to Delete">
         <IconButton ref={drop} component="span" color="error" size="large">
           <IconDelete />
         </IconButton>

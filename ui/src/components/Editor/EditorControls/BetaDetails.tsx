@@ -109,7 +109,9 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
         <FormLabel component="span">Moves</FormLabel>
 
         {moves.length === 0 && (
-          <Typography variant="body2">Click a hold to add a move</Typography>
+          <Typography variant="body2">
+            Drag a move from the palette to add
+          </Typography>
         )}
 
         <List component="ol">
