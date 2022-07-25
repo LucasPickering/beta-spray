@@ -5,31 +5,27 @@ import {
   CardContent,
   CardMedia,
   IconButton,
-  Input,
   Skeleton,
   Tooltip,
   Typography,
 } from "@mui/material";
 import dayjs from "dayjs";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { graphql, useFragment } from "react-relay";
-import {
-  Edit as IconEdit,
-  Delete as IconDelete,
-  Done as IconDone,
-} from "@mui/icons-material";
+import { Delete as IconDelete } from "@mui/icons-material";
 import { ProblemCard_problemNode$key } from "./__generated__/ProblemCard_problemNode.graphql";
 import LinkBehavior from "components/common/LinkBehavior";
+import Editable from "components/common/Editable";
 
 interface Props {
   problemKey: ProblemCard_problemNode$key;
   // Called _after_ taking input
-  onEdit?: (problemId: string, name: string) => void;
+  onEditName?: (problemId: string, name: string) => void;
   // Called _after_ confirmation dialog
   onDelete?: (problemId: string) => void;
 }
 
-const ProblemCard: React.FC<Props> = ({ problemKey, onEdit, onDelete }) => {
+const ProblemCard: React.FC<Props> = ({ problemKey, onEditName, onDelete }) => {
   const problem = useFragment(
     graphql`
       fragment ProblemCard_problemNode on ProblemNode {
@@ -54,15 +50,6 @@ const ProblemCard: React.FC<Props> = ({ problemKey, onEdit, onDelete }) => {
     problemKey
   );
 
-  const [editing, setEditing] = useState<boolean>(false);
-  const [problemName, setProblemName] = useState<string>(problem.name);
-
-  // If API's name changes, update local state. Makes sure we don't get out of
-  // date if an update request fails
-  useEffect(() => {
-    setProblemName(problem.name);
-  }, [problem.name]);
-
   // Pre-select first beta, if possible
   let linkPath = `/problems/${problem.id}`;
   if (problem.betas.edges.length > 0) {
@@ -70,19 +57,7 @@ const ProblemCard: React.FC<Props> = ({ problemKey, onEdit, onDelete }) => {
   }
 
   return (
-    <Card
-      // Form enables name editing functionalities
-      {...(editing && {
-        component: "form",
-        onSubmit: (e) => {
-          e.preventDefault(); // Prevent page reload from form
-          setEditing(false);
-          if (onEdit) {
-            onEdit(problem.id, problemName);
-          }
-        },
-      })}
-    >
+    <Card>
       <CardActionArea component={LinkBehavior} href={linkPath}>
         <CardMedia sx={{ height: 200 }}>
           {problem.boulder.image.url ? (
@@ -102,54 +77,42 @@ const ProblemCard: React.FC<Props> = ({ problemKey, onEdit, onDelete }) => {
       </CardActionArea>
 
       <CardContent>
-        {editing ? (
-          <Input
-            autoFocus
-            value={problemName}
-            onChange={(e) => setProblemName(e.target.value)}
-            sx={{ display: "block" }}
-          />
-        ) : (
-          <Typography variant="h6" component="h3">
-            {/* Missing name indicates it's still loading */}
-            {problemName || <Skeleton />}
-          </Typography>
-        )}
+        <Typography variant="h6" component="h3">
+          {problem.name ? (
+            <Editable
+              value={problem.name}
+              onChange={
+                onEditName && ((newValue) => onEditName(problem.id, newValue))
+              }
+            />
+          ) : (
+            // Missing name indicates it's still loading
+            <Skeleton />
+          )}
+        </Typography>
         <Typography variant="subtitle1" component="span" color="text.secondary">
           {dayjs(problem.createdAt).format("LLL")}
         </Typography>
       </CardContent>
 
       <CardActions sx={{ justifyContent: "end" }}>
-        {onEdit &&
-          (editing ? (
-            <Tooltip title="Save Changes">
-              <IconButton type="submit" color="success">
-                <IconDone />
-              </IconButton>
-            </Tooltip>
-          ) : (
-            <Tooltip title="Edit">
-              <IconButton aria-label="Edit" onClick={() => setEditing(true)}>
-                <IconEdit />
-              </IconButton>
-            </Tooltip>
-          ))}
         {onDelete && (
-          <IconButton
-            color="error"
-            onClick={() => {
-              if (
-                window.confirm(
-                  `Are you sure you want to delete ${problemName}?`
-                )
-              ) {
-                onDelete(problem.id);
-              }
-            }}
-          >
-            <IconDelete />
-          </IconButton>
+          <Tooltip title="Delete Problem">
+            <IconButton
+              color="error"
+              onClick={() => {
+                if (
+                  window.confirm(
+                    `Are you sure you want to delete ${problem.name}?`
+                  )
+                ) {
+                  onDelete(problem.id);
+                }
+              }}
+            >
+              <IconDelete />
+            </IconButton>
+          </Tooltip>
         )}
       </CardActions>
     </Card>

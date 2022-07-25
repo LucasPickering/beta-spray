@@ -5,6 +5,10 @@ import { problemQuery } from "../queries";
 import { queriesProblemQuery } from "../__generated__/queriesProblemQuery.graphql";
 import { graphql, useFragment } from "react-relay";
 import { ProblemName_problemNode$key } from "./__generated__/ProblemName_problemNode.graphql";
+import Editable from "components/common/Editable";
+import useMutation from "util/useMutation";
+import { ProblemName_updateProblemMutation } from "./__generated__/ProblemName_updateProblemMutation.graphql";
+import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
 
 interface Props {
   problemKey: ProblemName_problemNode$key;
@@ -25,13 +29,54 @@ const ProblemName: React.FC<Props> = ({ problemKey }) => {
   const problem = useFragment(
     graphql`
       fragment ProblemName_problemNode on ProblemNode {
+        id
         name
       }
     `,
     problemKey
   );
 
-  return <Typography {...typographyProps}>{problem.name}</Typography>;
+  const { commit: updateProblem, state: updateState } =
+    useMutation<ProblemName_updateProblemMutation>(graphql`
+      mutation ProblemName_updateProblemMutation(
+        $input: UpdateProblemMutationInput!
+      ) {
+        updateProblem(input: $input) {
+          problem {
+            id
+            name
+          }
+        }
+      }
+    `);
+
+  return (
+    <>
+      <Typography {...typographyProps}>
+        <Editable
+          value={problem.name}
+          onChange={(newValue) => {
+            updateProblem({
+              variables: { input: { problemId: problem.id, name: newValue } },
+              optimisticResponse: {
+                updateProblem: {
+                  problem: {
+                    id: problem.id,
+                    name: newValue,
+                  },
+                },
+              },
+            });
+          }}
+        />
+      </Typography>
+
+      <MutationErrorSnackbar
+        message="Error renaming problem"
+        state={updateState}
+      />
+    </>
+  );
 };
 
 export default withQuery<queriesProblemQuery, Props>({

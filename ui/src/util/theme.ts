@@ -63,10 +63,29 @@ const theme = createTheme({
         },
       },
     },
+    MuiTextField: {
+      defaultProps: {
+        variant: "standard",
+      },
+    },
     MuiTooltip: {
       defaultProps: {
         enterTouchDelay: 0,
         leaveTouchDelay: 3000,
+      },
+    },
+    MuiTypography: {
+      defaultProps: {
+        // <p> tags aren't actually what we want in most cases, so make them
+        // explicit.
+        // NOTE: do *NOT* override `component` here, or it will effectively
+        // disable the `paragraph` and `variantMapping` props in all places,
+        // since `component` always takes precedence
+        variantMapping: {
+          body1: "div",
+          body2: "div",
+          inherit: "div",
+        },
       },
     },
   },

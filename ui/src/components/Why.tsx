@@ -6,7 +6,7 @@ const Why: React.FC = () => (
     <Typography component="h3" variant="h4">
       Why?
     </Typography>
-    <Typography>
+    <Typography paragraph>
       Ever try to share beta over text? It sucks. Now you don&apos;t have to.
       Just upload your problem, send a link and unlock a whole new level of
       spraying potential. Or, maybe you&apos;re &quot;working&quot; from home
