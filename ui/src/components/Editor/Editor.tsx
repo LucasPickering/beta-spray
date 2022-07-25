@@ -153,8 +153,8 @@ const Editor: React.FC = () => {
                   <ItemTrashCan queryRef={problemQueryRef} />
                 </Box>
 
-                {/* Top-right overlay buttons are mobile-only, so they live in
-                  EditorDrawer */}
+                {/* Top-right drawer button is mobile-only, rendered by
+                    ToggleDrawer */}
 
                 {/* Controls sidebar/drawer */}
                 <EditorControls>

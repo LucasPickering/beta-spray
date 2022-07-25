@@ -53,6 +53,7 @@ const Editable: React.FC<Props> = ({ value, onChange }) => {
                 onReset();
               }
             }}
+            fullWidth
           />
         </Box>
       </ClickAwayListener>

@@ -16,16 +16,28 @@ interface Props extends DrawerProps {
  * wherever this drawer appears in the tree, then the drawer will float on top
  * of the screen.
  */
-const ToggleDrawer: React.FC<Props> = ({ ButtonProps, ...rest }) => {
+const ToggleDrawer: React.FC<Props> = ({
+  ButtonProps,
+  variant = "temporary",
+  ...rest
+}) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   return (
     <>
-      <IconButton onClick={() => setIsOpen((prev) => !prev)} {...ButtonProps}>
-        <IconMenu />
-      </IconButton>
+      {/* Show/hide button is only needed in temporary mode */}
+      {variant === "temporary" && (
+        <IconButton onClick={() => setIsOpen((prev) => !prev)} {...ButtonProps}>
+          <IconMenu />
+        </IconButton>
+      )}
 
-      <Drawer open={isOpen} onClose={() => setIsOpen(false)} {...rest} />
+      <Drawer
+        variant={variant}
+        open={isOpen}
+        onClose={() => setIsOpen(false)}
+        {...rest}
+      />
     </>
   );
 };
