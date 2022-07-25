@@ -24,6 +24,7 @@ MEDIA_ROOT = BASE_DIR / "media"  # noqa F405
 MEDIA_URL = "/api/media/"
 
 # Add debug middlewares
+INSTALLED_APPS.append("debug_toolbar")  # noqa F405
 MIDDLEWARE.append(  # noqa F405
     "graphiql_debug_toolbar.middleware.DebugToolbarMiddleware"
 )

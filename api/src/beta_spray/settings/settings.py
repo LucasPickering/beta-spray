@@ -33,7 +33,6 @@ INSTALLED_APPS = [
     "django_extensions",
     "django_filters",
     "graphene_django",
-    "debug_toolbar",
     "graphiql_debug_toolbar",
     "core",
 ]
