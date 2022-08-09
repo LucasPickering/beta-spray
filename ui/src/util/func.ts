@@ -49,7 +49,7 @@ export function assertUnreachable(message: string = ""): never {
  * Slide an element up or down an array, *returning a new array*
  */
 export function moveArrayElement<T>(
-  array: T[],
+  array: readonly T[],
   oldIndex: number,
   newIndex: number
 ): T[] {

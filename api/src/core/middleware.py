@@ -66,7 +66,7 @@ class TimeDelayMiddleware:
     possible via browser tools.
     """
 
-    delay = 10.0  # Per-request delay, in seconds
+    delay = 3.0  # Per-request delay, in seconds
 
     def __init__(self, get_response):
         self.get_response = get_response

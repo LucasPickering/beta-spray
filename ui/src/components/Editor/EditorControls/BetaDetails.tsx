@@ -16,6 +16,7 @@ import { queriesBetaQuery } from "../__generated__/queriesBetaQuery.graphql";
 import { betaQuery } from "../queries";
 import withQuery from "util/withQuery";
 import { getBetaMoveColors } from "util/svg";
+import { deleteBetaMoveLocal, reorderBetaMoveLocal } from "util/moves";
 import BetaDetailsDragLayer from "./BetaDetailsDragLayer";
 
 interface Props {
@@ -77,9 +78,16 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
         updateBetaMove(input: $input) {
           betaMove {
             beta {
-              # Refetch to update UI
-              ...BetaEditor_betaNode
-              ...BetaDetails_betaNode
+              # Refetch all moves to get the new ordering
+              moves {
+                edges {
+                  node {
+                    id
+                    order
+                    isStart
+                  }
+                }
+              }
             }
           }
         }
@@ -94,9 +102,16 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
         deleteBetaMove(input: $input) {
           betaMove {
             beta {
-              # Refetch to update UI
-              ...BetaEditor_betaNode
-              ...BetaDetails_betaNode
+              # Refetch all moves to get the new ordering
+              moves {
+                edges {
+                  node {
+                    id
+                    order
+                    isStart
+                  }
+                }
+              }
             }
           }
         }
@@ -136,18 +151,33 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
               }}
               onDrop={(item) => {
                 if (item) {
+                  // The index field was modified during dragging, but
+                  // index is 0-based and order is 1-based, so we need to
+                  // convert now. The API will take care of sliding the
+                  // other moves up/down to fit this one in
+                  const newOrder = item.index + 1;
                   updateBetaMove({
                     variables: {
                       input: {
                         betaMoveId: item.betaMoveId,
-                        // The index field was modified during dragging, but
-                        // index is 0-based and order is 1-based, so we need to
-                        // convert now. The API will take care of sliding the
-                        // other moves up/down to fit this one in
-                        order: item.index + 1,
+                        order: newOrder,
                       },
                     },
-                    // Punting on optimistic update because it's complicated
+                    optimisticResponse: {
+                      updateBetaMove: {
+                        betaMove: {
+                          id: node.id,
+                          beta: {
+                            id: beta.id,
+                            moves: reorderBetaMoveLocal(
+                              beta.moves,
+                              item.betaMoveId,
+                              newOrder
+                            ),
+                          },
+                        },
+                      },
+                    },
                   });
                 }
               }}
@@ -156,7 +186,17 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
                   variables: {
                     input: { betaMoveId: node.id },
                   },
-                  // Punting on optimistic update because it's complicated
+                  optimisticResponse: {
+                    deleteBetaMove: {
+                      betaMove: {
+                        id: node.id,
+                        beta: {
+                          id: beta.id,
+                          moves: deleteBetaMoveLocal(beta.moves, node.id),
+                        },
+                      },
+                    },
+                  },
                 })
               }
             />

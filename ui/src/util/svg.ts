@@ -299,8 +299,8 @@ export function useBetaMoveColor(): (betaMoveId: string) => string {
         // TODO figure out why this gets triggered in BetaDetails after deletion
         // eslint-disable-next-line no-console
         console.warn(
-          `No color pair for beta move ${betaMoveId}. Either the ID is unknown or` +
-            ` colors weren't initialized in this part of the component tree.`
+          `No color for beta move ${betaMoveId}. Either the ID is unknown or` +
+            ` color was't initialized in this part of the component tree.`
         );
         return "#000000";
       }

@@ -86,7 +86,7 @@ export const ItemTrashCan: React.FC<Props> = ({ problemKey }) => {
           if (item.action === "relocate" || item.action === "insertAfter") {
             deleteBetaMove({
               variables: { input: { betaMoveId: item.betaMoveId } },
-              // Punting on optimistic update because ordering is hard.
+              // TODO optimistic update (requires piping in the beta)
             });
           }
           break;

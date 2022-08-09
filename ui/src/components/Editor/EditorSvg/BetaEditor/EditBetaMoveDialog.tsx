@@ -16,6 +16,7 @@ import { EditBetaMoveDialog_betaNode$key } from "./__generated__/EditBetaMoveDia
 import { EditBetaMoveDialogContent_deleteBetaMoveMutation } from "./__generated__/EditBetaMoveDialogContent_deleteBetaMoveMutation.graphql";
 import { EditBetaMoveDialogContent_updateBetaMoveMutation } from "./__generated__/EditBetaMoveDialogContent_updateBetaMoveMutation.graphql";
 import { EditBetaMoveDialogContent_betaMoveNode$key } from "./__generated__/EditBetaMoveDialogContent_betaMoveNode.graphql";
+import { deleteBetaMoveLocal } from "util/moves";
 
 interface Props {
   betaKey: EditBetaMoveDialog_betaNode$key;
@@ -29,10 +30,13 @@ const EditBetaMoveDialog: React.FC<Props> = ({ betaKey }) => {
   const beta = useFragment(
     graphql`
       fragment EditBetaMoveDialog_betaNode on BetaNode {
+        id
         moves {
           edges {
             node {
               id
+              order
+              isStart
               ...EditBetaMoveDialogContent_betaMoveNode
             }
           }
@@ -110,7 +114,17 @@ const EditBetaMoveDialog: React.FC<Props> = ({ betaKey }) => {
                 variables: { input: { betaMoveId: selectedMove.id } },
                 // Reset selection to prevent ghost highlight
                 onCompleted: onClose,
-                // Punting on optimistic update because ordering is hard.
+                optimisticResponse: {
+                  deleteBetaMove: {
+                    betaMove: {
+                      id: selectedMove.id,
+                      beta: {
+                        id: beta.id,
+                        moves: deleteBetaMoveLocal(beta.moves, selectedMove.id),
+                      },
+                    },
+                  },
+                },
               })
             }
           />

@@ -117,7 +117,6 @@ const BetaListItem: React.FC<Props> = ({
           <ListItemText>Copy</ListItemText>
         </MenuItem>
 
-        {/* TODO red coloring */}
         <MenuItem
           onClick={() => {
             if (
