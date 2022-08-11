@@ -54,7 +54,7 @@ const Editor: React.FC = () => {
   // All of these *don't* unpack the array, so they can be passed to context
   // without unnecessarily creating a new array object (and thus re-render)
   // ===
-  // TODO
+  // Flag to show/hide the overlay, toggled by a user button
   const visibilityState = useState<boolean>(true);
   // Which move is being emphasized
   const highlightedMoveState = useState<string>();

@@ -18,7 +18,10 @@ import withQuery from "util/withQuery";
 import { betaQuery } from "../queries";
 import { queriesBetaQuery } from "../__generated__/queriesBetaQuery.graphql";
 import { PlayPauseControls_betaNode$key } from "./__generated__/PlayPauseControls_betaNode.graphql";
-import { EditorHighlightedMoveContext } from "util/context";
+import {
+  EditorHighlightedMoveContext,
+  EditorVisibilityContext,
+} from "util/context";
 import { isDefined } from "util/func";
 
 /**
@@ -53,6 +56,7 @@ const PlayPauseControls: React.FC<Props> = ({ betaKey }) => {
     `,
     betaKey
   );
+  const [visibility] = useContext(EditorVisibilityContext);
   // Play/pause handler needs the list of move IDs so it knows how to walk
   // through them
   const moveIds = useMemo(
@@ -114,7 +118,8 @@ const PlayPauseControls: React.FC<Props> = ({ betaKey }) => {
 
   return (
     <PlayPauseControlsContent
-      disabled={moveIds.length === 0}
+      // Disable buttons while the overlay is disabled
+      disabled={!visibility || moveIds.length === 0}
       isPlaying={isPlaying}
       isFirstMove={isFirstMove}
       isLastMove={isLastMove}
@@ -198,8 +203,8 @@ const PlayPauseControlsContent: React.FC<{
 export default withQuery<queriesBetaQuery, Props>({
   query: betaQuery,
   dataToProps: (data) => data.beta && { betaKey: data.beta },
-  // We want to show the disabled buttons before the initial load, *and* while
-  // doing the load
-  fallbackElement: <PlayPauseControlsContent disabled />,
-  preloadElement: <PlayPauseControlsContent disabled />,
+  // We want to show the buttons before the initial load, *and* while doing the
+  // load. That way they're visible before creating/selecting a beta
+  fallbackElement: <PlayPauseControlsContent />,
+  preloadElement: <PlayPauseControlsContent />,
 })(PlayPauseControls);
