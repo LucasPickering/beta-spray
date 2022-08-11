@@ -104,10 +104,8 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
     `);
 
   return (
-    <BetaContext.Provider value={betaContextValue}>
-      <div>
-        <FormLabel component="span">Moves</FormLabel>
-
+    <BetaDetailsWrapper>
+      <BetaContext.Provider value={betaContextValue}>
         {moves.length === 0 && (
           <Typography variant="body2">
             Drag a move from the palette to add
@@ -164,23 +162,39 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
             />
           ))}
         </List>
-      </div>
 
-      <BetaDetailsDragLayer betaMoveConnectionKey={beta.moves} />
-      <MutationErrorSnackbar
-        message="Error updating move"
-        state={updateState}
-      />
-      <MutationErrorSnackbar
-        message="Error deleting move"
-        state={deleteState}
-      />
-    </BetaContext.Provider>
+        <BetaDetailsDragLayer betaMoveConnectionKey={beta.moves} />
+        <MutationErrorSnackbar
+          message="Error updating move"
+          state={updateState}
+        />
+        <MutationErrorSnackbar
+          message="Error deleting move"
+          state={deleteState}
+        />
+      </BetaContext.Provider>
+    </BetaDetailsWrapper>
   );
 };
+
+/**
+ * Wrapper with static content that allows for a fleshed out loading state.
+ */
+const BetaDetailsWrapper: React.FC<{ children?: React.ReactNode }> = ({
+  children,
+}) => (
+  <div>
+    <FormLabel component="span">Moves</FormLabel>
+    {children}
+  </div>
+);
 
 export default withQuery<queriesBetaQuery, Props>({
   query: betaQuery,
   dataToProps: (data) => data.beta && { betaKey: data.beta },
-  fallbackElement: <Skeleton variant="rectangular" height={240} />,
+  fallbackElement: (
+    <BetaDetailsWrapper>
+      <Skeleton variant="rectangular" height={240} />
+    </BetaDetailsWrapper>
+  ),
 })(BetaDetails);

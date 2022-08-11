@@ -20,6 +20,9 @@ import { Add as IconAdd } from "@mui/icons-material";
 import BetaListItem from "./BetaListItem";
 import { BetaList_copyBetaMutation } from "./__generated__/BetaList_copyBetaMutation.graphql";
 import { BetaList_updateBetaMutation } from "./__generated__/BetaList_updateBetaMutation.graphql";
+import { isDefined } from "util/func";
+
+const labelId = "beta-select";
 
 interface Props {
   problemKey: BetaList_problemNode$key;
@@ -200,41 +203,26 @@ const BetaList: React.FC<Props> = ({
     });
   };
 
-  const labelId = `beta-select`;
   return (
-    <>
-      <FormControl>
-        <FormLabel id={labelId}>Beta</FormLabel>
-
-        <RadioGroup
-          aria-labelledby={labelId}
-          // `undefined` makes the group think it's in uncontrolled state
-          value={selectedBeta ?? null}
-          onChange={(e) => onSelectBeta(e.target.value)}
-          sx={{ marginTop: 1, marginBottom: 1 }}
-        >
-          <Stack direction="column">
-            {problem.betas.edges.map(({ node }) => (
-              <BetaListItem
-                key={node.id}
-                betaKey={node}
-                onRename={onRename}
-                onCopy={onCopy}
-                onDelete={onDelete}
-              />
-            ))}
-          </Stack>
-        </RadioGroup>
-
-        <Button
-          size="small"
-          startIcon={<IconAdd />}
-          onClick={() => onCreateNew()}
-          sx={{ width: "100%" }}
-        >
-          Add
-        </Button>
-      </FormControl>
+    <BetaListWrapper onClickAdd={() => onCreateNew()}>
+      <RadioGroup
+        aria-labelledby={labelId}
+        // `undefined` makes the group think it's in uncontrolled state
+        value={selectedBeta ?? null}
+        onChange={(e) => onSelectBeta(e.target.value)}
+      >
+        <Stack direction="column">
+          {problem.betas.edges.map(({ node }) => (
+            <BetaListItem
+              key={node.id}
+              betaKey={node}
+              onRename={onRename}
+              onCopy={onCopy}
+              onDelete={onDelete}
+            />
+          ))}
+        </Stack>
+      </RadioGroup>
 
       <MutationErrorSnackbar
         message="Error creating beta"
@@ -249,12 +237,40 @@ const BetaList: React.FC<Props> = ({
         message="Error deleting beta"
         state={deleteState}
       />
-    </>
+    </BetaListWrapper>
   );
 };
+
+/**
+ * Wrapper with static content that allows for a fleshed out loading state.
+ */
+const BetaListWrapper: React.FC<{
+  onClickAdd?: React.MouseEventHandler<HTMLButtonElement>;
+  children?: React.ReactNode;
+}> = ({ onClickAdd, children }) => (
+  <FormControl>
+    <FormLabel id={labelId}>Beta</FormLabel>
+
+    {children}
+
+    <Button
+      size="small"
+      startIcon={<IconAdd />}
+      onClick={onClickAdd}
+      disabled={!isDefined(onClickAdd)} // No callback means button does nothing
+      sx={{ width: "100%", marginTop: 1 }}
+    >
+      Add
+    </Button>
+  </FormControl>
+);
 
 export default withQuery<queriesProblemQuery, Props, "problemKey">({
   query: problemQuery,
   dataToProps: (data) => data.problem && { problemKey: data.problem },
-  fallbackElement: <Skeleton variant="rectangular" height={100} />,
+  fallbackElement: (
+    <BetaListWrapper>
+      <Skeleton variant="rectangular" height={100} />
+    </BetaListWrapper>
+  ),
 })(BetaList);
