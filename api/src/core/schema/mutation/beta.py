@@ -21,6 +21,7 @@ class CreateBetaMutation(relay.ClientIDMutation):
         }
 
         # Rely on default if not given
+        # TODO validate name
         if name is not None:
             fields["name"] = name
 

@@ -1,9 +1,24 @@
 import { Box, ClickAwayListener, TextField } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
+import { isDefined } from "util/func";
 
 interface Props {
   value: string;
+  validator?: (value: string) => string | undefined;
   onChange?: (newValue: string) => void;
+}
+
+/**
+ * The default validator. Disallows empty and egregiously long strings.
+ */
+function validateString(value: string): string | undefined {
+  if (value.length === 0) {
+    return "Cannot be empty";
+  }
+  if (value.length > 100) {
+    return "Too long";
+  }
+  return undefined;
 }
 
 /**
@@ -16,17 +31,21 @@ interface Props {
  * changes (e.g. calling the API), otherwise this will just reset to the
  * original value upon saving.
  */
-const Editable: React.FC<Props> = ({ value, onChange }) => {
+const Editable: React.FC<Props> = ({
+  value,
+  validator = validateString,
+  onChange,
+}) => {
   const [currentValue, setCurrentValue] = useState<string>(value);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const onSave = (): void => {
-    setIsEditing(false);
-    setCurrentValue(value);
-
     // Tell the parent a new value was saved
     if (onChange && value !== currentValue) {
       onChange(currentValue);
     }
+
+    setIsEditing(false);
+    setCurrentValue(value);
   };
   const onReset = (): void => {
     setIsEditing(false);
@@ -37,14 +56,24 @@ const Editable: React.FC<Props> = ({ value, onChange }) => {
   useEffect(onReset, [value]);
 
   if (isEditing) {
+    const validationError = validator(currentValue);
+    const hasError = isDefined(validationError);
+
     return (
-      <ClickAwayListener onClickAway={onSave}>
+      <ClickAwayListener onClickAway={hasError ? onReset : onSave}>
         {/* Use a form so we can capture enter presses */}
-        <Box component="form" onSubmit={onSave}>
+        <Box
+          component="form"
+          // Submission does nothing while there's an error. This feels the
+          // most natural to me - better than resetting
+          onSubmit={hasError ? (e: FormEvent) => e.preventDefault() : onSave}
+        >
           <TextField
             autoFocus
             size="small"
             value={currentValue}
+            error={hasError}
+            helperText={validationError}
             onChange={(e) => setCurrentValue(e.target.value)}
             // There's no native behavior to listen for escape key, so we'll
             // need to do that manually
