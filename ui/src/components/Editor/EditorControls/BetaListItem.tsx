@@ -20,6 +20,7 @@ import React from "react";
 import { graphql, useFragment } from "react-relay";
 import { BetaListItem_betaNode$key } from "./__generated__/BetaListItem_betaNode.graphql";
 import Editable from "components/common/Editable";
+import { isDefined } from "util/func";
 
 interface Props {
   betaKey: BetaListItem_betaNode$key;
@@ -71,7 +72,7 @@ const BetaListItem: React.FC<Props> = ({
         label={
           <>
             <Typography>
-              {beta.name ? (
+              {isDefined(beta.name) ? (
                 <Editable
                   value={beta.name}
                   onChange={(newValue) => onRename(beta.id, newValue)}

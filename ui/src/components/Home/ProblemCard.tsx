@@ -16,6 +16,7 @@ import { Delete as IconDelete } from "@mui/icons-material";
 import { ProblemCard_problemNode$key } from "./__generated__/ProblemCard_problemNode.graphql";
 import LinkBehavior from "components/common/LinkBehavior";
 import Editable from "components/common/Editable";
+import { isDefined } from "util/func";
 
 interface Props {
   problemKey: ProblemCard_problemNode$key;
@@ -78,7 +79,7 @@ const ProblemCard: React.FC<Props> = ({ problemKey, onEditName, onDelete }) => {
 
       <CardContent>
         <Typography variant="h6" component="h3">
-          {problem.name ? (
+          {isDefined(problem.name) ? (
             <Editable
               value={problem.name}
               onChange={
