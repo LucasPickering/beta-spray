@@ -35,10 +35,10 @@ const BetaChainLine: React.FC<Props> = ({ startMoveKey, endMoveKey }) => {
   );
 
   const [{ isDragging }, drag] = useDrag<
-    "betaMoveOverlay",
+    "overlayBetaMove",
     { isDragging: boolean }
   >({
-    type: "betaMoveOverlay",
+    type: "overlayBetaMove",
     item: {
       action: "insertAfter",
       betaMoveId: startMove.id,

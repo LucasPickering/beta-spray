@@ -13,6 +13,7 @@ import {
   ConnectDropTarget,
   DragLayerMonitor,
   DragSourceMonitor,
+  DropTargetMonitor,
 } from "react-dnd";
 import { BodyPart, OverlayPosition } from "./svg";
 import { DistributivePick } from "./types";
@@ -23,27 +24,28 @@ import { DistributivePick } from "./types";
  */
 export type DragType =
   | {
-      kind: "holdOverlay";
+      kind: "overlayHold";
       item: { action: "create" } | { action: "relocate"; holdId: string };
       drop: { kind: "dropZone"; position: OverlayPosition } | { kind: "trash" };
     }
   | {
-      kind: "betaMoveOverlay";
-      item: {
-        bodyPart: BodyPart;
-      } & ( // Create a new move (dragging from palette)
-        | { action: "create"; betaId: string }
+      kind: "overlayBetaMove";
+      item: // Create a new move (dragging from palette)
+      | { action: "create"; bodyPart: BodyPart; betaId: string }
         // Relocate an existing move to a new hold/position
-        | { action: "relocate"; betaMoveId: string }
+        | { action: "relocate"; bodyPart: BodyPart; betaMoveId: string }
         // Insert a new move *after* the dragged one (dragging a line)
-        | { action: "insertAfter"; betaMoveId: string }
-      );
-      // hold => dropped on hold
-      // undefined => dropped on trash
-      drop: { kind: "hold"; holdId: string } | { kind: "trash" };
+        | { action: "insertAfter"; bodyPart: BodyPart; betaMoveId: string };
+      // hold => attached move
+      // drop zone => free move
+      // trash => delete
+      drop:
+        | { kind: "hold"; holdId: string }
+        | { kind: "dropZone"; position: OverlayPosition }
+        | { kind: "trash" };
     }
   | {
-      kind: "betaMoveList";
+      kind: "listBetaMove";
       item: {
         betaMoveId: string;
         // This is *similar to* the move's order, but with a couple critical
@@ -55,7 +57,7 @@ export type DragType =
         //    be updated until the user stops dragging and the API call is sent
         index: number;
       };
-      drop: undefined;
+      drop: { kind: "list" };
     };
 
 /**
@@ -83,16 +85,6 @@ export type DragItemWithKind<K extends DragKind = DragKind> = DistributivePick<
 export type DragKind = DragType["kind"];
 
 /**
- * One or two drag kinds. Useful in scenarios where you have a finite set of
- * kinds to accept.
- *
- * This could easily be manually extended to 3 or more, but will take more work
- * to make the tuple dynamic length (if possible at all). I only need 2 for now
- * though, so leaving it.
- */
-export type DragKindOrTuple = DragKind | [DragKind, DragKind];
-
-/**
  * The metadata attached to a drag item, for a particular kind of dragging.
  */
 export type DragItem<K extends DragKind = DragKind> =
@@ -105,11 +97,14 @@ export type DropResult<K extends DragKind = DragKind> =
   DragTypeForKind<K>["drop"];
 
 /**
- * An onDrop handler
+ * An onDrop handler. User must declare both the expected drag item type as
+ * well as the expected drop type. In most contexts where this is used, both
+ * will be known statically and thus it makes our lives a bit easier.
  */
-export type DropHandler<K extends DragKind> = (
+export type DropHandler<K extends DragKind, J extends DropResult["kind"]> = (
   item: DragItem<K>,
-  result: DropResult<K>
+  result: Extract<DropResult<K>, { kind: J }>,
+  monitor: DropTargetMonitor<DragItem<K>, DropResult<K>>
 ) => void;
 
 /**
@@ -135,31 +130,20 @@ export function useDrag<K extends DragKind, CollectedProps = unknown>(
 /**
  * Type of the object argument passed to useDrop.
  */
-export type DropSpec<
-  K extends DragKindOrTuple,
+type DropSpec<
+  K extends DragKind,
   CollectedProps = unknown
-> = FactoryOrInstance<
-  DropTargetHookSpec<
-    // Kind jank, but this allows for drop targets that accept 2 different drag
-    // sources. Unfortunately the copy-pasta is necessary w/o higher-order generics.
-    K extends DragKind
-      ? DragItem<K>
-      : K extends DragKind[]
-      ? DragItem<K[0]> | DragItem<K[1]>
-      : never,
-    K extends DragKind
-      ? DropResult<K>
-      : K extends DragKind[]
-      ? DropResult<K[0]> | DropResult<K[1]>
-      : never,
-    CollectedProps
-  >
-> & { accept: K };
+> = DropTargetHookSpec<DragItem<K>, DropResult<K>, CollectedProps> & {
+  // We can accept one or more types, as supported by the vanilla useDrop. If
+  // an array is passed here, K will implicitly be widened to include all
+  // the given variants.
+  accept: K | K[];
+};
 
 /**
  * Wrapper around react-dnd's useDrop that enforces better typing.
  */
-export function useDrop<K extends DragKindOrTuple, CollectedProps = unknown>(
+export function useDrop<K extends DragKind, CollectedProps = unknown>(
   specArg: DropSpec<K, CollectedProps>,
   deps?: unknown[]
 ): [CollectedProps, ConnectDropTarget] {

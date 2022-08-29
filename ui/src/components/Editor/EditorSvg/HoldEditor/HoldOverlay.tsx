@@ -7,7 +7,7 @@ import { HoldOverlay_holdConnection$key } from "./__generated__/HoldOverlay_hold
 interface Props
   extends Pick<
     React.ComponentProps<typeof HoldMark>,
-    "onClick" | "onDoubleClick"
+    "onClick" | "onDoubleClick" | "onDrop"
   > {
   holdConnectionKey: HoldOverlay_holdConnection$key;
 }
@@ -15,11 +15,7 @@ interface Props
 /**
  * A dumb component that just renders holds onto an image.
  */
-const HoldOverlay: React.FC<Props> = ({
-  holdConnectionKey,
-  onClick,
-  onDoubleClick,
-}) => {
+const HoldOverlay: React.FC<Props> = ({ holdConnectionKey, ...rest }) => {
   const holdConnection = useFragment(
     graphql`
       fragment HoldOverlay_holdConnection on HoldNodeConnection {
@@ -37,12 +33,7 @@ const HoldOverlay: React.FC<Props> = ({
   return (
     <>
       {holdConnection.edges.map(({ node }) => (
-        <HoldMark
-          key={node.id}
-          holdKey={node}
-          onClick={onClick}
-          onDoubleClick={onDoubleClick}
-        />
+        <HoldMark key={node.id} holdKey={node} {...rest} />
       ))}
     </>
   );

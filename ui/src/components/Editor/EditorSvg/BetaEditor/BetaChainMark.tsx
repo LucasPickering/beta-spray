@@ -41,10 +41,10 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey }) => {
   const ref = useRef<SVGCircleElement>(null);
 
   const [{ isDragging }, drag] = useDrag<
-    "betaMoveOverlay",
+    "overlayBetaMove",
     { isDragging: boolean }
   >({
-    type: "betaMoveOverlay",
+    type: "overlayBetaMove",
     item: {
       action: "relocate",
       betaMoveId: moveId,

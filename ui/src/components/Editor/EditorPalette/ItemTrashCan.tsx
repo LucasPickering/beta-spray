@@ -60,12 +60,12 @@ export const ItemTrashCan: React.FC<Props> = ({ problemKey }) => {
     `);
 
   const [, drop] = useDrop({
-    accept: ["betaMoveOverlay", "holdOverlay"],
+    accept: ["overlayBetaMove", "overlayHold"],
     drop(_, monitor) {
       // Use helper function to get kind+item, so we can use variant guards
       const { kind, item } = getItemWithKind(monitor);
       switch (kind) {
-        case "holdOverlay": {
+        case "overlayHold": {
           if (item.action === "relocate") {
             deleteHold({
               variables: {
@@ -82,7 +82,7 @@ export const ItemTrashCan: React.FC<Props> = ({ problemKey }) => {
           }
           break;
         }
-        case "betaMoveOverlay": {
+        case "overlayBetaMove": {
           if (item.action === "relocate" || item.action === "insertAfter") {
             deleteBetaMove({
               variables: { input: { betaMoveId: item.betaMoveId } },

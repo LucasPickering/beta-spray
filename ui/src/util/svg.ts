@@ -175,12 +175,19 @@ export function getBetaMoveVisualPositions(
   moves: Array<{
     id: string;
     bodyPart: BodyPart;
-    hold: { id: string; position: OverlayPosition } | null;
+    hold: { id: string } | null;
+    position: OverlayPosition;
   }>
 ): Map<string, OverlayPosition> {
   const positionMap: Map<string, OverlayPosition> = new Map();
 
-  // We want to offset each move like so:
+  // Start by just jamming every move into the map
+  for (const move of moves) {
+    positionMap.set(move.id, move.position);
+  }
+
+  // Next, we'll apply offsets to moves that share the same hold+body part, so
+  // they don't sit on top of each other. The steps are:
   // 1. By body part, so left hand is top-left, right foot is bottom-right, etc.
   // 2. Spread evenly within that 90° slice (if multiple moves per body part)
   // So iterate over each move and set its visual offset accordingly
@@ -188,7 +195,12 @@ export function getBetaMoveVisualPositions(
   const sliceSize = Math.PI / 2; // 90 degrees
 
   // Group by hold, then body part
-  for (const movesByHold of groupBy(moves, (move) => move.hold?.id).values()) {
+  for (const movesByHold of groupBy(
+    // Exclude free moves, since they'll never share the *exact* some position
+    // Maybe we'll need a more dynamic disambiguation, but not yet
+    moves.filter((move) => isDefined(move.hold)),
+    (move) => move.hold?.id
+  ).values()) {
     const movesByBodyPart = groupBy(movesByHold, (move) => move.bodyPart);
 
     bodyPartsCCW.forEach((bodyPart, i) => {
@@ -204,14 +216,15 @@ export function getBetaMoveVisualPositions(
 
         // API wil pre-sort by order, and that ordering will persist here
         bodyPartMoves.forEach((move, i) => {
-          assertIsDefined(move.hold); // TODO handle holdless moves
+          // If the move is attached to a hold, we want to apply spreading
           const offset = polarToSvg(
             disambiguationDistance,
             // i+1 so we don't start at the extreme edge
             bodyPartAngle + subsliceSize * (i + 1)
           );
+
           // Apply the offset to create the visual position
-          positionMap.set(move.id, add(move.hold.position, offset));
+          positionMap.set(move.id, add(move.position, offset));
         });
       }
     });

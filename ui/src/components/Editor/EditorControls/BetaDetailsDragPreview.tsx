@@ -32,7 +32,7 @@ const BetaDetailsDragPreview: React.FC<Props> = ({
   );
 
   switch (itemWithKind.kind) {
-    case "betaMoveList": {
+    case "listBetaMove": {
       const betaMoveEdge = betaMoveConnection.edges.find(
         ({ node }) => node.id === itemWithKind.item.betaMoveId
       );

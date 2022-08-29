@@ -38,10 +38,10 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
               isStart
               hold {
                 id
-                position {
-                  x
-                  y
-                }
+              }
+              position {
+                x
+                y
               }
               ...BetaChainMark_betaMoveNode
               ...BetaChainLine_startBetaMoveNode

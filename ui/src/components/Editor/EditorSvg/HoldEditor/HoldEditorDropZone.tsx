@@ -5,7 +5,7 @@ import { useDOMToSVGPosition } from "util/svg";
 import PanZone from "../PanZone";
 
 interface Props extends Omit<React.ComponentProps<typeof PanZone>, "onDrop"> {
-  onDrop?: DropHandler<"holdOverlay">;
+  onDrop?: DropHandler<"overlayHold" | "overlayBetaMove", "dropZone">;
 }
 
 /**
@@ -17,8 +17,8 @@ const HoldEditorDropZone: React.FC<Props> = ({ onDrop, ...rest }) => {
   const domToSVGPosition = useDOMToSVGPosition();
 
   // Listen for holds being dropped
-  const [, drop] = useDrop<"holdOverlay">({
-    accept: "holdOverlay",
+  const [, drop] = useDrop({
+    accept: ["overlayHold", "overlayBetaMove"],
     // Tell the dragger where they airdropped to
     drop(item, monitor) {
       const mousePos = monitor.getClientOffset();
@@ -30,7 +30,7 @@ const HoldEditorDropZone: React.FC<Props> = ({ onDrop, ...rest }) => {
         position: domToSVGPosition(mousePos),
       };
       if (onDrop) {
-        onDrop(item, result);
+        onDrop(item, result, monitor);
       }
 
       return result;

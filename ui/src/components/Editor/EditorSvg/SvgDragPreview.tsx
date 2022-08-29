@@ -12,9 +12,9 @@ const SvgDragPreview: React.FC<Props> = ({ itemWithKind }) => {
   const theme = useTheme();
 
   switch (itemWithKind.kind) {
-    case "holdOverlay":
+    case "overlayHold":
       return <HoldIcon draggable isDragging />;
-    case "betaMoveOverlay": {
+    case "overlayBetaMove": {
       const { item } = itemWithKind;
       // We don't know what order the new move will be, so don't show text
       // and kinda "guess" at the color. We know for sure it's not a start

@@ -11,8 +11,8 @@ interface Props {
   index: number;
   totalMoves: number;
   disabled?: boolean;
-  onReorder?: (dragItem: DragItem<"betaMoveList">, newIndex: number) => void;
-  onDrop?: DropHandler<"betaMoveList">;
+  onReorder?: (dragItem: DragItem<"listBetaMove">, newIndex: number) => void;
+  onDrop?: DropHandler<"listBetaMove", "list">;
   onDelete?: () => void;
 }
 
@@ -44,10 +44,10 @@ const BetaDetailsMove: React.FC<Props> = ({
   const dragHandleRef = useRef<SVGSVGElement | null>(null);
 
   const [{ isDragging }, drag] = useDrag<
-    "betaMoveList",
+    "listBetaMove",
     { isDragging: boolean }
   >({
-    type: "betaMoveList",
+    type: "listBetaMove",
     item: { betaMoveId: betaMove.id, index },
     canDrag() {
       return !disabled;
@@ -57,19 +57,12 @@ const BetaDetailsMove: React.FC<Props> = ({
         isDragging: Boolean(monitor.isDragging()),
       };
     },
-    end(item, monitor) {
-      if (onDrop) {
-        // Second param is `result` which we don't use in this case, but let's
-        // pass it just for consistency with other DnD use cases
-        onDrop(item, monitor.getDropResult() ?? undefined);
-      }
-    },
   });
 
   // Use DnD for sortability
   // https://react-dnd.github.io/react-dnd/examples/sortable/simple
-  const [, drop] = useDrop<"betaMoveList", { isOver: boolean }>({
-    accept: "betaMoveList",
+  const [, drop] = useDrop<"listBetaMove", { isOver: boolean }>({
+    accept: "listBetaMove",
     collect(monitor) {
       return {
         isOver: Boolean(monitor.isOver()),
@@ -142,6 +135,13 @@ const BetaDetailsMove: React.FC<Props> = ({
         // https://github.com/react-dnd/react-dnd/blob/main/packages/examples/src/04-sortable/simple/Card.tsx
         item.index = newDragIndex;
       }
+    },
+    drop(item, monitor) {
+      const result = { kind: "list" } as const;
+      if (onDrop) {
+        onDrop(item, result, monitor);
+      }
+      return result;
     },
   });
 

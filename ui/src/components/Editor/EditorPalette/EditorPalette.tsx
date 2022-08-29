@@ -66,7 +66,7 @@ const EditorPalette: React.FC<Props> = ({ betaQueryRef, selectedBeta }) => {
           <DragSourceButton
             title="Hold"
             disabled={!visibility}
-            dragSpec={{ type: "holdOverlay", item: { action: "create" } }}
+            dragSpec={{ type: "overlayHold", item: { action: "create" } }}
           >
             <IconCircle />
           </DragSourceButton>
@@ -79,7 +79,7 @@ const EditorPalette: React.FC<Props> = ({ betaQueryRef, selectedBeta }) => {
               disabled={!visibility || !selectedBeta}
               title={formatBodyPart(bodyPart)}
               dragSpec={{
-                type: "betaMoveOverlay",
+                type: "overlayBetaMove",
                 item: {
                   action: "create",
                   bodyPart,
