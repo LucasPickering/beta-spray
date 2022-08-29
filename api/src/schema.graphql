@@ -194,7 +194,7 @@ type BetaMoveNodeEdge {
 type BetaMoveNode implements Node {
   beta: BetaNode!
 
-  """Optional destination hold for this move"""
+  """Destination hold for this move. Mutually exclusive with `position`."""
   hold: HoldNode
 
   """Ordering number of the hold in the beta, starting at 1"""
@@ -208,6 +208,14 @@ type BetaMoveNode implements Node {
 
   """Body part being moved"""
   bodyPart: BodyPart!
+
+  """
+  Position of the move. For a free move, this is defined by the user. For a hold-attached move, this is just the position of the hold.
+  """
+  position: SVGPosition!
+
+  """Is this move NOT attached to any hold? E.g. smear, flag, etc."""
+  isFree: Boolean!
 
   """Is this one of the initial moves for the beta?"""
   isStart: Boolean!
@@ -565,8 +573,13 @@ input AppendBetaMoveMutationInput {
   betaId: ID!
   bodyPart: BodyPart!
 
-  """Hold to connect the move to"""
-  holdId: ID!
+  """Hold to connect the move to. Mutually exclusive with `position`."""
+  holdId: ID
+
+  """
+  Position of the move, for free moves. Mutually exclusive with `hold_id`.
+  """
+  position: SVGPositionInput = null
   clientMutationId: String
 }
 
@@ -585,8 +598,13 @@ input InsertBetaMoveMutationInput {
   """Move *preceding* this one in the beta"""
   previousBetaMoveId: ID!
 
-  """Hold to connect the move to"""
-  holdId: ID!
+  """Hold to connect the move to. Mutually exclusive with `position`."""
+  holdId: ID
+
+  """
+  Position of the move, for free moves. Mutually exclusive with `hold_id`.
+  """
+  position: SVGPositionInput = null
   clientMutationId: String
 }
 
@@ -598,7 +616,14 @@ type UpdateBetaMoveMutationPayload {
 input UpdateBetaMoveMutationInput {
   betaMoveId: ID!
   order: Int
+
+  """Hold to connect the move to. Mutually exclusive with `position`."""
   holdId: ID
+
+  """
+  Position of the move, for free moves. Mutually exclusive with `hold_id`.
+  """
+  position: SVGPositionInput = null
   annotation: String
   clientMutationId: String
 }

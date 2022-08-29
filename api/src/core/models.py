@@ -1,3 +1,5 @@
+from core import fields
+from django import forms
 from django.db.models import F, Q, Max
 from django.db.models.functions import Coalesce
 from django.db.models.signals import pre_save, post_delete
@@ -54,13 +56,8 @@ class Hold(models.Model):
     boulder = models.ForeignKey(
         Boulder, related_name="holds", on_delete=models.CASCADE
     )
-    # Positions are *0-1*, not in pixels!! This allows for scaling on the image
-    # without messing up these positions
-    position_x = models.FloatField(
-        help_text="Left-to-right position of the hold within the image, 0-1"
-    )
-    position_y = models.FloatField(
-        help_text="Top-to-bottom position of the hold within the image, 0-1"
+    position = fields.BoulderPositionField(
+        help_text="Position of the hold within the boulder image"
     )
     source = models.CharField(
         max_length=4,
@@ -183,7 +180,13 @@ class BetaMove(models.Model):
         Hold,
         on_delete=models.CASCADE,
         null=True,
-        help_text="Optional destination hold for this move",
+        help_text="Destination hold for this move."
+        " Mutually exclusive with `position`.",
+    )
+    position = fields.BoulderPositionField(
+        null=True,
+        help_text="Position of the move, if not attached to a hold."
+        " Mutually exclusive with `hold`.",
     )
     order = models.PositiveIntegerField(
         db_index=True,  # We sort and filter by this a lot
@@ -199,6 +202,21 @@ class BetaMove(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def clean(self):
+        if (self.hold_id is None) == (self.position is None):
+            raise forms.ValidationError(
+                "Exactly one of `hold_id` and `position` must be defined"
+            )
+
+        return self
+
+    @property
+    def is_free(self):
+        """
+        Is this move NOT attached to any hold? E.g. smear, flag, etc.
+        """
+        return self.hold_id is None
 
 
 # ========== SIGNALS ==========

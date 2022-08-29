@@ -1,4 +1,5 @@
 from core.models import BetaMove
+from core.schema.mutation.position import SVGPositionInput
 from core.schema.query import BetaMoveNode, BetaNode, BodyPartType, HoldNode
 from graphene import relay
 import graphene
@@ -13,9 +14,14 @@ class AppendBetaMoveMutation(relay.ClientIDMutation):
     class Input:
         beta_id = graphene.ID(required=True)
         body_part = BodyPartType(required=True)
-        # TODO make this optional if we support free moves
         hold_id = graphene.ID(
-            required=True, description="Hold to connect the move to"
+            description="Hold to connect the move to."
+            " Mutually exclusive with `position`.",
+        )
+        position = graphene.Field(
+            SVGPositionInput,
+            description="Position of the move, for free moves."
+            " Mutually exclusive with `hold_id`.",
         )
 
     beta_move = graphene.Field(BetaMoveNode, required=True)
@@ -23,20 +29,18 @@ class AppendBetaMoveMutation(relay.ClientIDMutation):
 
     @classmethod
     def mutate_and_get_payload(
-        cls,
-        root,
-        info,
-        beta_id,
-        body_part,
-        hold_id,
+        cls, root, info, beta_id, body_part, hold_id=None, position=None
     ):
         # Convert GQL IDs to PKs
-        beta_id = BetaNode.get_pk_from_global_id(info, beta_id)
-        hold_id = HoldNode.get_pk_from_global_id(info, hold_id)
+        beta = BetaNode.get_node_from_global_id(info, beta_id)
+        hold_id = hold_id and HoldNode.get_pk_from_global_id(info, hold_id)
 
         # TODO validate that hold and beta belong to the same problem
         beta_move = BetaMove.objects.create(
-            beta_id=beta_id, body_part=body_part, hold_id=hold_id
+            beta=beta,
+            body_part=body_part,
+            hold_id=hold_id,
+            position=position.to_normalized(beta.problem.boulder.image),
         )
 
         return cls(beta_move=beta_move)
@@ -53,9 +57,14 @@ class InsertBetaMoveMutation(relay.ClientIDMutation):
         previous_beta_move_id = graphene.ID(
             required=True, description="Move *preceding* this one in the beta"
         )
-        # TODO make this optional if we support free moves
         hold_id = graphene.ID(
-            required=True, description="Hold to connect the move to"
+            description="Hold to connect the move to."
+            " Mutually exclusive with `position`.",
+        )
+        position = graphene.Field(
+            SVGPositionInput,
+            description="Position of the move, for free moves."
+            " Mutually exclusive with `hold_id`.",
         )
 
     beta_move = graphene.Field(BetaMoveNode, required=True)
@@ -63,24 +72,22 @@ class InsertBetaMoveMutation(relay.ClientIDMutation):
 
     @classmethod
     def mutate_and_get_payload(
-        cls,
-        root,
-        info,
-        previous_beta_move_id,
-        hold_id,
+        cls, root, info, previous_beta_move_id, hold_id=None, position=None
     ):
         # Convert GQL IDs to PKs
         previous_move = BetaMoveNode.get_node_from_global_id(
             info, previous_beta_move_id
         )
-        hold_id = HoldNode.get_pk_from_global_id(info, hold_id)
+        beta = previous_move.beta
+        hold_id = hold_id and HoldNode.get_pk_from_global_id(info, hold_id)
 
         # TODO validate that hold and beta belong to the same problem
         beta_move = BetaMove.objects.create(
-            beta_id=previous_move.beta_id,
+            beta=beta,
             body_part=previous_move.body_part,
             order=previous_move.order + 1,
             hold_id=hold_id,
+            position=position.to_normalized(beta.problem.boulder.image),
         )
 
         return cls(beta_move=beta_move)
@@ -90,14 +97,29 @@ class UpdateBetaMoveMutation(relay.ClientIDMutation):
     class Input:
         beta_move_id = graphene.ID(required=True)
         order = graphene.Int()
-        hold_id = graphene.ID()
+        hold_id = graphene.ID(
+            description="Hold to connect the move to."
+            " Mutually exclusive with `position`.",
+        )
+        position = graphene.Field(
+            SVGPositionInput,
+            description="Position of the move, for free moves."
+            " Mutually exclusive with `hold_id`.",
+        )
         annotation = graphene.String()
 
     beta_move = graphene.Field(BetaMoveNode, required=True)
 
     @classmethod
     def mutate_and_get_payload(
-        cls, root, info, beta_move_id, order=None, hold_id=None, annotation=None
+        cls,
+        root,
+        info,
+        beta_move_id,
+        order=None,
+        hold_id=None,
+        position=None,
+        annotation=None,
     ):
         beta_move_id = BetaMoveNode.get_pk_from_global_id(info, beta_move_id)
         hold_id = hold_id and HoldNode.get_pk_from_global_id(info, hold_id)
@@ -111,8 +133,12 @@ class UpdateBetaMoveMutation(relay.ClientIDMutation):
         # TODO validate hold and beta belong to same problem
         if hold_id is not None:
             beta_move.hold_id = hold_id
-            # TODO validate length
+        if position is not None:
+            beta_move.position = position.to_normalized(
+                beta_move.beta.problem.boulder.image
+            )
         if annotation is not None:
+            # TODO validate length
             beta_move.annotation = annotation
         beta_move.save()
 

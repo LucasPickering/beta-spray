@@ -75,3 +75,15 @@ def get_svg_dimensions(image):
         if aspect_ratio < 1
         else (100 * aspect_ratio, 100)
     )
+
+
+def to_svg_position(boulder_position, image):
+    """
+    Map a normalized position, where both components are [0,1], to an SVG
+    position, where X and Y are in SVG coordinates, based on image dimensions.
+    """
+    (svg_width, svg_height) = get_svg_dimensions(image)
+    return {
+        "x": boulder_position.x * svg_width,
+        "y": boulder_position.y * svg_height,
+    }

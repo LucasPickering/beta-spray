@@ -1,20 +1,8 @@
-from core import util
 from core.models import Hold, HoldAnnotationSource, ProblemHold
+from core.schema.mutation.position import SVGPositionInput
 from core.schema.query import BoulderNode, HoldNode, ProblemNode
 from graphene import relay
 import graphene
-
-
-class SVGPositionInput(graphene.InputObjectType):
-    x = graphene.Float(required=True, description="X position, 0-100ish")
-    y = graphene.Float(required=True, description="Y position, 0-100ish")
-
-    def to_normalized(self, image):
-        """
-        TODO
-        """
-        (svg_width, svg_height) = util.get_svg_dimensions(image)
-        return (self.x / svg_width, self.y / svg_height)
 
 
 class CreateHoldMutation(relay.ClientIDMutation):
@@ -38,13 +26,10 @@ class CreateHoldMutation(relay.ClientIDMutation):
         # We need to grab the whole boulder object so we can access the img dims
         boulder = BoulderNode.get_node_from_global_id(info, boulder_id)
 
-        # Convert SVG position to normalized position
-        (position_x, position_y) = position.to_normalized(boulder.image)
-
         hold = Hold.objects.create(
             boulder=boulder,
-            position_x=position_x,
-            position_y=position_y,
+            # Convert SVG position to normalized position
+            position=position.to_normalized(boulder.image),
             source=HoldAnnotationSource.USER,
         )
 
@@ -75,9 +60,7 @@ class RelocateHoldMutation(relay.ClientIDMutation):
     def mutate_and_get_payload(cls, root, info, hold_id, position):
         hold = HoldNode.get_node_from_global_id(info, hold_id)
         # Convert position from SVG coords to normalized (DB) coords
-        (position_x, position_y) = position.to_normalized(hold.boulder.image)
-        hold.position_x = position_x
-        hold.position_y = position_y
+        hold.position = position.to_normalized(hold.boulder.image)
         hold.save()
         return cls(hold=hold)
 

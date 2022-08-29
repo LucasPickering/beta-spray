@@ -136,11 +136,7 @@ class HoldNode(NodeType):
     position = graphene.Field(SVGPosition, required=True)
 
     def resolve_position(self, info):
-        (svg_width, svg_height) = util.get_svg_dimensions(self.boulder.image)
-        return {
-            "x": self.position_x * svg_width,
-            "y": self.position_y * svg_height,
-        }
+        return util.to_svg_position(self.position, self.boulder.image)
 
 
 class ProblemNode(NodeType):
@@ -167,6 +163,18 @@ class BetaMoveNode(NodeType):
         fields = ("beta", "hold", "order", "annotation")
 
     body_part = BodyPartType(required=True, description="Body part being moved")
+    position = graphene.Field(
+        SVGPosition,
+        required=True,
+        description="Position of the move. For a free move, this is defined by"
+        " the user. For a hold-attached move, this is just the position of the"
+        " hold.",
+    )
+    is_free = graphene.Boolean(
+        required=True,
+        description="Is this move NOT attached to any hold?"
+        " E.g. smear, flag, etc.",
+    )
     is_start = graphene.Boolean(
         required=True,
         description="Is this one of the initial moves for the beta?",
@@ -182,6 +190,17 @@ class BetaMoveNode(NodeType):
         # it's actually requested, but the documentation for the `info` object
         # is horrendous and I don't feel like trying too hard on that.
         return queryset.annotate_is_start().annotate_is_last_in_chain()
+
+    def resolve_position(self, info):
+        """
+        Use our own position if available, otherwise we assume a hold is
+        defined. The underlying model should enforce that exactly one of these
+        is present.
+        """
+        position = (
+            self.position if self.position is not None else self.hold.position
+        )
+        return util.to_svg_position(position, self.beta.problem.boulder.image)
 
     def resolve_is_start(self, info):
         # This is populated by annotation, so we need to resolve it explicitly
