@@ -34,13 +34,16 @@ class AppendBetaMoveMutation(relay.ClientIDMutation):
         # Convert GQL IDs to PKs
         beta = BetaNode.get_node_from_global_id(info, beta_id)
         hold_id = hold_id and HoldNode.get_pk_from_global_id(info, hold_id)
+        normalized_position = position and position.to_normalized(
+            beta.problem.boulder.image
+        )
 
         # TODO validate that hold and beta belong to the same problem
         beta_move = BetaMove.objects.create(
             beta=beta,
             body_part=body_part,
             hold_id=hold_id,
-            position=position.to_normalized(beta.problem.boulder.image),
+            position=normalized_position,
         )
 
         return cls(beta_move=beta_move)
@@ -80,6 +83,9 @@ class InsertBetaMoveMutation(relay.ClientIDMutation):
         )
         beta = previous_move.beta
         hold_id = hold_id and HoldNode.get_pk_from_global_id(info, hold_id)
+        normalized_position = position and position.to_normalized(
+            beta.problem.boulder.image
+        )
 
         # TODO validate that hold and beta belong to the same problem
         beta_move = BetaMove.objects.create(
@@ -87,7 +93,7 @@ class InsertBetaMoveMutation(relay.ClientIDMutation):
             body_part=previous_move.body_part,
             order=previous_move.order + 1,
             hold_id=hold_id,
-            position=position.to_normalized(beta.problem.boulder.image),
+            position=normalized_position,
         )
 
         return cls(beta_move=beta_move)

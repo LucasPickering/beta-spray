@@ -54,5 +54,4 @@ class BoulderPositionField(models.Field):
     def get_prep_value(self, position):
         if position is None:
             return None
-        print(position)
         return f"{position.x},{position.y}"
