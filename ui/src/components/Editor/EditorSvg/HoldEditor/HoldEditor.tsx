@@ -132,6 +132,9 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
           betaMove {
             id
             # These are the only fields we modify
+            hold {
+              id
+            }
             position {
               x
               y

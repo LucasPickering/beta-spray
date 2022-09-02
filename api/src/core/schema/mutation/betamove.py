@@ -137,9 +137,12 @@ class UpdateBetaMoveMutation(relay.ClientIDMutation):
         if order is not None:
             beta_move.order = order
         # TODO validate hold and beta belong to same problem
+        # TODO validate exactly one of hold_id/position is defined
         if hold_id is not None:
             beta_move.hold_id = hold_id
+            beta_move.position = None
         if position is not None:
+            beta_move.hold_id = None
             beta_move.position = position.to_normalized(
                 beta_move.beta.problem.boulder.image
             )

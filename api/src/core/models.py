@@ -1,5 +1,4 @@
 from core import fields
-from django import forms
 from django.db.models import F, Q, Max
 from django.db.models.functions import Coalesce
 from django.db.models.signals import pre_save, post_delete
@@ -202,14 +201,6 @@ class BetaMove(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-    def clean(self):
-        if (self.hold_id is None) == (self.position is None):
-            raise forms.ValidationError(
-                "Exactly one of `hold_id` and `position` must be defined"
-            )
-
-        return self
 
     @property
     def is_free(self):
