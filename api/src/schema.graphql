@@ -214,9 +214,6 @@ type BetaMoveNode implements Node {
   """
   position: SVGPosition!
 
-  """Is this move NOT attached to any hold? E.g. smear, flag, etc."""
-  isFree: Boolean!
-
   """Is this one of the initial moves for the beta?"""
   isStart: Boolean!
 

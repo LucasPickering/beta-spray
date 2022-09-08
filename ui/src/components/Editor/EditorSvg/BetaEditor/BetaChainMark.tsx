@@ -10,6 +10,7 @@ import BetaMoveIcon from "./BetaMoveIcon";
 import { graphql, useFragment } from "react-relay";
 import { BetaChainMark_betaMoveNode$key } from "./__generated__/BetaChainMark_betaMoveNode.graphql";
 import { useBetaMoveColors, useBetaMoveVisualPosition } from "util/svg";
+import { isDefined } from "util/func";
 
 interface Props {
   betaMoveKey: BetaChainMark_betaMoveNode$key;
@@ -25,7 +26,9 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey }) => {
         id
         bodyPart
         order
-        isFree
+        hold {
+          id
+        }
         isLastInChain
         annotation
         beta {
@@ -81,7 +84,7 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey }) => {
           ref={ref}
           bodyPart={betaMove.bodyPart}
           order={betaMove.order}
-          isFree={betaMove.isFree}
+          isFree={!isDefined(betaMove.hold)}
           hasAnnotation={Boolean(betaMove.annotation)}
           primaryColor={colors.primary}
           secondaryColor={colors.secondary}

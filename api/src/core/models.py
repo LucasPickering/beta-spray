@@ -202,13 +202,6 @@ class BetaMove(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    @property
-    def is_free(self):
-        """
-        Is this move NOT attached to any hold? E.g. smear, flag, etc.
-        """
-        return self.hold_id is None
-
 
 # ========== SIGNALS ==========
 

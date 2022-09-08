@@ -170,11 +170,6 @@ class BetaMoveNode(NodeType):
         " the user. For a hold-attached move, this is just the position of the"
         " hold.",
     )
-    is_free = graphene.Boolean(
-        required=True,
-        description="Is this move NOT attached to any hold?"
-        " E.g. smear, flag, etc.",
-    )
     is_start = graphene.Boolean(
         required=True,
         description="Is this one of the initial moves for the beta?",
