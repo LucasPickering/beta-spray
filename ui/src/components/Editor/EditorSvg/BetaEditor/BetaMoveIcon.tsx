@@ -13,6 +13,7 @@ import Positioned from "../Positioned";
 interface Props extends React.SVGProps<SVGGElement> {
   bodyPart: BodyPart;
   order?: number;
+  isFree?: boolean;
   hasAnnotation?: boolean;
   primaryColor: string;
   secondaryColor?: string | null; // Allow null to match w/ the gql schema
@@ -33,6 +34,7 @@ const BetaMoveIcon = React.forwardRef<SVGGElement, Props>(
       primaryColor,
       secondaryColor,
       order,
+      isFree = false,
       hasAnnotation,
       isDragging,
       isHighlighted,
@@ -58,6 +60,10 @@ const BetaMoveIcon = React.forwardRef<SVGGElement, Props>(
           bodyPart={bodyPart}
           css={[
             { fill: primaryColor },
+            // Free moves get a dotted outline. This has to go *before* the
+            // secondaryColor rule, because that one should always take priority
+            // for stroke color
+            isFree && { stroke: "white", strokeDasharray: "1,0.5" },
             isDefined(secondaryColor) && { stroke: secondaryColor },
           ]}
         />

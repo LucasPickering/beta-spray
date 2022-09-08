@@ -25,6 +25,7 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey }) => {
         id
         bodyPart
         order
+        isFree
         isLastInChain
         annotation
         beta {
@@ -80,6 +81,7 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey }) => {
           ref={ref}
           bodyPart={betaMove.bodyPart}
           order={betaMove.order}
+          isFree={betaMove.isFree}
           hasAnnotation={Boolean(betaMove.annotation)}
           primaryColor={colors.primary}
           secondaryColor={colors.secondary}
