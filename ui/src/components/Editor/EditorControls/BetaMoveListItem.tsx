@@ -4,15 +4,19 @@ import {
   Close as IconClose,
 } from "@mui/icons-material";
 import {
+  Box,
   IconButton,
   ListItem,
   ListItemIcon,
   ListItemSecondaryAction,
   ListItemText,
+  Stack,
 } from "@mui/material";
 import { formatBodyPart, useBetaMoveColor } from "util/svg";
 import { graphql, useFragment } from "react-relay";
 import { BetaMoveListItem_betaMoveNode$key } from "./__generated__/BetaMoveListItem_betaMoveNode.graphql";
+import { BetaMoveIconWrapped } from "../EditorSvg/BetaEditor/BetaMoveIcon";
+import { isDefined } from "util/func";
 
 interface Props extends React.ComponentProps<typeof ListItem> {
   betaMoveKey: BetaMoveListItem_betaMoveNode$key;
@@ -33,10 +37,14 @@ const BetaMoveListItem = React.forwardRef<SVGSVGElement, Props>(
           order
           annotation
           isStart
+          hold {
+            id
+          }
         }
       `,
       betaMoveKey
     );
+    const isFree = !isDefined(betaMove.hold);
 
     const color = useBetaMoveColor()(betaMove.id);
     return (
@@ -48,17 +56,39 @@ const BetaMoveListItem = React.forwardRef<SVGSVGElement, Props>(
         </ListItemIcon>
 
         <ListItemText
-          primary={`${betaMove.order} ${formatBodyPart(betaMove.bodyPart)}`}
+          primary={
+            <Stack direction="row" spacing={1}>
+              <BetaMoveIconWrapped
+                bodyPart={betaMove.bodyPart}
+                order={betaMove.order}
+                color={color}
+                isStart={betaMove.isStart}
+                isFree={isFree}
+              />
+
+              <Box
+                sx={[
+                  { color },
+                  // Apply text decoration to mimic the outline features on the
+                  // move icon. Order here is important to get the proper
+                  // precedence
+                  isFree && {
+                    textDecorationLine: "underline",
+                    textDecorationStyle: "dashed",
+                    textDecorationColor: "white",
+                  },
+                  betaMove.isStart &&
+                    (({ palette }) => ({
+                      textDecorationLine: "underline",
+                      textDecorationColor: palette.secondary.main,
+                    })),
+                ]}
+              >
+                {formatBodyPart(betaMove.bodyPart)}
+              </Box>
+            </Stack>
+          }
           secondary={betaMove.annotation}
-          sx={[
-            { color },
-            // Show start moves with an underline
-            betaMove.isStart &&
-              (({ palette }) => ({
-                textDecoration: "underline",
-                textDecorationColor: palette.secondary.main,
-              })),
-          ]}
         />
 
         {/* Preview version of the element shouldn't show this button. Note: this

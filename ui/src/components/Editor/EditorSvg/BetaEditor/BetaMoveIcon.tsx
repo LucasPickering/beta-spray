@@ -8,7 +8,7 @@ import {
 import { Interpolation, Theme } from "@emotion/react";
 import { assertUnreachable, isDefined } from "util/func";
 import Positioned from "../Positioned";
-import { SvgIcon, useTheme } from "@mui/material";
+import { SvgIcon, SvgIconProps, useTheme } from "@mui/material";
 
 interface Props {
   bodyPart: BodyPart;
@@ -79,6 +79,7 @@ const BetaMoveIcon = React.forwardRef<
           <text
             css={{
               fontSize: 4,
+              strokeWidth: 0,
               userSelect: "none",
               pointerEvents: "none",
               // This should contrast all possible fill colors
@@ -107,10 +108,12 @@ BetaMoveIcon.displayName = "BetaMoveIcon";
  * A standalone version of a beta move icon, which can be used in standard
  * HTML context (i.e. outside of an SVG).
  */
-export const BetaMoveIconWrapped: React.FC<Props> = (props) => (
+export const BetaMoveIconWrapped: React.FC<
+  Props & Pick<SvgIconProps, "fontSize">
+> = ({ fontSize, ...rest }) => (
   // View box was determined experimentally, so it's slightly off but close enough
-  <SvgIcon viewBox="-4.5 -4.5 9 9">
-    <BetaMoveIcon {...props} />
+  <SvgIcon viewBox="-4.5 -4.5 9 9" fontSize={fontSize}>
+    <BetaMoveIcon {...rest} />
   </SvgIcon>
 );
 
