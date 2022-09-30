@@ -10,7 +10,6 @@ import {
   ListItemIcon,
   ListItemSecondaryAction,
   ListItemText,
-  Stack,
 } from "@mui/material";
 import { formatBodyPart, useBetaMoveColor } from "util/svg";
 import { graphql, useFragment } from "react-relay";
@@ -52,41 +51,41 @@ const BetaMoveListItem = React.forwardRef<SVGSVGElement, Props>(
         <ListItemIcon>
           {/* Ref is used for dnd only, so pass it to the drag handle.
               This prevents interfering with scrolling on mobile */}
-          <IconDragHandle ref={ref} sx={[!disabled && { cursor: "move" }]} />
+          <IconDragHandle
+            ref={ref}
+            sx={[{ paddingRight: 1 }, !disabled && { cursor: "move" }]}
+          />
+          <BetaMoveIconWrapped
+            bodyPart={betaMove.bodyPart}
+            order={betaMove.order}
+            color={color}
+            isStart={betaMove.isStart}
+            isFree={isFree}
+          />
         </ListItemIcon>
 
         <ListItemText
           primary={
-            <Stack direction="row" spacing={1}>
-              <BetaMoveIconWrapped
-                bodyPart={betaMove.bodyPart}
-                order={betaMove.order}
-                color={color}
-                isStart={betaMove.isStart}
-                isFree={isFree}
-              />
-
-              <Box
-                sx={[
-                  { color },
-                  // Apply text decoration to mimic the outline features on the
-                  // move icon. Order here is important to get the proper
-                  // precedence
-                  isFree && {
+            <Box
+              sx={[
+                { color },
+                // Apply text decoration to mimic the outline features on the
+                // move icon. Order here is important to get the proper
+                // precedence
+                isFree && {
+                  textDecorationLine: "underline",
+                  textDecorationStyle: "dashed",
+                  textDecorationColor: "white",
+                },
+                betaMove.isStart &&
+                  (({ palette }) => ({
                     textDecorationLine: "underline",
-                    textDecorationStyle: "dashed",
-                    textDecorationColor: "white",
-                  },
-                  betaMove.isStart &&
-                    (({ palette }) => ({
-                      textDecorationLine: "underline",
-                      textDecorationColor: palette.secondary.main,
-                    })),
-                ]}
-              >
-                {formatBodyPart(betaMove.bodyPart)}
-              </Box>
-            </Stack>
+                    textDecorationColor: palette.secondary.main,
+                  })),
+              ]}
+            >
+              {formatBodyPart(betaMove.bodyPart)}
+            </Box>
           }
           secondary={betaMove.annotation}
         />

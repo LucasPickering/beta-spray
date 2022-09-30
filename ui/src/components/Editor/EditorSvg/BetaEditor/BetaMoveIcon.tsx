@@ -52,6 +52,7 @@ const BetaMoveIcon = React.forwardRef<
       <g
         ref={ref}
         css={[
+          { stroke: "#00000000" },
           draggable && styleDraggable,
           isDragging && styleDragging,
           isHighlighted && styleDraggableHighlight,
@@ -79,7 +80,6 @@ const BetaMoveIcon = React.forwardRef<
           <text
             css={{
               fontSize: 4,
-              strokeWidth: 0,
               userSelect: "none",
               pointerEvents: "none",
               // This should contrast all possible fill colors
