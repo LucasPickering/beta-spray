@@ -165,10 +165,7 @@ class BetaMoveNode(NodeType):
     body_part = BodyPartType(required=True, description="Body part being moved")
     position = graphene.Field(
         SVGPosition,
-        required=True,
-        description="Position of the move. For a free move, this is defined by"
-        " the user. For a hold-attached move, this is just the position of the"
-        " hold.",
+        description="Position of a free move. Null for hold-attached moves.",
     )
     is_start = graphene.Boolean(
         required=True,
@@ -188,14 +185,19 @@ class BetaMoveNode(NodeType):
 
     def resolve_position(self, info):
         """
-        Use our own position if available, otherwise we assume a hold is
-        defined. The underlying model should enforce that exactly one of these
-        is present.
+        Resolve the position of a free move.
+
+        Note: You may be tempted to have this return the hold position when
+        available so the frontend doesn't have to handle that logic. But wait!
+        That doesn't work because then if the hold move is modified, Relay
+        doesn't know to update the associated move position(s) in local state,
+        so the data gets out of sync.
         """
-        position = (
-            self.position if self.position is not None else self.hold.position
-        )
-        return util.to_svg_position(position, self.beta.problem.boulder.image)
+        if self.position:
+            return util.to_svg_position(
+                self.position, self.beta.problem.boulder.image
+            )
+        return None
 
     def resolve_is_start(self, info):
         # This is populated by annotation, so we need to resolve it explicitly

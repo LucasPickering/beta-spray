@@ -168,22 +168,31 @@ const bodyPartsCCW: BodyPart[] = [
  * can all be seen at once. These positions should be used for any rendering
  * purposes (so basically everywhere in the UI).
  *
- * @param moves All moves in the beta (from Relay)
+ * @param moves All moves in the beta (from Relay). Readonly because mutating
+ *  Relay state is a nono.
  * @returns Map of beta ID : visual position, to be passed to BetaContext
  */
 export function getBetaMoveVisualPositions(
-  moves: Array<{
-    id: string;
-    bodyPart: BodyPart;
-    hold: { id: string } | null;
-    position: OverlayPosition;
+  moves: ReadonlyArray<{
+    readonly id: string;
+    readonly bodyPart: BodyPart;
+    readonly hold: { id: string; position: OverlayPosition } | null;
+    readonly position: OverlayPosition | null;
   }>
 ): Map<string, OverlayPosition> {
   const positionMap: Map<string, OverlayPosition> = new Map();
 
   // Start by just jamming every move into the map
   for (const move of moves) {
-    positionMap.set(move.id, move.position);
+    // Grab position from either the hold (for attached moves) or the move
+    // itself (for free moves)
+    const position = move.position ?? move.hold?.position;
+    if (position) {
+      positionMap.set(move.id, position);
+    } else {
+      // eslint-disable-next-line no-console
+      console.warn("No position available for move:", move);
+    }
   }
 
   // Next, we'll apply offsets to moves that share the same hold+body part, so
@@ -224,7 +233,10 @@ export function getBetaMoveVisualPositions(
           );
 
           // Apply the offset to create the visual position
-          positionMap.set(move.id, add(move.position, offset));
+          const position = positionMap.get(move.id);
+          // The map is fully populated above so this assertion is safe
+          assertIsDefined(position);
+          positionMap.set(move.id, add(position, offset));
         });
       }
     });

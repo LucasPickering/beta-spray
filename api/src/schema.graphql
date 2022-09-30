@@ -209,10 +209,8 @@ type BetaMoveNode implements Node {
   """Body part being moved"""
   bodyPart: BodyPart!
 
-  """
-  Position of the move. For a free move, this is defined by the user. For a hold-attached move, this is just the position of the hold.
-  """
-  position: SVGPosition!
+  """Position of a free move. Null for hold-attached moves."""
+  position: SVGPosition
 
   """Is this one of the initial moves for the beta?"""
   isStart: Boolean!
