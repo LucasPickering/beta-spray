@@ -19,29 +19,33 @@ interface Options<
 /**
  * Get a type for the props of a wrapping component, given:
  * - Wrapper props (T)
- * - Underling props, defined by the wrapped component (Props)
+ * - Underlying props, defined by the wrapped component (Props)
  * - Data props, defined by the wrapped component by derived from Relay state
  */
-type Gloobulate<T, Props, DataKeys extends keyof Props> = T &
+type AllProps<
+  OuterProps,
+  InnerProps,
+  DataKeys extends keyof InnerProps
+> = OuterProps &
   // We want to only pull out the static props from `Props`. Generally, `Props`
   // shouldn't intersect with `T`, but I included that in the `Omit` in an
   // attempt to convince TS that what I'm doing is legit. It didn't work, but
   // I'm leaving it there to make myself feel better.
-  Omit<Props, DataKeys | keyof T>;
+  Omit<InnerProps, DataKeys | keyof OuterProps>;
 
 type LoaderProps<
   Query extends OperationType,
-  Props,
-  DataKeys extends keyof Props
-> = Gloobulate<{ queryRef: PreloadedQuery<Query> }, Props, DataKeys>;
+  InnerProps,
+  DataKeys extends keyof InnerProps
+> = AllProps<{ queryRef: PreloadedQuery<Query> }, InnerProps, DataKeys>;
 
 type SuspenseProps<
   Query extends OperationType,
-  Props,
-  DataKeys extends keyof Props
-> = Gloobulate<
+  InnerProps,
+  DataKeys extends keyof InnerProps
+> = AllProps<
   { queryRef: PreloadedQuery<Query> | null | undefined },
-  Props,
+  InnerProps,
   DataKeys
 >;
 
@@ -103,12 +107,13 @@ function withQuery<
         return noDataElement;
       }
 
+      // The props that we'll transparently pass through the wrappers
       // Unfortunate type assertion. I'm 99% sure I set up all the types
       // correctly here, TS just isn't complicated enough to do these assertions
       const props = {
         ...rest,
         ...dataProps,
-      } as unknown as Props;
+      } as Props & {}; // eslint-disable-line @typescript-eslint/ban-types
       return <Component {...props} />;
     };
     LoaderComponent.displayName = `${baseName}Loader`;
@@ -122,10 +127,10 @@ function withQuery<
 
       return (
         <Suspense fallback={fallbackElement}>
-          <LoaderComponent
-            queryRef={queryRef}
-            {...(rest as unknown as Props)}
-          />
+          {/* I can't figure out how to fix this error. This whole thing is fucked.
+           eslint-disable-next-line @typescript-eslint/ban-ts-comment
+           @ts-ignore 2122 */}
+          <LoaderComponent queryRef={queryRef} {...rest} />
         </Suspense>
       );
     };
