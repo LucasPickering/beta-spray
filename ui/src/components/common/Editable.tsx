@@ -106,6 +106,8 @@ const Editable: React.FC<Props> = ({
             // easier and works well enough
             content: '"✎"',
             marginLeft: 1,
+            // Don't join document flow, to prevent text wrapping
+            position: "absolute",
           },
         },
       }}
