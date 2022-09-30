@@ -1,11 +1,9 @@
 import React, { useContext } from "react";
 import { Divider, IconButton, Paper, Stack, Tooltip } from "@mui/material";
-import { IconBodyPart } from "components/common/icons";
-import { BodyPart, formatBodyPart } from "util/svg";
+import { allBodyParts, formatBodyPart } from "util/svg";
 import HelpText from "./HelpText";
 import DragSourceButton from "./DragSourceButton";
 import {
-  Circle as IconCircle,
   Visibility as IconVisibility,
   VisibilityOff as IconVisibilityOff,
 } from "@mui/icons-material";
@@ -13,14 +11,8 @@ import { EditorVisibilityContext } from "util/context";
 import { PreloadedQuery } from "react-relay";
 import { queriesBetaQuery } from "../__generated__/queriesBetaQuery.graphql";
 import PlayPauseControls from "./PlayPauseControls";
-
-// Body parts, order top-left to bottom-right
-const bodyParts: BodyPart[] = [
-  "LEFT_HAND",
-  "RIGHT_HAND",
-  "LEFT_FOOT",
-  "RIGHT_FOOT",
-];
+import { BetaMoveIconWrapped } from "../EditorSvg/BetaEditor/BetaMoveIcon";
+import { HoldIconWrapped } from "../EditorSvg/HoldEditor/HoldIcon";
 
 interface Props {
   selectedBeta: string | undefined;
@@ -68,14 +60,13 @@ const EditorPalette: React.FC<Props> = ({ betaQueryRef, selectedBeta }) => {
             disabled={!visibility}
             dragSpec={{ type: "overlayHold", item: { action: "create" } }}
           >
-            <IconCircle />
+            <HoldIconWrapped />
           </DragSourceButton>
 
           {/* One button per body part */}
-          {bodyParts.map((bodyPart) => (
+          {allBodyParts.map((bodyPart) => (
             <DragSourceButton
               key={bodyPart}
-              // TODO auto-create a beta server-side when adding a move, if necessary
               disabled={!visibility || !selectedBeta}
               title={formatBodyPart(bodyPart)}
               dragSpec={{
@@ -90,7 +81,7 @@ const EditorPalette: React.FC<Props> = ({ betaQueryRef, selectedBeta }) => {
                 },
               }}
             >
-              <IconBodyPart bodyPart={bodyPart} />
+              <BetaMoveIconWrapped bodyPart={bodyPart} />
             </DragSourceButton>
           ))}
         </Stack>

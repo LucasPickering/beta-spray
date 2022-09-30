@@ -23,7 +23,7 @@ const SvgDragPreview: React.FC<Props> = ({ itemWithKind }) => {
         <BetaMoveIcon
           bodyPart={item.bodyPart}
           // Just pick a pretty color, basically
-          primaryColor={theme.palette.primary.main}
+          color={theme.palette.primary.main}
           isDragging
         />
       );

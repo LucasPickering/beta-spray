@@ -5,7 +5,7 @@ import { graphql } from "relay-runtime";
 import { useFragment } from "react-relay";
 import { BetaChainLine_startBetaMoveNode$key } from "./__generated__/BetaChainLine_startBetaMoveNode.graphql";
 import { BetaChainLine_endBetaMoveNode$key } from "./__generated__/BetaChainLine_endBetaMoveNode.graphql";
-import { useBetaMoveColors, useBetaMoveVisualPosition } from "util/svg";
+import { useBetaMoveColor, useBetaMoveVisualPosition } from "util/svg";
 
 interface Props {
   startMoveKey: BetaChainLine_startBetaMoveNode$key;
@@ -61,9 +61,9 @@ const BetaChainLine: React.FC<Props> = ({ startMoveKey, endMoveKey }) => {
 
   // Color will be a gradient between the two moves
   const gradientId = `${startMove.id}_${endMove.id}`;
-  const getColors = useBetaMoveColors();
-  const startColor = getColors(startMove.id).primary;
-  const endColor = getColors(endMove.id).primary;
+  const getColors = useBetaMoveColor();
+  const startColor = getColors(startMove.id);
+  const endColor = getColors(endMove.id);
 
   return (
     <>

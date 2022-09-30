@@ -10,8 +10,7 @@ import {
   ListItemSecondaryAction,
   ListItemText,
 } from "@mui/material";
-import { formatBodyPart, useBetaMoveColors } from "util/svg";
-import { isDefined } from "util/func";
+import { formatBodyPart, useBetaMoveColor } from "util/svg";
 import { graphql, useFragment } from "react-relay";
 import { BetaMoveListItem_betaMoveNode$key } from "./__generated__/BetaMoveListItem_betaMoveNode.graphql";
 
@@ -33,12 +32,13 @@ const BetaMoveListItem = React.forwardRef<SVGSVGElement, Props>(
           bodyPart
           order
           annotation
+          isStart
         }
       `,
       betaMoveKey
     );
 
-    const colors = useBetaMoveColors()(betaMove.id);
+    const color = useBetaMoveColor()(betaMove.id);
     return (
       <ListItem disabled={disabled} {...rest}>
         <ListItemIcon>
@@ -51,13 +51,13 @@ const BetaMoveListItem = React.forwardRef<SVGSVGElement, Props>(
           primary={`${betaMove.order} ${formatBodyPart(betaMove.bodyPart)}`}
           secondary={betaMove.annotation}
           sx={[
-            { color: colors.primary },
-            // Show stroke color as an underline. This is a little ugly but it
-            // works for now at least (ecks dee)
-            isDefined(colors.secondary) && {
-              textDecoration: "underline",
-              textDecorationColor: colors.secondary,
-            },
+            { color },
+            // Show start moves with an underline
+            betaMove.isStart &&
+              (({ palette }) => ({
+                textDecoration: "underline",
+                textDecorationColor: palette.secondary.main,
+              })),
           ]}
         />
 

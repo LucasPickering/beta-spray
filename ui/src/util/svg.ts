@@ -24,17 +24,22 @@ export interface OverlayPosition {
   y: number;
 }
 
-export interface ColorPair {
-  primary: string;
-  secondary: string | undefined;
-}
-
 /**
  * Re-export of the BodyPart type from GraphQL, for convenience. We need
  * separate import and export statements though, so we can also refer to the
  * type within this file.
  */
 export type BodyPart = BodyPartAPI;
+
+/**
+ * Body parts, order top-left to bottom-right
+ */
+export const allBodyParts: BodyPart[] = [
+  "LEFT_HAND",
+  "RIGHT_HAND",
+  "LEFT_FOOT",
+  "RIGHT_FOOT",
+];
 
 export function formatBodyPart(bodyPart: BodyPart): string {
   switch (bodyPart) {
@@ -134,18 +139,15 @@ export function polarToSvg(radius: number, radians: number): OverlayPosition {
  */
 export function getBetaMoveColors(
   moves: Array<{ id: string; order: number; isStart: boolean }>
-): Map<string, ColorPair> {
+): Map<string, string> {
   const startColor = 0xffffff;
   const endColor = htmlToHex(theme.palette.primary.main);
-  const colorMap: Map<string, ColorPair> = new Map();
+  const colorMap: Map<string, string> = new Map();
 
   // Generate a color for each move
   for (const move of moves) {
     const hex = lerpColor(startColor, endColor, move.order / moves.length);
-    const primary = hexToHtml(hex);
-
-    const secondary = move.isStart ? theme.palette.secondary.main : undefined;
-    colorMap.set(move.id, { primary, secondary });
+    colorMap.set(move.id, hexToHtml(hex));
   }
 
   return colorMap;
@@ -281,32 +283,28 @@ export function useDOMToSVGPosition(): (
 }
 
 /**
- * A hook for accessing the colors of each move in the beta. This returns a
- * getter than can then provide each move's colors, so that you can easily
+ * A hook for accessing the color of each move in the beta. This returns a
+ * getter than can then provide each move's color, so that you can easily
  * handle multiple moves within one component. Relies on BetaContext being
  * present and the colors being initialized within that context.
  *
- * @returns A function that takes in a move ID and returns its position
+ * @returns A function that takes in a move ID and returns its color
  */
-export function useBetaMoveColors(): (betaMoveId: string) => ColorPair {
+export function useBetaMoveColor(): (betaMoveId: string) => string {
   const { betaMoveColors } = useContext(BetaContext);
   return useCallback(
     (betaMoveId) => {
-      const colorPair = betaMoveColors.get(betaMoveId);
-      if (!isDefined(colorPair)) {
+      const color = betaMoveColors.get(betaMoveId);
+      if (!isDefined(color)) {
         // TODO figure out why this gets triggered in BetaDetails after deletion
         // eslint-disable-next-line no-console
         console.warn(
           `No color pair for beta move ${betaMoveId}. Either the ID is unknown or` +
             ` colors weren't initialized in this part of the component tree.`
         );
-        return { primary: "#000000", secondary: undefined };
-        // throw new Error(
-        //   `No color pair for beta move ${betaMoveId}. Either the ID is unknown or` +
-        //     ` colors weren't initialized in this part of the component tree.`
-        // );
+        return "#000000";
       }
-      return colorPair;
+      return color;
     },
     [betaMoveColors]
   );

@@ -1,6 +1,6 @@
 import React from "react";
 import { noop } from "./func";
-import { ColorPair, Dimensions, OverlayPosition } from "./svg";
+import { Dimensions, OverlayPosition } from "./svg";
 
 export interface SvgContextType {
   svgRef: React.RefObject<SVGSVGElement | null>;
@@ -39,7 +39,7 @@ export const EditorSelectedMoveContext = React.createContext<
 >([undefined, noop]);
 
 export interface BetaContextType {
-  betaMoveColors: Map<string, ColorPair>;
+  betaMoveColors: Map<string, string>;
   betaMoveVisualPositions: Map<string, OverlayPosition>;
 }
 

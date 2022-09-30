@@ -1,6 +1,9 @@
-import { IconButton, Tooltip } from "@mui/material";
+import { Divider, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import { Help as IconHelp } from "@mui/icons-material";
 import React from "react";
+import { allBodyParts, formatBodyPart } from "util/svg";
+import { BetaMoveIconWrapped } from "../EditorSvg/BetaEditor/BetaMoveIcon";
+import { HoldIconWrapped } from "../EditorSvg/HoldEditor/HoldIcon";
 
 /**
  * An overlay to show contextual help on top of the editor.
@@ -34,8 +37,41 @@ const HelpTextContent: React.FC = () => {
       <div>
         <strong>Reorder moves</strong> in the list at right
       </div>
+
+      <Divider
+        orientation="horizontal"
+        sx={{ marginTop: 1, marginBottom: 1 }}
+      />
+
+      <LegendIcon icon={<HoldIconWrapped />} label="Hold" />
+      {allBodyParts.map((bodyPart) => (
+        <LegendIcon
+          key={bodyPart}
+          icon={<BetaMoveIconWrapped bodyPart={bodyPart} />}
+          label={formatBodyPart(bodyPart)}
+        />
+      ))}
+
+      <LegendIcon
+        icon={<BetaMoveIconWrapped bodyPart="LEFT_HAND" isStart />}
+        label="Start Move"
+      />
+      <LegendIcon
+        icon={<BetaMoveIconWrapped bodyPart="LEFT_HAND" isFree />}
+        label="Free Move (smear, flag, etc.)"
+      />
     </>
   );
 };
+
+const LegendIcon: React.FC<{ icon: React.ReactElement; label: string }> = ({
+  icon,
+  label,
+}) => (
+  <Stack key={label} direction="row" spacing={1}>
+    {icon}
+    <Typography variant="body2">{label}</Typography>
+  </Stack>
+);
 
 export default HelpText;

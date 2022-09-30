@@ -9,7 +9,7 @@ import Positioned from "../Positioned";
 import BetaMoveIcon from "./BetaMoveIcon";
 import { graphql, useFragment } from "react-relay";
 import { BetaChainMark_betaMoveNode$key } from "./__generated__/BetaChainMark_betaMoveNode.graphql";
-import { useBetaMoveColors, useBetaMoveVisualPosition } from "util/svg";
+import { useBetaMoveColor, useBetaMoveVisualPosition } from "util/svg";
 import { isDefined } from "util/func";
 
 interface Props {
@@ -17,7 +17,7 @@ interface Props {
 }
 
 /**
- * A circle representing a single beta move in a chain
+ * An icon representing a single beta move in a chain
  */
 const BetaChainMark: React.FC<Props> = ({ betaMoveKey }) => {
   const betaMove = useFragment(
@@ -29,6 +29,7 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey }) => {
         hold {
           id
         }
+        isStart
         isLastInChain
         annotation
         beta {
@@ -39,7 +40,7 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey }) => {
     betaMoveKey
   );
   const moveId = betaMove.id; // This gets captured by a lot of lambdas
-  const colors = useBetaMoveColors()(moveId);
+  const color = useBetaMoveColor()(moveId);
   const position = useBetaMoveVisualPosition()(moveId);
 
   const ref = useRef<SVGCircleElement>(null);
@@ -84,10 +85,11 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey }) => {
           ref={ref}
           bodyPart={betaMove.bodyPart}
           order={betaMove.order}
+          isStart={betaMove.isStart}
           isFree={!isDefined(betaMove.hold)}
           hasAnnotation={Boolean(betaMove.annotation)}
-          primaryColor={colors.primary}
-          secondaryColor={colors.secondary}
+          color={color}
+          draggable
           isDragging={isDragging}
           isHighlighted={isHighlighted}
           // Don't block drop events when another element is being dragged
