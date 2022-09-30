@@ -1,6 +1,8 @@
 # Beta Spray
 
-Available at [betaspray.net](https://betaspray.net)! Try it out, let me know what you think.
+A website designed to plan and share [bouldering beta](<https://en.wikipedia.org/wiki/Beta_(climbing)>). Available at [betaspray.net](https://betaspray.net)! Try it out, let me know what you think.
+
+![Annotated boulder](/images/boulder1.png)
 
 ## Development
 
