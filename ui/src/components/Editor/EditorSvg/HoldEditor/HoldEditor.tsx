@@ -132,8 +132,14 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
           betaMove {
             id
             # These are the only fields we modify
+            # Yes, we need to refetch both positions, in case the move was
+            # converted from free to attached or vice versa
             hold {
               id
+              position {
+                x
+                y
+              }
             }
             position {
               x
@@ -246,8 +252,10 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
     }
   };
 
-  const onHoldDrop: DropHandler<"overlayBetaMove", "hold"> = (item, result) => {
-    const holdId = result.holdId;
+  const onHoldDrop: DropHandler<"overlayBetaMove", "hold"> = (
+    item,
+    { holdId, position }
+  ) => {
     switch (item.action) {
       // Dragged a body part from the palette
       case "create":
@@ -284,7 +292,12 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
           },
           optimisticResponse: {
             updateBetaMove: {
-              betaMove: { id: item.betaMoveId, hold: { id: holdId } },
+              betaMove: {
+                id: item.betaMoveId,
+                // Move is attached - position comes indirectly from the hold
+                hold: { id: holdId, position },
+                position: null,
+              },
             },
           },
         });

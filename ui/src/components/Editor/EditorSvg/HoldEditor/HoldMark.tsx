@@ -56,7 +56,11 @@ const HoldMark: React.FC<Props> = ({
     }),
     // Apply mutation based on exactly what was dropped
     drop(item, monitor) {
-      const result = { kind: "hold", holdId: hold.id } as const;
+      const result = {
+        kind: "hold",
+        holdId: hold.id,
+        position: hold.position,
+      } as const;
       if (onDrop) {
         onDrop(item, result, monitor);
       }

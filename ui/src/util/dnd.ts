@@ -40,7 +40,7 @@ export type DragType =
       // drop zone => free move
       // trash => delete
       drop:
-        | { kind: "hold"; holdId: string }
+        | { kind: "hold"; holdId: string; position: OverlayPosition }
         | { kind: "dropZone"; position: OverlayPosition }
         | { kind: "trash" };
     }
