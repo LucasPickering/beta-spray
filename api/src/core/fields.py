@@ -9,12 +9,19 @@ without messing up these positions
 BoulderPosition = namedtuple("BoulderPosition", "x y")
 
 
-def parse_position(value):
+def parse_position(value: str) -> BoulderPosition:
     """
     Parse a string position to a struct value
     """
     x, y = (float(v) for v in value.split(","))
     return BoulderPosition(x, y)
+
+
+def serialize_position(position: BoulderPosition) -> str:
+    """
+    Serialize a BoulderPosition into a string
+    """
+    return f"{position.x},{position.y}"
 
 
 class BoulderPositionField(models.Field):
@@ -54,4 +61,8 @@ class BoulderPositionField(models.Field):
     def get_prep_value(self, position):
         if position is None:
             return None
-        return f"{position.x},{position.y}"
+        return serialize_position(position)
+
+    def value_to_string(self, obj):
+        value = self.value_from_object(obj)
+        return self.get_prep_value(value)
