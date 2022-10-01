@@ -180,6 +180,7 @@ const EditBetaMoveDialogContent: React.FC<{
         }}
       >
         <TextField
+          autoFocus
           label="Notes"
           value={annotation}
           onChange={(e) => setAnnotation(e.target.value)}
