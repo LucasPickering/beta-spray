@@ -41,7 +41,7 @@ const BetaDetailsMove: React.FC<Props> = ({
     EditorHighlightedMoveContext
   );
 
-  const dragHandleRef = useRef<SVGSVGElement | null>(null);
+  const childRef = useRef<HTMLLIElement | null>(null);
 
   const [{ isDragging }, drag] = useDrag<
     "listBetaMove",
@@ -69,7 +69,7 @@ const BetaDetailsMove: React.FC<Props> = ({
       };
     },
     hover(item, monitor) {
-      if (!dragHandleRef.current || !onReorder) {
+      if (!childRef.current || !onReorder) {
         return;
       }
 
@@ -84,7 +84,7 @@ const BetaDetailsMove: React.FC<Props> = ({
       }
 
       // Determine rectangle on screen
-      const hoverBoundingRect = dragHandleRef.current.getBoundingClientRect();
+      const hoverBoundingRect = childRef.current.getBoundingClientRect();
 
       // Get vertical middle
       const hoverMiddleY =
@@ -149,18 +149,22 @@ const BetaDetailsMove: React.FC<Props> = ({
 
   // Scroll the highlighted move into view
   useEffect(() => {
-    if (dragHandleRef.current && isHighlighted) {
-      dragHandleRef.current.scrollIntoView({
+    if (childRef.current && isHighlighted) {
+      childRef.current.scrollIntoView({
         behavior: "smooth",
         block: "nearest",
       });
     }
   }, [isHighlighted]);
 
-  drag(drop(dragHandleRef));
+  // We want the *entire child* to be the drop target. But only the drag handle
+  // element should be a drag target. Otherwise we'd interfere with scrolling
+  // on mobile
+  drop(childRef);
   return (
     <BetaMoveListItem
-      ref={dragHandleRef}
+      ref={childRef}
+      dragRef={drag}
       betaMoveKey={betaMove}
       disabled={disabled}
       onMouseEnter={() => {

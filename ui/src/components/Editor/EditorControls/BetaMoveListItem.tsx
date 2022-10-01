@@ -20,14 +20,15 @@ import { isDefined } from "util/func";
 interface Props extends React.ComponentProps<typeof ListItem> {
   betaMoveKey: BetaMoveListItem_betaMoveNode$key;
   disabled?: boolean;
+  dragRef?: React.Ref<SVGSVGElement>;
   onDelete?: () => void;
 }
 
 /**
  * A dumb component to render a beta move in a list.
  */
-const BetaMoveListItem = React.forwardRef<SVGSVGElement, Props>(
-  ({ betaMoveKey, disabled = false, onDelete, ...rest }, ref) => {
+const BetaMoveListItem = React.forwardRef<HTMLLIElement, Props>(
+  ({ betaMoveKey, disabled = false, dragRef, onDelete, ...rest }, ref) => {
     const betaMove = useFragment(
       graphql`
         fragment BetaMoveListItem_betaMoveNode on BetaMoveNode {
@@ -47,12 +48,12 @@ const BetaMoveListItem = React.forwardRef<SVGSVGElement, Props>(
 
     const color = useBetaMoveColor()(betaMove.id);
     return (
-      <ListItem disabled={disabled} {...rest}>
+      <ListItem ref={ref} disabled={disabled} {...rest}>
         <ListItemIcon>
-          {/* Ref is used for dnd only, so pass it to the drag handle.
-              This prevents interfering with scrolling on mobile */}
+          {/* Only use the drag icon for dragging, to prevent interfering with
+              scrolling on mobile */}
           <IconDragHandle
-            ref={ref}
+            ref={dragRef}
             sx={[{ paddingRight: 1 }, !disabled && { cursor: "move" }]}
           />
           <BetaMoveIconWrapped
