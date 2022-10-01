@@ -4,7 +4,7 @@ import { Upload as IconUpload } from "@mui/icons-material";
 import imageCompression from "browser-image-compression";
 import ErrorSnackbar from "components/common/ErrorSnackbar";
 
-const maxUploadSizeMB = 1;
+const maxUploadSizeMB = 0.2; // 200 KB
 
 interface Props {
   onUpload?: (file: File) => void;
