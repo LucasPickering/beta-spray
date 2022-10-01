@@ -8,7 +8,6 @@ import HoldEditorDropZone from "./HoldEditorDropZone";
 import HoldOverlay from "./HoldOverlay";
 import { HoldEditor_appendBetaMoveMutation } from "./__generated__/HoldEditor_appendBetaMoveMutation.graphql";
 import { HoldEditor_createHoldMutation } from "./__generated__/HoldEditor_createHoldMutation.graphql";
-import { HoldEditor_deleteHoldMutation } from "./__generated__/HoldEditor_deleteHoldMutation.graphql";
 import { HoldEditor_insertBetaMoveMutation } from "./__generated__/HoldEditor_insertBetaMoveMutation.graphql";
 import { HoldEditor_problemNode$key } from "./__generated__/HoldEditor_problemNode.graphql";
 import { HoldEditor_relocateHoldMutation } from "./__generated__/HoldEditor_relocateHoldMutation.graphql";
@@ -45,7 +44,7 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
     problemKey
   );
 
-  const { commit: createHold, state: createState } =
+  const { commit: createHold, state: createHoldState } =
     useMutation<HoldEditor_createHoldMutation>(graphql`
       mutation HoldEditor_createHoldMutation(
         $input: CreateHoldMutationInput!
@@ -62,7 +61,7 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
         }
       }
     `);
-  const { commit: relocateHold, state: relocateState } =
+  const { commit: relocateHold, state: relocateHoldState } =
     useMutation<HoldEditor_relocateHoldMutation>(graphql`
       mutation HoldEditor_relocateHoldMutation(
         $input: RelocateHoldMutationInput!
@@ -75,25 +74,12 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
         }
       }
     `);
-  const { commit: deleteHold, state: deleteState } =
-    useMutation<HoldEditor_deleteHoldMutation>(graphql`
-      mutation HoldEditor_deleteHoldMutation(
-        $input: DeleteHoldMutationInput!
-        $connections: [ID!]!
-      ) {
-        deleteHold(input: $input) {
-          hold {
-            id @deleteEdge(connections: $connections) @deleteRecord
-          }
-        }
-      }
-    `);
 
   // These mutations are all for modifying moves, since they get called when
   // a move is dropped *onto* a hold/drop zone
   //
   // Append new move to end of the beta
-  const { commit: appendBetaMove, state: appendState } =
+  const { commit: appendBetaMove, state: appendBetaMoveState } =
     useMutation<HoldEditor_appendBetaMoveMutation>(graphql`
       mutation HoldEditor_appendBetaMoveMutation(
         $input: AppendBetaMoveMutationInput!
@@ -108,7 +94,7 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
       }
     `);
   // Insert a new move into the middle of the beta
-  const { commit: insertBetaMove, state: insertState } =
+  const { commit: insertBetaMove, state: insertBetaMoveState } =
     useMutation<HoldEditor_insertBetaMoveMutation>(graphql`
       mutation HoldEditor_insertBetaMoveMutation(
         $input: InsertBetaMoveMutationInput!
@@ -123,7 +109,7 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
       }
     `);
   // Relocate an existing move
-  const { commit: updateBetaMove, state: updateState } =
+  const { commit: updateBetaMove, state: updateBetaMoveState } =
     useMutation<HoldEditor_updateBetaMoveMutation>(graphql`
       mutation HoldEditor_updateBetaMoveMutation(
         $input: UpdateBetaMoveMutationInput!
@@ -314,42 +300,29 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
         // Always render all holds, but if we're editing a specific problem,
         // highlight those holds
         holdConnectionKey={problem.holds}
-        // Double click = delete
-        onDoubleClick={(holdId) => {
-          deleteHold({
-            variables: {
-              input: { holdId },
-              // Delete from everywhere possible
-              connections: [problem.holds.__id],
-            },
-            optimisticResponse: {
-              deleteHold: {
-                hold: { id: holdId },
-              },
-            },
-          });
-        }}
         onDrop={onHoldDrop}
       />
 
       <MutationErrorSnackbar
         message="Error creating hold"
-        state={createState}
+        state={createHoldState}
       />
       <MutationErrorSnackbar
         message="Error moving hold"
-        state={relocateState}
+        state={relocateHoldState}
       />
       <MutationErrorSnackbar
-        message="Error deleting hold"
-        state={deleteState}
+        message="Error adding move"
+        state={appendBetaMoveState}
       />
-      <MutationErrorSnackbar message="Error adding move" state={appendState} />
       <MutationErrorSnackbar
         message="Error updating move"
-        state={updateState}
+        state={updateBetaMoveState}
       />
-      <MutationErrorSnackbar message="Error adding move" state={insertState} />
+      <MutationErrorSnackbar
+        message="Error adding move"
+        state={insertBetaMoveState}
+      />
     </>
   );
 };
