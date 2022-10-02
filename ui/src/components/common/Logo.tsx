@@ -20,15 +20,18 @@ const Logo: React.FC = () => (
 );
 
 /**
- * Standlone logo icon.
+ * Standlone logo icon. This is copied in from `logo.svg`, which is the
+ * definitive image.
+ *
+ * TODO import that SVG so we don't have to duplicate it.
  */
 export const IconLogo: React.FC<SvgIconProps> = (props) => (
   <SvgIcon viewBox="0 0 100 100" {...props}>
-    <circle cx="20" cy="82" r="12" />
-    <circle cx="74" cy="60" r="12" />
-    <circle cx="38" cy="18" r="12" />
-    <line strokeWidth="7" x1="20" y1="82" x2="74" y2="60" />
-    <line strokeWidth="7" x1="74" y1="60" x2="38" y2="18" />
+    <circle cx="25" cy="82" r="12" />
+    <circle cx="79" cy="60" r="12" />
+    <circle cx="43" cy="18" r="12" />
+    <line strokeWidth="7" x1="25" y1="82" x2="79" y2="60" />
+    <line strokeWidth="7" x1="74" y1="60" x2="43" y2="18" />
   </SvgIcon>
 );
 
