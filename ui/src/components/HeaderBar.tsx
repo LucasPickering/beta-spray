@@ -67,7 +67,7 @@ const HeaderBar: React.FC<Props> = ({ children }) => {
       {isWide && (
         <Stack direction="row" component="nav" spacing={2} marginLeft={2}>
           {links.map(({ to, label }) => (
-            <HeaderLink key={to} to={to}>
+            <HeaderLink key={to} to={to} end>
               {label}
             </HeaderLink>
           ))}
