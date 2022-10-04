@@ -8,18 +8,16 @@ version = "0.1.0"
 [tool.poetry.dependencies]
 Django = "^4.0.3"
 Pillow = "^9.0.1"
+django-debug-toolbar = "^3.5.0"
 django-extensions = "^3.1.5"
 django-filter = "^21.1"
+django-graphiql-debug-toolbar = "^0.2.0"
 django-storages = {extras = ["google"], version = "^1.12.3"}
-# Need to pull in a couple hacks from here
-graphene = {git = "https://github.com/LucasPickering/graphene.git", branch = "master"}
-# Django 4.0 support is unreleased
-graphene-django = {git = "https://github.com/graphql-python/graphene-django.git", rev = "0bb9f1ca60458050911eb17ab2f0e1203561c91f"}
+graphene = {git = "https://github.com/LucasPickering/graphene.git", branch = "master"}# Need to pull in a couple hacks from here
+graphene-django = "^3.0.0"
 gunicorn = "^20.1.0"
 psycopg2 = "^2.9.3"
 python = "^3.9"
-django-debug-toolbar = "^3.5.0"
-django-graphiql-debug-toolbar = "^0.2.0"
 
 [tool.poetry.dev-dependencies]
 flake8-black = "^0.3.2"
