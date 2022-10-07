@@ -1,6 +1,7 @@
+import React, { Suspense } from "react";
 import { AppBar, Box, useTheme } from "@mui/material";
-import { Suspense } from "react";
-import Loading from "./common/Loading";
+import Loading from "../common/Loading";
+import AlphaBanner from "./AlphaBanner";
 import Footer from "./Footer";
 import HeaderBar from "./HeaderBar";
 
@@ -21,7 +22,9 @@ const PageLayout: React.FC<Props> = ({ children }) => {
     >
       <AppBar position="static">
         <HeaderBar />
+        <AlphaBanner />
       </AppBar>
+
       <Box
         padding={2}
         // Always fill the screen, but not wider than MUI's largest breakpoint.

@@ -3,7 +3,7 @@ import LinkBehavior from "components/common/LinkBehavior";
 
 const theme = createTheme({
   palette: {
-    // https://coolors.co/0f1c2e-1d3557-5296a5-ff9233-48cfea
+    // https://coolors.co/0f1c2e-1d3557-ffc848-ff9233-1abbdb
     mode: "dark",
     background: {
       default: "#0F1C2E",
@@ -14,6 +14,9 @@ const theme = createTheme({
     },
     secondary: {
       main: "#48CFEA",
+    },
+    warning: {
+      main: "#FFBE26",
     },
   },
   components: {

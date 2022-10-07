@@ -9,10 +9,10 @@ import {
   Typography,
 } from "@mui/material";
 import useIsWide from "util/useIsWide";
-import HeaderLink from "./common/HeaderLink";
-import Logo from "./common/Logo";
-import NavLink from "./common/NavLink";
-import ToggleDrawer from "./common/ToggleDrawer";
+import HeaderLink from "../common/HeaderLink";
+import Logo from "../common/Logo";
+import NavLink from "../common/NavLink";
+import ToggleDrawer from "../common/ToggleDrawer";
 
 const links = [
   { to: "/", label: "Problems" },

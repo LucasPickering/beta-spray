@@ -8,7 +8,7 @@ import environment from "util/environment";
 import Loading from "components/common/Loading";
 import NotFound from "components/common/NotFound";
 import theme from "util/theme";
-import PageLayout from "components/PageLayout";
+import PageLayout from "components/PageLayout/PageLayout";
 import ErrorBoundary from "components/common/ErrorBoundary";
 import Home from "components/Home/Home";
 import { Helmet, HelmetProvider } from "react-helmet-async";
