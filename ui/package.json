@@ -29,7 +29,6 @@
     "babel-loader": "^8.2.5",
     "babel-plugin-relay": "^14.1.0",
     "browser-image-compression": "^2.0.0",
-    "dayjs": "^1.11.5",
     "eslint": "^8.24.0",
     "graphql": "^16.6.0",
     "html-webpack-plugin": "^5.5.0",

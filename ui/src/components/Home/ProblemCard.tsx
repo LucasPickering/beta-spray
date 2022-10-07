@@ -9,7 +9,6 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import dayjs from "dayjs";
 import React from "react";
 import { graphql, useFragment } from "react-relay";
 import { Delete as IconDelete } from "@mui/icons-material";
@@ -17,6 +16,8 @@ import { ProblemCard_problemNode$key } from "./__generated__/ProblemCard_problem
 import LinkBehavior from "components/common/LinkBehavior";
 import Editable from "components/common/Editable";
 import { isDefined } from "util/func";
+
+const dateFormat = new Intl.DateTimeFormat(undefined, { dateStyle: "long" });
 
 interface Props {
   problemKey: ProblemCard_problemNode$key;
@@ -92,7 +93,7 @@ const ProblemCard: React.FC<Props> = ({ problemKey, onEditName, onDelete }) => {
           )}
         </Typography>
         <Typography variant="subtitle1" component="span" color="text.secondary">
-          {dayjs(problem.createdAt).format("LLL")}
+          {dateFormat.format(new Date(problem.createdAt))}
         </Typography>
       </CardContent>
 
