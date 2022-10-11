@@ -14,7 +14,7 @@ import React, {
   useState,
 } from "react";
 import { graphql, useFragment } from "react-relay";
-import withQuery from "util/withQuery";
+import { withQuery } from "relay-query-wrapper";
 import { betaQuery } from "../queries";
 import { queriesBetaQuery } from "../__generated__/queriesBetaQuery.graphql";
 import { PlayPauseControls_betaNode$key } from "./__generated__/PlayPauseControls_betaNode.graphql";

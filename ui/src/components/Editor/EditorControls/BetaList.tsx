@@ -7,7 +7,7 @@ import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
 import useMutation from "util/useMutation";
 import { queriesProblemQuery } from "../__generated__/queriesProblemQuery.graphql";
 import { problemQuery } from "../queries";
-import withQuery from "util/withQuery";
+import { withQuery } from "relay-query-wrapper";
 import {
   Button,
   FormControl,

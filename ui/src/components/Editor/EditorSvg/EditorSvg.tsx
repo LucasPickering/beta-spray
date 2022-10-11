@@ -12,7 +12,7 @@ import { EditorSvg_problemNode$key } from "./__generated__/EditorSvg_problemNode
 import { usePinch } from "@use-gesture/react";
 import { isDefined } from "util/func";
 import { problemQuery } from "../queries";
-import withQuery from "util/withQuery";
+import { withQuery } from "relay-query-wrapper";
 import Loading from "components/common/Loading";
 import { queriesBetaQuery } from "../__generated__/queriesBetaQuery.graphql";
 

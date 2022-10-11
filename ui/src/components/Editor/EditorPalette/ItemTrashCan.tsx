@@ -10,7 +10,7 @@ import { ItemTrashCan_deleteHoldMutation } from "./__generated__/ItemTrashCan_de
 import { ItemTrashCan_problemNode$key } from "./__generated__/ItemTrashCan_problemNode.graphql";
 import { problemQuery } from "../queries";
 import { queriesProblemQuery } from "../__generated__/queriesProblemQuery.graphql";
-import withQuery from "util/withQuery";
+import { withQuery } from "relay-query-wrapper";
 
 interface Props {
   problemKey: ItemTrashCan_problemNode$key;

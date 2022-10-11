@@ -1,7 +1,7 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
 import { graphql, useFragment } from "react-relay";
-import withQuery from "util/withQuery";
+import { withQuery } from "relay-query-wrapper";
 import { problemQuery } from "./queries";
 import { EditorHelmet_problemNode$key } from "./__generated__/EditorHelmet_problemNode.graphql";
 import { queriesProblemQuery } from "./__generated__/queriesProblemQuery.graphql";

@@ -6,7 +6,7 @@ import { groupBy } from "util/func";
 import BodyState from "./BodyState";
 import BetaChainLine from "./BetaChainLine";
 import BetaChainMark from "./BetaChainMark";
-import withQuery from "util/withQuery";
+import { withQuery } from "relay-query-wrapper";
 import { queriesBetaQuery } from "components/Editor/__generated__/queriesBetaQuery.graphql";
 import { betaQuery } from "components/Editor/queries";
 import { getBetaMoveColors, getBetaMoveVisualPositions } from "util/svg";

@@ -1,6 +1,6 @@
 import { Skeleton, Typography, TypographyProps } from "@mui/material";
 import React from "react";
-import withQuery from "util/withQuery";
+import { withQuery } from "relay-query-wrapper";
 import { problemQuery } from "../queries";
 import { queriesProblemQuery } from "../__generated__/queriesProblemQuery.graphql";
 import { graphql, useFragment } from "react-relay";

@@ -10,7 +10,7 @@ import { ProblemList_createBoulderWithFriendsMutation } from "./__generated__/Pr
 import useMutation from "util/useMutation";
 import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
 import { ProblemListQuery } from "./__generated__/ProblemListQuery.graphql";
-import withQuery from "util/withQuery";
+import { withQuery } from "relay-query-wrapper";
 import { useNavigate } from "react-router-dom";
 
 const cardSizes = { xs: 12, sm: 6, md: 4 };
