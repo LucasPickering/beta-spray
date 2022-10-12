@@ -1,6 +1,7 @@
 import useIsWide from "util/useIsWide";
 import { Paper, Box, Stack } from "@mui/material";
 import ToggleDrawer from "components/common/ToggleDrawer";
+import ErrorBoundary from "components/common/ErrorBoundary";
 
 interface Props {
   children?: React.ReactNode;
@@ -33,7 +34,7 @@ const EditorControls: React.FC<Props> = ({ children }) => {
       >
         <Box sx={({ spacing }) => ({ padding: spacing(2) })}>
           <Stack direction="column" spacing={2}>
-            {children}
+            <ErrorBoundary>{children}</ErrorBoundary>
           </Stack>
         </Box>
       </ToggleDrawer>

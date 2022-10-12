@@ -5,9 +5,19 @@ interface Props {
 }
 
 const ErrorMessage: React.FC<Props> = () => (
-  <Box>
+  <Box
+    width="100%"
+    height="100%"
+    display="flex"
+    flexDirection="column"
+    justifyContent="center"
+    alignItems="center"
+  >
     <Typography variant="h4" component="p">
-      An error occurred
+      An error occurred, try again.
+    </Typography>
+    <Typography variant="h6" component="p">
+      If it persists, please report it!
     </Typography>
   </Box>
 );

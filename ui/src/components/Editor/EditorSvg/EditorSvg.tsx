@@ -15,6 +15,7 @@ import { problemQuery } from "../queries";
 import { withQuery } from "relay-query-wrapper";
 import Loading from "components/common/Loading";
 import { queriesBetaQuery } from "../__generated__/queriesBetaQuery.graphql";
+import ErrorBoundary from "components/common/ErrorBoundary";
 
 interface Props {
   problemKey: EditorSvg_problemNode$key;
@@ -58,22 +59,24 @@ const EditorSvg: React.FC<Props> = ({ problemKey, betaQueryRef }) => {
   };
 
   return (
-    <SvgContext.Provider value={{ svgRef: ref, dimensions }}>
-      <EditorSvgInner ref={ref}>
-        <BoulderImage boulderKey={problem.boulder} />
+    <ErrorBoundary>
+      <SvgContext.Provider value={{ svgRef: ref, dimensions }}>
+        <EditorSvgInner ref={ref}>
+          <BoulderImage boulderKey={problem.boulder} />
 
-        {/* This has to go before other interactive stuff so it doesn't eat
+          {/* This has to go before other interactive stuff so it doesn't eat
             events from other components */}
-        <SvgDragLayer />
+          <SvgDragLayer />
 
-        {visibility && (
-          <>
-            <HoldEditor problemKey={problem} />
-            <BetaEditor queryRef={betaQueryRef} />
-          </>
-        )}
-      </EditorSvgInner>
-    </SvgContext.Provider>
+          {visibility && (
+            <>
+              <HoldEditor problemKey={problem} />
+              <BetaEditor queryRef={betaQueryRef} />
+            </>
+          )}
+        </EditorSvgInner>
+      </SvgContext.Provider>
+    </ErrorBoundary>
   );
 };
 

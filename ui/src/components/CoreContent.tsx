@@ -43,14 +43,18 @@ const CoreContent: React.FC = () => {
                   {/* Fullscreen routes */}
                   <Route path={"problems/:problemId"} element={<Editor />}>
                     {/* Just an alias to pre-select beta */}
-                    <Route path="beta/:betaId" element={<></>} />
+                    <Route path="beta/:betaId" element={null} />
                   </Route>
 
                   {/* Main route group */}
                   <Route
                     element={
                       <PageLayout>
-                        <Outlet />
+                        {/* For some reason this doesn't work inside PageLayout
+                            so we have to stick it here */}
+                        <ErrorBoundary>
+                          <Outlet />
+                        </ErrorBoundary>
                       </PageLayout>
                     }
                   >
