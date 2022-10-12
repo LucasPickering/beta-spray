@@ -43,6 +43,7 @@ const HeaderBar: React.FC<Props> = ({ children }) => {
                 key={to}
                 component={NavLink}
                 to={to}
+                end
                 // Use built-in ListItem selected styles for active link
                 activeClassName="Mui-selected"
                 disablePadding
@@ -64,7 +65,7 @@ const HeaderBar: React.FC<Props> = ({ children }) => {
       </Typography>
 
       {isWide && (
-        <Stack direction="row" component="nav" spacing={2} marginLeft={2}>
+        <Stack direction="row" component="nav" marginLeft={2}>
           {links.map(({ to, label }) => (
             <HeaderLink key={to} to={to} end>
               {label}
