@@ -45,6 +45,12 @@ export function assertUnreachable(message: string = ""): never {
   throw new Error(`Unreachable code: ${message}`);
 }
 
+export function range(start: number, stop: number): number[] {
+  return Array(stop - start)
+    .fill(0)
+    .map((e, i) => start + i);
+}
+
 /**
  * Slide an element up or down an array, *returning a new array*
  */

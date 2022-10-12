@@ -17,6 +17,7 @@ const PageLayout: React.FC<Props> = ({ children }) => {
       flexDirection="column"
       alignItems="center"
       minHeight="100vh"
+      sx={({ palette }) => ({ backgroundColor: palette.background.default })}
     >
       <AppBar position="static">
         <HeaderBar />

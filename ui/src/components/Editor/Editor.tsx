@@ -133,7 +133,7 @@ const Editor: React.FC = () => {
                   width="100%"
                   height="100%"
                   sx={({ palette }) => ({
-                    backgroundColor: palette.background.paper,
+                    backgroundColor: palette.background.default,
                   })}
                 >
                   <EditorSvg
