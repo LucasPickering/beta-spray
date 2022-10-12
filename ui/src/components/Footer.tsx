@@ -25,13 +25,10 @@ const Footer: React.FC = () => {
           <Stack direction="row" alignItems="center" spacing={1}>
             <div>Feedback?</div>
 
-            <Link component="a" href="https://twitter.com/pucaslickering">
+            <Link href="https://twitter.com/pucaslickering">
               <IconTwitter />
             </Link>
-            <Link
-              component="a"
-              href="https://github.com/LucasPickering/beta-spray"
-            >
+            <Link href="https://github.com/LucasPickering/beta-spray">
               <IconGitHub />
             </Link>
           </Stack>
