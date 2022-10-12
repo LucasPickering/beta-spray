@@ -1,4 +1,3 @@
-import React from "react";
 import { DropHandler, useDrop } from "util/dnd";
 import { assertIsDefined } from "util/func";
 import { useDOMToSVGPosition } from "util/svg";

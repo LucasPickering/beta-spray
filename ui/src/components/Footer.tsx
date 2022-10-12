@@ -1,5 +1,4 @@
 import { Box, Divider, Link, Stack, Typography } from "@mui/material";
-import React from "react";
 import { IconGitHub, IconTwitter } from "assets";
 import useIsWide from "util/useIsWide";
 

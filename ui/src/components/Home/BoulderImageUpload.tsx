@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Card, CardActionArea, CardContent, Typography } from "@mui/material";
 import { Upload as IconUpload } from "@mui/icons-material";
 import imageCompression from "browser-image-compression";

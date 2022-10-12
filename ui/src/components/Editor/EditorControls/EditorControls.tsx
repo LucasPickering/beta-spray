@@ -1,4 +1,3 @@
-import React from "react";
 import useIsWide from "util/useIsWide";
 import { Paper, Box, Stack } from "@mui/material";
 import ToggleDrawer from "components/common/ToggleDrawer";

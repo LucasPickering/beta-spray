@@ -1,5 +1,5 @@
 import { MutationState } from "util/useMutation";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Portal } from "@mui/material";
 import ErrorSnackbar from "./ErrorSnackbar";
 

@@ -1,5 +1,4 @@
 import { Grid, Skeleton } from "@mui/material";
-import React from "react";
 import { graphql, useFragment } from "react-relay";
 import ProblemCard from "./ProblemCard";
 import BoulderImageUpload from "./BoulderImageUpload";

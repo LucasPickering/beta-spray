@@ -1,5 +1,5 @@
 import { useTheme } from "@mui/material";
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { graphql, useFragment } from "react-relay";
 import { EditorHighlightedMoveContext } from "util/context";
 import { BodyPart, OverlayPosition, useBetaMoveVisualPosition } from "util/svg";

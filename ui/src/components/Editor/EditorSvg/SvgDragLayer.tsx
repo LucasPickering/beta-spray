@@ -1,4 +1,3 @@
-import React from "react";
 import { getItemWithKind, useDragLayer } from "util/dnd";
 import { useDOMToSVGPosition } from "util/svg";
 import DragPreview from "./SvgDragPreview";

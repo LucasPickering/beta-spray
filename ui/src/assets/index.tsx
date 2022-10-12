@@ -3,7 +3,6 @@
  * assets folder.
  */
 
-import React from "react";
 import { SvgIcon, SvgIconProps } from "@mui/material";
 import GitHubLogo from "./github.svg";
 import TwitterLogo from "./twitter.svg";

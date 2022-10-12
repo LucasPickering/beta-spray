@@ -6,13 +6,7 @@ import {
   KeyboardArrowRight as IconKeyboardArrowRight,
   Replay as IconReplay,
 } from "@mui/icons-material";
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { graphql, useFragment } from "react-relay";
 import { withQuery } from "relay-query-wrapper";
 import { betaQuery } from "../queries";

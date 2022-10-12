@@ -1,4 +1,4 @@
-import React from "react";
+import { forwardRef } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
 /**
@@ -7,7 +7,7 @@ import { Link as RouterLink } from "react-router-dom";
  *
  * @see https://mui.com/material-ui/guides/routing/#global-theme-link
  */
-const LinkBehavior = React.forwardRef<HTMLAnchorElement, { href: string }>(
+const LinkBehavior = forwardRef<HTMLAnchorElement, { href: string }>(
   // Map href (MUI) -> to (react-router)
   ({ href, ...rest }, ref) => <RouterLink ref={ref} to={href} {...rest} />
 );

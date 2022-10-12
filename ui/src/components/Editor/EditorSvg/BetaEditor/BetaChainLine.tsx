@@ -1,4 +1,3 @@
-import React from "react";
 import { useDrag } from "util/dnd";
 import { styleDraggable, styleDragging } from "styles/svg";
 import { graphql } from "relay-runtime";

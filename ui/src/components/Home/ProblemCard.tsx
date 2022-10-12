@@ -9,7 +9,6 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import React from "react";
 import { graphql, useFragment } from "react-relay";
 import { Delete as IconDelete } from "@mui/icons-material";
 import { ProblemCard_problemNode$key } from "./__generated__/ProblemCard_problemNode.graphql";

@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from "react";
+import { useContext, useMemo } from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
 import { BetaEditor_betaNode$key } from "./__generated__/BetaEditor_betaNode.graphql";

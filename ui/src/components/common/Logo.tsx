@@ -1,4 +1,3 @@
-import React from "react";
 import { Box, SvgIcon, SvgIconProps, Typography } from "@mui/material";
 
 /**

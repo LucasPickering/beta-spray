@@ -1,4 +1,3 @@
-import React from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
 import HoldMark from "./HoldMark";

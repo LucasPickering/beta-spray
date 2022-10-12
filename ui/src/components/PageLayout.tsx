@@ -1,5 +1,5 @@
 import { AppBar, Box, useTheme } from "@mui/material";
-import React, { Suspense } from "react";
+import { Suspense } from "react";
 import Loading from "./common/Loading";
 import Footer from "./Footer";
 import HeaderBar from "./HeaderBar";

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { graphql, useFragment } from "react-relay";
 import { BetaList_problemNode$key } from "./__generated__/BetaList_problemNode.graphql";
 import { BetaList_createBetaMutation } from "./__generated__/BetaList_createBetaMutation.graphql";

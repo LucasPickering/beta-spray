@@ -1,5 +1,4 @@
 import { useTheme } from "@mui/material";
-import React from "react";
 import { DragItemWithKind } from "util/dnd";
 import BetaMoveIcon from "./BetaEditor/BetaMoveIcon";
 import HoldIcon from "./HoldEditor/HoldIcon";

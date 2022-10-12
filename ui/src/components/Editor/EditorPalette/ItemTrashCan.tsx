@@ -1,6 +1,5 @@
 import { IconButton, Tooltip } from "@mui/material";
 import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
-import React from "react";
 import { graphql, useFragment } from "react-relay";
 import useMutation from "util/useMutation";
 import { Delete as IconDelete } from "@mui/icons-material";

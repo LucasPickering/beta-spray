@@ -8,7 +8,6 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
-import React from "react";
 import useIsWide from "util/useIsWide";
 import HeaderLink from "./common/HeaderLink";
 import Logo from "./common/Logo";

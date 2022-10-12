@@ -1,5 +1,4 @@
 import { IconButton, IconButtonProps, Tooltip } from "@mui/material";
-import React from "react";
 import { DragKind, DragSpec, useDrag } from "util/dnd";
 
 interface Props<K extends DragKind> extends IconButtonProps {

@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Box,
   FormControlLabel,
@@ -16,7 +17,6 @@ import {
   Delete as IconDelete,
   MoreVert as IconMoreVert,
 } from "@mui/icons-material";
-import React from "react";
 import { graphql, useFragment } from "react-relay";
 import { BetaListItem_betaNode$key } from "./__generated__/BetaListItem_betaNode.graphql";
 import Editable from "components/common/Editable";

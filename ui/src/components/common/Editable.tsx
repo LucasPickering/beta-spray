@@ -1,5 +1,5 @@
 import { Box, ClickAwayListener, TextField } from "@mui/material";
-import React, { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { isDefined } from "util/func";
 
 interface Props {

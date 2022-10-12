@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
 import { SvgContext } from "util/context";

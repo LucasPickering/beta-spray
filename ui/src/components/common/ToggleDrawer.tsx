@@ -5,7 +5,7 @@ import {
   IconButtonProps,
 } from "@mui/material";
 import { Menu as IconMenu } from "@mui/icons-material";
-import React, { useState } from "react";
+import { useState } from "react";
 
 interface Props extends DrawerProps {
   ButtonProps?: IconButtonProps;

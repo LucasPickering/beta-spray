@@ -1,4 +1,3 @@
-import React from "react";
 import { Helmet } from "react-helmet-async";
 import { graphql, useFragment } from "react-relay";
 import { withQuery } from "relay-query-wrapper";

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { Divider, IconButton, Paper, Stack, Tooltip } from "@mui/material";
 import { allBodyParts, formatBodyPart } from "util/svg";
 import HelpText from "./HelpText";

@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import { useRef } from "react";
 import { DropHandler, useDrag, useDrop } from "util/dnd";
 import { graphql, useFragment } from "react-relay";
 import { HoldMark_holdNode$key } from "./__generated__/HoldMark_holdNode.graphql";

@@ -1,5 +1,4 @@
 import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
-import React from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
 import { DropHandler, getItemWithKind } from "util/dnd";
