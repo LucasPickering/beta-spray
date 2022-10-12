@@ -12,7 +12,8 @@ import PageLayout from "components/PageLayout/PageLayout";
 import ErrorBoundary from "components/common/ErrorBoundary";
 import Home from "components/Home/Home";
 import { Helmet, HelmetProvider } from "react-helmet-async";
-import Why from "./Why";
+import About from "./About";
+import TextLayout from "./PageLayout/TextLayout";
 
 // Code splitting! Don't split the home page since it's tiny
 const Editor = React.lazy(() => import("components/Editor/Editor"));
@@ -59,8 +60,17 @@ const CoreContent: React.FC = () => {
                     }
                   >
                     <Route index element={<Home />} />
-                    <Route path="/why" element={<Why />} />
-                    <Route path="*" element={<NotFound />} />
+                    {/* Make text-only pages narrower */}
+                    <Route
+                      element={
+                        <TextLayout>
+                          <Outlet />
+                        </TextLayout>
+                      }
+                    >
+                      <Route path="/about" element={<About />} />
+                      <Route path="*" element={<NotFound />} />
+                    </Route>
                   </Route>
                 </Routes>
               </ErrorBoundary>

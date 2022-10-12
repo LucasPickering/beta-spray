@@ -16,7 +16,7 @@ import ToggleDrawer from "../common/ToggleDrawer";
 
 const links = [
   { to: "/", label: "Problems" },
-  { to: "why", label: "Why?" },
+  { to: "about", label: "About" },
 ];
 
 interface Props {

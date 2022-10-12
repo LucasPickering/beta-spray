@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Link, Typography } from "@mui/material";
 
 interface Props {
   error?: Error;
@@ -17,7 +17,7 @@ const ErrorMessage: React.FC<Props> = () => (
       An error occurred, try again.
     </Typography>
     <Typography variant="h6" component="p">
-      If it persists, please report it!
+      If it persists, <Link href="/about">please let me know!</Link>
     </Typography>
   </Box>
 );
