@@ -37,7 +37,7 @@ export function reorderBetaMoveLocal(
   return {
     edges: moveArrayElement(moves.edges, oldIndex, newIndex).map(
       ({ node: { id, isStart } }, i) => ({
-        // TODO recalculate isStart
+        // We intentionally don't recalculate isStart, it's just not worth it
         node: { id, isStart, order: i + 1 },
       })
     ),
@@ -59,7 +59,7 @@ export function deleteBetaMoveLocal(
     edges: moves.edges
       .filter(({ node: { id } }) => id !== betaMoveId)
       .map(({ node: { id, isStart } }, i) => ({
-        // TODO recalculate isStart
+        // We intentionally don't recalculate isStart, it's just not worth it
         node: { id, isStart, order: i + 1 },
       })),
   };
