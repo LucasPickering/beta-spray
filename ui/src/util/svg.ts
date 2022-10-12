@@ -140,13 +140,18 @@ export function polarToSvg(radius: number, radians: number): OverlayPosition {
 export function getBetaMoveColors(
   moves: Array<{ id: string; order: number; isStart: boolean }>
 ): Map<string, string> {
-  const startColor = 0xffffff;
-  const endColor = htmlToHex(theme.palette.primary.main);
+  const startColor = htmlToHex(theme.palette.primary.main);
+  const endColor = htmlToHex(theme.palette.secondary.main);
   const colorMap: Map<string, string> = new Map();
 
   // Generate a color for each move
   for (const move of moves) {
-    const hex = lerpColor(startColor, endColor, move.order / moves.length);
+    const hex = lerpColor(
+      startColor,
+      endColor,
+      // Make sure we map first=>0, last=>1
+      (move.order - 1) / (moves.length - 1)
+    );
     colorMap.set(move.id, hexToHtml(hex));
   }
 
