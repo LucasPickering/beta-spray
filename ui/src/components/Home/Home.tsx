@@ -10,7 +10,7 @@ const Home: React.FC = () => {
     useQueryLoader<ProblemListQueryType>(ProblemListQuery);
 
   useEffect(() => {
-    loadQuery({});
+    loadQuery({ count: 10 });
   }, [loadQuery]);
 
   return (
