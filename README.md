@@ -45,14 +45,3 @@ Deployment is managed via Terraform, which underneath uses Helm to manage the Ku
 ```sh
 ./deploy/deploy.sh
 ```
-
-## Notes
-
-### Generating Favicon
-
-Favicon is defined in `ui/favicon.svg`. To generate an ICO from that, using Imagemagick:
-
-```sh
-cd ui
-convert -density 256x256 -background transparent favicon.svg -define icon:auto-resize -colors 256 public/favicon.ico
-```
