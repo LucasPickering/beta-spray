@@ -27,7 +27,7 @@ export const EditorVisibilityContext = React.createContext<
   StateContext<boolean>
 >([true, noop]);
 
-// Highlighted move is on hover (or tap for mobile)
+// Highlighted move is on hover (or tap for mobile), or play/pause
 // Selected move is on double tap, which opens the modal
 
 export const EditorHighlightedMoveContext = React.createContext<

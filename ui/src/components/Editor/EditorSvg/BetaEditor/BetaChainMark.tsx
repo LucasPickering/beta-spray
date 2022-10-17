@@ -103,7 +103,6 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey }) => {
           onDoubleClick={() => setSelectedMove(moveId)}
           // Hover => highlight move
           onMouseEnter={() => setHighlightedMove(moveId)}
-          onMouseLeave={() => setHighlightedMove(undefined)}
         />
       </Positioned>
 
