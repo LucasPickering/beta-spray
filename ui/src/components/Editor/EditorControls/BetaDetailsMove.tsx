@@ -172,12 +172,6 @@ const BetaDetailsMove: React.FC<Props> = ({
           setHighlightedMove(betaMove.id);
         }
       }}
-      onMouseLeave={() => {
-        if (!disabled) {
-          // Only clear the highlight if we "own" it
-          setHighlightedMove((old) => (betaMove.id === old ? undefined : old));
-        }
-      }}
       onDelete={onDelete}
       sx={[
         { userSelect: "none" },
