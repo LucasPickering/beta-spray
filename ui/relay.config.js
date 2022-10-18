@@ -3,4 +3,5 @@ module.exports = {
   schema: "./schema.graphql",
   language: "typescript",
   excludes: ["/node_modules/", "/build/"],
+  noFutureProofEnums: true,
 };

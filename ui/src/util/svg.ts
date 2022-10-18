@@ -1,7 +1,7 @@
 import { useCallback, useContext } from "react";
 import { XYCoord } from "react-dnd";
 import { BetaContext, SvgContext } from "./context";
-import { assertIsDefined, assertUnreachable, groupBy, isDefined } from "./func";
+import { assertIsDefined, groupBy, isDefined } from "./func";
 import { hexToHtml, htmlToHex, lerpColor } from "./math";
 import type { BodyPart as BodyPartAPI } from "../components/Editor/EditorSvg/BetaEditor/__generated__/BetaEditor_betaNode.graphql";
 import theme from "./theme";
@@ -51,9 +51,6 @@ export function formatBodyPart(bodyPart: BodyPart): string {
       return "Left Foot";
     case "RIGHT_FOOT":
       return "Right Foot";
-    // NOTE: Don't use default, to force a type error if a variant is added
-    case "%future added value":
-      assertUnreachable();
   }
 }
 

@@ -36,15 +36,6 @@ export function assertDataKind<T extends { kind: string }, K extends T["kind"]>(
   }
 }
 
-/**
- * Assert that a code path is unreachable. One of these *should* never be thrown,
- * and is only intended to convince the type checker of something we know.
- * @param message Optional information message to include in error
- */
-export function assertUnreachable(message: string = ""): never {
-  throw new Error(`Unreachable code: ${message}`);
-}
-
 export function range(start: number, stop: number): number[] {
   return Array(stop - start)
     .fill(0)

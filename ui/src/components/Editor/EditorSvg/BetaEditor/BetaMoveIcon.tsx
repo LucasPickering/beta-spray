@@ -6,7 +6,7 @@ import {
   styleDragging,
 } from "styles/svg";
 import { Interpolation, Theme } from "@emotion/react";
-import { assertUnreachable, isDefined } from "util/func";
+import { isDefined } from "util/func";
 import Positioned from "../Positioned";
 import { SvgIcon, SvgIconProps, useTheme } from "@mui/material";
 
@@ -131,9 +131,6 @@ function getAnnotationPosition(bodyPart: BodyPart): OverlayPosition {
       return { x: -2.2, y: 2.2 };
     case "RIGHT_FOOT":
       return { x: 2.2, y: 2.2 };
-    // NOTE: Don't use default, to force a type error if a variant is added
-    case "%future added value":
-      assertUnreachable();
   }
 }
 
@@ -155,9 +152,6 @@ const IconBodyPartRaw: React.FC<
       return <IconOvalRaw transform="rotate(45)" {...rest} />;
     case "RIGHT_FOOT":
       return <IconOvalRaw transform="rotate(-45)" {...rest} />;
-    // NOTE: Don't use default, to force a type error if a variant is added
-    case "%future added value":
-      assertUnreachable();
   }
 };
 
