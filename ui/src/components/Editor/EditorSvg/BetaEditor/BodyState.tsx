@@ -1,8 +1,6 @@
-import { useTheme } from "@mui/material";
-import { useContext } from "react";
 import { graphql, useFragment } from "react-relay";
-import { EditorHighlightedMoveContext } from "util/context";
-import { BodyPart, OverlayPosition, useBetaMoveVisualPosition } from "util/svg";
+import { OverlayPosition, useBetaMoveVisualPosition } from "util/svg";
+import useBodyState from "util/useBodyState";
 import { BodyState_betaMoveNodeConnection$key } from "./__generated__/BodyState_betaMoveNodeConnection.graphql";
 
 interface Props {
@@ -20,6 +18,7 @@ const BodyState: React.FC<Props> = ({ betaMoveConnectionKey }) => {
   const betaMoveConnection = useFragment(
     graphql`
       fragment BodyState_betaMoveNodeConnection on BetaMoveNodeConnection {
+        ...useBodyState_betaMoveNodeConnection
         edges {
           node {
             id
@@ -30,40 +29,22 @@ const BodyState: React.FC<Props> = ({ betaMoveConnectionKey }) => {
     `,
     betaMoveConnectionKey
   );
-  const { palette } = useTheme();
-  const [highlightedMove] = useContext(EditorHighlightedMoveContext);
+  // Find which moves are in the current body position
+  const moveIds = useBodyState(betaMoveConnection);
+
+  // Grab the visual position of each move
   const getPosition = useBetaMoveVisualPosition();
-
-  if (!highlightedMove) {
-    return null;
-  }
-
-  // Find the most recent position of each body part at the point of the
-  // highlighted move. Moves should always be sorted by order!
-  const lastMoves: Map<
-    BodyPart,
-    // Just pull out the fields we need
-    { id: string; position: OverlayPosition }
-  > = new Map();
-  for (const edge of betaMoveConnection.edges) {
-    const move = edge.node;
-    lastMoves.set(move.bodyPart, {
-      id: move.id,
-      position: getPosition(move.id),
-    });
-
-    // If we've reached the highlighted move, everything after is irrelevant
-    if (move.id === highlightedMove) {
-      break;
-    }
-  }
+  const moves = moveIds.map((moveId) => ({
+    id: moveId,
+    position: getPosition(moveId),
+  }));
 
   // Find the center between the 4 points by averaging their x and y
-  const values = Array.from(lastMoves.values());
-  const center: OverlayPosition = values.reduce(
+  // This is a rough temporary measure
+  const center: OverlayPosition = moves.reduce(
     (acc, { position }) => {
-      acc.x += position.x / values.length;
-      acc.y += position.y / values.length;
+      acc.x += position.x / moveIds.length;
+      acc.y += position.y / moveIds.length;
       return acc;
     },
     { x: 0, y: 0 }
@@ -73,12 +54,11 @@ const BodyState: React.FC<Props> = ({ betaMoveConnectionKey }) => {
   // approximation of the current body position.
   return (
     <>
-      {values.map((move) => (
+      {moves.map((move) => (
         <line
           key={move.id}
-          stroke={palette.secondary.main}
-          strokeWidth={0.6}
-          strokeDasharray="2,2"
+          stroke="white"
+          strokeWidth={1}
           x1={center.x}
           y1={center.y}
           x2={move.position.x}

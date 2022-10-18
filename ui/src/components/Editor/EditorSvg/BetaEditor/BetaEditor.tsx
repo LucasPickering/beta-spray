@@ -13,6 +13,7 @@ import { getBetaMoveColors, getBetaMoveVisualPositions } from "util/svg";
 import { BetaContext, EditorHighlightedMoveContext } from "util/context";
 import { comparator } from "util/func";
 import EditBetaMoveDialog from "./EditBetaMoveDialog";
+import useBodyState from "util/useBodyState";
 
 interface Props {
   betaKey: BetaEditor_betaNode$key;
@@ -29,6 +30,7 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
         ...EditBetaMoveDialog_betaNode
         moves {
           ...BodyState_betaMoveNodeConnection
+          ...useBodyState_betaMoveNodeConnection
           edges {
             node {
               # Yes these fields are all needed, to get positions and colors
@@ -103,6 +105,7 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
         : moves,
     [moves, highlightedMoveId]
   );
+  const bodyStateMoves = useBodyState(beta.moves);
 
   // Pre-select the *last start move*, which is the first body position on the wall
   useEffect(() => {
@@ -137,7 +140,11 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
           on top, which we can only do in SVG via ordering, so we need to make
           sure that's rendered last */}
       {movesRenderOrder.map((move) => (
-        <BetaChainMark key={move.id} betaMoveKey={move} />
+        <BetaChainMark
+          key={move.id}
+          betaMoveKey={move}
+          isInCurrentState={bodyStateMoves.includes(move.id)}
+        />
       ))}
 
       {/* After clicking a move, show a modal to edit it */}

@@ -14,12 +14,13 @@ import { isDefined } from "util/func";
 
 interface Props {
   betaMoveKey: BetaChainMark_betaMoveNode$key;
+  isInCurrentState: boolean;
 }
 
 /**
  * An icon representing a single beta move in a chain
  */
-const BetaChainMark: React.FC<Props> = ({ betaMoveKey }) => {
+const BetaChainMark: React.FC<Props> = ({ betaMoveKey, isInCurrentState }) => {
   const betaMove = useFragment(
     graphql`
       fragment BetaChainMark_betaMoveNode on BetaMoveNode {
@@ -71,11 +72,11 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey }) => {
   }));
   const isDraggingOther = isDraggingAny && !isDragging;
 
-  const [highlightedMove, setHighlightedMove] = useContext(
+  const [highlightedMoveId, setHighlightedMoveId] = useContext(
     EditorHighlightedMoveContext
   );
   const [, setSelectedMove] = useContext(EditorSelectedMoveContext);
-  const isHighlighted = highlightedMove === moveId;
+  const isHighlighted = highlightedMoveId === moveId;
 
   drag(ref);
   return (
@@ -92,17 +93,18 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey }) => {
           draggable
           isDragging={isDragging}
           isHighlighted={isHighlighted}
+          isFaded={!isInCurrentState}
           // Don't block drop events when another element is being dragged
           css={isDraggingOther && { pointerEvents: "none" }}
           // Click => toggle highlight on move
           onClick={() =>
             // If we already "own" the selection, then toggle off
-            setHighlightedMove((old) => (old === moveId ? undefined : moveId))
+            setHighlightedMoveId((old) => (old === moveId ? undefined : moveId))
           }
           // Double click => delete move
           onDoubleClick={() => setSelectedMove(moveId)}
           // Hover => highlight move
-          onMouseEnter={() => setHighlightedMove(moveId)}
+          onMouseEnter={() => setHighlightedMoveId(moveId)}
         />
       </Positioned>
 
