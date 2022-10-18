@@ -3,7 +3,7 @@ import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
 import { BetaEditor_betaNode$key } from "./__generated__/BetaEditor_betaNode.graphql";
 import { groupBy } from "util/func";
-import BodyState from "./BodyState";
+import BodyStance from "./BodyStance";
 import BetaChainLine from "./BetaChainLine";
 import BetaChainMark from "./BetaChainMark";
 import { withQuery } from "relay-query-wrapper";
@@ -13,7 +13,7 @@ import { getBetaMoveColors, getBetaMoveVisualPositions } from "util/svg";
 import { BetaContext, EditorHighlightedMoveContext } from "util/context";
 import { comparator } from "util/func";
 import EditBetaMoveDialog from "./EditBetaMoveDialog";
-import useBodyState from "util/useBodyState";
+import useCurrentStance from "util/useCurrentStance";
 
 interface Props {
   betaKey: BetaEditor_betaNode$key;
@@ -29,8 +29,8 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
         id
         ...EditBetaMoveDialog_betaNode
         moves {
-          ...BodyState_betaMoveNodeConnection
-          ...useBodyState_betaMoveNodeConnection
+          ...BodyStance_betaMoveNodeConnection
+          ...useCurrentStance_betaMoveNodeConnection
           edges {
             node {
               # Yes these fields are all needed, to get positions and colors
@@ -105,7 +105,7 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
         : moves,
     [moves, highlightedMoveId]
   );
-  const bodyStateMoves = useBodyState(beta.moves);
+  const stance = useCurrentStance(beta.moves);
 
   // Pre-select the *last start move*, which is the first body position on the wall
   useEffect(() => {
@@ -134,7 +134,7 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
       {/* Render body position. This will only show something if the user is
           hovering a move. We want this above the move lines, but below the
           move marks so it's not intrusive. */}
-      <BodyState betaMoveConnectionKey={beta.moves} />
+      <BodyStance betaMoveConnectionKey={beta.moves} />
 
       {/* Draw the actual move marks. We want to render the highlighted move
           on top, which we can only do in SVG via ordering, so we need to make
@@ -143,7 +143,7 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
         <BetaChainMark
           key={move.id}
           betaMoveKey={move}
-          isInCurrentState={bodyStateMoves.includes(move.id)}
+          isInCurrentState={Object.values(stance).includes(move.id)}
         />
       ))}
 
