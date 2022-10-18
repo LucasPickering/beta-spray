@@ -4,6 +4,7 @@ import {
   styleDraggable,
   styleDraggableHighlight,
   styleDragging,
+  styleFaded,
 } from "styles/svg";
 import { Interpolation, Theme } from "@emotion/react";
 import { isDefined } from "util/func";
@@ -19,7 +20,9 @@ interface Props {
   hasAnnotation?: boolean;
   draggable?: boolean;
   isDragging?: boolean;
+  // TODO consolidate "highlight" and "fade" into one concept
   isHighlighted?: boolean;
+  isFaded?: boolean;
   css?: Interpolation<Theme>;
 }
 
@@ -42,6 +45,7 @@ const BetaMoveIcon = React.forwardRef<
       draggable = false,
       isDragging = false,
       isHighlighted = false,
+      isFaded = false,
       css: parentCss,
       ...rest
     },
@@ -56,6 +60,7 @@ const BetaMoveIcon = React.forwardRef<
           draggable && styleDraggable,
           isDragging && styleDragging,
           isHighlighted && styleDraggableHighlight,
+          isFaded && styleFaded,
           parentCss,
         ]}
         {...rest}
