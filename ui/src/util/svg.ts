@@ -32,6 +32,12 @@ export interface OverlayPosition {
 export type BodyPart = BodyPartAPI;
 
 /**
+ * Climber's body position at a particular point in the beta. Each body part is
+ * at a particular position, which is represented by a move ID.
+ */
+export type Stance = Record<BodyPart, string>;
+
+/**
  * Body parts, order top-left to bottom-right
  */
 export const allBodyParts: BodyPart[] = [
