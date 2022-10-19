@@ -1,7 +1,13 @@
 import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
+import { useContext } from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
+import {
+  EditorHighlightedMoveContext,
+  EditorSelectedBetaContext,
+} from "util/context";
 import { DropHandler, getItemWithKind } from "util/dnd";
+import { assertIsDefined } from "util/func";
 import useMutation from "util/useMutation";
 import HoldEditorDropZone from "./HoldEditorDropZone";
 import HoldOverlay from "./HoldOverlay";
@@ -22,6 +28,9 @@ interface Props {
  * hold drop zone, or individual holds.
  */
 const HoldEditor: React.FC<Props> = ({ problemKey }) => {
+  const selectedBeta = useContext(EditorSelectedBetaContext);
+  const [, setHighlightedMove] = useContext(EditorHighlightedMoveContext);
+
   const problem = useFragment(
     graphql`
       fragment HoldEditor_problemNode on ProblemNode {
@@ -85,6 +94,7 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
       ) {
         appendBetaMove(input: $input) {
           betaMove {
+            id
             beta {
               ...BetaEditor_betaNode # Refetch to update UI
             }
@@ -100,6 +110,7 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
       ) {
         insertBetaMove(input: $input) {
           betaMove {
+            id
             beta {
               ...BetaEditor_betaNode # Refetch to update UI
             }
@@ -195,13 +206,17 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
         switch (item.action) {
           // Dragged a body part from the palette
           case "create":
+            assertIsDefined(selectedBeta); // Beta must be selected to get this far
             appendBetaMove({
               variables: {
                 input: {
-                  betaId: item.betaId,
+                  betaId: selectedBeta,
                   bodyPart: item.bodyPart,
                   position,
                 },
+              },
+              onCompleted(result) {
+                setHighlightedMove(result.appendBetaMove?.betaMove.id);
               },
               // Punting on optimistic update because ordering is hard
               // We could hypothetically add this, but we'd need to pipe down
@@ -216,6 +231,9 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
                   previousBetaMoveId: item.betaMoveId,
                   position,
                 },
+              },
+              onCompleted(result) {
+                setHighlightedMove(result.appendBetaMove?.betaMove.id);
               },
               // Punting on optimistic update because ordering is hard
             });
@@ -244,13 +262,17 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
     switch (item.action) {
       // Dragged a body part from the palette
       case "create":
+        assertIsDefined(selectedBeta); // Beta must be selected to get this far
         appendBetaMove({
           variables: {
             input: {
-              betaId: item.betaId,
+              betaId: selectedBeta,
               bodyPart: item.bodyPart,
               holdId,
             },
+          },
+          onCompleted(result) {
+            setHighlightedMove(result.appendBetaMove?.betaMove.id);
           },
           // Punting on optimistic update because ordering is hard
           // We could hypothetically add this, but we'd need to pipe down
@@ -265,6 +287,9 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
               previousBetaMoveId: item.betaMoveId,
               holdId,
             },
+          },
+          onCompleted(result) {
+            setHighlightedMove(result.appendBetaMove?.betaMove.id);
           },
           // Punting on optimistic update because ordering is hard
         });

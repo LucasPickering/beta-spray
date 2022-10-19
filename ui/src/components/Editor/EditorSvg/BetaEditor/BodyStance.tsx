@@ -1,6 +1,8 @@
+import React from "react";
 import { graphql, useFragment } from "react-relay";
 import { BodyPart, OverlayPosition, useBetaMoveVisualPosition } from "util/svg";
 import useCurrentStance from "util/useCurrentStance";
+import StickFigureDragHandle from "./StickFigureDragHandle";
 import { BodyStance_betaMoveNodeConnection$key } from "./__generated__/BodyStance_betaMoveNodeConnection.graphql";
 
 const defaultPositions: Record<BodyPart, OverlayPosition> = {
@@ -16,18 +18,15 @@ interface Props {
 
 /**
  * A visual for the body's current position.
+ *
+ * TODO rename to StickFigure
  */
 const BodyStance: React.FC<Props> = ({ betaMoveConnectionKey }) => {
+  // TODO remove this fragment and make it transparent, if possible
   const betaMoveConnection = useFragment(
     graphql`
       fragment BodyStance_betaMoveNodeConnection on BetaMoveNodeConnection {
         ...useCurrentStance_betaMoveNodeConnection
-        edges {
-          node {
-            id
-            bodyPart
-          }
-        }
       }
     `,
     betaMoveConnectionKey
@@ -61,13 +60,13 @@ const BodyStance: React.FC<Props> = ({ betaMoveConnectionKey }) => {
     <g strokeWidth={1} stroke="white" fill="none">
       <circle key="head" r={3} cx={center.x} cy={center.y} />
       {Object.entries(positions).map(([bodyPart, position]) => (
-        <line
-          key={bodyPart}
-          x1={center.x}
-          y1={center.y}
-          x2={position.x}
-          y2={position.y}
-        />
+        <React.Fragment key={bodyPart}>
+          <line x1={center.x} y1={center.y} x2={position.x} y2={position.y} />
+          <StickFigureDragHandle
+            bodyPart={bodyPart as BodyPart}
+            position={position}
+          />
+        </React.Fragment>
       ))}
     </g>
   );

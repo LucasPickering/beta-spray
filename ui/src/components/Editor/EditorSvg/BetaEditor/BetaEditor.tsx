@@ -131,11 +131,6 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
         })
       )}
 
-      {/* Render body position. This will only show something if the user is
-          hovering a move. We want this above the move lines, but below the
-          move marks so it's not intrusive. */}
-      <BodyStance betaMoveConnectionKey={beta.moves} />
-
       {/* Draw the actual move marks. We want to render the highlighted move
           on top, which we can only do in SVG via ordering, so we need to make
           sure that's rendered last */}
@@ -146,6 +141,11 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
           isInCurrentState={Object.values(stance).includes(move.id)}
         />
       ))}
+
+      {/* Render body position. This will only show something if the user is
+          hovering a move. We want this above the move lines, but below the
+          move marks so it's not intrusive. */}
+      <BodyStance betaMoveConnectionKey={beta.moves} />
 
       {/* After clicking a move, show a modal to edit it */}
       <EditBetaMoveDialog betaKey={beta} />
