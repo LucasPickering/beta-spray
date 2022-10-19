@@ -14,6 +14,7 @@ import {
   EditorSelectedMoveContext,
   EditorHighlightedMoveContext,
   EditorVisibilityContext,
+  EditorSelectedBetaContext,
 } from "util/context";
 import { ZoomPanProvider } from "util/zoom";
 import BetaDetails from "./EditorControls/BetaDetails";
@@ -113,70 +114,78 @@ const Editor: React.FC = () => {
       <EditorHelmet queryRef={problemQueryRef} />
 
       <EditorVisibilityContext.Provider value={visibilityState}>
-        <EditorHighlightedMoveContext.Provider value={highlightedMoveState}>
-          <EditorSelectedMoveContext.Provider value={selectedMoveState}>
-            <ZoomPanProvider>
-              {/* The maximum possible display area (the full screen) */}
-              <Box
-                display="flex"
-                justifyContent="center"
-                // Anchor for overlay button positioning
-                position="relative"
-                width="100vw"
-                height="100vh"
-                // Hide the image when it grows bigger than the viewport
-                sx={{ overflow: "hidden" }}
-              >
-                {/* Wrapper for the SVG, to provide background color and spacing
+        <EditorSelectedBetaContext.Provider value={selectedBeta}>
+          <EditorHighlightedMoveContext.Provider value={highlightedMoveState}>
+            <EditorSelectedMoveContext.Provider value={selectedMoveState}>
+              <ZoomPanProvider>
+                {/* The maximum possible display area (the full screen) */}
+                <Box
+                  display="flex"
+                  justifyContent="center"
+                  // Anchor for overlay button positioning
+                  position="relative"
+                  width="100vw"
+                  height="100vh"
+                  // Hide the image when it grows bigger than the viewport
+                  sx={{ overflow: "hidden" }}
+                >
+                  {/* Wrapper for the SVG, to provide background color and spacing
                   during loading */}
-                <Box
-                  width="100%"
-                  height="100%"
-                  sx={({ palette }) => ({
-                    backgroundColor: palette.background.default,
-                  })}
-                >
-                  <EditorSvg
-                    queryRef={problemQueryRef}
-                    betaQueryRef={betaQueryRef}
-                  />
-                </Box>
+                  <Box
+                    width="100%"
+                    height="100%"
+                    sx={({ palette }) => ({
+                      backgroundColor: palette.background.default,
+                    })}
+                  >
+                    <EditorSvg
+                      queryRef={problemQueryRef}
+                      betaQueryRef={betaQueryRef}
+                    />
+                  </Box>
 
-                {/* Top-left overlay buttons */}
-                <Box sx={{ position: "absolute", top: 0, left: 0, margin: 1 }}>
-                  <EditorPalette
-                    selectedBeta={selectedBeta}
-                    betaQueryRef={betaQueryRef}
-                  />
-                </Box>
+                  {/* Top-left overlay buttons */}
+                  <Box
+                    sx={{ position: "absolute", top: 0, left: 0, margin: 1 }}
+                  >
+                    <EditorPalette
+                      selectedBeta={selectedBeta}
+                      betaQueryRef={betaQueryRef}
+                    />
+                  </Box>
 
-                <Box
-                  sx={{ position: "absolute", bottom: 0, left: 0, margin: 1 }}
-                >
-                  <ItemTrashCan queryRef={problemQueryRef} />
-                </Box>
+                  <Box
+                    sx={{ position: "absolute", bottom: 0, left: 0, margin: 1 }}
+                  >
+                    <ItemTrashCan queryRef={problemQueryRef} />
+                  </Box>
 
-                {/* Top-right drawer button is mobile-only, rendered by
+                  {/* Top-right drawer button is mobile-only, rendered by
                     ToggleDrawer */}
 
-                {/* Controls sidebar/drawer */}
-                <EditorControls>
-                  <Button component={Link} to="/" startIcon={<IconArrowBack />}>
-                    Back
-                  </Button>
-                  <Divider />
-                  <ProblemName queryRef={problemQueryRef} />
-                  <BetaList
-                    queryRef={problemQueryRef}
-                    selectedBeta={selectedBeta}
-                    onSelectBeta={onSelectBeta}
-                  />
-                  <BetaDetails queryRef={betaQueryRef} />
-                </EditorControls>
-              </Box>
-            </ZoomPanProvider>
-          </EditorSelectedMoveContext.Provider>
-        </EditorHighlightedMoveContext.Provider>
+                  {/* Controls sidebar/drawer */}
+                  <EditorControls>
+                    <Button
+                      component={Link}
+                      to="/"
+                      startIcon={<IconArrowBack />}
+                    >
+                      Back
+                    </Button>
+                    <Divider />
+                    <ProblemName queryRef={problemQueryRef} />
+                    <BetaList
+                      queryRef={problemQueryRef}
+                      selectedBeta={selectedBeta}
+                      onSelectBeta={onSelectBeta}
+                    />
+                    <BetaDetails queryRef={betaQueryRef} />
+                  </EditorControls>
+                </Box>
+              </ZoomPanProvider>
+            </EditorSelectedMoveContext.Provider>
+          </EditorHighlightedMoveContext.Provider>
+        </EditorSelectedBetaContext.Provider>
       </EditorVisibilityContext.Provider>
     </DndProvider>
   );

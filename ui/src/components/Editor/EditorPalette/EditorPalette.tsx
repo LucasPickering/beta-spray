@@ -74,10 +74,6 @@ const EditorPalette: React.FC<Props> = ({ betaQueryRef, selectedBeta }) => {
                 item: {
                   action: "create",
                   bodyPart,
-                  // Assertion is safe because the button is disabled when beta is not
-                  // selected
-                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                  betaId: selectedBeta!,
                 },
               }}
             >

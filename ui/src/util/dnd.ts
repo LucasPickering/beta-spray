@@ -31,7 +31,7 @@ export type DragType =
   | {
       kind: "overlayBetaMove";
       item: // Create a new move (dragging from palette)
-      | { action: "create"; bodyPart: BodyPart; betaId: string }
+      | { action: "create"; bodyPart: BodyPart }
         // Relocate an existing move to a new hold/position
         | { action: "relocate"; bodyPart: BodyPart; betaMoveId: string }
         // Insert a new move *after* the dragged one (dragging a line)
