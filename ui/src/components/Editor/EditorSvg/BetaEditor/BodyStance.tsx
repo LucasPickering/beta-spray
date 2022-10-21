@@ -1,5 +1,6 @@
 import React from "react";
 import { graphql, useFragment } from "react-relay";
+import { isDefined } from "util/func";
 import { BodyPart, OverlayPosition, useBetaMoveVisualPosition } from "util/svg";
 import useCurrentStance from "util/useCurrentStance";
 import StickFigureDragHandle from "./StickFigureDragHandle";
@@ -62,10 +63,12 @@ const BodyStance: React.FC<Props> = ({ betaMoveConnectionKey }) => {
       {Object.entries(positions).map(([bodyPart, position]) => (
         <React.Fragment key={bodyPart}>
           <line x1={center.x} y1={center.y} x2={position.x} y2={position.y} />
-          <StickFigureDragHandle
-            bodyPart={bodyPart as BodyPart}
-            position={position}
-          />
+          {!isDefined(stance[bodyPart as BodyPart]) && (
+            <StickFigureDragHandle
+              bodyPart={bodyPart as BodyPart}
+              position={position}
+            />
+          )}
         </React.Fragment>
       ))}
     </g>

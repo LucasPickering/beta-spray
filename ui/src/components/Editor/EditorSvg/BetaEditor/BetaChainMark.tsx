@@ -11,13 +11,13 @@ import { isDefined } from "util/func";
 
 interface Props {
   betaMoveKey: BetaChainMark_betaMoveNode$key;
-  isInCurrentState: boolean;
+  isInCurrentStance: boolean;
 }
 
 /**
  * An icon representing a single beta move in a chain
  */
-const BetaChainMark: React.FC<Props> = ({ betaMoveKey, isInCurrentState }) => {
+const BetaChainMark: React.FC<Props> = ({ betaMoveKey, isInCurrentStance }) => {
   const betaMove = useFragment(
     graphql`
       fragment BetaChainMark_betaMoveNode on BetaMoveNode {
@@ -79,30 +79,38 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey, isInCurrentState }) => {
   return (
     <>
       <Positioned position={position}>
-        <BetaMoveIcon
-          ref={ref}
-          bodyPart={betaMove.bodyPart}
-          order={betaMove.order}
-          isStart={betaMove.isStart}
-          isFree={!isDefined(betaMove.hold)}
-          hasAnnotation={Boolean(betaMove.annotation)}
-          color={color}
-          draggable
-          isDragging={isDragging}
-          isHighlighted={isHighlighted}
-          isFaded={!isInCurrentState}
-          // Don't block drop events when another element is being dragged
-          css={isDraggingOther && { pointerEvents: "none" }}
-          // Hover (desktop) or click (mobile) => highlight the move
-          onClick={highlightMove}
-          onMouseEnter={highlightMove}
-        />
+        {isInCurrentStance ? (
+          <BetaMoveIcon
+            ref={ref}
+            bodyPart={betaMove.bodyPart}
+            order={betaMove.order}
+            isStart={betaMove.isStart}
+            isFree={!isDefined(betaMove.hold)}
+            hasAnnotation={Boolean(betaMove.annotation)}
+            color={color}
+            draggable
+            isDragging={isDragging}
+            isHighlighted={isHighlighted}
+            // Don't block drop events when another element is being dragged
+            css={isDraggingOther && { pointerEvents: "none" }}
+            // Hover (desktop) or click (mobile) => highlight the move
+            onClick={highlightMove}
+            onMouseEnter={highlightMove}
+          />
+        ) : (
+          <circle
+            r={1.5}
+            fill={color}
+            onClick={highlightMove}
+            onMouseEnter={highlightMove}
+          />
+        )}
       </Positioned>
 
       {betaMove.annotation && (
         <Portal>
           <Tooltip
-            open={isHighlighted}
+            open={isInCurrentStance}
             title={betaMove.annotation}
             placement="bottom"
             PopperProps={{ anchorEl: ref.current }}
