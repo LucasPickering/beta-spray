@@ -11,7 +11,6 @@ import { DndProvider } from "react-dnd";
 import { TouchBackend } from "react-dnd-touch-backend";
 import { ArrowBack as IconArrowBack } from "@mui/icons-material";
 import {
-  EditorSelectedMoveContext,
   EditorHighlightedMoveContext,
   EditorVisibilityContext,
   EditorSelectedBetaContext,
@@ -25,6 +24,8 @@ import EditorHelmet from "./EditorHelmet";
 import ProblemName from "./EditorControls/ProblemName";
 import EditorPalette from "./EditorPalette/EditorPalette";
 import ItemTrashCan from "./EditorPalette/ItemTrashCan";
+import EditorActions from "./EditorActions/EditorActions";
+import BetaMoveActions from "./EditorActions/BetaMoveActions";
 
 /**
  * Main app component, for viewing+editing boulders/problems/betas. This is
@@ -59,8 +60,6 @@ const Editor: React.FC = () => {
   const visibilityState = useState<boolean>(true);
   // Which move is being emphasized
   const highlightedMoveState = useState<string>();
-  // Which move is being edited
-  const selectedMoveState = useState<string>();
 
   const refreshBetaQuery = useCallback(
     (betaId: string | undefined) => {
@@ -116,74 +115,71 @@ const Editor: React.FC = () => {
       <EditorVisibilityContext.Provider value={visibilityState}>
         <EditorSelectedBetaContext.Provider value={selectedBeta}>
           <EditorHighlightedMoveContext.Provider value={highlightedMoveState}>
-            <EditorSelectedMoveContext.Provider value={selectedMoveState}>
-              <ZoomPanProvider>
-                {/* The maximum possible display area (the full screen) */}
-                <Box
-                  display="flex"
-                  justifyContent="center"
-                  // Anchor for overlay button positioning
-                  position="relative"
-                  width="100vw"
-                  height="100vh"
-                  // Hide the image when it grows bigger than the viewport
-                  sx={{ overflow: "hidden" }}
-                >
-                  {/* Wrapper for the SVG, to provide background color and spacing
+            <ZoomPanProvider>
+              {/* The maximum possible display area (the full screen) */}
+              <Box
+                display="flex"
+                justifyContent="center"
+                // Anchor for overlay button positioning
+                position="relative"
+                width="100vw"
+                height="100vh"
+                // Hide the image when it grows bigger than the viewport
+                sx={{ overflow: "hidden" }}
+              >
+                {/* Wrapper for the SVG, to provide background color and spacing
                   during loading */}
-                  <Box
-                    width="100%"
-                    height="100%"
-                    sx={({ palette }) => ({
-                      backgroundColor: palette.background.default,
-                    })}
-                  >
-                    <EditorSvg
-                      queryRef={problemQueryRef}
-                      betaQueryRef={betaQueryRef}
-                    />
-                  </Box>
+                <Box
+                  width="100%"
+                  height="100%"
+                  sx={({ palette }) => ({
+                    backgroundColor: palette.background.default,
+                  })}
+                >
+                  <EditorSvg
+                    queryRef={problemQueryRef}
+                    betaQueryRef={betaQueryRef}
+                  />
+                </Box>
 
-                  {/* Top-left overlay buttons */}
-                  <Box
-                    sx={{ position: "absolute", top: 0, left: 0, margin: 1 }}
-                  >
-                    <EditorPalette
-                      selectedBeta={selectedBeta}
-                      betaQueryRef={betaQueryRef}
-                    />
-                  </Box>
+                {/* Top-left overlay buttons */}
+                <Box sx={{ position: "absolute", top: 0, left: 0, margin: 1 }}>
+                  <EditorPalette
+                    selectedBeta={selectedBeta}
+                    betaQueryRef={betaQueryRef}
+                  />
+                </Box>
 
-                  <Box
-                    sx={{ position: "absolute", bottom: 0, left: 0, margin: 1 }}
-                  >
-                    <ItemTrashCan queryRef={problemQueryRef} />
-                  </Box>
+                <Box
+                  sx={{ position: "absolute", bottom: 0, left: 0, margin: 1 }}
+                >
+                  <ItemTrashCan queryRef={problemQueryRef} />
+                </Box>
 
-                  {/* Top-right drawer button is mobile-only, rendered by
+                {/* Buttons at the bottom of the screen */}
+                <EditorActions>
+                  <BetaMoveActions queryRef={betaQueryRef} />
+                </EditorActions>
+
+                {/* Top-right drawer button is mobile-only, rendered by
                     ToggleDrawer */}
 
-                  {/* Controls sidebar/drawer */}
-                  <EditorControls>
-                    <Button
-                      component={Link}
-                      to="/"
-                      startIcon={<IconArrowBack />}
-                    >
-                      Back
-                    </Button>
-                    <Divider />
-                    <ProblemName queryRef={problemQueryRef} />
-                    <BetaList
-                      queryRef={problemQueryRef}
-                      selectedBeta={selectedBeta}
-                      onSelectBeta={onSelectBeta}
-                    />
-                    <BetaDetails queryRef={betaQueryRef} />
-                  </EditorControls>
-                </Box>
-              </ZoomPanProvider>
-            </EditorSelectedMoveContext.Provider>
+                {/* Controls sidebar/drawer */}
+                <EditorControls>
+                  <Button component={Link} to="/" startIcon={<IconArrowBack />}>
+                    Back
+                  </Button>
+                  <Divider />
+                  <ProblemName queryRef={problemQueryRef} />
+                  <BetaList
+                    queryRef={problemQueryRef}
+                    selectedBeta={selectedBeta}
+                    onSelectBeta={onSelectBeta}
+                  />
+                  <BetaDetails queryRef={betaQueryRef} />
+                </EditorControls>
+              </Box>
+            </ZoomPanProvider>
           </EditorHighlightedMoveContext.Provider>
         </EditorSelectedBetaContext.Provider>
       </EditorVisibilityContext.Provider>

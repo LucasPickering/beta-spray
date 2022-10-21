@@ -1,10 +1,7 @@
 import { useContext, useRef } from "react";
 import { useDrag, useDragLayer } from "util/dnd";
 import { Portal, Tooltip } from "@mui/material";
-import {
-  EditorHighlightedMoveContext,
-  EditorSelectedMoveContext,
-} from "util/context";
+import { EditorHighlightedMoveContext } from "util/context";
 import Positioned from "../Positioned";
 import BetaMoveIcon from "./BetaMoveIcon";
 import { graphql, useFragment } from "react-relay";
@@ -75,8 +72,8 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey, isInCurrentState }) => {
   const [highlightedMoveId, setHighlightedMoveId] = useContext(
     EditorHighlightedMoveContext
   );
-  const [, setSelectedMove] = useContext(EditorSelectedMoveContext);
   const isHighlighted = highlightedMoveId === moveId;
+  const highlightMove = (): void => setHighlightedMoveId(moveId);
 
   drag(ref);
   return (
@@ -96,15 +93,9 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey, isInCurrentState }) => {
           isFaded={!isInCurrentState}
           // Don't block drop events when another element is being dragged
           css={isDraggingOther && { pointerEvents: "none" }}
-          // Click => toggle highlight on move
-          onClick={() =>
-            // If we already "own" the selection, then toggle off
-            setHighlightedMoveId((old) => (old === moveId ? undefined : moveId))
-          }
-          // Double click => delete move
-          onDoubleClick={() => setSelectedMove(moveId)}
-          // Hover => highlight move
-          onMouseEnter={() => setHighlightedMoveId(moveId)}
+          // Hover (desktop) or click (mobile) => highlight the move
+          onClick={highlightMove}
+          onMouseEnter={highlightMove}
         />
       </Positioned>
 

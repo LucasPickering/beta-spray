@@ -12,7 +12,6 @@ import { betaQuery } from "components/Editor/queries";
 import { getBetaMoveColors, getBetaMoveVisualPositions } from "util/svg";
 import { BetaContext, EditorHighlightedMoveContext } from "util/context";
 import { comparator } from "util/func";
-import EditBetaMoveDialog from "./EditBetaMoveDialog";
 import useCurrentStance from "util/useCurrentStance";
 
 interface Props {
@@ -27,7 +26,6 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
     graphql`
       fragment BetaEditor_betaNode on BetaNode {
         id
-        ...EditBetaMoveDialog_betaNode
         moves {
           ...BodyStance_betaMoveNodeConnection
           ...useCurrentStance_betaMoveNodeConnection
@@ -146,9 +144,6 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
           hovering a move. We want this above the move lines, but below the
           move marks so it's not intrusive. */}
       <BodyStance betaMoveConnectionKey={beta.moves} />
-
-      {/* After clicking a move, show a modal to edit it */}
-      <EditBetaMoveDialog betaKey={beta} />
     </BetaContext.Provider>
   );
 };
