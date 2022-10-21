@@ -78,11 +78,7 @@ const BetaChainLine: React.FC<Props> = ({ startMoveKey, endMoveKey }) => {
       </defs>
       <line
         ref={drag}
-        css={[
-          { strokeWidth: 1.5 },
-          styleDraggable,
-          isDragging && styleDragging,
-        ]}
+        css={[{ strokeWidth: 1 }, styleDraggable, isDragging && styleDragging]}
         stroke={`url(#${gradientId})`}
         {...coords}
       />

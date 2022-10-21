@@ -1,14 +1,12 @@
 import React from "react";
-import { BodyPart, OverlayPosition } from "util/svg";
+import { BodyPart } from "util/svg";
 import {
   styleDraggable,
   styleDraggableHighlight,
   styleDragging,
-  styleFaded,
 } from "styles/svg";
 import { Interpolation, Theme } from "@emotion/react";
 import { isDefined } from "util/func";
-import Positioned from "../Positioned";
 import { SvgIcon, SvgIconProps, useTheme } from "@mui/material";
 
 interface Props {
@@ -20,9 +18,7 @@ interface Props {
   hasAnnotation?: boolean;
   draggable?: boolean;
   isDragging?: boolean;
-  // TODO consolidate "highlight" and "fade" into one concept
   isHighlighted?: boolean;
-  isFaded?: boolean;
   css?: Interpolation<Theme>;
 }
 
@@ -45,7 +41,6 @@ const BetaMoveIcon = React.forwardRef<
       draggable = false,
       isDragging = false,
       isHighlighted = false,
-      isFaded = false,
       css: parentCss,
       ...rest
     },
@@ -60,7 +55,6 @@ const BetaMoveIcon = React.forwardRef<
           draggable && styleDraggable,
           isDragging && styleDragging,
           isHighlighted && styleDraggableHighlight,
-          isFaded && styleFaded,
           parentCss,
         ]}
         {...rest}
@@ -97,11 +91,10 @@ const BetaMoveIcon = React.forwardRef<
           </text>
         )}
 
-        {hasAnnotation && (
-          <Positioned position={getAnnotationPosition(bodyPart)}>
-            <IconNotesRaw />
-          </Positioned>
-        )}
+        {/* We don't want to show this if the move is highlighted because it
+            won't fit with the order number there, and the annotation itself
+            will already be visible in the tooltip */}
+        {/* {hasAnnotation && !isHighlighted && <IconNotesRaw />} */}
       </g>
     );
   }
@@ -121,23 +114,6 @@ export const BetaMoveIconWrapped: React.FC<
     <BetaMoveIcon {...rest} />
   </SvgIcon>
 );
-
-/**
- * Get the position of the annotation icon within a move. Each body part uses
- * a different position to make it fit correctly.
- */
-function getAnnotationPosition(bodyPart: BodyPart): OverlayPosition {
-  switch (bodyPart) {
-    case "LEFT_HAND":
-      return { x: -0.2, y: 2.2 };
-    case "RIGHT_HAND":
-      return { x: 0.2, y: 2.2 };
-    case "LEFT_FOOT":
-      return { x: -2.2, y: 2.2 };
-    case "RIGHT_FOOT":
-      return { x: 2.2, y: 2.2 };
-  }
-}
 
 // Below are the "raw" icons that we piece together to make the final icon.
 

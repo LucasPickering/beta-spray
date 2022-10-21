@@ -31,13 +31,6 @@ export const styleDraggableHighlight = css({
 });
 
 /**
- * Apply to elements that are visually faded/de-emphasized
- */
-export const styleFaded = css({
-  opacity: 0.5,
-});
-
-/**
  * Apply to elements that can be dragged
  */
 export const styleDraggable = css({
