@@ -19,7 +19,6 @@ import { graphql } from "react-relay";
 export const problemQuery = graphql`
   query queriesProblemQuery($problemId: ID!) {
     problem(id: $problemId) {
-      ...ItemTrashCan_problemNode
       ...EditorHelmet_problemNode
       ...EditorSvg_problemNode
       ...ProblemName_problemNode
