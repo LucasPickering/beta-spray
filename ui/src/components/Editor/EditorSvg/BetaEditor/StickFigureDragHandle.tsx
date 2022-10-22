@@ -1,6 +1,6 @@
 import { useDrag } from "util/dnd";
 import { BodyPart, OverlayPosition } from "util/svg";
-import Positioned from "../Positioned";
+import Positioned from "../common/Positioned";
 import BetaMoveIcon from "./BetaMoveIcon";
 
 interface Props {

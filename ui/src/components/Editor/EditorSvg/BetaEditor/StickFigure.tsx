@@ -7,7 +7,7 @@ import {
 } from "util/svg";
 import useCurrentStance from "util/useCurrentStance";
 import { useCurrentStance_betaMoveNodeConnection$key } from "util/__generated__/useCurrentStance_betaMoveNodeConnection.graphql";
-import Line from "../Line";
+import Line from "../common/Line";
 import StickFigureDragHandle from "./StickFigureDragHandle";
 
 const defaultPositions: Record<BodyPart, OverlayPosition> = {

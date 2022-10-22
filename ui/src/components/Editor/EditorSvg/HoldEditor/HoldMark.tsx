@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { DropHandler, useDrag, useDrop } from "util/dnd";
 import { graphql, useFragment } from "react-relay";
 import { HoldMark_holdNode$key } from "./__generated__/HoldMark_holdNode.graphql";
-import Positioned from "../Positioned";
+import Positioned from "../common/Positioned";
 import HoldIcon from "./HoldIcon";
 
 interface Props {
