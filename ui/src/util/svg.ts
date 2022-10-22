@@ -118,6 +118,19 @@ export function distanceTo(
 }
 
 /**
+ * Get the midpoint of two positions
+ */
+export function midpoint(
+  position1: OverlayPosition,
+  position2: OverlayPosition
+): OverlayPosition {
+  return {
+    x: (position1.x + position2.x) / 2,
+    y: (position1.y + position2.y) / 2,
+  };
+}
+
+/**
  * Convert a polar point of (radius, angle) to an SVG point. Note: SVG
  * coordinates are *not* cartesian! SVG uses the top-left as origin, with right
  * being +x and down being +y.
@@ -170,22 +183,6 @@ const bodyPartsCCW: BodyPart[] = [
   "LEFT_FOOT",
   "RIGHT_FOOT",
 ];
-
-/**
- * Get the midpoint of two positions
- * @param position1 First position
- * @param position2 Second position
- * @returns Midpoint position
- */
-export function getMidpoint(
-  position1: OverlayPosition,
-  position2: OverlayPosition
-): OverlayPosition {
-  return {
-    x: (position1.x + position2.x) / 2,
-    y: (position1.y + position2.y) / 2,
-  };
-}
 
 /**
  * Get the visual position for each move in a beta. For each move, this will
