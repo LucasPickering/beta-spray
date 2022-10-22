@@ -19,10 +19,8 @@ interface Props {
 
 /**
  * A visual for the body's current position.
- *
- * TODO rename to StickFigure
  */
-const BodyStance: React.FC<Props> = ({ betaMoveConnectionKey }) => {
+const StickFigure: React.FC<Props> = ({ betaMoveConnectionKey }) => {
   // TODO remove this fragment and make it transparent, if possible
   const betaMoveConnection = useFragment(
     graphql`
@@ -75,4 +73,4 @@ const BodyStance: React.FC<Props> = ({ betaMoveConnectionKey }) => {
   );
 };
 
-export default BodyStance;
+export default StickFigure;
