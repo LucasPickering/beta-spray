@@ -233,7 +233,7 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
                 },
               },
               onCompleted(result) {
-                setHighlightedMove(result.appendBetaMove?.betaMove.id);
+                setHighlightedMove(result.insertBetaMove?.betaMove.id);
               },
               // Punting on optimistic update because ordering is hard
             });
@@ -289,7 +289,7 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
             },
           },
           onCompleted(result) {
-            setHighlightedMove(result.appendBetaMove?.betaMove.id);
+            setHighlightedMove(result.insertBetaMove?.betaMove.id);
           },
           // Punting on optimistic update because ordering is hard
         });

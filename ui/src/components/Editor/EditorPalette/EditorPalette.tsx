@@ -1,6 +1,5 @@
 import { useContext } from "react";
 import { Divider, IconButton, Paper, Stack, Tooltip } from "@mui/material";
-import { allBodyParts, formatBodyPart } from "util/svg";
 import HelpText from "./HelpText";
 import DragSourceButton from "./DragSourceButton";
 import {
@@ -11,11 +10,9 @@ import { EditorVisibilityContext } from "util/context";
 import { PreloadedQuery } from "react-relay";
 import { queriesBetaQuery } from "../__generated__/queriesBetaQuery.graphql";
 import PlayPauseControls from "./PlayPauseControls";
-import { BetaMoveIconWrapped } from "../EditorSvg/BetaEditor/BetaMoveIcon";
 import { HoldIconWrapped } from "../EditorSvg/HoldEditor/HoldIcon";
 
 interface Props {
-  selectedBeta: string | undefined;
   betaQueryRef: PreloadedQuery<queriesBetaQuery> | null | undefined;
 }
 
@@ -25,17 +22,16 @@ interface Props {
  *
  * Appears in the top-left corner.
  */
-const EditorPalette: React.FC<Props> = ({ betaQueryRef, selectedBeta }) => {
+const EditorPalette: React.FC<Props> = ({ betaQueryRef }) => {
   const [visibility, setVisibility] = useContext(EditorVisibilityContext);
 
   return (
     <Paper>
       <Stack
-        direction="row"
-        divider={<Divider orientation="vertical" flexItem />}
+        direction="column"
+        divider={<Divider orientation="horizontal" flexItem />}
       >
-        {/* Misc utils */}
-        <Stack direction="column">
+        <Stack direction="row">
           <HelpText />
 
           <Tooltip
@@ -50,11 +46,7 @@ const EditorPalette: React.FC<Props> = ({ betaQueryRef, selectedBeta }) => {
             </IconButton>
           </Tooltip>
 
-          <PlayPauseControls queryRef={betaQueryRef} />
-        </Stack>
-
-        {/* Draggable items */}
-        <Stack direction="column">
+          {/* TODO make this a button instead of drag source */}
           <DragSourceButton
             title="Hold"
             disabled={!visibility}
@@ -62,24 +54,10 @@ const EditorPalette: React.FC<Props> = ({ betaQueryRef, selectedBeta }) => {
           >
             <HoldIconWrapped />
           </DragSourceButton>
+        </Stack>
 
-          {/* One button per body part */}
-          {allBodyParts.map((bodyPart) => (
-            <DragSourceButton
-              key={bodyPart}
-              disabled={!visibility || !selectedBeta}
-              title={formatBodyPart(bodyPart)}
-              dragSpec={{
-                type: "overlayBetaMove",
-                item: {
-                  action: "create",
-                  bodyPart,
-                },
-              }}
-            >
-              <BetaMoveIconWrapped bodyPart={bodyPart} />
-            </DragSourceButton>
-          ))}
+        <Stack direction="row">
+          <PlayPauseControls queryRef={betaQueryRef} />
         </Stack>
       </Stack>
     </Paper>
