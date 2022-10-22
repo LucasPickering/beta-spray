@@ -105,6 +105,8 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
   const stance = useCurrentStance(beta.moves);
 
   // Pre-select the *last start move*, which is the first body position on the wall
+  // This will apply on first load, but also any time the highlighted move is
+  // cleared (e.g. if that move is deleted)
   useEffect(() => {
     // TODO replace with Array.findLast after https://github.com/microsoft/TypeScript/issues/48829
     const lastStartMove = moves.filter((move) => move.isStart).pop();

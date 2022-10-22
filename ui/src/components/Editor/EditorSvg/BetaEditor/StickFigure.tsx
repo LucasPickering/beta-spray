@@ -1,14 +1,26 @@
 import React from "react";
 import {
+  add,
   BodyPart,
-  getMidpoint,
+  midpoint,
+  multiply,
   OverlayPosition,
+  subtract,
+  unit,
   useBetaMoveVisualPosition,
 } from "util/svg";
 import useCurrentStance from "util/useCurrentStance";
 import { useCurrentStance_betaMoveNodeConnection$key } from "util/__generated__/useCurrentStance_betaMoveNodeConnection.graphql";
 import Line from "../common/Line";
 import StickFigureDragHandle from "./StickFigureDragHandle";
+
+/**
+ * The torso will always be this percentage of the distance between hands and
+ * feet midpoints.
+ */
+const torsoLengthRatio = 0.5;
+
+const headRadius = 3;
 
 const defaultPositions: Record<BodyPart, OverlayPosition> = {
   // TODO can we calculate actual center mark, using svg coordinates?
@@ -38,15 +50,31 @@ const StickFigure: React.FC<Props> = ({ betaMoveConnectionKey }) => {
     return acc;
   }, defaultPositions);
 
-  const shoulders = getMidpoint(positions.LEFT_HAND, positions.RIGHT_HAND);
-  const hips = getMidpoint(positions.LEFT_FOOT, positions.RIGHT_FOOT);
+  // Calculate some rough positions for shoulder and hips. We'll calculate
+  // midpoint of hands, then feet, and make the torso some fixed percentage of
+  // the distance between those two. Shoulders and hips are the ends of the torso.
+  // Let's do some GEOMETRY (thank u mr mallia)
+  const handsMidpoint = midpoint(positions.LEFT_HAND, positions.RIGHT_HAND);
+  const feetMidpoint = midpoint(positions.LEFT_FOOT, positions.RIGHT_FOOT);
+
+  // Get the vector displacement between the two points
+  const diff = subtract(handsMidpoint, feetMidpoint);
+  // The ratio between each midpoint and the torso end. E.g. distance from
+  // hands midpoint to shoulders, as a percentage of hands=>feet distance
+  const offsetRatio = (1.0 - torsoLengthRatio) / 2;
+
+  const shoulders = subtract(handsMidpoint, multiply(diff, offsetRatio));
+  const hips = add(feetMidpoint, multiply(diff, offsetRatio));
+  // Project the torso out a bit further to place the head. We use a fudge factor
+  // on the radius to overcome the width of the arm/torso lines
+  const head = add(shoulders, multiply(unit(diff), headRadius * 1.3));
 
   // Draw an approximate stick figure. There is some code dupe here, but IMO
   // it's better than trying to generalize it for only 4 use cases.
   return (
     <g strokeWidth={1} stroke="white" fill="none">
       {/* Head */}
-      <circle r={3} cx={shoulders.x} cy={shoulders.y} />
+      <circle r={headRadius} cx={head.x} cy={head.y} />
       {/* Torso */}
       <Line p1={shoulders} p2={hips} />
 
