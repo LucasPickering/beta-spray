@@ -27,7 +27,6 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
       fragment BetaEditor_betaNode on BetaNode {
         id
         moves {
-          ...BodyStance_betaMoveNodeConnection
           ...useCurrentStance_betaMoveNodeConnection
           edges {
             node {

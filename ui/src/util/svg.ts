@@ -172,6 +172,22 @@ const bodyPartsCCW: BodyPart[] = [
 ];
 
 /**
+ * Get the midpoint of two positions
+ * @param position1 First position
+ * @param position2 Second position
+ * @returns Midpoint position
+ */
+export function getMidpoint(
+  position1: OverlayPosition,
+  position2: OverlayPosition
+): OverlayPosition {
+  return {
+    x: (position1.x + position2.x) / 2,
+    y: (position1.y + position2.y) / 2,
+  };
+}
+
+/**
  * Get the visual position for each move in a beta. For each move, this will
  * calculate some visual offset from its true position in order to make the beta
  * more legible. Specifically, this spreads apart moves on the same hold so they
