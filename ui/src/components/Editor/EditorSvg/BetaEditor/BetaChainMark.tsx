@@ -2,7 +2,7 @@ import { useContext, useRef } from "react";
 import { useDrag, useDragLayer } from "util/dnd";
 import { Portal, Tooltip } from "@mui/material";
 import { EditorHighlightedMoveContext } from "util/context";
-import Positioned from "../Positioned";
+import Positioned from "../common/Positioned";
 import BetaMoveIcon from "./BetaMoveIcon";
 import { graphql, useFragment } from "react-relay";
 import { BetaChainMark_betaMoveNode$key } from "./__generated__/BetaChainMark_betaMoveNode.graphql";
