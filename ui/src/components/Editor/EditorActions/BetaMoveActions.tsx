@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import { Button } from "@mui/material";
+import { SpeedDial, SpeedDialAction, SpeedDialIcon } from "@mui/material";
 import useMutation from "util/useMutation";
 import { graphql, useFragment } from "react-relay";
 import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
@@ -54,36 +54,34 @@ const BetaMoveActions: React.FC<Props> = ({ betaKey }) => {
   // This gets rendered in the SVG context, so we need to portal out of that
   return (
     <>
-      <Button
-        color="error"
-        variant="contained"
-        startIcon={<IconDelete />}
-        onClick={() => {
-          // This *should* always be defined, but hypothetically if someone
-          // clicks the button while the element is being hidden, it could
-          // trigger this so we need to guard for that
-          if (isDefined(highlightedMoveId)) {
-            deleteBetaMove({
-              variables: { input: { betaMoveId: highlightedMoveId } },
-              // Reset selection to prevent ghost highlight
-              onCompleted() {
-                setHighlightedMoveId(undefined);
-              },
-              // Punting on optimisitic response for now
-            });
-          }
-        }}
-      >
-        Delete Move
-      </Button>
+      <SpeedDial ariaLabel="Beta move actions" icon={<SpeedDialIcon />}>
+        <SpeedDialAction
+          tooltipTitle="Delete Move"
+          icon={<IconDelete />}
+          onClick={() => {
+            // This *should* always be defined, but hypothetically if someone
+            // clicks the button while the element is being hidden, it could
+            // trigger this so we need to guard for that
+            if (isDefined(highlightedMoveId)) {
+              deleteBetaMove({
+                variables: { input: { betaMoveId: highlightedMoveId } },
+                // Reset selection to prevent ghost highlight
+                onCompleted() {
+                  setHighlightedMoveId(undefined);
+                },
+                // Punting on optimisitic response for now
+              });
+            }
+          }}
+        />
 
-      <Button
-        variant="contained"
-        startIcon={<IconEdit />}
-        onClick={() => setIsEditing(true)}
-      >
-        Edit Notes
-      </Button>
+        <SpeedDialAction
+          tooltipTitle="Edit Notes"
+          icon={<IconEdit />}
+          onClick={() => setIsEditing(true)}
+        />
+      </SpeedDial>
+
       {/* Opened by the Edit button */}
       <EditBetaMoveDialog
         betaMoveConnectionKey={beta.moves}
