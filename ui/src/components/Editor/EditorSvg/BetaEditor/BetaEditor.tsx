@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
 import { BetaEditor_betaNode$key } from "./__generated__/BetaEditor_betaNode.graphql";
@@ -10,9 +10,10 @@ import { withQuery } from "relay-query-wrapper";
 import { queriesBetaQuery } from "components/Editor/__generated__/queriesBetaQuery.graphql";
 import { betaQuery } from "components/Editor/queries";
 import { getBetaMoveColors, getBetaMoveVisualPositions } from "util/svg";
-import { BetaContext, EditorHighlightedMoveContext } from "util/context";
+import { BetaContext } from "util/context";
 import { comparator } from "util/func";
 import useCurrentStance from "util/useCurrentStance";
+import useHighlight from "util/useHighlight";
 
 interface Props {
   betaKey: BetaEditor_betaNode$key;
@@ -85,9 +86,8 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
   // separate element for the highlighted move at the end. With the latter, the
   // element gets deleted and re-added by react when highlighting/unhighlighting,
   // which makes it impossible to drag.
-  const [highlightedMoveId, setHighlightedMoveId] = useContext(
-    EditorHighlightedMoveContext
-  );
+  const [highlightedMove, setHighlightedMove] = useHighlight("move");
+  const highlightedMoveId = highlightedMove?.betaMoveId;
   const movesRenderOrder = useMemo(
     () =>
       highlightedMoveId
@@ -110,8 +110,10 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
   useEffect(() => {
     // TODO replace with Array.findLast after https://github.com/microsoft/TypeScript/issues/48829
     const lastStartMove = moves.filter((move) => move.isStart).pop();
-    setHighlightedMoveId(lastStartMove?.id);
-  }, [setHighlightedMoveId, moves]);
+    setHighlightedMove(
+      lastStartMove ? { betaMoveId: lastStartMove?.id } : undefined
+    );
+  }, [setHighlightedMove, moves]);
 
   // Render one "chain" of moves per body part
   return (

@@ -2,12 +2,10 @@ import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
 import { useContext } from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
-import {
-  EditorHighlightedMoveContext,
-  EditorSelectedBetaContext,
-} from "util/context";
+import { EditorSelectedBetaContext } from "util/context";
 import { DropHandler, getItemWithKind } from "util/dnd";
 import { assertIsDefined } from "util/func";
+import useHighlight from "util/useHighlight";
 import useMutation from "util/useMutation";
 import HoldEditorDropZone from "./HoldEditorDropZone";
 import HoldOverlay from "./HoldOverlay";
@@ -29,7 +27,7 @@ interface Props {
  */
 const HoldEditor: React.FC<Props> = ({ problemKey }) => {
   const selectedBeta = useContext(EditorSelectedBetaContext);
-  const [, setHighlightedMove] = useContext(EditorHighlightedMoveContext);
+  const [, setHighlightedMove] = useHighlight("move");
 
   const problem = useFragment(
     graphql`
@@ -204,7 +202,7 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
       case "overlayBetaMove": {
         const item = itemWithKind.item;
         switch (item.action) {
-          // Dragged a body part from the palette
+          // Dragged a body part from the stick figure
           case "create":
             assertIsDefined(selectedBeta); // Beta must be selected to get this far
             appendBetaMove({
@@ -216,7 +214,11 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
                 },
               },
               onCompleted(result) {
-                setHighlightedMove(result.appendBetaMove?.betaMove.id);
+                // Highlight the new move
+                assertIsDefined(result.appendBetaMove);
+                setHighlightedMove({
+                  betaMoveId: result.appendBetaMove.betaMove.id,
+                });
               },
               // Punting on optimistic update because ordering is hard
               // We could hypothetically add this, but we'd need to pipe down
@@ -233,7 +235,11 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
                 },
               },
               onCompleted(result) {
-                setHighlightedMove(result.insertBetaMove?.betaMove.id);
+                // Highlight the new move
+                assertIsDefined(result.insertBetaMove);
+                setHighlightedMove({
+                  betaMoveId: result.insertBetaMove.betaMove.id,
+                });
               },
               // Punting on optimistic update because ordering is hard
             });
@@ -260,7 +266,7 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
     { holdId, position }
   ) => {
     switch (item.action) {
-      // Dragged a body part from the palette
+      // Dragged a body part from the stick figure
       case "create":
         assertIsDefined(selectedBeta); // Beta must be selected to get this far
         appendBetaMove({
@@ -272,7 +278,11 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
             },
           },
           onCompleted(result) {
-            setHighlightedMove(result.appendBetaMove?.betaMove.id);
+            // Highlight the new move
+            assertIsDefined(result.appendBetaMove);
+            setHighlightedMove({
+              betaMoveId: result.appendBetaMove.betaMove.id,
+            });
           },
           // Punting on optimistic update because ordering is hard
           // We could hypothetically add this, but we'd need to pipe down
@@ -289,7 +299,11 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
             },
           },
           onCompleted(result) {
-            setHighlightedMove(result.insertBetaMove?.betaMove.id);
+            // Highlight the new move
+            assertIsDefined(result.insertBetaMove);
+            setHighlightedMove({
+              betaMoveId: result.insertBetaMove.betaMove.id,
+            });
           },
           // Punting on optimistic update because ordering is hard
         });

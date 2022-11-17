@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogTitle, TextField } from "@mui/material";
 import useMutation from "util/useMutation";
 import { graphql, useFragment } from "react-relay";
 import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
-import { EditorHighlightedMoveContext } from "util/context";
+import { EditorHighlightedItemContext } from "util/context";
 import { EditBetaMoveDialog_updateBetaMoveMutation } from "./__generated__/EditBetaMoveDialog_updateBetaMoveMutation.graphql";
 import { EditBetaMoveDialogContent_betaMoveNode$key } from "./__generated__/EditBetaMoveDialogContent_betaMoveNode.graphql";
 import { EditBetaMoveDialog_betaMoveConnection$key } from "./__generated__/EditBetaMoveDialog_betaMoveConnection.graphql";
@@ -50,16 +50,18 @@ const EditBetaMoveDialog: React.FC<Props> = ({
       }
     `);
 
-  const [highlightedMoveId] = useContext(EditorHighlightedMoveContext);
+  const [highlightedItem] = useContext(EditorHighlightedItemContext);
   // Find the highlighted move by ID
   // TODO figure out if we can pull the move directly from Relay by ID without
   // having to make a separate query, since we know the move is already present
   // in the Relay store from the many beta query. That will save us a lot of
   // garbage code
-  const highlightedMove = highlightedMoveId
-    ? betaMoveConnection.edges.find(({ node }) => node.id === highlightedMoveId)
-        ?.node
-    : undefined;
+  const highlightedMove =
+    highlightedItem?.kind === "move"
+      ? betaMoveConnection.edges.find(
+          ({ node }) => node.id === highlightedItem.betaMoveId
+        )?.node
+      : undefined;
 
   return (
     <Dialog open={open} onClose={onClose}>

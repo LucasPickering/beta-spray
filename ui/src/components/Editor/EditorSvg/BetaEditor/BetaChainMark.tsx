@@ -1,7 +1,7 @@
 import { useContext, useRef } from "react";
 import { useDrag, useDragLayer } from "util/dnd";
 import { Portal, Tooltip } from "@mui/material";
-import { EditorHighlightedMoveContext } from "util/context";
+import { EditorHighlightedItemContext } from "util/context";
 import Positioned from "../common/Positioned";
 import BetaMoveIcon from "./BetaMoveIcon";
 import { graphql, useFragment } from "react-relay";
@@ -69,11 +69,13 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey, isInCurrentStance }) => {
   }));
   const isDraggingOther = isDraggingAny && !isDragging;
 
-  const [highlightedMoveId, setHighlightedMoveId] = useContext(
-    EditorHighlightedMoveContext
+  const [highlightedItem, setHighlightedItem] = useContext(
+    EditorHighlightedItemContext
   );
-  const isHighlighted = highlightedMoveId === moveId;
-  const highlightMove = (): void => setHighlightedMoveId(moveId);
+  const isHighlighted =
+    highlightedItem?.kind === "move" && highlightedItem.betaMoveId === moveId;
+  const highlightMove = (): void =>
+    setHighlightedItem({ kind: "move", betaMoveId: moveId });
 
   drag(ref);
   return (

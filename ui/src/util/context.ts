@@ -35,11 +35,19 @@ export const EditorSelectedBetaContext = React.createContext<
   string | undefined
 >(undefined);
 
-// Highlighted move is on hover (or tap for mobile), or play/pause
-// Selected move is on double tap, which opens the modal
+/**
+ * A UI item that can be highlighted on hover/tap. This will allow the user to
+ * view details on the highlighted item, or execute certain actions. Each
+ * variant just holds a kind + ID, but each variant stores the ID in a different
+ * field so that usages have to be explicit about each variant(s) they can work
+ * with.
+ */
+export type HighlightedItem =
+  | { kind: "hold"; holdId: string }
+  | { kind: "move"; betaMoveId: string };
 
-export const EditorHighlightedMoveContext = React.createContext<
-  StateContext<string | undefined>
+export const EditorHighlightedItemContext = React.createContext<
+  StateContext<HighlightedItem | undefined>
 >([undefined, noop]);
 
 export interface BetaContextType {

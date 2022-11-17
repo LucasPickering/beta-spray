@@ -1,10 +1,9 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { SpeedDial, SpeedDialAction, SpeedDialIcon } from "@mui/material";
 import useMutation from "util/useMutation";
 import { graphql, useFragment } from "react-relay";
 import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
 import { Delete as IconDelete, Edit as IconEdit } from "@mui/icons-material";
-import { EditorHighlightedMoveContext } from "util/context";
 import { BetaMoveActions_deleteBetaMoveMutation } from "./__generated__/BetaMoveActions_deleteBetaMoveMutation.graphql";
 import { isDefined } from "util/func";
 import { queriesBetaQuery } from "components/Editor/__generated__/queriesBetaQuery.graphql";
@@ -12,6 +11,7 @@ import { betaQuery } from "components/Editor/queries";
 import EditBetaMoveDialog from "./EditBetaMoveDialog";
 import { withQuery } from "relay-query-wrapper";
 import { BetaMoveActions_betaNode$key } from "./__generated__/BetaMoveActions_betaNode.graphql";
+import useHighlight from "util/useHighlight";
 
 interface Props {
   betaKey: BetaMoveActions_betaNode$key;
@@ -32,9 +32,7 @@ const BetaMoveActions: React.FC<Props> = ({ betaKey }) => {
     betaKey
   );
 
-  const [highlightedMoveId, setHighlightedMoveId] = useContext(
-    EditorHighlightedMoveContext
-  );
+  const [highlightedMove, setHighlightedMove] = useHighlight("move");
   const [isEditing, setIsEditing] = useState(false);
   const { commit: deleteBetaMove, state: deleteState } =
     useMutation<BetaMoveActions_deleteBetaMoveMutation>(graphql`
@@ -62,12 +60,14 @@ const BetaMoveActions: React.FC<Props> = ({ betaKey }) => {
             // This *should* always be defined, but hypothetically if someone
             // clicks the button while the element is being hidden, it could
             // trigger this so we need to guard for that
-            if (isDefined(highlightedMoveId)) {
+            if (isDefined(highlightedMove)) {
               deleteBetaMove({
-                variables: { input: { betaMoveId: highlightedMoveId } },
+                variables: {
+                  input: { betaMoveId: highlightedMove.betaMoveId },
+                },
                 // Reset selection to prevent ghost highlight
                 onCompleted() {
-                  setHighlightedMoveId(undefined);
+                  setHighlightedMove(undefined);
                 },
                 // Punting on optimisitic response for now
               });

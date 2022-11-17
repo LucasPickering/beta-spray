@@ -11,9 +11,10 @@ import { DndProvider } from "react-dnd";
 import { TouchBackend } from "react-dnd-touch-backend";
 import { ArrowBack as IconArrowBack } from "@mui/icons-material";
 import {
-  EditorHighlightedMoveContext,
+  EditorHighlightedItemContext,
   EditorVisibilityContext,
   EditorSelectedBetaContext,
+  HighlightedItem,
 } from "util/context";
 import { ZoomPanProvider } from "util/zoom";
 import BetaDetails from "./EditorControls/BetaDetails";
@@ -57,8 +58,8 @@ const Editor: React.FC = () => {
   // ===
   // Flag to show/hide the overlay, toggled by a user button
   const visibilityState = useState<boolean>(true);
-  // Which move is being emphasized
-  const highlightedMoveState = useState<string>();
+  // Which hold/move is being emphasized
+  const highlightedItemState = useState<HighlightedItem | undefined>();
 
   const refreshBetaQuery = useCallback(
     (betaId: string | undefined) => {
@@ -113,7 +114,7 @@ const Editor: React.FC = () => {
 
       <EditorVisibilityContext.Provider value={visibilityState}>
         <EditorSelectedBetaContext.Provider value={selectedBeta}>
-          <EditorHighlightedMoveContext.Provider value={highlightedMoveState}>
+          <EditorHighlightedItemContext.Provider value={highlightedItemState}>
             <ZoomPanProvider>
               {/* The maximum possible display area (the full screen) */}
               <Box
@@ -147,6 +148,7 @@ const Editor: React.FC = () => {
                 </Box>
 
                 {/* Buttons at the bottom of the screen */}
+                {/* TODO make this visible on desktop */}
                 <EditorActions>
                   <BetaMoveActions queryRef={betaQueryRef} />
                 </EditorActions>
@@ -170,7 +172,7 @@ const Editor: React.FC = () => {
                 </EditorControls>
               </Box>
             </ZoomPanProvider>
-          </EditorHighlightedMoveContext.Provider>
+          </EditorHighlightedItemContext.Provider>
         </EditorSelectedBetaContext.Provider>
       </EditorVisibilityContext.Provider>
     </DndProvider>
