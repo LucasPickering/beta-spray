@@ -1,7 +1,7 @@
 import { useContext, useMemo } from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
-import { EditorHighlightedMoveContext } from "./context";
+import { EditorHighlightedItemContext } from "./context";
 import { Stance } from "./svg";
 import { useCurrentStance_betaMoveNodeConnection$key } from "./__generated__/useCurrentStance_betaMoveNodeConnection.graphql";
 
@@ -12,7 +12,7 @@ import { useCurrentStance_betaMoveNodeConnection$key } from "./__generated__/use
  *
  * @param betaMoveConnectionKey Relay fragment key
  * @returns A list of IDs of the moves in the current body position. The list
- *  will be empty iff there are no moves in the beta.
+ *  will be empty iff there is no move highlighted.
  */
 function useCurrentStance(
   betaMoveConnectionKey: useCurrentStance_betaMoveNodeConnection$key
@@ -30,9 +30,14 @@ function useCurrentStance(
     `,
     betaMoveConnectionKey
   );
-  const [highlightedMoveId] = useContext(EditorHighlightedMoveContext);
+  const [highlightedItem] = useContext(EditorHighlightedItemContext);
 
   return useMemo(() => {
+    // If there isn't a highlighted move, then there's no current stance
+    if (highlightedItem?.kind !== "move") {
+      return {};
+    }
+
     // Find the most recent position of each body part at the point of the
     // highlighted move. Moves should always be sorted by order!
     const stance: Partial<Stance> = {};
@@ -41,13 +46,13 @@ function useCurrentStance(
       stance[move.bodyPart] = move.id;
 
       // If we've reached the highlighted move, everything after is irrelevant
-      if (move.id === highlightedMoveId) {
+      if (move.id === highlightedItem.betaMoveId) {
         break;
       }
     }
 
     return stance;
-  }, [betaMoveConnection, highlightedMoveId]);
+  }, [betaMoveConnection, highlightedItem]);
 }
 
 export default useCurrentStance;
