@@ -2,7 +2,7 @@
  * Utility functions related to beta moves.
  */
 
-import { assertIsDefined, moveArrayElement } from "./func";
+import { findNodeIndex, moveArrayElement } from "./func";
 
 /**
  * List of beta moves, from Relay, that we will update locally for the purpose
@@ -31,8 +31,7 @@ export function reorderBetaMoveLocal(
   betaMoveId: string,
   newOrder: number
 ): BetaMoves {
-  const oldIndex = moves.edges.findIndex(({ node }) => node.id === betaMoveId);
-  assertIsDefined(oldIndex);
+  const oldIndex = findNodeIndex(moves, betaMoveId);
   const newIndex = newOrder - 1;
   return {
     edges: moveArrayElement(moves.edges, oldIndex, newIndex).map(

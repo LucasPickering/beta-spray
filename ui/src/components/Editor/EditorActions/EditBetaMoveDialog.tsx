@@ -7,6 +7,7 @@ import { EditBetaMoveDialog_updateBetaMoveMutation } from "./__generated__/EditB
 import { EditBetaMoveDialogContent_betaMoveNode$key } from "./__generated__/EditBetaMoveDialogContent_betaMoveNode.graphql";
 import { EditBetaMoveDialog_betaMoveConnection$key } from "./__generated__/EditBetaMoveDialog_betaMoveConnection.graphql";
 import useHighlight from "util/useHighlight";
+import { findNode } from "util/func";
 
 interface Props {
   betaMoveConnectionKey: EditBetaMoveDialog_betaMoveConnection$key;
@@ -54,9 +55,7 @@ const EditBetaMoveDialog: React.FC<Props> = ({
   const [highlightedMove] = useHighlight("move");
   // Find the highlighted move by ID
   const move = highlightedMove
-    ? betaMoveConnection.edges.find(
-        ({ node }) => node.id === highlightedMove.betaMoveId
-      )?.node
+    ? findNode(betaMoveConnection, highlightedMove.betaMoveId)
     : undefined;
 
   return (

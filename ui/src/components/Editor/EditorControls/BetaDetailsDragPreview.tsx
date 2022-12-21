@@ -1,6 +1,6 @@
 import { graphql, useFragment } from "react-relay";
 import { DragItemWithKind } from "util/dnd";
-import { assertIsDefined } from "util/func";
+import { assertIsDefined, findNode } from "util/func";
 import BetaMoveListItem from "./BetaMoveListItem";
 import { BetaDetailsDragPreview_betaMoveNodeConnection$key } from "./__generated__/BetaDetailsDragPreview_betaMoveNodeConnection.graphql";
 
@@ -32,14 +32,15 @@ const BetaDetailsDragPreview: React.FC<Props> = ({
 
   switch (itemWithKind.kind) {
     case "listBetaMove": {
-      const betaMoveEdge = betaMoveConnection.edges.find(
-        ({ node }) => node.id === itemWithKind.item.betaMoveId
+      const betaMove = findNode(
+        betaMoveConnection,
+        itemWithKind.item.betaMoveId
       );
       // If the user is dragging the move, it had better fucking be defined
-      assertIsDefined(betaMoveEdge);
+      assertIsDefined(betaMove);
       return (
         <BetaMoveListItem
-          betaMoveKey={betaMoveEdge.node}
+          betaMoveKey={betaMove}
           // Hacky translation: DnD uses the drag handle as the component
           // root, so the parent offset will align to that. We want to align
           // to the list item though (the parent of the drag handle), so we
