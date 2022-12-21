@@ -88,7 +88,6 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey, isInCurrentStance }) => {
             order={betaMove.order}
             isStart={betaMove.isStart}
             isFree={!isDefined(betaMove.hold)}
-            hasAnnotation={Boolean(betaMove.annotation)}
             color={color}
             draggable
             isDragging={isDragging}

@@ -15,7 +15,6 @@ interface Props {
   color?: string;
   isFree?: boolean;
   isStart?: boolean;
-  hasAnnotation?: boolean;
   draggable?: boolean;
   isDragging?: boolean;
   isHighlighted?: boolean;
@@ -37,7 +36,6 @@ const BetaMoveIcon = React.forwardRef<
       color = "white",
       isFree = false,
       isStart = false,
-      hasAnnotation = false,
       draggable = false,
       isDragging = false,
       isHighlighted = false,
@@ -90,11 +88,6 @@ const BetaMoveIcon = React.forwardRef<
             {order}
           </text>
         )}
-
-        {/* We don't want to show this if the move is highlighted because it
-            won't fit with the order number there, and the annotation itself
-            will already be visible in the tooltip */}
-        {/* {hasAnnotation && !isHighlighted && <IconNotesRaw />} */}
       </g>
     );
   }
@@ -151,14 +144,6 @@ const IconOvalRaw: React.FC<React.SVGProps<SVGPathElement>> = (props) => (
   <path
     d="M-1.75,-1.25 A1,1,0,0,1,1.75,-1.25 L1.75,1.25 A1,1,0,0,1,-1.75,1.25 Z"
     strokeWidth={0.5}
-    {...props}
-  />
-);
-
-const IconNotesRaw: React.FC<React.SVGProps<SVGPathElement>> = (props) => (
-  <path
-    d="M3 18h12v-2H3v2zM3 6v2h18V6H3zm0 7h18v-2H3v2z"
-    transform="scale(0.1) translate(-12, -12)"
     {...props}
   />
 );
