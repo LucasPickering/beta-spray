@@ -1,12 +1,12 @@
-import { FormEvent, useContext, useState } from "react";
+import { FormEvent, useState } from "react";
 import { Dialog, DialogContent, DialogTitle, TextField } from "@mui/material";
 import useMutation from "util/useMutation";
 import { graphql, useFragment } from "react-relay";
 import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
-import { EditorHighlightedItemContext } from "util/context";
 import { EditBetaMoveDialog_updateBetaMoveMutation } from "./__generated__/EditBetaMoveDialog_updateBetaMoveMutation.graphql";
 import { EditBetaMoveDialogContent_betaMoveNode$key } from "./__generated__/EditBetaMoveDialogContent_betaMoveNode.graphql";
 import { EditBetaMoveDialog_betaMoveConnection$key } from "./__generated__/EditBetaMoveDialog_betaMoveConnection.graphql";
+import useHighlight from "util/useHighlight";
 
 interface Props {
   betaMoveConnectionKey: EditBetaMoveDialog_betaMoveConnection$key;
@@ -29,6 +29,7 @@ const EditBetaMoveDialog: React.FC<Props> = ({
         edges {
           node {
             id
+            order
             ...EditBetaMoveDialogContent_betaMoveNode
           }
         }
@@ -50,39 +51,34 @@ const EditBetaMoveDialog: React.FC<Props> = ({
       }
     `);
 
-  const [highlightedItem] = useContext(EditorHighlightedItemContext);
+  const [highlightedMove] = useHighlight("move");
   // Find the highlighted move by ID
-  // TODO figure out if we can pull the move directly from Relay by ID without
-  // having to make a separate query, since we know the move is already present
-  // in the Relay store from the many beta query. That will save us a lot of
-  // garbage code
-  const highlightedMove =
-    highlightedItem?.kind === "move"
-      ? betaMoveConnection.edges.find(
-          ({ node }) => node.id === highlightedItem.betaMoveId
-        )?.node
-      : undefined;
+  const move = highlightedMove
+    ? betaMoveConnection.edges.find(
+        ({ node }) => node.id === highlightedMove.betaMoveId
+      )?.node
+    : undefined;
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Edit Notes</DialogTitle>
+      <DialogTitle>Edit Notes for Move {move?.order}</DialogTitle>
 
       <DialogContent>
-        {highlightedMove && (
+        {move && (
           <EditBetaMoveDialogContent
-            betaMoveKey={highlightedMove}
+            betaMoveKey={move}
             onEdit={(annotation) =>
               updateBetaMove({
                 variables: {
                   input: {
-                    betaMoveId: highlightedMove.id,
+                    betaMoveId: move.id,
                     annotation,
                   },
                 },
                 optimisticResponse: {
                   updateBetaMove: {
                     betaMove: {
-                      id: highlightedMove.id,
+                      id: move.id,
                       annotation,
                     },
                   },
