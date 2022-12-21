@@ -6,7 +6,7 @@ import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
 import { EditBetaMoveDialog_updateBetaMoveMutation } from "./__generated__/EditBetaMoveDialog_updateBetaMoveMutation.graphql";
 import { EditBetaMoveDialogContent_betaMoveNode$key } from "./__generated__/EditBetaMoveDialogContent_betaMoveNode.graphql";
 import { EditBetaMoveDialog_betaMoveConnection$key } from "./__generated__/EditBetaMoveDialog_betaMoveConnection.graphql";
-import useHighlight from "util/useHighlight";
+import { useHighlight } from "util/highlight";
 import { findNode } from "util/func";
 
 interface Props {
@@ -52,10 +52,10 @@ const EditBetaMoveDialog: React.FC<Props> = ({
       }
     `);
 
-  const [highlightedMove] = useHighlight("move");
+  const [highlightedMoveId] = useHighlight("move");
   // Find the highlighted move by ID
-  const move = highlightedMove
-    ? findNode(betaMoveConnection, highlightedMove.betaMoveId)
+  const move = highlightedMoveId
+    ? findNode(betaMoveConnection, highlightedMoveId)
     : undefined;
 
   return (

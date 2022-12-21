@@ -11,10 +11,8 @@ import { DndProvider } from "react-dnd";
 import { TouchBackend } from "react-dnd-touch-backend";
 import { ArrowBack as IconArrowBack } from "@mui/icons-material";
 import {
-  EditorHighlightedItemContext,
   EditorVisibilityContext,
   EditorSelectedBetaContext,
-  HighlightedItem,
 } from "util/context";
 import { ZoomPanProvider } from "util/zoom";
 import BetaDetails from "./EditorControls/BetaDetails";
@@ -26,6 +24,7 @@ import ProblemName from "./EditorControls/ProblemName";
 import EditorPalette from "./EditorPalette/EditorPalette";
 import EditorActions from "./EditorActions/EditorActions";
 import BetaMoveActions from "./EditorActions/BetaMoveActions";
+import { EditorHighlightedItemContext, HighlightedItem } from "util/highlight";
 
 /**
  * Main app component, for viewing+editing boulders/problems/betas. This is

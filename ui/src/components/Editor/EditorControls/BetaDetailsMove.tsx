@@ -4,7 +4,7 @@ import { BetaDetailsMove_betaMoveNode$key } from "./__generated__/BetaDetailsMov
 import { XYCoord } from "react-dnd";
 import { DragItem, DropHandler, useDrag, useDrop } from "util/dnd";
 import BetaMoveListItem from "./BetaMoveListItem";
-import useHighlight from "util/useHighlight";
+import { useHighlight } from "util/highlight";
 
 interface Props {
   betaMoveKey: BetaDetailsMove_betaMoveNode$key;
@@ -37,7 +37,7 @@ const BetaDetailsMove: React.FC<Props> = ({
     betaMoveKey
   );
 
-  const [highlightedMove, setHighlightedMove] = useHighlight("move");
+  const [highlightedMoveId, highlightMove] = useHighlight("move");
 
   const childRef = useRef<HTMLLIElement | null>(null);
 
@@ -143,7 +143,7 @@ const BetaDetailsMove: React.FC<Props> = ({
     },
   });
 
-  const isHighlighted = highlightedMove?.betaMoveId === betaMove.id;
+  const isHighlighted = highlightedMoveId === betaMove.id;
 
   // Scroll the highlighted move into view
   useEffect(() => {
@@ -167,7 +167,7 @@ const BetaDetailsMove: React.FC<Props> = ({
       disabled={disabled}
       onMouseEnter={() => {
         if (!disabled) {
-          setHighlightedMove({ betaMoveId: betaMove.id });
+          highlightMove(betaMove.id);
         }
       }}
       onDelete={onDelete}

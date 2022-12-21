@@ -35,21 +35,6 @@ export const EditorSelectedBetaContext = React.createContext<
   string | undefined
 >(undefined);
 
-/**
- * A UI item that can be highlighted on hover/tap. This will allow the user to
- * view details on the highlighted item, or execute certain actions. Each
- * variant just holds a kind + ID, but each variant stores the ID in a different
- * field so that usages have to be explicit about each variant(s) they can work
- * with.
- */
-export type HighlightedItem =
-  | { kind: "hold"; holdId: string }
-  | { kind: "move"; betaMoveId: string };
-
-export const EditorHighlightedItemContext = React.createContext<
-  StateContext<HighlightedItem | undefined>
->([undefined, noop]);
-
 export interface BetaContextType {
   betaMoveColors: Map<string, string>;
   betaMoveVisualPositions: Map<string, OverlayPosition>;
