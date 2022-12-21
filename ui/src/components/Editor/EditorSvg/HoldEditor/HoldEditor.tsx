@@ -5,7 +5,7 @@ import { graphql } from "relay-runtime";
 import { EditorSelectedBetaContext } from "util/context";
 import { DropHandler, getItemWithKind } from "util/dnd";
 import { assertIsDefined } from "util/func";
-import useHighlight from "util/useHighlight";
+import { useHighlight } from "util/highlight";
 import useMutation from "util/useMutation";
 import HoldEditorDropZone from "./HoldEditorDropZone";
 import HoldOverlay from "./HoldOverlay";
@@ -27,7 +27,7 @@ interface Props {
  */
 const HoldEditor: React.FC<Props> = ({ problemKey }) => {
   const selectedBeta = useContext(EditorSelectedBetaContext);
-  const [, setHighlightedMove] = useHighlight("move");
+  const [, highlightMove] = useHighlight("move");
 
   const problem = useFragment(
     graphql`
@@ -216,9 +216,7 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
               onCompleted(result) {
                 // Highlight the new move
                 assertIsDefined(result.appendBetaMove);
-                setHighlightedMove({
-                  betaMoveId: result.appendBetaMove.betaMove.id,
-                });
+                highlightMove(result.appendBetaMove.betaMove.id);
               },
               // Punting on optimistic update because ordering is hard
               // We could hypothetically add this, but we'd need to pipe down
@@ -237,9 +235,7 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
               onCompleted(result) {
                 // Highlight the new move
                 assertIsDefined(result.insertBetaMove);
-                setHighlightedMove({
-                  betaMoveId: result.insertBetaMove.betaMove.id,
-                });
+                highlightMove(result.insertBetaMove.betaMove.id);
               },
               // Punting on optimistic update because ordering is hard
             });
@@ -280,9 +276,7 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
           onCompleted(result) {
             // Highlight the new move
             assertIsDefined(result.appendBetaMove);
-            setHighlightedMove({
-              betaMoveId: result.appendBetaMove.betaMove.id,
-            });
+            highlightMove(result.appendBetaMove.betaMove.id);
           },
           // Punting on optimistic update because ordering is hard
           // We could hypothetically add this, but we'd need to pipe down
@@ -301,9 +295,7 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
           onCompleted(result) {
             // Highlight the new move
             assertIsDefined(result.insertBetaMove);
-            setHighlightedMove({
-              betaMoveId: result.insertBetaMove.betaMove.id,
-            });
+            highlightMove(result.insertBetaMove.betaMove.id);
           },
           // Punting on optimistic update because ordering is hard
         });

@@ -13,7 +13,7 @@ import { getBetaMoveColors, getBetaMoveVisualPositions } from "util/svg";
 import { BetaContext } from "util/context";
 import { comparator } from "util/func";
 import useCurrentStance from "util/useCurrentStance";
-import useHighlight from "util/useHighlight";
+import { useHighlight } from "util/highlight";
 
 interface Props {
   betaKey: BetaEditor_betaNode$key;
@@ -86,8 +86,7 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
   // separate element for the highlighted move at the end. With the latter, the
   // element gets deleted and re-added by react when highlighting/unhighlighting,
   // which makes it impossible to drag.
-  const [highlightedMove, setHighlightedMove] = useHighlight("move");
-  const highlightedMoveId = highlightedMove?.betaMoveId;
+  const [highlightedMoveId, highlightMove] = useHighlight("move");
   const movesRenderOrder = useMemo(
     () =>
       highlightedMoveId
@@ -109,10 +108,8 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
   // cleared (e.g. if that move is deleted)
   useEffect(() => {
     const lastStartMove = moves.findLast((move) => move.isStart);
-    setHighlightedMove(
-      lastStartMove ? { betaMoveId: lastStartMove?.id } : undefined
-    );
-  }, [setHighlightedMove, moves]);
+    highlightMove(lastStartMove?.id);
+  }, [highlightMove, moves]);
 
   // Render one "chain" of moves per body part
   return (

@@ -14,7 +14,7 @@ import { queriesBetaQuery } from "../__generated__/queriesBetaQuery.graphql";
 import { PlayPauseControls_betaNode$key } from "./__generated__/PlayPauseControls_betaNode.graphql";
 import { EditorVisibilityContext } from "util/context";
 import { isDefined } from "util/func";
-import useHighlight from "util/useHighlight";
+import { useHighlight } from "util/highlight";
 
 /**
  * Length of time (in milliseconds) between steps while playing moves.
@@ -56,38 +56,38 @@ const PlayPauseControls: React.FC<Props> = ({ betaKey }) => {
     [beta.moves.edges]
   );
 
-  const [highlightedMove, setHighlightedMove] = useHighlight("move");
+  const [highlightedMoveId, highlightMove] = useHighlight("move");
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
   const togglePlayPause = useCallback(() => setIsPlaying((prev) => !prev), []);
   // Step forward (positive) or back (negative) some arbitrary number of moves
   const step = useCallback(
     (steps: number) => {
-      setHighlightedMove((prev) => {
+      highlightMove((prev) => {
         // Stepping forward => start at the beginning
         // Stepping backward => start at the end
         const defaultIndex = steps > 0 ? 0 : moveIds.length - 1;
         const nextHighlightedIndex = isDefined(prev)
-          ? moveIds.indexOf(prev.betaMoveId) + steps
+          ? moveIds.indexOf(prev) + steps
           : defaultIndex;
         return 0 <= nextHighlightedIndex &&
           nextHighlightedIndex < moveIds.length
-          ? { kind: "move", betaMoveId: moveIds[nextHighlightedIndex] }
+          ? moveIds[nextHighlightedIndex]
           : // We've reached the end, just leave the last move highlighted
             prev;
       });
     },
-    [moveIds, setHighlightedMove]
+    [moveIds, highlightMove]
   );
 
   // The behavior of the stepper buttons changes if we're at the beginning/end
   // of the beta. isDefined checks are necessary to prevent false positives when
   // moveIds is empty.
   const isFirstMove =
-    isDefined(highlightedMove) && highlightedMove.betaMoveId === moveIds[0];
+    isDefined(highlightedMoveId) && highlightedMoveId === moveIds[0];
   const isLastMove =
-    isDefined(highlightedMove) &&
-    highlightedMove.betaMoveId === moveIds[moveIds.length - 1];
+    isDefined(highlightedMoveId) &&
+    highlightedMoveId === moveIds[moveIds.length - 1];
 
   // When playing is enabled, trigger an interval to step through the moves.
   // Interval will cancel itself when play state changes.

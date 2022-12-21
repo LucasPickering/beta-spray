@@ -1,13 +1,13 @@
-import { useContext, useRef } from "react";
+import { useRef } from "react";
 import { useDrag, useDragLayer } from "util/dnd";
 import { Portal, Tooltip } from "@mui/material";
-import { EditorHighlightedItemContext } from "util/context";
 import Positioned from "../common/Positioned";
 import BetaMoveIcon from "./BetaMoveIcon";
 import { graphql, useFragment } from "react-relay";
 import { BetaChainMark_betaMoveNode$key } from "./__generated__/BetaChainMark_betaMoveNode.graphql";
 import { useBetaMoveColor, useBetaMoveVisualPosition } from "util/svg";
 import { isDefined } from "util/func";
+import { useHighlight } from "util/highlight";
 
 interface Props {
   betaMoveKey: BetaChainMark_betaMoveNode$key;
@@ -69,13 +69,9 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey, isInCurrentStance }) => {
   }));
   const isDraggingOther = isDraggingAny && !isDragging;
 
-  const [highlightedItem, setHighlightedItem] = useContext(
-    EditorHighlightedItemContext
-  );
-  const isHighlighted =
-    highlightedItem?.kind === "move" && highlightedItem.betaMoveId === moveId;
-  const highlightMove = (): void =>
-    setHighlightedItem({ kind: "move", betaMoveId: moveId });
+  const [highlightedMoveId, highlightMove] = useHighlight("move");
+  const isHighlighted = highlightedMoveId === moveId;
+  const highlightThis = (): void => highlightMove(moveId);
 
   drag(ref);
   return (
@@ -95,15 +91,15 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey, isInCurrentStance }) => {
             // Don't block drop events when another element is being dragged
             css={isDraggingOther && { pointerEvents: "none" }}
             // Hover (desktop) or click (mobile) => highlight the move
-            onClick={highlightMove}
-            onMouseEnter={highlightMove}
+            onClick={highlightThis}
+            onMouseEnter={highlightThis}
           />
         ) : (
           <circle
             r={1.5}
             fill={color}
-            onClick={highlightMove}
-            onMouseEnter={highlightMove}
+            onClick={highlightThis}
+            onMouseEnter={highlightThis}
           />
         )}
       </Positioned>

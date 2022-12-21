@@ -11,7 +11,7 @@ import { betaQuery } from "components/Editor/queries";
 import EditBetaMoveDialog from "./EditBetaMoveDialog";
 import { withQuery } from "relay-query-wrapper";
 import { BetaMoveActions_betaNode$key } from "./__generated__/BetaMoveActions_betaNode.graphql";
-import useHighlight from "util/useHighlight";
+import { useHighlight } from "util/highlight";
 
 interface Props {
   betaKey: BetaMoveActions_betaNode$key;
@@ -32,7 +32,7 @@ const BetaMoveActions: React.FC<Props> = ({ betaKey }) => {
     betaKey
   );
 
-  const [highlightedMove, setHighlightedMove] = useHighlight("move");
+  const [highlightedMoveId, highlightMove] = useHighlight("move");
   const [isEditing, setIsEditing] = useState(false);
   const { commit: deleteBetaMove, state: deleteState } =
     useMutation<BetaMoveActions_deleteBetaMoveMutation>(graphql`
@@ -60,14 +60,14 @@ const BetaMoveActions: React.FC<Props> = ({ betaKey }) => {
             // This *should* always be defined, but hypothetically if someone
             // clicks the button while the element is being hidden, it could
             // trigger this so we need to guard for that
-            if (isDefined(highlightedMove)) {
+            if (isDefined(highlightedMoveId)) {
               deleteBetaMove({
                 variables: {
-                  input: { betaMoveId: highlightedMove.betaMoveId },
+                  input: { betaMoveId: highlightedMoveId },
                 },
                 // Reset selection to prevent ghost highlight
                 onCompleted() {
-                  setHighlightedMove(undefined);
+                  highlightMove(undefined);
                 },
                 // Punting on optimisitic response for now
               });

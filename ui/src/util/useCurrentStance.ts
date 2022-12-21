@@ -2,8 +2,8 @@ import { useMemo } from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
 import { findNodeIndex, isDefined } from "./func";
+import { useHighlight } from "./highlight";
 import { Stance } from "./svg";
-import useHighlight from "./useHighlight";
 import { useCurrentStance_betaMoveNodeConnection$key } from "./__generated__/useCurrentStance_betaMoveNodeConnection.graphql";
 
 /**
@@ -32,11 +32,11 @@ function useCurrentStance(
     `,
     betaMoveConnectionKey
   );
-  const [highlightedMove] = useHighlight("move");
+  const [highlightedMoveId] = useHighlight("move");
 
   return useMemo(() => {
     // If there isn't a highlighted move, then there's no current stance
-    if (!isDefined(highlightedMove)) {
+    if (!isDefined(highlightedMoveId)) {
       return {};
     }
 
@@ -45,7 +45,7 @@ function useCurrentStance(
     const stance: Partial<Stance> = {};
     const highlightedMoveIndex = findNodeIndex(
       betaMoveConnection,
-      highlightedMove.betaMoveId
+      highlightedMoveId
     );
     betaMoveConnection.edges
       // Remove any move after the highlighted one, *unless* it's a start move.
@@ -59,7 +59,7 @@ function useCurrentStance(
       });
 
     return stance;
-  }, [betaMoveConnection, highlightedMove]);
+  }, [betaMoveConnection, highlightedMoveId]);
 }
 
 export default useCurrentStance;
