@@ -116,3 +116,30 @@ export function comparator<T>(
 ): (a: T, b: T) => number {
   return (a, b) => keyFunc(a) - keyFunc(b);
 }
+
+/**
+ * Find a node in a connection, by ID
+ * @param connection Relay connection
+ * @param id ID of the node to find
+ * @returns The node with the given ID, or undefined if not in the connection
+ */
+export function findNode<T extends { readonly id: string }>(
+  connection: { readonly edges: ReadonlyArray<{ readonly node: T }> },
+  id: string
+): T | undefined {
+  return connection.edges.find(({ node }) => node.id === id)?.node;
+}
+
+/**
+ * Find the index of a node in a connection, by ID
+ * @param connection Relay connection
+ * @param id ID of the node to find
+ * @returns The index of the node with the given ID, or undefined if not in the
+ *  connection, or -1 if not present
+ */
+export function findNodeIndex<T extends { readonly id: string }>(
+  connection: { readonly edges: ReadonlyArray<{ readonly node: T }> },
+  id: string
+): number {
+  return connection.edges.findIndex(({ node }) => node.id === id);
+}

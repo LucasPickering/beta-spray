@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
-import { isDefined } from "./func";
+import { findNodeIndex, isDefined } from "./func";
 import { Stance } from "./svg";
 import useHighlight from "./useHighlight";
 import { useCurrentStance_betaMoveNodeConnection$key } from "./__generated__/useCurrentStance_betaMoveNodeConnection.graphql";
@@ -43,8 +43,9 @@ function useCurrentStance(
     // Find the most recent position of each body part at the point of the
     // highlighted move. Moves should always be sorted by order!
     const stance: Partial<Stance> = {};
-    const highlightedMoveIndex = betaMoveConnection.edges.findIndex(
-      ({ node }) => node.id === highlightedMove.betaMoveId
+    const highlightedMoveIndex = findNodeIndex(
+      betaMoveConnection,
+      highlightedMove.betaMoveId
     );
     betaMoveConnection.edges
       // Remove any move after the highlighted one, *unless* it's a start move.
