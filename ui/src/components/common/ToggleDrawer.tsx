@@ -27,7 +27,15 @@ const ToggleDrawer: React.FC<Props> = ({
     <>
       {/* Show/hide button is only needed in temporary mode */}
       {variant === "temporary" && (
-        <IconButton onClick={() => setIsOpen((prev) => !prev)} {...ButtonProps}>
+        <IconButton
+          sx={({ spacing }) => ({
+            position: "absolute",
+            top: spacing(1),
+            right: spacing(1),
+          })}
+          onClick={() => setIsOpen((prev) => !prev)}
+          {...ButtonProps}
+        >
           <IconMenu />
         </IconButton>
       )}
