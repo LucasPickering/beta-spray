@@ -12,9 +12,9 @@ import { css } from "@emotion/react";
 export const disambiguationDistance = 6;
 
 /**
- * Apply to elements that are draggable and currently highlighted (usually because they're hovered)
+ * Apply to elements that are draggable and currently being hovered or dragged
  */
-export const styleDraggableHighlight = css({
+export const styleDraggableHover = css({
   // We can't scale lines because that fucks up their length, so we need to
   // just adjust stroke width for them instead.
   "&:not(line)": {
@@ -35,7 +35,7 @@ export const styleDraggableHighlight = css({
  */
 export const styleDraggable = css({
   cursor: "grab",
-  "&:hover": styleDraggableHighlight,
+  "&:hover": styleDraggableHover,
 });
 
 /**
@@ -45,7 +45,12 @@ export const styleDragging = css({
   opacity: 0.6,
   cursor: "grabbing",
   pointerEvents: "none",
-  "&": styleDraggableHighlight,
+  "&": styleDraggableHover,
+});
+
+export const styleHighlight = css({
+  fill: "green",
+  // TODO some sort of glow effect here
 });
 
 /**

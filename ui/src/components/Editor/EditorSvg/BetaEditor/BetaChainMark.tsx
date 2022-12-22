@@ -95,6 +95,7 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey, isInCurrentStance }) => {
             onMouseEnter={highlightThis}
           />
         ) : (
+          // Not part of the current stance - show a little icon
           <circle
             r={1.5}
             fill={color}

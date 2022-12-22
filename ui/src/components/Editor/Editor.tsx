@@ -22,8 +22,7 @@ import EditorSvg from "./EditorSvg/EditorSvg";
 import EditorHelmet from "./EditorHelmet";
 import ProblemName from "./EditorControls/ProblemName";
 import EditorPalette from "./EditorPalette/EditorPalette";
-import EditorActions from "./EditorActions/EditorActions";
-import BetaMoveActions from "./EditorActions/BetaMoveActions";
+import HighlightActions from "./HighlightActions/HighlightActions";
 import { EditorHighlightedItemContext, HighlightedItem } from "util/highlight";
 
 /**
@@ -151,9 +150,10 @@ const Editor: React.FC = () => {
                   </Box>
 
                   {/* Buttons at the bottom of the screen */}
-                  <EditorActions>
-                    <BetaMoveActions queryRef={betaQueryRef} />
-                  </EditorActions>
+                  <HighlightActions
+                    problemQueryRef={problemQueryRef}
+                    betaQueryRef={betaQueryRef}
+                  />
                 </Box>
 
                 {/* Top-right drawer button is mobile-only, rendered by

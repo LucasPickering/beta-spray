@@ -3,6 +3,7 @@ import {
   styleDraggable,
   styleDragging,
   styleDropHover,
+  styleHighlight,
 } from "styles/svg";
 import { Interpolation, Theme } from "@emotion/react";
 import { SvgIcon, useTheme } from "@mui/material";
@@ -11,6 +12,7 @@ interface Props {
   clickable?: boolean;
   draggable?: boolean;
   isDragging?: boolean;
+  isHighlighted?: boolean;
   isOver?: boolean;
   css?: Interpolation<Theme>;
 }
@@ -23,6 +25,7 @@ const HoldIcon: React.FC<Props> = ({
   clickable = false,
   draggable = false,
   isDragging = false,
+  isHighlighted = false,
   isOver = false,
   css: parentCss,
   ...rest
@@ -42,6 +45,7 @@ const HoldIcon: React.FC<Props> = ({
         clickable && styleAddObject,
         draggable && styleDraggable,
         isDragging && styleDragging,
+        isHighlighted && styleHighlight,
         isOver && styleDropHover,
       ]}
       {...rest}
