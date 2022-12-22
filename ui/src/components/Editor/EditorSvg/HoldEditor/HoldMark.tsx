@@ -4,24 +4,21 @@ import { graphql, useFragment } from "react-relay";
 import { HoldMark_holdNode$key } from "./__generated__/HoldMark_holdNode.graphql";
 import Positioned from "../common/Positioned";
 import HoldIcon from "./HoldIcon";
+import { useHighlight } from "util/highlight";
 
 interface Props {
   holdKey: HoldMark_holdNode$key;
   draggable?: boolean;
-  onClick?: (holdId: string) => void;
-  onDoubleClick?: (holdId: string) => void;
+  /**
+   * Called when something is dropped *onto* this hold
+   */
   onDrop?: DropHandler<"overlayBetaMove", "hold">;
 }
 
 /**
  * An editable hold, in the context of the full interface editor.
  */
-const HoldMark: React.FC<Props> = ({
-  holdKey,
-  onClick,
-  onDoubleClick,
-  onDrop,
-}) => {
+const HoldMark: React.FC<Props> = ({ holdKey, onDrop }) => {
   const ref = useRef<SVGCircleElement | null>(null);
   const hold = useFragment(
     graphql`
@@ -68,15 +65,24 @@ const HoldMark: React.FC<Props> = ({
     },
   });
 
+  const [highlightedHoldId, highlightHold] = useHighlight("hold");
+  const isHighlighted = highlightedHoldId === hold.id;
+  const highlightThis = (): void => highlightHold(hold.id);
+
   drag(drop(ref));
   return (
     <Positioned
       ref={ref}
       position={hold.position}
-      onClick={onClick && (() => onClick(hold.id))}
-      onDoubleClick={onDoubleClick && (() => onDoubleClick(hold.id))}
+      onClick={highlightThis}
+      onMouseEnter={highlightThis}
     >
-      <HoldIcon draggable isDragging={isDragging} isOver={isOver} />
+      <HoldIcon
+        draggable
+        isDragging={isDragging}
+        isOver={isOver}
+        isHighlighted={isHighlighted}
+      />
     </Positioned>
   );
 };

@@ -1,10 +1,6 @@
 import React from "react";
 import { BodyPart } from "util/svg";
-import {
-  styleDraggable,
-  styleDraggableHighlight,
-  styleDragging,
-} from "styles/svg";
+import { styleDraggable, styleHighlight, styleDragging } from "styles/svg";
 import { Interpolation, Theme } from "@emotion/react";
 import { isDefined } from "util/func";
 import { SvgIcon, SvgIconProps, useTheme } from "@mui/material";
@@ -52,7 +48,7 @@ const BetaMoveIcon = React.forwardRef<
           { stroke: "#00000000" },
           draggable && styleDraggable,
           isDragging && styleDragging,
-          isHighlighted && styleDraggableHighlight,
+          isHighlighted && styleHighlight,
           parentCss,
         ]}
         {...rest}

@@ -23,6 +23,7 @@ export const problemQuery = graphql`
       ...EditorSvg_problemNode
       ...ProblemName_problemNode
       ...BetaList_problemNode
+      ...HoldActions_problemNode
     }
   }
 `;

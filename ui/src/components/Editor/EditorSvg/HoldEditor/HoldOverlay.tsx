@@ -3,11 +3,7 @@ import { graphql } from "relay-runtime";
 import HoldMark from "./HoldMark";
 import { HoldOverlay_holdConnection$key } from "./__generated__/HoldOverlay_holdConnection.graphql";
 
-interface Props
-  extends Pick<
-    React.ComponentProps<typeof HoldMark>,
-    "onClick" | "onDoubleClick" | "onDrop"
-  > {
+interface Props extends Pick<React.ComponentProps<typeof HoldMark>, "onDrop"> {
   holdConnectionKey: HoldOverlay_holdConnection$key;
 }
 
