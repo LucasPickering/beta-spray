@@ -10,10 +10,6 @@ import { Box, Button, Divider } from "@mui/material";
 import { DndProvider } from "react-dnd";
 import { TouchBackend } from "react-dnd-touch-backend";
 import { ArrowBack as IconArrowBack } from "@mui/icons-material";
-import {
-  EditorVisibilityContext,
-  EditorSelectedBetaContext,
-} from "components/Editor/util/context";
 import { ZoomPanProvider } from "components/Editor/util/zoom";
 import BetaDetails from "./EditorControls/BetaDetails";
 import BetaList from "./EditorControls/BetaList";
@@ -23,10 +19,7 @@ import EditorHelmet from "./EditorHelmet";
 import ProblemName from "./EditorControls/ProblemName";
 import EditorPalette from "./EditorPalette/EditorPalette";
 import HighlightActions from "./HighlightActions/HighlightActions";
-import {
-  EditorHighlightedItemContext,
-  HighlightedItem,
-} from "components/Editor/util/highlight";
+import EditorState from "./EditorState";
 
 /**
  * Main app component, for viewing+editing boulders/problems/betas. This is
@@ -52,15 +45,6 @@ const Editor: React.FC = () => {
     useQueryLoader<queriesProblemQueryType>(queriesProblemQuery);
   const [betaQueryRef, loadBetaQuery, disposeBetaQuery] =
     useQueryLoader<queriesBetaQueryType>(queriesBetaQuery);
-
-  // ===
-  // All of these *don't* unpack the array, so they can be passed to context
-  // without unnecessarily creating a new array object (and thus re-render)
-  // ===
-  // Flag to show/hide the overlay, toggled by a user button
-  const visibilityState = useState<boolean>(true);
-  // Which hold/move is being emphasized
-  const highlightedItemState = useState<HighlightedItem | undefined>();
 
   const refreshBetaQuery = useCallback(
     (betaId: string | undefined) => {
@@ -113,74 +97,68 @@ const Editor: React.FC = () => {
     >
       <EditorHelmet queryRef={problemQueryRef} />
 
-      <EditorVisibilityContext.Provider value={visibilityState}>
-        <EditorSelectedBetaContext.Provider value={selectedBeta}>
-          <EditorHighlightedItemContext.Provider value={highlightedItemState}>
-            <ZoomPanProvider>
-              {/* The maximum possible display area (the full screen) */}
-              <Box
-                display="flex"
-                justifyContent="center"
-                // Anchor for overlay button positioning
-                position="relative"
-                width="100vw"
-                height="100vh"
-                // Hide the image when it grows bigger than the viewport
-                sx={{ overflow: "hidden" }}
-              >
-                {/* Wrapper for the SVG, to provide background color and spacing
+      <EditorState selectedBeta={selectedBeta}>
+        <ZoomPanProvider>
+          {/* The maximum possible display area (the full screen) */}
+          <Box
+            display="flex"
+            justifyContent="center"
+            // Anchor for overlay button positioning
+            position="relative"
+            width="100vw"
+            height="100vh"
+            // Hide the image when it grows bigger than the viewport
+            sx={{ overflow: "hidden" }}
+          >
+            {/* Wrapper for the SVG, to provide background color and spacing
                   during loading */}
-                <Box
-                  position="relative"
-                  width="100%"
-                  height="100%"
-                  sx={({ palette }) => ({
-                    backgroundColor: palette.background.default,
-                  })}
-                >
-                  <EditorSvg
-                    queryRef={problemQueryRef}
-                    betaQueryRef={betaQueryRef}
-                  />
+            <Box
+              position="relative"
+              width="100%"
+              height="100%"
+              sx={({ palette }) => ({
+                backgroundColor: palette.background.default,
+              })}
+            >
+              <EditorSvg
+                queryRef={problemQueryRef}
+                betaQueryRef={betaQueryRef}
+              />
 
-                  {/* These buttons live with the SVG, so that they don't get
+              {/* These buttons live with the SVG, so that they don't get
                       covered by the drawer on desktop */}
-                  {/* Top-left overlay buttons */}
-                  <Box
-                    sx={{ position: "absolute", top: 0, left: 0, margin: 1 }}
-                  >
-                    <EditorPalette betaQueryRef={betaQueryRef} />
-                  </Box>
+              {/* Top-left overlay buttons */}
+              <Box sx={{ position: "absolute", top: 0, left: 0, margin: 1 }}>
+                <EditorPalette betaQueryRef={betaQueryRef} />
+              </Box>
 
-                  {/* Buttons at the bottom of the screen */}
-                  <HighlightActions
-                    problemQueryRef={problemQueryRef}
-                    betaQueryRef={betaQueryRef}
-                  />
-                </Box>
+              {/* Buttons at the bottom of the screen */}
+              <HighlightActions
+                problemQueryRef={problemQueryRef}
+                betaQueryRef={betaQueryRef}
+              />
+            </Box>
 
-                {/* Top-right drawer button is mobile-only, rendered by
+            {/* Top-right drawer button is mobile-only, rendered by
                     ToggleDrawer */}
 
-                {/* Controls sidebar/drawer */}
-                <EditorControls>
-                  <Button component={Link} to="/" startIcon={<IconArrowBack />}>
-                    Back
-                  </Button>
-                  <Divider />
-                  <ProblemName queryRef={problemQueryRef} />
-                  <BetaList
-                    queryRef={problemQueryRef}
-                    selectedBeta={selectedBeta}
-                    onSelectBeta={onSelectBeta}
-                  />
-                  <BetaDetails queryRef={betaQueryRef} />
-                </EditorControls>
-              </Box>
-            </ZoomPanProvider>
-          </EditorHighlightedItemContext.Provider>
-        </EditorSelectedBetaContext.Provider>
-      </EditorVisibilityContext.Provider>
+            {/* Controls sidebar/drawer */}
+            <EditorControls>
+              <Button component={Link} to="/" startIcon={<IconArrowBack />}>
+                Back
+              </Button>
+              <Divider />
+              <ProblemName queryRef={problemQueryRef} />
+              <BetaList
+                queryRef={problemQueryRef}
+                selectedBeta={selectedBeta}
+                onSelectBeta={onSelectBeta}
+              />
+              <BetaDetails queryRef={betaQueryRef} />
+            </EditorControls>
+          </Box>
+        </ZoomPanProvider>
+      </EditorState>
     </DndProvider>
   );
 };
