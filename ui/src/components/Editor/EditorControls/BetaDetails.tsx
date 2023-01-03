@@ -9,14 +9,17 @@ import { BetaDetails_deleteBetaMoveMutation } from "./__generated__/BetaDetails_
 import { FormLabel, List, Skeleton, Typography } from "@mui/material";
 import { moveArrayElement } from "util/func";
 import { BetaDetails_updateBetaMoveMutation } from "./__generated__/BetaDetails_updateBetaMoveMutation.graphql";
-import { BetaContext } from "util/context";
+import { BetaContext } from "components/Editor/util/context";
 import useMutation from "util/useMutation";
 import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
 import { queriesBetaQuery } from "../__generated__/queriesBetaQuery.graphql";
 import { betaQuery } from "../queries";
 import { withQuery } from "relay-query-wrapper";
-import { getBetaMoveColors } from "util/svg";
-import { deleteBetaMoveLocal, reorderBetaMoveLocal } from "util/moves";
+import { getBetaMoveColors } from "components/Editor/util/svg";
+import {
+  deleteBetaMoveLocal,
+  reorderBetaMoveLocal,
+} from "components/Editor/util/moves";
 import BetaDetailsDragLayer from "./BetaDetailsDragLayer";
 
 interface Props {

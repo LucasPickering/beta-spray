@@ -9,11 +9,14 @@ import BetaChainMark from "./BetaChainMark";
 import { withQuery } from "relay-query-wrapper";
 import { queriesBetaQuery } from "components/Editor/__generated__/queriesBetaQuery.graphql";
 import { betaQuery } from "components/Editor/queries";
-import { getBetaMoveColors, getBetaMoveVisualPositions } from "util/svg";
-import { BetaContext } from "util/context";
+import {
+  getBetaMoveColors,
+  getBetaMoveVisualPositions,
+} from "components/Editor/util/svg";
+import { BetaContext } from "components/Editor/util/context";
 import { comparator } from "util/func";
-import useCurrentStance from "util/useCurrentStance";
-import { useHighlight } from "util/highlight";
+import useCurrentStance from "components/Editor/util/useCurrentStance";
+import { useHighlight } from "components/Editor/util/highlight";
 
 interface Props {
   betaKey: BetaEditor_betaNode$key;

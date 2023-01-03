@@ -6,7 +6,7 @@ import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
 import { EditBetaMoveDialog_updateBetaMoveMutation } from "./__generated__/EditBetaMoveDialog_updateBetaMoveMutation.graphql";
 import { EditBetaMoveDialogContent_betaMoveNode$key } from "./__generated__/EditBetaMoveDialogContent_betaMoveNode.graphql";
 import { EditBetaMoveDialog_betaMoveConnection$key } from "./__generated__/EditBetaMoveDialog_betaMoveConnection.graphql";
-import { useHighlight } from "util/highlight";
+import { useHighlight } from "components/Editor/util/highlight";
 import { findNode } from "util/func";
 
 interface Props {

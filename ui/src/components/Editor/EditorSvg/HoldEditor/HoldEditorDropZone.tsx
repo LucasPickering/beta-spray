@@ -1,6 +1,6 @@
-import { DropHandler, useDrop } from "util/dnd";
+import { DropHandler, useDrop } from "components/Editor/util/dnd";
 import { assertIsDefined } from "util/func";
-import { useDOMToSVGPosition } from "util/svg";
+import { useDOMToSVGPosition } from "components/Editor/util/svg";
 import PanZone from "../PanZone";
 
 interface Props extends Omit<React.ComponentProps<typeof PanZone>, "onDrop"> {

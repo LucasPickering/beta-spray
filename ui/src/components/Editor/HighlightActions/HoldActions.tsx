@@ -5,7 +5,7 @@ import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
 import { Delete as IconDelete } from "@mui/icons-material";
 import { HoldActions_deleteHoldMutation } from "./__generated__/HoldActions_deleteHoldMutation.graphql";
 import { isDefined } from "util/func";
-import { useHighlight } from "util/highlight";
+import { useHighlight } from "components/Editor/util/highlight";
 import { HoldActions_problemNode$key } from "./__generated__/HoldActions_problemNode.graphql";
 import { withQuery } from "relay-query-wrapper";
 import { queriesProblemQuery } from "../__generated__/queriesProblemQuery.graphql";

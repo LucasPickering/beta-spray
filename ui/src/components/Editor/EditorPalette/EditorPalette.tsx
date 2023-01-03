@@ -6,7 +6,7 @@ import {
   Visibility as IconVisibility,
   VisibilityOff as IconVisibilityOff,
 } from "@mui/icons-material";
-import { EditorVisibilityContext } from "util/context";
+import { EditorVisibilityContext } from "components/Editor/util/context";
 import { PreloadedQuery } from "react-relay";
 import { queriesBetaQuery } from "../__generated__/queriesBetaQuery.graphql";
 import PlayPauseControls from "./PlayPauseControls";

@@ -1,5 +1,5 @@
-import { getItemWithKind, useDragLayer } from "util/dnd";
-import { useDOMToSVGPosition } from "util/svg";
+import { getItemWithKind, useDragLayer } from "components/Editor/util/dnd";
+import { useDOMToSVGPosition } from "components/Editor/util/svg";
 import DragPreview from "./SvgDragPreview";
 import Positioned from "./common/Positioned";
 

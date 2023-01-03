@@ -11,7 +11,7 @@ import { betaQuery } from "components/Editor/queries";
 import EditBetaMoveDialog from "./EditBetaMoveDialog";
 import { withQuery } from "relay-query-wrapper";
 import { BetaMoveActions_betaNode$key } from "./__generated__/BetaMoveActions_betaNode.graphql";
-import { useHighlight } from "util/highlight";
+import { useHighlight } from "components/Editor/util/highlight";
 
 interface Props {
   betaKey: BetaMoveActions_betaNode$key;

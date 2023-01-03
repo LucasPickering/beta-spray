@@ -1,10 +1,10 @@
 import { useRef } from "react";
-import { DropHandler, useDrag, useDrop } from "util/dnd";
+import { DropHandler, useDrag, useDrop } from "components/Editor/util/dnd";
 import { graphql, useFragment } from "react-relay";
 import { HoldMark_holdNode$key } from "./__generated__/HoldMark_holdNode.graphql";
 import Positioned from "../common/Positioned";
 import HoldIcon from "./HoldIcon";
-import { useHighlight } from "util/highlight";
+import { useHighlight } from "components/Editor/util/highlight";
 
 interface Props {
   holdKey: HoldMark_holdNode$key;

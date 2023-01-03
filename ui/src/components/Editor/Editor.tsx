@@ -13,8 +13,8 @@ import { ArrowBack as IconArrowBack } from "@mui/icons-material";
 import {
   EditorVisibilityContext,
   EditorSelectedBetaContext,
-} from "util/context";
-import { ZoomPanProvider } from "util/zoom";
+} from "components/Editor/util/context";
+import { ZoomPanProvider } from "components/Editor/util/zoom";
 import BetaDetails from "./EditorControls/BetaDetails";
 import BetaList from "./EditorControls/BetaList";
 import EditorControls from "./EditorControls/EditorControls";
@@ -23,7 +23,10 @@ import EditorHelmet from "./EditorHelmet";
 import ProblemName from "./EditorControls/ProblemName";
 import EditorPalette from "./EditorPalette/EditorPalette";
 import HighlightActions from "./HighlightActions/HighlightActions";
-import { EditorHighlightedItemContext, HighlightedItem } from "util/highlight";
+import {
+  EditorHighlightedItemContext,
+  HighlightedItem,
+} from "components/Editor/util/highlight";
 
 /**
  * Main app component, for viewing+editing boulders/problems/betas. This is

@@ -8,7 +8,7 @@
 
 import React, { useContext, useCallback } from "react";
 import { StateContext } from "./context";
-import { noop } from "./func";
+import { noop } from "../../../util/func";
 
 /**
  * A UI item that can be highlighted on hover/tap. This will allow the user to

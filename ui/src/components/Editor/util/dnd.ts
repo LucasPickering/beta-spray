@@ -16,7 +16,7 @@ import {
   DropTargetMonitor,
 } from "react-dnd";
 import { BodyPart, OverlayPosition } from "./svg";
-import { DistributivePick } from "./types";
+import { DistributivePick } from "../../../util/types";
 
 /**
  * The classes of things we can drag, and the metadata attached to each

@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
-import { findNodeIndex, isDefined } from "./func";
+import { findNodeIndex, isDefined } from "../../../util/func";
 import { useHighlight } from "./highlight";
 import { Stance } from "./svg";
 import { useCurrentStance_betaMoveNodeConnection$key } from "./__generated__/useCurrentStance_betaMoveNodeConnection.graphql";

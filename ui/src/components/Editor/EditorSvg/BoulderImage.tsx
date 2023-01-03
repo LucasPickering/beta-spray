@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
-import { SvgContext } from "util/context";
+import { SvgContext } from "components/Editor/util/context";
 import { BoulderImage_boulderNode$key } from "./__generated__/BoulderImage_boulderNode.graphql";
 
 interface Props {

@@ -1,5 +1,5 @@
 import { Portal } from "@mui/material";
-import { getItemWithKind, useDragLayer } from "util/dnd";
+import { getItemWithKind, useDragLayer } from "components/Editor/util/dnd";
 import BetaDetailsDragPreview from "./BetaDetailsDragPreview";
 import { BetaDetailsDragPreview_betaMoveNodeConnection$key } from "./__generated__/BetaDetailsDragPreview_betaMoveNodeConnection.graphql";
 
