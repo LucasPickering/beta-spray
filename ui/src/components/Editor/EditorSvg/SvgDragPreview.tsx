@@ -1,5 +1,5 @@
 import { useTheme } from "@mui/material";
-import { DragItemWithKind } from "util/dnd";
+import { DragItemWithKind } from "components/Editor/util/dnd";
 import BetaMoveIcon from "./BetaEditor/BetaMoveIcon";
 import HoldIcon from "./HoldEditor/HoldIcon";
 

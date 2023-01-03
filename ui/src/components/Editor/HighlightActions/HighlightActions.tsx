@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import { useContext } from "react";
-import { EditorHighlightedItemContext } from "util/highlight";
+import { EditorHighlightedItemContext } from "components/Editor/util/highlight";
 import BetaMoveActions from "./BetaMoveActions";
 import HoldActions from "./HoldActions";
 

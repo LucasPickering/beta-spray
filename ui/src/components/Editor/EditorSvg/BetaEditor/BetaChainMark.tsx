@@ -1,13 +1,16 @@
 import { useRef } from "react";
-import { useDrag, useDragLayer } from "util/dnd";
+import { useDrag, useDragLayer } from "components/Editor/util/dnd";
 import { Portal, Tooltip } from "@mui/material";
 import Positioned from "../common/Positioned";
 import BetaMoveIcon from "./BetaMoveIcon";
 import { graphql, useFragment } from "react-relay";
 import { BetaChainMark_betaMoveNode$key } from "./__generated__/BetaChainMark_betaMoveNode.graphql";
-import { useBetaMoveColor, useBetaMoveVisualPosition } from "util/svg";
+import {
+  useBetaMoveColor,
+  useBetaMoveVisualPosition,
+} from "components/Editor/util/svg";
 import { isDefined } from "util/func";
-import { useHighlight } from "util/highlight";
+import { useHighlight } from "components/Editor/util/highlight";
 
 interface Props {
   betaMoveKey: BetaChainMark_betaMoveNode$key;

@@ -8,9 +8,9 @@ import {
   subtract,
   unit,
   useBetaMoveVisualPosition,
-} from "util/svg";
-import useCurrentStance from "util/useCurrentStance";
-import { useCurrentStance_betaMoveNodeConnection$key } from "util/__generated__/useCurrentStance_betaMoveNodeConnection.graphql";
+} from "components/Editor/util/svg";
+import useCurrentStance from "components/Editor/util/useCurrentStance";
+import { useCurrentStance_betaMoveNodeConnection$key } from "../../util/__generated__/useCurrentStance_betaMoveNodeConnection.graphql";
 import Line from "../common/Line";
 import StickFigureDragHandle from "./StickFigureDragHandle";
 

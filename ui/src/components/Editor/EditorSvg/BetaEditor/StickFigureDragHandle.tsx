@@ -1,5 +1,5 @@
-import { useDrag } from "util/dnd";
-import { BodyPart, OverlayPosition } from "util/svg";
+import { useDrag } from "components/Editor/util/dnd";
+import { BodyPart, OverlayPosition } from "components/Editor/util/svg";
 import Positioned from "../common/Positioned";
 import BetaMoveIcon from "./BetaMoveIcon";
 

@@ -1,10 +1,13 @@
-import { useDrag } from "util/dnd";
+import { useDrag } from "components/Editor/util/dnd";
 import { styleDraggable, styleDragging } from "styles/svg";
 import { graphql } from "relay-runtime";
 import { useFragment } from "react-relay";
 import { BetaChainLine_startBetaMoveNode$key } from "./__generated__/BetaChainLine_startBetaMoveNode.graphql";
 import { BetaChainLine_endBetaMoveNode$key } from "./__generated__/BetaChainLine_endBetaMoveNode.graphql";
-import { useBetaMoveColor, useBetaMoveVisualPosition } from "util/svg";
+import {
+  useBetaMoveColor,
+  useBetaMoveVisualPosition,
+} from "components/Editor/util/svg";
 
 interface Props {
   startMoveKey: BetaChainLine_startBetaMoveNode$key;

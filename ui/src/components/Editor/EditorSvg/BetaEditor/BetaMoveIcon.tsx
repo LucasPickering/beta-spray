@@ -1,5 +1,5 @@
 import React from "react";
-import { BodyPart } from "util/svg";
+import { BodyPart } from "components/Editor/util/svg";
 import { styleDraggable, styleHighlight, styleDragging } from "styles/svg";
 import { Interpolation, Theme } from "@emotion/react";
 import { isDefined } from "util/func";

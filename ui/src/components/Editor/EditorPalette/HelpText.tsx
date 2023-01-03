@@ -1,6 +1,6 @@
 import { Divider, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import { Help as IconHelp } from "@mui/icons-material";
-import { allBodyParts, formatBodyPart } from "util/svg";
+import { allBodyParts, formatBodyPart } from "components/Editor/util/svg";
 import { BetaMoveIconWrapped } from "../EditorSvg/BetaEditor/BetaMoveIcon";
 import { HoldIconWrapped } from "../EditorSvg/HoldEditor/HoldIcon";
 

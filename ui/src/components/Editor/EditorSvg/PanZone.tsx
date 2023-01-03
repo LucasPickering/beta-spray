@@ -1,11 +1,11 @@
 import React, { useContext, useState } from "react";
-import { useDOMToSVGPosition } from "util/svg";
-import { useZoomPan } from "util/zoom";
-import { subtract } from "util/svg";
+import { useDOMToSVGPosition } from "components/Editor/util/svg";
+import { useZoomPan } from "components/Editor/util/zoom";
+import { subtract } from "components/Editor/util/svg";
 import { useDrag } from "@use-gesture/react";
 import { isDefined } from "util/func";
 import { Interpolation, Theme } from "@emotion/react";
-import { SvgContext } from "util/context";
+import { SvgContext } from "components/Editor/util/context";
 
 interface Props extends React.SVGProps<SVGRectElement> {
   css?: Interpolation<Theme>;

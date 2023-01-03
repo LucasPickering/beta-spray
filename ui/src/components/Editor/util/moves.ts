@@ -2,7 +2,7 @@
  * Utility functions related to beta moves.
  */
 
-import { findNodeIndex, moveArrayElement } from "./func";
+import { findNodeIndex, moveArrayElement } from "../../../util/func";
 
 /**
  * List of beta moves, from Relay, that we will update locally for the purpose

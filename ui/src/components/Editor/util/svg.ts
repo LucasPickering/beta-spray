@@ -1,10 +1,10 @@
 import { useCallback, useContext } from "react";
 import { XYCoord } from "react-dnd";
 import { BetaContext, SvgContext } from "./context";
-import { assertIsDefined, groupBy, isDefined } from "./func";
-import { hexToHtml, htmlToHex, lerpColor } from "./math";
-import type { BodyPart as BodyPartAPI } from "../components/Editor/EditorSvg/BetaEditor/__generated__/BetaEditor_betaNode.graphql";
-import theme from "./theme";
+import { assertIsDefined, groupBy, isDefined } from "../../../util/func";
+import { hexToHtml, htmlToHex, lerpColor } from "../../../util/math";
+import type { BodyPart as BodyPartAPI } from "../EditorSvg/BetaEditor/__generated__/BetaEditor_betaNode.graphql";
+import theme from "../../../util/theme";
 import { disambiguationDistance } from "styles/svg";
 
 /**

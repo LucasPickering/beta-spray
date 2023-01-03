@@ -12,9 +12,9 @@ import { withQuery } from "relay-query-wrapper";
 import { betaQuery } from "../queries";
 import { queriesBetaQuery } from "../__generated__/queriesBetaQuery.graphql";
 import { PlayPauseControls_betaNode$key } from "./__generated__/PlayPauseControls_betaNode.graphql";
-import { EditorVisibilityContext } from "util/context";
+import { EditorVisibilityContext } from "components/Editor/util/context";
 import { isDefined } from "util/func";
-import { useHighlight } from "util/highlight";
+import { useHighlight } from "components/Editor/util/highlight";
 
 /**
  * Length of time (in milliseconds) between steps while playing moves.

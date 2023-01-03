@@ -2,9 +2,14 @@ import { useEffect, useRef } from "react";
 import { graphql, useFragment } from "react-relay";
 import { BetaDetailsMove_betaMoveNode$key } from "./__generated__/BetaDetailsMove_betaMoveNode.graphql";
 import { XYCoord } from "react-dnd";
-import { DragItem, DropHandler, useDrag, useDrop } from "util/dnd";
+import {
+  DragItem,
+  DropHandler,
+  useDrag,
+  useDrop,
+} from "components/Editor/util/dnd";
 import BetaMoveListItem from "./BetaMoveListItem";
-import { useHighlight } from "util/highlight";
+import { useHighlight } from "components/Editor/util/highlight";
 
 interface Props {
   betaMoveKey: BetaDetailsMove_betaMoveNode$key;

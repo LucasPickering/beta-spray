@@ -1,7 +1,10 @@
 import React, { useContext, useRef } from "react";
-import { EditorVisibilityContext, SvgContext } from "util/context";
+import {
+  EditorVisibilityContext,
+  SvgContext,
+} from "components/Editor/util/context";
 import { graphql, PreloadedQuery, useFragment } from "react-relay";
-import { useZoomPan } from "util/zoom";
+import { useZoomPan } from "components/Editor/util/zoom";
 import { queriesProblemQuery } from "../__generated__/queriesProblemQuery.graphql";
 import NotFound from "components/common/NotFound";
 import BetaEditor from "./BetaEditor/BetaEditor";
