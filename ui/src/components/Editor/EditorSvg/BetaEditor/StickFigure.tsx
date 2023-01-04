@@ -45,10 +45,13 @@ const StickFigure: React.FC<Props> = ({ betaMoveConnectionKey }) => {
   const getPosition = useBetaMoveVisualPosition();
   const positions: Record<BodyPart, OverlayPosition> = Object.entries(
     stance
-  ).reduce((acc, [bodyPart, moveId]) => {
-    acc[bodyPart as BodyPart] = getPosition(moveId);
-    return acc;
-  }, defaultPositions);
+  ).reduce(
+    (acc, [bodyPart, moveId]) => {
+      acc[bodyPart as BodyPart] = getPosition(moveId);
+      return acc;
+    },
+    { ...defaultPositions }
+  );
 
   // Calculate some rough positions for shoulder and hips. We'll calculate
   // midpoint of hands, then feet, and make the torso some fixed percentage of
