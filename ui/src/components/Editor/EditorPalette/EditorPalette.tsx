@@ -46,7 +46,6 @@ const EditorPalette: React.FC<Props> = ({ betaQueryRef }) => {
             </IconButton>
           </Tooltip>
 
-          {/* TODO make this a button instead of drag source */}
           <DragSourceButton
             title="Hold"
             disabled={!visibility}

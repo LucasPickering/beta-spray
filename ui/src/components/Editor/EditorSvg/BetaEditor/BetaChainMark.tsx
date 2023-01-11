@@ -82,7 +82,7 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey, isInCurrentStance }) => {
   return (
     <>
       <Positioned position={position}>
-        {isInCurrentStance ? (
+        {isInCurrentStance || isHighlighted ? (
           <BetaMoveIcon
             ref={ref}
             bodyPart={betaMove.bodyPart}

@@ -1,5 +1,10 @@
 import { useDrag } from "components/Editor/util/dnd";
-import { add, useBetaMoveVisualPosition } from "components/Editor/util/svg";
+import {
+  add,
+  BodyPart,
+  OverlayPosition,
+  useBetaMoveVisualPosition,
+} from "components/Editor/util/svg";
 import { graphql, useFragment } from "react-relay";
 import { styleDraggable, styleDragging } from "styles/svg";
 import Positioned from "../common/Positioned";
@@ -9,8 +14,21 @@ interface Props {
   betaMoveKey: AddBetaMoveMark_betaMoveNode$key;
 }
 
+const offsetDistance = 4.5;
 /**
- * TODO
+ * We'll offset this component to separate it from the associated beta move.
+ * The offset direction will be based on the body part.
+ */
+const offsets: Record<BodyPart, OverlayPosition> = {
+  LEFT_HAND: { x: -offsetDistance, y: -offsetDistance },
+  RIGHT_HAND: { x: offsetDistance, y: -offsetDistance },
+  LEFT_FOOT: { x: -offsetDistance, y: offsetDistance },
+  RIGHT_FOOT: { x: offsetDistance, y: offsetDistance },
+};
+
+/**
+ * A drag handle to add a new beta move. This should be associated with a
+ * particular move.
  */
 const AddBetaMoveMark: React.FC<Props> = ({ betaMoveKey }) => {
   const betaMove = useFragment(
@@ -49,12 +67,18 @@ const AddBetaMoveMark: React.FC<Props> = ({ betaMoveKey }) => {
   });
 
   return (
-    <Positioned ref={drag} position={add(position, { x: 5, y: 5 })}>
-      <g css={[styleDraggable, isDragging && styleDragging]}>
-        <circle r={1.5} fill="green" />
-      </g>
+    <Positioned ref={drag} position={add(position, offsets[betaMove.bodyPart])}>
+      <IconAddBetaMoveRaw css={[styleDraggable, isDragging && styleDragging]} />
     </Positioned>
   );
 };
+
+const IconAddBetaMoveRaw: React.FC<React.SVGProps<SVGPathElement>> = (
+  props
+) => (
+  <g {...props}>
+    <circle r={1.5} fill="green" />
+  </g>
+);
 
 export default AddBetaMoveMark;

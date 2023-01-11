@@ -36,6 +36,12 @@ export function assertDataKind<T extends { kind: string }, K extends T["kind"]>(
   }
 }
 
+/**
+ * Get an array of a range of numbers
+ * @param start First number in the range (inclusive)
+ * @param stop First number *not* in the range (i.e. exclusive bound)
+ * @returns Array of [start, ..., stop - 1]
+ */
 export function range(start: number, stop: number): number[] {
   return Array(stop - start)
     .fill(0)
