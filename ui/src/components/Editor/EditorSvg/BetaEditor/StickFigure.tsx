@@ -72,46 +72,31 @@ const StickFigure: React.FC<Props> = ({ betaMoveConnectionKey }) => {
   // on the radius to overcome the width of the arm/torso lines
   const head = add(shoulders, multiply(unit(diff), headRadius * 1.3));
 
-  // Draw an approximate stick figure. There is some code dupe here, but IMO
-  // it's better than trying to generalize it for only 4 use cases.
+  // Draw an approximate stick figure
+  const limbs: Array<{ bodyPart: BodyPart; joint: OverlayPosition }> = [
+    { bodyPart: "LEFT_HAND", joint: shoulders },
+    { bodyPart: "RIGHT_HAND", joint: shoulders },
+    { bodyPart: "LEFT_FOOT", joint: hips },
+    { bodyPart: "RIGHT_FOOT", joint: hips },
+  ];
   return (
-    <g strokeWidth={1} stroke="white" fill="none">
+    <g strokeWidth={1} stroke="#dddddd" fill="none">
       {/* Head */}
       <circle r={headRadius} cx={head.x} cy={head.y} />
       {/* Torso */}
       <Line p1={shoulders} p2={hips} />
 
-      {!stance.LEFT_HAND && (
-        <StickFigureDragHandle
-          bodyPart="LEFT_HAND"
-          position={positions.LEFT_HAND}
-        />
-      )}
-      <Line p1={positions.LEFT_HAND} p2={shoulders} />
-
-      {!stance.RIGHT_HAND && (
-        <StickFigureDragHandle
-          bodyPart="RIGHT_HAND"
-          position={positions.RIGHT_HAND}
-        />
-      )}
-      <Line p1={positions.RIGHT_HAND} p2={shoulders} />
-
-      {!stance.LEFT_FOOT && (
-        <StickFigureDragHandle
-          bodyPart="LEFT_FOOT"
-          position={positions.LEFT_FOOT}
-        />
-      )}
-      <Line p1={positions.LEFT_FOOT} p2={hips} />
-
-      {!stance.RIGHT_FOOT && (
-        <StickFigureDragHandle
-          bodyPart="RIGHT_FOOT"
-          position={positions.RIGHT_FOOT}
-        />
-      )}
-      <Line p1={positions.RIGHT_FOOT} p2={hips} />
+      {limbs.map(({ bodyPart, joint }) => (
+        <React.Fragment key={bodyPart}>
+          <Line p1={positions[bodyPart]} p2={joint} />
+          {!stance[bodyPart] && (
+            <StickFigureDragHandle
+              bodyPart={bodyPart}
+              position={positions[bodyPart]}
+            />
+          )}
+        </React.Fragment>
+      ))}
     </g>
   );
 };
