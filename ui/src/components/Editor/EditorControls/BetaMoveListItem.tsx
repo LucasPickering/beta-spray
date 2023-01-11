@@ -19,7 +19,7 @@ import { isDefined } from "util/func";
 
 interface Props extends React.ComponentProps<typeof ListItem> {
   betaMoveKey: BetaMoveListItem_betaMoveNode$key;
-  disabled?: boolean;
+  isInCurrentStance?: boolean;
   dragRef?: React.Ref<SVGSVGElement>;
   onDelete?: () => void;
 }
@@ -28,7 +28,10 @@ interface Props extends React.ComponentProps<typeof ListItem> {
  * A dumb component to render a beta move in a list.
  */
 const BetaMoveListItem = React.forwardRef<HTMLLIElement, Props>(
-  ({ betaMoveKey, disabled = false, dragRef, onDelete, ...rest }, ref) => {
+  (
+    { betaMoveKey, isInCurrentStance = false, dragRef, onDelete, sx, ...rest },
+    ref
+  ) => {
     const betaMove = useFragment(
       graphql`
         fragment BetaMoveListItem_betaMoveNode on BetaMoveNode {
@@ -48,14 +51,23 @@ const BetaMoveListItem = React.forwardRef<HTMLLIElement, Props>(
 
     const color = useBetaMoveColor()(betaMove.id);
     return (
-      <ListItem ref={ref} disabled={disabled} {...rest}>
+      <ListItem
+        ref={ref}
+        sx={[
+          // If we're in the current stance, add a little indicator line
+          isInCurrentStance && {
+            // TODO make sure this color corresponds to the stick figure somehow
+            borderLeft: "3px solid white",
+            marginLeft: "-3px", // Cancel out the space taken up by the border
+          },
+          ...(Array.isArray(sx) ? sx : [sx]),
+        ]}
+        {...rest}
+      >
         <ListItemIcon>
           {/* Only use the drag icon for dragging, to prevent interfering with
               scrolling on mobile */}
-          <IconDragHandle
-            ref={dragRef}
-            sx={[{ paddingRight: 1 }, !disabled && { cursor: "move" }]}
-          />
+          <IconDragHandle ref={dragRef} sx={{ paddingRight: 1 }} />
           <BetaMoveIconWrapped
             bodyPart={betaMove.bodyPart}
             order={betaMove.order}
@@ -100,7 +112,6 @@ const BetaMoveListItem = React.forwardRef<HTMLLIElement, Props>(
             <IconButton
               aria-label={`delete move ${betaMove.order}`}
               size="small"
-              disabled={disabled}
               onClick={onDelete}
             >
               <IconClose />
