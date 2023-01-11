@@ -1,15 +1,15 @@
-import { useMemo } from "react";
+import { useContext, useMemo } from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
-import { findNodeIndex, isDefined } from "../../../util/func";
-import { useHighlight } from "./highlight";
+import { findNodeIndex, isDefined } from "util/func";
+import { StanceBetaMoveContext } from "./context";
 import { Stance } from "./svg";
 import { useCurrentStance_betaMoveNodeConnection$key } from "./__generated__/useCurrentStance_betaMoveNodeConnection.graphql";
 
 /**
  * Get the list of moves in the current body stance (AKA body position).
  * This is determined by finding the *last* move of each body part that is *not
- * after* the currently highlighted move. If the
+ * after* the currently highlighted move.
  *
  * @param betaMoveConnectionKey Relay fragment key
  * @returns A list of IDs of the moves in the current body position. The list
@@ -32,7 +32,7 @@ function useCurrentStance(
     `,
     betaMoveConnectionKey
   );
-  const [highlightedMoveId] = useHighlight("move");
+  const [highlightedMoveId] = useContext(StanceBetaMoveContext);
 
   return useMemo(() => {
     // If there isn't a highlighted move, then there's no current stance

@@ -2,6 +2,7 @@ import { useState } from "react";
 import {
   EditorVisibilityContext,
   EditorSelectedBetaContext,
+  StanceBetaMoveContext,
 } from "./util/context";
 import {
   HighlightedItem,
@@ -25,12 +26,18 @@ const EditorState: React.FC<Props> = ({ selectedBeta, children }) => {
   const visibilityState = useState<boolean>(true);
   // Which hold/move is being emphasized
   const highlightedItemState = useState<HighlightedItem | undefined>();
+  // Which move denotes the current stick figure stance? This will be the *first*
+  // move in the stance
+  // TODO this logic needs a refactor -- maybe we should store the whole stance?
+  const stanceState = useState<string | undefined>();
 
   return (
     <EditorVisibilityContext.Provider value={visibilityState}>
       <EditorSelectedBetaContext.Provider value={selectedBeta}>
         <EditorHighlightedItemContext.Provider value={highlightedItemState}>
-          {children}
+          <StanceBetaMoveContext.Provider value={stanceState}>
+            {children}
+          </StanceBetaMoveContext.Provider>
         </EditorHighlightedItemContext.Provider>
       </EditorSelectedBetaContext.Provider>
     </EditorVisibilityContext.Provider>

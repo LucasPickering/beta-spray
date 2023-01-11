@@ -35,6 +35,13 @@ export const EditorSelectedBetaContext = React.createContext<
   string | undefined
 >(undefined);
 
+/**
+ * State defining the current stance (which is reflect by the stick figure).
+ */
+export const StanceBetaMoveContext = React.createContext<
+  StateContext<string | undefined>
+>([undefined, noop]);
+
 export interface BetaContextType {
   betaMoveColors: Map<string, string>;
   betaMoveVisualPositions: Map<string, OverlayPosition>;

@@ -21,6 +21,7 @@ import { graphql, useFragment } from "react-relay";
 import { BetaListItem_betaNode$key } from "./__generated__/BetaListItem_betaNode.graphql";
 import Editable from "components/common/Editable";
 import { isDefined } from "util/func";
+import useCurrentStance from "../util/useCurrentStance";
 
 interface Props {
   betaKey: BetaListItem_betaNode$key;

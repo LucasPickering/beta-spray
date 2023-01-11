@@ -14,8 +14,7 @@ import { useHighlight } from "components/Editor/util/highlight";
 interface Props {
   betaMoveKey: BetaDetailsMove_betaMoveNode$key;
   index: number;
-  totalMoves: number;
-  disabled?: boolean;
+  isInCurrentStance: boolean;
   onReorder?: (dragItem: DragItem<"listBetaMove">, newIndex: number) => void;
   onDrop?: DropHandler<"listBetaMove", "list">;
   onDelete?: () => void;
@@ -27,7 +26,7 @@ interface Props {
 const BetaDetailsMove: React.FC<Props> = ({
   betaMoveKey,
   index,
-  disabled = false,
+  isInCurrentStance,
   onReorder,
   onDrop,
   onDelete,
@@ -52,9 +51,6 @@ const BetaDetailsMove: React.FC<Props> = ({
   >({
     type: "listBetaMove",
     item: { betaMoveId: betaMove.id, index },
-    canDrag() {
-      return !disabled;
-    },
     collect(monitor) {
       return {
         isDragging: Boolean(monitor.isDragging()),
@@ -169,11 +165,9 @@ const BetaDetailsMove: React.FC<Props> = ({
       ref={childRef}
       dragRef={drag}
       betaMoveKey={betaMove}
-      disabled={disabled}
+      isInCurrentStance={isInCurrentStance}
       onMouseEnter={() => {
-        if (!disabled) {
-          highlightMove(betaMove.id);
-        }
+        highlightMove(betaMove.id);
       }}
       onDelete={onDelete}
       sx={[

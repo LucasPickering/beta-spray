@@ -12,9 +12,11 @@ import { withQuery } from "relay-query-wrapper";
 import { betaQuery } from "../queries";
 import { queriesBetaQuery } from "../__generated__/queriesBetaQuery.graphql";
 import { PlayPauseControls_betaNode$key } from "./__generated__/PlayPauseControls_betaNode.graphql";
-import { EditorVisibilityContext } from "components/Editor/util/context";
+import {
+  EditorVisibilityContext,
+  StanceBetaMoveContext,
+} from "components/Editor/util/context";
 import { isDefined } from "util/func";
-import { useHighlight } from "components/Editor/util/highlight";
 
 /**
  * Length of time (in milliseconds) between steps while playing moves.
@@ -56,7 +58,7 @@ const PlayPauseControls: React.FC<Props> = ({ betaKey }) => {
     [beta.moves.edges]
   );
 
-  const [highlightedMoveId, highlightMove] = useHighlight("move");
+  const [highlightedMoveId, highlightMove] = useContext(StanceBetaMoveContext);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
   const togglePlayPause = useCallback(() => setIsPlaying((prev) => !prev), []);
