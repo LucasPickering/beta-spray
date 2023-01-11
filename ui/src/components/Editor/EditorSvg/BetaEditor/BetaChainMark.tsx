@@ -11,6 +11,7 @@ import {
 } from "components/Editor/util/svg";
 import { isDefined } from "util/func";
 import { useHighlight } from "components/Editor/util/highlight";
+import AddBetaMoveMark from "./AddBetaMoveMark";
 
 interface Props {
   betaMoveKey: BetaChainMark_betaMoveNode$key;
@@ -24,6 +25,7 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey, isInCurrentStance }) => {
   const betaMove = useFragment(
     graphql`
       fragment BetaChainMark_betaMoveNode on BetaMoveNode {
+        ...AddBetaMoveMark_betaMoveNode
         id
         bodyPart
         order
@@ -107,6 +109,8 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey, isInCurrentStance }) => {
           />
         )}
       </Positioned>
+
+      {isInCurrentStance && <AddBetaMoveMark betaMoveKey={betaMove} />}
 
       {betaMove.annotation && (
         <Portal>
