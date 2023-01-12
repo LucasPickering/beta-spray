@@ -49,8 +49,9 @@ export const styleDragging = css({
 });
 
 export const styleHighlight = css({
-  fill: "green",
-  // TODO some sort of glow effect here
+  // Create a glow effect with overlapping shadows
+  // TODO use a color from the theme here
+  filter: "drop-shadow(0px 0px 2px yellow) drop-shadow(0px 0px 4px yellow)",
 });
 
 /**
@@ -64,6 +65,7 @@ export const styleAddObject = css({
  * Apply to elements that can be dropped onto and are being hovered
  */
 export const styleDropHover = css({
+  // TODO use a color from the theme here
   stroke: "red",
   fill: "red",
 });
