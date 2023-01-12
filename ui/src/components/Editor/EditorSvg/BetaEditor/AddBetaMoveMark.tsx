@@ -1,3 +1,4 @@
+import { useTheme } from "@mui/material";
 import { useDrag } from "components/Editor/util/dnd";
 import {
   add,
@@ -75,10 +76,21 @@ const AddBetaMoveMark: React.FC<Props> = ({ betaMoveKey }) => {
 
 const IconAddBetaMoveRaw: React.FC<React.SVGProps<SVGPathElement>> = (
   props
-) => (
-  <g {...props}>
-    <circle r={1.5} fill="green" />
-  </g>
-);
+) => {
+  const { palette } = useTheme();
+  return (
+    <g {...props}>
+      <circle r={1.5} fill={palette.success.main} />
+      <text
+        textAnchor="middle"
+        dominantBaseline="middle"
+        fontSize={3}
+        fill={palette.getContrastText(palette.success.main)}
+      >
+        +
+      </text>
+    </g>
+  );
+};
 
 export default AddBetaMoveMark;
