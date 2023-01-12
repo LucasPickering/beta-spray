@@ -9,7 +9,7 @@
 import { css } from "@emotion/react";
 
 /** The distance to shift a disambiguated move from the center of the hold */
-export const disambiguationDistance = 6;
+export const disambiguationDistance = 5;
 
 /**
  * Apply to elements that are draggable and currently being hovered or dragged

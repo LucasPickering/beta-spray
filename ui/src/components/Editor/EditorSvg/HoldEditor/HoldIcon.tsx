@@ -36,7 +36,7 @@ const HoldIcon: React.FC<Props> = ({
       css={[
         parentCss,
         {
-          r: 7,
+          r: 6,
           opacity: 0.6,
           strokeWidth: 0.5,
           fill: "white",
@@ -58,7 +58,7 @@ const HoldIcon: React.FC<Props> = ({
  * context (i.e. outside of an SVG).
  */
 export const HoldIconWrapped: React.FC<Props> = (props) => (
-  <SvgIcon viewBox="-7.5 -7.5 15 15">
+  <SvgIcon viewBox="-6.5 -6.5 13 13">
     {/* The low opacity looks wonky in other contexts */}
     <HoldIcon css={{ opacity: 1 }} {...props} />
   </SvgIcon>
