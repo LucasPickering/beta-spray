@@ -2,12 +2,12 @@ import { useState } from "react";
 import {
   EditorVisibilityContext,
   EditorSelectedBetaContext,
-  StanceBetaMoveContext,
 } from "./util/context";
 import {
   HighlightedItem,
   EditorHighlightedItemContext,
 } from "./util/highlight";
+import { StanceContextProvider } from "./util/stance";
 
 interface Props {
   selectedBeta: string | undefined;
@@ -26,18 +26,17 @@ const EditorState: React.FC<Props> = ({ selectedBeta, children }) => {
   const visibilityState = useState<boolean>(true);
   // Which hold/move is being emphasized
   const highlightedItemState = useState<HighlightedItem | undefined>();
-  // Which move denotes the current stick figure stance? This will be the *first*
+  // Which move denotes the current stick figure stance? This will be the *last*
   // move in the stance
-  // TODO this logic needs a refactor -- maybe we should store the whole stance?
   const stanceState = useState<string | undefined>();
 
   return (
     <EditorVisibilityContext.Provider value={visibilityState}>
       <EditorSelectedBetaContext.Provider value={selectedBeta}>
         <EditorHighlightedItemContext.Provider value={highlightedItemState}>
-          <StanceBetaMoveContext.Provider value={stanceState}>
+          <StanceContextProvider value={stanceState}>
             {children}
-          </StanceBetaMoveContext.Provider>
+          </StanceContextProvider>
         </EditorHighlightedItemContext.Provider>
       </EditorSelectedBetaContext.Provider>
     </EditorVisibilityContext.Provider>

@@ -15,8 +15,8 @@ import {
 } from "components/Editor/util/svg";
 import { BetaContext } from "components/Editor/util/context";
 import { comparator } from "util/func";
-import useCurrentStance from "components/Editor/util/useCurrentStance";
 import { useHighlight } from "components/Editor/util/highlight";
+import { useStance, useStanceControls } from "components/Editor/util/stance";
 
 interface Props {
   betaKey: BetaEditor_betaNode$key;
@@ -31,7 +31,7 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
       fragment BetaEditor_betaNode on BetaNode {
         id
         moves {
-          ...useCurrentStance_betaMoveNodeConnection
+          ...stance_betaMoveNodeConnection
           edges {
             node {
               # Yes these fields are all needed, to get positions and colors
@@ -89,7 +89,7 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
   // separate element for the highlighted move at the end. With the latter, the
   // element gets deleted and re-added by react when highlighting/unhighlighting,
   // which makes it impossible to drag.
-  const [highlightedMoveId, highlightMove] = useHighlight("move");
+  const [highlightedMoveId] = useHighlight("move");
   const movesRenderOrder = useMemo(
     () =>
       highlightedMoveId
@@ -104,15 +104,15 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
         : moves,
     [moves, highlightedMoveId]
   );
-  const stance = useCurrentStance(beta.moves);
+  const stance = useStance(beta.moves);
+  const { selectFirst: selectFirstStance } = useStanceControls(beta.moves);
 
-  // Pre-select the *last start move*, which is the first body position on the wall
-  // This will apply on first load, but also any time the highlighted move is
-  // cleared (e.g. if that move is deleted)
-  useEffect(() => {
-    const lastStartMove = moves.findLast((move) => move.isStart);
-    highlightMove(lastStartMove?.id);
-  }, [highlightMove, moves]);
+  // Pre-select first stance in the beta.  We only want to do this when first
+  // loading a beta. `selectFirstStance` will change whenever we
+  // add/change/delete a move, but we don't want to constantly re-select the
+  // first stance in those cases
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(selectFirstStance, [beta.id]);
 
   // Render one "chain" of moves per body part
   return (

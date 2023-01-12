@@ -21,7 +21,7 @@ import {
   reorderBetaMoveLocal,
 } from "components/Editor/util/moves";
 import BetaDetailsDragLayer from "./BetaDetailsDragLayer";
-import useCurrentStance from "../util/useCurrentStance";
+import { useStance } from "../util/stance";
 
 interface Props {
   betaKey: BetaDetails_betaNode$key;
@@ -36,7 +36,7 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
         id
         moves {
           ...BetaDetailsDragPreview_betaMoveNodeConnection
-          ...useCurrentStance_betaMoveNodeConnection
+          ...stance_betaMoveNodeConnection
           edges {
             node {
               id
@@ -76,7 +76,7 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
     [beta.moves.edges]
   );
 
-  const currentStance = useCurrentStance(beta.moves);
+  const stance = useStance(beta.moves);
 
   const { commit: updateBetaMove, state: updateState } =
     useMutation<BetaDetails_updateBetaMoveMutation>(graphql`
@@ -141,7 +141,7 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
               key={node.id}
               betaMoveKey={node}
               index={moveIndex}
-              isInCurrentStance={currentStance[node.bodyPart] === node.id}
+              isInCurrentStance={stance[node.bodyPart] === node.id}
               onReorder={(dragItem, newIndex) => {
                 // This is called on the *hovered* move, so the passed item is
                 // the one being dragged

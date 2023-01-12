@@ -37,6 +37,17 @@ export function assertDataKind<T extends { kind: string }, K extends T["kind"]>(
 }
 
 /**
+ * Get the last element in an array. This may seem pointless, but the typing
+ * is more realistic, since Typescript pretends that array indices are
+ * guaranteed to be valid.
+ * @param array Array to index
+ * @returns Last element in the array, or undefined if the array is empty
+ */
+export function last<T>(array: ReadonlyArray<T>): T | undefined {
+  return array[array.length - 1];
+}
+
+/**
  * Get an array of a range of numbers
  * @param start First number in the range (inclusive)
  * @param stop First number *not* in the range (i.e. exclusive bound)
