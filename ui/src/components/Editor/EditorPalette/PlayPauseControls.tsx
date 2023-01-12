@@ -12,11 +12,8 @@ import { withQuery } from "relay-query-wrapper";
 import { betaQuery } from "../queries";
 import { queriesBetaQuery } from "../__generated__/queriesBetaQuery.graphql";
 import { PlayPauseControls_betaNode$key } from "./__generated__/PlayPauseControls_betaNode.graphql";
-import {
-  EditorVisibilityContext,
-  StanceBetaMoveContext,
-} from "components/Editor/util/context";
-import { isDefined } from "util/func";
+import { EditorVisibilityContext } from "components/Editor/util/context";
+import { StanceControls, useStanceControls } from "../util/stance";
 
 /**
  * Length of time (in milliseconds) between steps while playing moves.
@@ -40,6 +37,7 @@ const PlayPauseControls: React.FC<Props> = ({ betaKey }) => {
     graphql`
       fragment PlayPauseControls_betaNode on BetaNode {
         moves {
+          ...stance_betaMoveNodeConnection
           edges {
             node {
               id
@@ -58,68 +56,36 @@ const PlayPauseControls: React.FC<Props> = ({ betaKey }) => {
     [beta.moves.edges]
   );
 
-  const [highlightedMoveId, highlightMove] = useContext(StanceBetaMoveContext);
+  const stanceControls = useStanceControls(beta.moves);
+  const { hasNext, selectNext } = stanceControls;
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
   const togglePlayPause = useCallback(() => setIsPlaying((prev) => !prev), []);
-  // Step forward (positive) or back (negative) some arbitrary number of moves
-  const step = useCallback(
-    (steps: number) => {
-      highlightMove((prev) => {
-        // Stepping forward => start at the beginning
-        // Stepping backward => start at the end
-        const defaultIndex = steps > 0 ? 0 : moveIds.length - 1;
-        const nextHighlightedIndex = isDefined(prev)
-          ? moveIds.indexOf(prev) + steps
-          : defaultIndex;
-        return 0 <= nextHighlightedIndex &&
-          nextHighlightedIndex < moveIds.length
-          ? moveIds[nextHighlightedIndex]
-          : // We've reached the end, just leave the last move highlighted
-            prev;
-      });
-    },
-    [moveIds, highlightMove]
-  );
-
-  // The behavior of the stepper buttons changes if we're at the beginning/end
-  // of the beta. isDefined checks are necessary to prevent false positives when
-  // moveIds is empty.
-  const isFirstMove =
-    isDefined(highlightedMoveId) && highlightedMoveId === moveIds[0];
-  const isLastMove =
-    isDefined(highlightedMoveId) &&
-    highlightedMoveId === moveIds[moveIds.length - 1];
 
   // When playing is enabled, trigger an interval to step through the moves.
   // Interval will cancel itself when play state changes.
   useEffect(() => {
     if (isPlaying) {
-      step(1); // Make first step immediately
-      const intervalID = setInterval(() => step(1), stepIntervalMs);
+      selectNext(); // Make first step immediately
+      const intervalID = setInterval(selectNext, stepIntervalMs);
       return () => clearInterval(intervalID);
     }
-  }, [isPlaying, step]);
+  }, [isPlaying, selectNext]);
 
-  // When we reach the last highlighted move, stop playing
+  // When we reach the last move, stop playing
   useEffect(() => {
-    if (isLastMove) {
+    if (!hasNext) {
       setIsPlaying(false);
     }
-  }, [isLastMove]);
+  }, [hasNext]);
 
   return (
     <PlayPauseControlsContent
       // Disable buttons while the overlay is disabled
       disabled={!visibility || moveIds.length === 0}
       isPlaying={isPlaying}
-      isFirstMove={isFirstMove}
-      isLastMove={isLastMove}
       togglePlayPause={togglePlayPause}
-      // If at the first move, we can't step back so jump to the end. Vice
-      // versa for stepNext
-      stepPrev={() => step(isFirstMove ? moveIds.length - 1 : -1)}
-      stepNext={() => step(isLastMove ? -(moveIds.length - 1) : 1)}
+      {...stanceControls}
     />
   );
 };
@@ -128,39 +94,43 @@ const PlayPauseControls: React.FC<Props> = ({ betaKey }) => {
  * A dumb helper component to render the buttons. This makes it easy to render
  * placeholder buttons when no beta is available.
  */
-const PlayPauseControlsContent: React.FC<{
-  disabled?: boolean;
-  isPlaying?: boolean;
-  isFirstMove?: boolean;
-  isLastMove?: boolean;
-  togglePlayPause?: () => void;
-  stepPrev?: () => void;
-  stepNext?: () => void;
-}> = ({
+const PlayPauseControlsContent: React.FC<
+  // All fields must be optional to support the visual-only preview element
+  {
+    disabled?: boolean;
+    isPlaying?: boolean;
+    togglePlayPause?: () => void;
+  } & Partial<StanceControls>
+> = ({
   disabled = false,
   isPlaying = false,
-  isFirstMove = false,
-  isLastMove = false,
   togglePlayPause,
-  stepPrev,
-  stepNext,
+  hasPrevious = false,
+  hasNext = false,
+  selectPrevious,
+  selectNext,
+  selectFirst,
+  selectLast,
 }) => (
   // <span> wrappers needed so Tooltip can track cursor events while buttons
   // are disabled
   <>
     <Tooltip
-      title={isFirstMove ? "Go to Last Move" : "Previous Move"}
+      title={hasPrevious ? "Go to Last Move" : "Previous Move"}
       placement="right"
     >
       <span>
-        <IconButton disabled={disabled} onClick={stepPrev}>
+        <IconButton
+          disabled={disabled}
+          onClick={hasPrevious ? selectPrevious : selectLast}
+        >
           {/* We can't go back from the first move, so offer to go to the end
               instead */}
-          {isFirstMove ? (
+          {hasPrevious ? (
+            <IconKeyboardArrowLeft />
+          ) : (
             // Mirror the arrow so it's not the same as the "go to first" button
             <IconReplay transform="scale(-1,1)" />
-          ) : (
-            <IconKeyboardArrowLeft />
           )}
         </IconButton>
       </span>
@@ -178,14 +148,17 @@ const PlayPauseControlsContent: React.FC<{
     </Tooltip>
 
     <Tooltip
-      title={isLastMove ? "Go to First Move" : "Next Move"}
+      title={hasNext ? "Go to First Move" : "Next Move"}
       placement="right"
     >
       <span>
         {/* We can't go forward from the last move, so offer to go to back to
             the beginning instead */}
-        <IconButton disabled={disabled} onClick={stepNext}>
-          {isLastMove ? <IconReplay /> : <IconKeyboardArrowRight />}
+        <IconButton
+          disabled={disabled}
+          onClick={hasNext ? selectNext : selectFirst}
+        >
+          {hasNext ? <IconKeyboardArrowRight /> : <IconReplay />}
         </IconButton>
       </span>
     </Tooltip>

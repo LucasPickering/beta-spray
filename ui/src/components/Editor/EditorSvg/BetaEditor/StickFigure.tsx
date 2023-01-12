@@ -9,10 +9,10 @@ import {
   unit,
   useBetaMoveVisualPosition,
 } from "components/Editor/util/svg";
-import useCurrentStance from "components/Editor/util/useCurrentStance";
-import { useCurrentStance_betaMoveNodeConnection$key } from "../../util/__generated__/useCurrentStance_betaMoveNodeConnection.graphql";
+import { stance_betaMoveNodeConnection$key } from "../../util/__generated__/stance_betaMoveNodeConnection.graphql";
 import Line from "../common/Line";
 import StickFigureDragHandle from "./StickFigureDragHandle";
+import { useStance } from "components/Editor/util/stance";
 
 /**
  * The torso will always be this percentage of the distance between hands and
@@ -31,7 +31,7 @@ const defaultPositions: Record<BodyPart, OverlayPosition> = {
 };
 
 interface Props {
-  betaMoveConnectionKey: useCurrentStance_betaMoveNodeConnection$key;
+  betaMoveConnectionKey: stance_betaMoveNodeConnection$key;
 }
 
 /**
@@ -39,7 +39,7 @@ interface Props {
  */
 const StickFigure: React.FC<Props> = ({ betaMoveConnectionKey }) => {
   // Find which moves are in the current body position
-  const stance = useCurrentStance(betaMoveConnectionKey);
+  const stance = useStance(betaMoveConnectionKey);
 
   // Grab the visual position of each move
   const getPosition = useBetaMoveVisualPosition();
