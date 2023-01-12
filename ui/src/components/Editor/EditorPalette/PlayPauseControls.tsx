@@ -1,10 +1,10 @@
-import { Tooltip, IconButton } from "@mui/material";
 import {
   PlayArrow as IconPlayArrow,
   Pause as IconPause,
   KeyboardArrowLeft as IconKeyboardArrowLeft,
   KeyboardArrowRight as IconKeyboardArrowRight,
-  Replay as IconReplay,
+  FirstPage as IconFirstPage,
+  LastPage as IconLastPage,
 } from "@mui/icons-material";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { graphql, useFragment } from "react-relay";
@@ -14,6 +14,7 @@ import { queriesBetaQuery } from "../__generated__/queriesBetaQuery.graphql";
 import { PlayPauseControls_betaNode$key } from "./__generated__/PlayPauseControls_betaNode.graphql";
 import { EditorVisibilityContext } from "components/Editor/util/context";
 import { StanceControls, useStanceControls } from "../util/stance";
+import TooltipIconButton from "components/common/TooltipIconButton";
 
 /**
  * Length of time (in milliseconds) between steps while playing moves.
@@ -115,53 +116,50 @@ const PlayPauseControlsContent: React.FC<
   // <span> wrappers needed so Tooltip can track cursor events while buttons
   // are disabled
   <>
-    <Tooltip
-      title={hasPrevious ? "Go to Last Move" : "Previous Move"}
-      placement="right"
+    <TooltipIconButton
+      title="Go to First Move"
+      placement="bottom"
+      disabled={disabled || !hasPrevious}
+      onClick={selectFirst}
     >
-      <span>
-        <IconButton
-          disabled={disabled}
-          onClick={hasPrevious ? selectPrevious : selectLast}
-        >
-          {/* We can't go back from the first move, so offer to go to the end
-              instead */}
-          {hasPrevious ? (
-            <IconKeyboardArrowLeft />
-          ) : (
-            // Mirror the arrow so it's not the same as the "go to first" button
-            <IconReplay transform="scale(-1,1)" />
-          )}
-        </IconButton>
-      </span>
-    </Tooltip>
+      <IconFirstPage />
+    </TooltipIconButton>
 
-    <Tooltip
+    <TooltipIconButton
+      title="Previous Move"
+      placement="bottom"
+      disabled={disabled || !hasPrevious}
+      onClick={selectPrevious}
+    >
+      <IconKeyboardArrowLeft />
+    </TooltipIconButton>
+
+    <TooltipIconButton
       title={isPlaying ? "Pause Sequence" : "Play Sequence"}
-      placement="right"
+      placement="bottom"
+      disabled={disabled}
+      onClick={togglePlayPause}
     >
-      <span>
-        <IconButton disabled={disabled} onClick={togglePlayPause}>
-          {isPlaying ? <IconPause /> : <IconPlayArrow />}
-        </IconButton>
-      </span>
-    </Tooltip>
+      {isPlaying ? <IconPause /> : <IconPlayArrow />}
+    </TooltipIconButton>
 
-    <Tooltip
-      title={hasNext ? "Go to First Move" : "Next Move"}
-      placement="right"
+    <TooltipIconButton
+      title="Next Move"
+      placement="bottom"
+      disabled={disabled || !hasNext}
+      onClick={selectNext}
     >
-      <span>
-        {/* We can't go forward from the last move, so offer to go to back to
-            the beginning instead */}
-        <IconButton
-          disabled={disabled}
-          onClick={hasNext ? selectNext : selectFirst}
-        >
-          {hasNext ? <IconKeyboardArrowRight /> : <IconReplay />}
-        </IconButton>
-      </span>
-    </Tooltip>
+      <IconKeyboardArrowRight />
+    </TooltipIconButton>
+
+    <TooltipIconButton
+      title="Go to Last Move"
+      placement="bottom"
+      disabled={disabled || !hasNext}
+      onClick={selectLast}
+    >
+      <IconLastPage />
+    </TooltipIconButton>
   </>
 );
 
