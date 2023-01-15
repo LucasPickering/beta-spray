@@ -1,12 +1,50 @@
-name: Build Production Images/Assets
+name: Build & Deploy
 
 on:
   push:
     branches:
       - master
   pull_request:
+  workflow_dispatch:
 
 jobs:
+  select-env:
+    name: Select deployment environment
+    runs-on: ubuntu-latest
+    outputs:
+      env_name: ${{ steps.select-env.outputs.env_name }}
+    steps:
+      - name: Check branch name
+        id: select-env
+        run: |
+          echo "Running on branch ${{ github.ref_name }}"
+          if [ "${{ github.ref_name }}" = "master" ]; then
+            ENV_NAME=production
+          else
+            ENV_NAME=development
+          fi
+          echo "Environment is $ENV_NAME"
+          echo "env_name=$ENV_NAME" >> $GITHUB_OUTPUT
+
+  # The hostname for the deployment is stored in the environment, which means
+  # we have to read it *after* selecting the environment, but *before* the job
+  # that needs it in the environment definition, so it has to be in its own job
+  read-env:
+    name: Read hostname from environment
+    runs-on: ubuntu-latest
+    environment: ${{ needs.select-env.outputs.env_name }}
+    outputs:
+      hostname: ${{ steps.read-env.outputs.hostname }}
+    needs:
+      - select-env
+    steps:
+      - name: Read hostname from environment
+        id: read-env
+        run: |
+          HOSTNAME=${{ vars.HOSTNAME }}
+          echo "Hostname is $HOSTNAME"
+          echo "hostname=$HOSTNAME" >> $GITHUB_OUTPUT
+
   build-api:
     name: "Build & Push API Image"
     runs-on: ubuntu-latest
@@ -14,34 +52,28 @@ jobs:
       contents: read
       packages: write
     env:
-      API_IMAGE_REPO: ghcr.io/lucaspickering/beta-spray-api
-
+      API_IMAGE_TAG: ghcr.io/lucaspickering/beta-spray-api:${{ github.sha }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up docker buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v2
 
       - name: Docker login
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build & push image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           context: ./api/
           file: ./api/prd.Dockerfile
-          # `latest` tag is convenient to have, and also lets us download
-          # the cache from a previous build. The sha-versioned tag is the one
-          # used in deployments.
-          tags: |
-            ${{ env.API_IMAGE_REPO }}:latest
-            ${{ env.API_IMAGE_REPO }}:${{ github.sha }}
-          push: ${{ github.ref == 'refs/heads/master' }}
+          tags: ${{ env.API_IMAGE_TAG }}
+          push: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -51,7 +83,7 @@ jobs:
           docker run
           -v $PWD/static:/app/src/static
           -e DJANGO_SETTINGS_MODULE=beta_spray.settings.settings_dev
-          ${{ env.API_IMAGE_REPO }}:latest ./m.sh collectstatic
+          ${{ env.API_IMAGE_TAG }} ./m.sh collectstatic
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
@@ -62,11 +94,10 @@ jobs:
   build-ui:
     name: "Build UI static assets"
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v3
       - name: Cache npm files
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ui/node_modules
           key: ${{ runner.os }}-npm-${{ hashFiles('ui/package-lock.json') }}
@@ -88,25 +119,22 @@ jobs:
   upload:
     name: "Upload static assets to GCS bucket"
     runs-on: ubuntu-latest
-    # Only upload assets on master
-    if: ${{ github.ref == 'refs/heads/master' }}
     needs:
       - build-api
       - build-ui
     permissions:
       contents: read
       id-token: write
-
     steps:
       # Needed in order to pass auth creds to subsequent steps
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Google Cloud auth
         uses: google-github-actions/auth@v0
         with:
-          service_account: ${{ secrets.google_service_account }}
-          workload_identity_provider: ${{ secrets.google_workload_id_provider }}
+          service_account: ${{ secrets.GOOGLE_SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ secrets.GOOGLE_WORKLOAD_ID_PROVIDER }}
 
       # Unpack both UI and API assets into the directory structure that we'll
       # want in the bucket, so we can upload them all at once
@@ -129,3 +157,46 @@ jobs:
           path: ./assets/
           parent: false # Don't include /assets/ in the bucket
           destination: beta-spray-static/${{ github.sha }}/
+
+  deploy-app:
+    name: Deploy Kubernetes app
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ needs.select-env.outputs.env_name }}
+      url: https://${{ needs.read-env.outputs.hostname }}/
+    needs:
+      - select-env
+      - read-env
+      - build-api
+      - upload
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Save kubeconfig
+        run: doctl kubernetes cluster kubeconfig save ${{ vars.CLUSTER_NAME }} --expiry-seconds 600
+
+      - name: Helm deploy
+        # The two TLS secrets have to be put in files because they're multi-line
+        run: |
+          echo "${{ secrets.TLS_CERT }}" > /tmp/tls_cert
+          echo "${{ secrets.TLS_KEY }}" > /tmp/tls_key
+          helm upgrade beta-spray ./deploy/helm/ \
+            --install \
+            --namespace ${{ secrets.NAMESPACE }} \
+            --create-namespace \
+            --set-string versionSha="${{ github.sha }}" \
+            --set-string hostname="${{ vars.HOSTNAME }}" \
+            --set-string mediaBucket="${{ secrets.MEDIA_BUCKET }}" \
+            --set-string staticAssetsHost=storage.googleapis.com \
+            --set-string staticAssetsBucket="${{ secrets.STATIC_ASSETS_BUCKET }}" \
+            --set-string apiGcpKey="${{ secrets.API_GCP_KEY }}" \
+            --set-string apiSecretKey="${{ secrets.API_SECRET_KEY }}" \
+            --set-string databasePassword="${{ secrets.DATABASE_PASSWORD }}" \
+            --set-file tlsCert=/tmp/tls_cert \
+            --set-file tlsKey=/tmp/tls_key

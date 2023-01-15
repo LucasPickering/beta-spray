@@ -36,12 +36,11 @@ https://docs.djangoproject.com/en/4.0/topics/migrations/
 
 ## Production
 
-Deployed via Kubernetes on the [Keskne](https://github.com/LucasPickering/keskne) cluster.
+Deployed via Kubernetes on the [Keskne](https://github.com/LucasPickering/keskne) cluster. Deployment is run automatically into two environments:
 
-### Kubernetes Deploy
+| Environment | Namespace        | Domain                                         | When             |
+| ----------- | ---------------- | ---------------------------------------------- | ---------------- |
+| Development | `beta-spray-dev` | [dev.betaspray.net](https://dev.betaspray.net) | Pull Request     |
+| Production  | `beta-spray`     | [betaspray.net](https://betaspray.net)         | Push to `master` |
 
-Deployment is managed via Terraform, which underneath uses Helm to manage the Kubernetes resources. See the README in the `terraform` sub-directory for more info. To deploy the latest version:
-
-```sh
-./deploy/deploy.sh
-```
+See the [deployment-specific README](./deploy/README.md) for more info.

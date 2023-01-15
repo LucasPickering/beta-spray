@@ -1,3 +1,9 @@
+variable "digitalocean_token" {
+  description = "DigitalOcean Personal Access Token, to allow CI to auth with doctl"
+  type        = string
+  sensitive   = true
+}
+
 variable "github_owner" {
   description = "GitHub repository owner"
   default     = "LucasPickering"
@@ -13,10 +19,12 @@ variable "github_repository" {
 variable "github_token" {
   description = "GitHub Personal Access Token"
   type        = string
+  sensitive   = true
 }
 
 variable "gcp_project_id" {
   description = "GCP project id"
+  default     = "beta-spray"
   type        = string
 }
 

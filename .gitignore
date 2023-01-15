@@ -12,4 +12,4 @@ api/src/media/boulders/
 .terraform/
 *.tgz
 *.tfstate*
-*.tfvars
+secrets*.tfvars

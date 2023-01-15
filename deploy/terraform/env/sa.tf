@@ -1,7 +1,7 @@
 # Service accounts. Note: some permissions may be configured elsewhere
 
 resource "google_service_account" "api_service_account" {
-  account_id   = "api-pod"
+  account_id   = "api-pod-${terraform.workspace}"
   display_name = "API Pod Service Account"
   description  = "Service account for the API to access GCP resources"
 }
