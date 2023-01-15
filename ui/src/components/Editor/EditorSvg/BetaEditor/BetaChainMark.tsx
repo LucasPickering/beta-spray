@@ -82,32 +82,23 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey, isInCurrentStance }) => {
   return (
     <>
       <Positioned position={position}>
-        {isInCurrentStance || isHighlighted ? (
-          <BetaMoveIcon
-            ref={ref}
-            bodyPart={betaMove.bodyPart}
-            order={betaMove.order}
-            isStart={betaMove.isStart}
-            isFree={!isDefined(betaMove.hold)}
-            color={color}
-            draggable
-            isDragging={isDragging}
-            isHighlighted={isHighlighted}
-            // Don't block drop events when another element is being dragged
-            css={isDraggingOther && { pointerEvents: "none" }}
-            // Hover (desktop) or click (mobile) => highlight the move
-            onClick={highlightThis}
-            onMouseEnter={highlightThis}
-          />
-        ) : (
-          // Not part of the current stance - show a little icon
-          <circle
-            r={1.5}
-            fill={color}
-            onClick={highlightThis}
-            onMouseEnter={highlightThis}
-          />
-        )}
+        <BetaMoveIcon
+          ref={ref}
+          bodyPart={betaMove.bodyPart}
+          order={betaMove.order}
+          isStart={betaMove.isStart}
+          isFree={!isDefined(betaMove.hold)}
+          color={color}
+          variant={isInCurrentStance || isHighlighted ? "large" : "small"}
+          draggable
+          isDragging={isDragging}
+          isHighlighted={isHighlighted}
+          // Don't block drop events when another element is being dragged
+          css={isDraggingOther && { pointerEvents: "none" }}
+          // Hover (desktop) or click (mobile) => highlight the move
+          onClick={highlightThis}
+          onMouseEnter={highlightThis}
+        />
       </Positioned>
 
       {isInCurrentStance && <AddBetaMoveMark betaMoveKey={betaMove} />}

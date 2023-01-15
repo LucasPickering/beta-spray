@@ -9,6 +9,7 @@ interface Props {
   bodyPart: BodyPart;
   order?: number;
   color?: string;
+  variant?: "small" | "large";
   isFree?: boolean;
   isStart?: boolean;
   draggable?: boolean;
@@ -30,6 +31,7 @@ const BetaMoveIcon = React.forwardRef<
       bodyPart,
       order,
       color = "white",
+      variant = "large",
       isFree = false,
       isStart = false,
       draggable = false,
@@ -54,8 +56,8 @@ const BetaMoveIcon = React.forwardRef<
         {...rest}
       >
         {/* We need this wrapper so we don't fuck up the transform that the
-            icon does on itself. Scaling improves touch interaction. */}
-        <g css={{ transform: "scale(1.5)" }}>
+            icon does on itself.*/}
+        <g css={{ transform: `scale(${variant === "large" ? 1.5 : 0.75})` }}>
           <IconBodyPartRaw
             bodyPart={bodyPart}
             css={[
@@ -69,7 +71,7 @@ const BetaMoveIcon = React.forwardRef<
           />
         </g>
 
-        {isDefined(order) && (
+        {isDefined(order) && variant === "large" && (
           <text
             css={{
               fontSize: 4,
