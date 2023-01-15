@@ -4,6 +4,18 @@ output "api_gcp_key" {
   sensitive   = true
 }
 
+output "api_secret_key" {
+  value       = random_password.api_secret_key.result
+  description = "Generated API secret key"
+  sensitive   = true
+}
+
+output "database_password" {
+  value       = random_password.database_password.result
+  description = "Generated database password"
+  sensitive   = true
+}
+
 output "gcp_region" {
   value       = var.gcp_region
   description = "GCP Region"
