@@ -4,29 +4,42 @@ import {
   CardActions,
   CardContent,
   CardMedia,
-  IconButton,
   Skeleton,
-  Tooltip,
   Typography,
 } from "@mui/material";
 import { graphql, useFragment } from "react-relay";
-import { Delete as IconDelete } from "@mui/icons-material";
+import {
+  Close as IconClose,
+  Delete as IconDelete,
+  Done as IconDone,
+  Edit as IconEdit,
+} from "@mui/icons-material";
 import { ProblemCard_problemNode$key } from "./__generated__/ProblemCard_problemNode.graphql";
 import LinkBehavior from "components/common/LinkBehavior";
-import Editable from "components/common/Editable";
 import { isDefined } from "util/func";
+import TooltipIconButton from "components/common/TooltipIconButton";
+import useForm from "util/useForm";
+import TextFormField from "components/common/TextFormField";
 
 const dateFormat = new Intl.DateTimeFormat(undefined, { dateStyle: "long" });
 
 interface Props {
   problemKey: ProblemCard_problemNode$key;
-  // Called _after_ taking input
-  onEditName?: (problemId: string, name: string) => void;
-  // Called _after_ confirmation dialog
+  /**
+   * Called to save changes to metadata
+   */
+  onSaveChanges?: (args: { problemId: string; name: string }) => void;
+  /**
+   * Called to delete, *after* confirmation dialog
+   */
   onDelete?: (problemId: string) => void;
 }
 
-const ProblemCard: React.FC<Props> = ({ problemKey, onEditName, onDelete }) => {
+const ProblemCard: React.FC<Props> = ({
+  problemKey,
+  onSaveChanges,
+  onDelete,
+}) => {
   const problem = useFragment(
     graphql`
       fragment ProblemCard_problemNode on ProblemNode {
@@ -50,6 +63,16 @@ const ProblemCard: React.FC<Props> = ({ problemKey, onEditName, onDelete }) => {
     `,
     problemKey
   );
+
+  const {
+    isEditing,
+    setIsEditing,
+    hasError,
+    fieldState: { name: nameState },
+    onReset,
+  } = useForm({
+    name: { initialValue: problem.name },
+  });
 
   // Pre-select first beta, if possible
   let linkPath = `/problems/${problem.id}`;
@@ -80,12 +103,7 @@ const ProblemCard: React.FC<Props> = ({ problemKey, onEditName, onDelete }) => {
       <CardContent>
         <Typography variant="h6" component="h3">
           {isDefined(problem.name) ? (
-            <Editable
-              value={problem.name}
-              onChange={
-                onEditName && ((newValue) => onEditName(problem.id, newValue))
-              }
-            />
+            <TextFormField isEditing={isEditing} state={nameState} />
           ) : (
             // Missing name indicates it's still loading
             <Skeleton />
@@ -97,23 +115,62 @@ const ProblemCard: React.FC<Props> = ({ problemKey, onEditName, onDelete }) => {
       </CardContent>
 
       <CardActions sx={{ justifyContent: "end" }}>
-        {onDelete && (
-          <Tooltip title="Delete Problem">
-            <IconButton
-              color="error"
+        {isEditing ? (
+          // Editing state - Cancel and Save buttons
+          <>
+            <TooltipIconButton
+              title="Discard Changes"
               onClick={() => {
-                if (
-                  window.confirm(
-                    `Are you sure you want to delete ${problem.name}?`
-                  )
-                ) {
-                  onDelete(problem.id);
+                setIsEditing(false);
+                onReset(); // Reset state back to initial values
+              }}
+            >
+              <IconClose />
+            </TooltipIconButton>
+            <TooltipIconButton
+              title="Save Changes"
+              color="primary"
+              disabled={hasError}
+              onClick={() => {
+                setIsEditing(false);
+                if (onSaveChanges) {
+                  onSaveChanges({
+                    problemId: problem.id,
+                    name: nameState.value,
+                  });
                 }
               }}
             >
-              <IconDelete />
-            </IconButton>
-          </Tooltip>
+              <IconDone />
+            </TooltipIconButton>
+          </>
+        ) : (
+          // "Regular" state - Edit and Delete buttons
+          <>
+            <TooltipIconButton
+              title="Edit Problem Metadata"
+              onClick={() => setIsEditing(true)}
+            >
+              <IconEdit />
+            </TooltipIconButton>
+            {onDelete && (
+              <TooltipIconButton
+                title="Delete Problem"
+                color="error"
+                onClick={() => {
+                  if (
+                    window.confirm(
+                      `Are you sure you want to delete ${problem.name}?`
+                    )
+                  ) {
+                    onDelete(problem.id);
+                  }
+                }}
+              >
+                <IconDelete />
+              </TooltipIconButton>
+            )}
+          </>
         )}
       </CardActions>
     </Card>

@@ -95,6 +95,24 @@ export function moveArrayElement<T>(
 }
 
 /**
+ * Map the values of an object, returning a new object
+ * @param obj Object to map
+ * @param mapper Function that maps a single value
+ * @returns An object of equal length as the input, with each value mapped
+ */
+export function mapValues<K extends string, V1, V2>(
+  obj: Record<K, V1>,
+  mapper: (value: V1, key: K) => V2
+): Record<K, V2> {
+  return Object.entries<V1>(obj).reduce((acc, [key, value]) => {
+    // Object.entries is shitty and wipes out key type, so we have to add it back
+    acc[key as K] = mapper(value, key as K);
+    return acc;
+    // Technically this assertion isn't true until the loop is done iterating
+  }, {} as Record<K, V2>);
+}
+
+/**
  * Group values into a map based on some key on each value.
  *
  * @param values The values to group
