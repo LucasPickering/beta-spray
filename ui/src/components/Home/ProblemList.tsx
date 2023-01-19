@@ -74,6 +74,7 @@ const ProblemList: React.FC<Props> = ({ queryKey }) => {
           problem {
             id
             name
+            externalLink
           }
         }
       }
@@ -147,15 +148,12 @@ const ProblemList: React.FC<Props> = ({ queryKey }) => {
         <ProblemListGridItem key={node.id}>
           <ProblemCard
             problemKey={node}
-            onSaveChanges={({ problemId, name }) =>
+            onSaveChanges={({ problemId, name, externalLink }) =>
               updateProblem({
-                variables: { input: { problemId, name } },
+                variables: { input: { problemId, name, externalLink } },
                 optimisticResponse: {
                   updateProblem: {
-                    problem: {
-                      id: problemId,
-                      name,
-                    },
+                    problem: { id: problemId, name, externalLink },
                   },
                 },
               })

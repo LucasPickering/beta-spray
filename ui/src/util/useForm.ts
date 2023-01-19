@@ -12,7 +12,6 @@ export type Validator = (value: string) => string | undefined;
 export interface FieldState {
   value: string;
   setValue: React.Dispatch<string>;
-  validator: Validator; // TODO remove?
   error: string | undefined;
 }
 

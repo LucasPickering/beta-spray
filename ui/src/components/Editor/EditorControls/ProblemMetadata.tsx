@@ -1,5 +1,7 @@
 import {
+  Box,
   Button,
+  Link,
   Skeleton,
   Stack,
   Typography,
@@ -20,12 +22,13 @@ import {
   Edit as IconEdit,
   Save as IconSave,
 } from "@mui/icons-material";
+import { validateExternalLink } from "util/validator";
 
 interface Props {
   problemKey: ProblemMetadata_problemNode$key;
 }
 
-const typographyProps: TypographyProps = {
+const nameTypographyProps: TypographyProps = {
   variant: "h5",
   // Overriding `component` doesn't work with the way we've done the types here,
   // so this makes it render as an <h1>, which is appropriate because this is
@@ -42,6 +45,7 @@ const ProblemMetadata: React.FC<Props> = ({ problemKey }) => {
       fragment ProblemMetadata_problemNode on ProblemNode {
         id
         name
+        externalLink
       }
     `,
     problemKey
@@ -56,6 +60,7 @@ const ProblemMetadata: React.FC<Props> = ({ problemKey }) => {
           problem {
             id
             name
+            externalLink
           }
         }
       }
@@ -65,17 +70,35 @@ const ProblemMetadata: React.FC<Props> = ({ problemKey }) => {
     isEditing,
     setIsEditing,
     hasError,
-    fieldState: { name: nameState },
+    fieldState: { name: nameState, externalLink: externalLinkState },
     onReset,
   } = useForm({
     name: { initialValue: problem.name },
+    externalLink: {
+      initialValue: problem.externalLink,
+      validator: validateExternalLink,
+    },
   });
 
   return (
     <>
-      <Typography {...typographyProps}>
-        <TextFormField isEditing={isEditing} state={nameState} />
-      </Typography>
+      <Box>
+        <Typography {...nameTypographyProps}>
+          <TextFormField
+            isEditing={isEditing}
+            state={nameState}
+            placeholder="Problem Name"
+          />
+        </Typography>
+
+        <Link href={externalLinkState.value}>
+          <TextFormField
+            isEditing={isEditing}
+            state={externalLinkState}
+            placeholder="External link"
+          />
+        </Link>
+      </Box>
 
       {isEditing ? (
         <Stack direction="row" spacing={1}>
@@ -90,11 +113,19 @@ const ProblemMetadata: React.FC<Props> = ({ problemKey }) => {
               setIsEditing(false);
               updateProblem({
                 variables: {
-                  input: { problemId: problem.id, name: nameState.value },
+                  input: {
+                    problemId: problem.id,
+                    name: nameState.value,
+                    externalLink: externalLinkState.value,
+                  },
                 },
                 optimisticResponse: {
                   updateProblem: {
-                    problem: { id: problem.id, name: nameState.value },
+                    problem: {
+                      id: problem.id,
+                      name: nameState.value,
+                      externalLink: externalLinkState.value,
+                    },
                   },
                 },
               });
@@ -125,7 +156,7 @@ export default withQuery<queriesProblemQuery, Props>({
   query: problemQuery,
   dataToProps: (data) => data.problem && { problemKey: data.problem },
   fallbackElement: (
-    <Typography {...typographyProps}>
+    <Typography {...nameTypographyProps}>
       <Skeleton />
     </Typography>
   ),
