@@ -1,8 +1,9 @@
 import { useContext } from "react";
-import { Divider, IconButton, Paper, Stack, Tooltip } from "@mui/material";
+import { Divider, IconButton, Paper, Stack } from "@mui/material";
 import HelpText from "./HelpText";
 import DragSourceButton from "./DragSourceButton";
 import {
+  ArrowBack as IconArrowBack,
   Visibility as IconVisibility,
   VisibilityOff as IconVisibilityOff,
 } from "@mui/icons-material";
@@ -11,6 +12,8 @@ import { PreloadedQuery } from "react-relay";
 import { queriesBetaQuery } from "../__generated__/queriesBetaQuery.graphql";
 import PlayPauseControls from "./PlayPauseControls";
 import { HoldIconWrapped } from "../EditorSvg/HoldEditor/HoldIcon";
+import TooltipIconButton from "components/common/TooltipIconButton";
+import { Link } from "react-router-dom";
 
 interface Props {
   betaQueryRef: PreloadedQuery<queriesBetaQuery> | null | undefined;
@@ -32,19 +35,20 @@ const EditorPalette: React.FC<Props> = ({ betaQueryRef }) => {
         divider={<Divider orientation="horizontal" flexItem />}
       >
         <Stack direction="row">
+          <IconButton component={Link} to="/">
+            <IconArrowBack />
+          </IconButton>
+
           <HelpText />
 
-          <Tooltip
+          <TooltipIconButton
             title={visibility ? "Hide Overlay" : "Show Overlay"}
             placement="right"
+            color={visibility ? "default" : "primary"}
+            onClick={() => setVisibility((prev) => !prev)}
           >
-            <IconButton
-              color={visibility ? "default" : "primary"}
-              onClick={() => setVisibility((prev) => !prev)}
-            >
-              {visibility ? <IconVisibilityOff /> : <IconVisibility />}
-            </IconButton>
-          </Tooltip>
+            {visibility ? <IconVisibilityOff /> : <IconVisibility />}
+          </TooltipIconButton>
 
           <DragSourceButton
             title="Hold"
