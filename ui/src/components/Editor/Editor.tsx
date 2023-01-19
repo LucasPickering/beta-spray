@@ -1,15 +1,14 @@
 import { useCallback, useEffect, useState } from "react";
 import { useQueryLoader } from "react-relay";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { assertIsDefined } from "util/func";
 import type { queriesProblemQuery as queriesProblemQueryType } from "./__generated__/queriesProblemQuery.graphql";
 import queriesProblemQuery from "./__generated__/queriesProblemQuery.graphql";
 import type { queriesBetaQuery as queriesBetaQueryType } from "./__generated__/queriesBetaQuery.graphql";
 import queriesBetaQuery from "./__generated__/queriesBetaQuery.graphql";
-import { Box, Button, Divider } from "@mui/material";
+import { Box } from "@mui/material";
 import { DndProvider } from "react-dnd";
 import { TouchBackend } from "react-dnd-touch-backend";
-import { ArrowBack as IconArrowBack } from "@mui/icons-material";
 import { ZoomPanProvider } from "components/Editor/util/zoom";
 import BetaDetails from "./EditorControls/BetaDetails";
 import BetaList from "./EditorControls/BetaList";
@@ -144,10 +143,6 @@ const Editor: React.FC = () => {
 
             {/* Controls sidebar/drawer */}
             <EditorControls>
-              <Button component={Link} to="/" startIcon={<IconArrowBack />}>
-                Back
-              </Button>
-              <Divider />
               <ProblemMetadata queryRef={problemQueryRef} />
               <BetaList
                 queryRef={problemQueryRef}
