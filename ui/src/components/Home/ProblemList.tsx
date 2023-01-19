@@ -147,7 +147,7 @@ const ProblemList: React.FC<Props> = ({ queryKey }) => {
         <ProblemListGridItem key={node.id}>
           <ProblemCard
             problemKey={node}
-            onEditName={(problemId, name) =>
+            onSaveChanges={({ problemId, name }) =>
               updateProblem({
                 variables: { input: { problemId, name } },
                 optimisticResponse: {
