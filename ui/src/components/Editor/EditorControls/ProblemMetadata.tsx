@@ -101,7 +101,13 @@ const ProblemMetadata: React.FC<Props> = ({ problemKey }) => {
       </Box>
 
       {isEditing ? (
-        <Stack direction="row" spacing={1}>
+        <Stack
+          direction="row"
+          spacing={1}
+          width="100%"
+          // Size children evenly
+          sx={{ "& > *": { flex: "1 1" } }}
+        >
           <Button size="small" startIcon={<IconClear />} onClick={onReset}>
             Cancel
           </Button>
