@@ -37,7 +37,7 @@ class UpdateBetaMutation(relay.ClientIDMutation):
     beta = graphene.Field(BetaNode, required=True)
 
     @classmethod
-    def mutate_and_get_payload(cls, root, info, beta_id, name):
+    def mutate_and_get_payload(cls, root, info, beta_id, name=None):
         beta = BetaNode.get_node_from_global_id(info, beta_id)
         if name is not None:
             beta.name = name

@@ -13,6 +13,7 @@ class CreateProblemMutation(relay.ClientIDMutation):
     class Input:
         boulder_id = graphene.ID(required=True)
         name = graphene.String()
+        external_link = graphene.String()
 
     problem = graphene.Field(ProblemNode, required=True)
 
@@ -23,13 +24,16 @@ class CreateProblemMutation(relay.ClientIDMutation):
         info,
         boulder_id,
         name=None,
+        external_link=None,
     ):
         fields = {}
 
         # Rely on default if not given
-        # TODO validate name
+        # TODO validation
         if name is not None:
             fields["name"] = name
+        if external_link is not None:
+            fields["external_link"] = external_link
 
         # Convert global ID to a PK
         fields["boulder_id"] = BoulderNode.get_pk_from_global_id(
@@ -45,14 +49,20 @@ class UpdateProblemMutation(relay.ClientIDMutation):
     class Input:
         problem_id = graphene.ID(required=True)
         name = graphene.String()
+        external_link = graphene.String()
 
     problem = graphene.Field(ProblemNode, required=True)
 
     @classmethod
-    def mutate_and_get_payload(cls, root, info, problem_id, name):
+    def mutate_and_get_payload(
+        cls, root, info, problem_id, name=None, external_link=None
+    ):
         problem = ProblemNode.get_node_from_global_id(info, problem_id)
+        # TODO validation
         if name is not None:
             problem.name = name
+        if external_link is not None:
+            problem.external_link = external_link
         problem.save()
         return cls(problem=problem)
 
