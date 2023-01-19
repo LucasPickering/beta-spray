@@ -19,22 +19,22 @@ const HelpTextContent: React.FC = () => {
   return (
     <>
       <div>
-        <strong>Drag from the palette</strong> to create holds and moves
+        <strong>Drag from the palette</strong> to create holds
       </div>
       <div>
         <strong>Drag a move or hold</strong> to relocate
       </div>
       <div>
+        <strong>Drag the + icon</strong> to add a new move
+      </div>
+      <div>
         <strong>Drag a line</strong> to add an intermediate move
       </div>
       <div>
-        <strong>Drag a hold or move to the trash</strong> to delete
+        <strong>Hover/tap a move or hold</strong> to add notes or delete
       </div>
       <div>
-        <strong>Double click a move</strong> to edit
-      </div>
-      <div>
-        <strong>Reorder moves</strong> in the list at right
+        <strong>Reorder moves</strong> in the sidebar
       </div>
 
       <Divider
