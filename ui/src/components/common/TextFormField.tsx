@@ -1,8 +1,8 @@
-import { TextField } from "@mui/material";
+import { StandardTextFieldProps, TextField } from "@mui/material";
 import { isDefined } from "util/func";
 import { FieldState } from "util/useForm";
 
-interface Props {
+interface Props extends StandardTextFieldProps {
   isEditing: boolean;
   state: FieldState;
 }
@@ -14,6 +14,7 @@ interface Props {
 const TextFormField: React.FC<Props> = ({
   isEditing,
   state: { value, setValue, error },
+  ...rest
 }) => {
   if (isEditing) {
     const hasError = isDefined(error);
@@ -27,6 +28,7 @@ const TextFormField: React.FC<Props> = ({
         helperText={error}
         onChange={(e) => setValue(e.target.value)}
         fullWidth
+        {...rest}
       />
     );
   }

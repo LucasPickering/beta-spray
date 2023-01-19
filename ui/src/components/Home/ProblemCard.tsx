@@ -4,6 +4,7 @@ import {
   CardActions,
   CardContent,
   CardMedia,
+  Link,
   Skeleton,
   Typography,
 } from "@mui/material";
@@ -20,6 +21,7 @@ import { isDefined } from "util/func";
 import TooltipIconButton from "components/common/TooltipIconButton";
 import useForm from "util/useForm";
 import TextFormField from "components/common/TextFormField";
+import { validateExternalLink } from "util/validator";
 
 const dateFormat = new Intl.DateTimeFormat(undefined, { dateStyle: "long" });
 
@@ -28,7 +30,11 @@ interface Props {
   /**
    * Called to save changes to metadata
    */
-  onSaveChanges?: (args: { problemId: string; name: string }) => void;
+  onSaveChanges?: (args: {
+    problemId: string;
+    name: string;
+    externalLink: string;
+  }) => void;
   /**
    * Called to delete, *after* confirmation dialog
    */
@@ -45,6 +51,7 @@ const ProblemCard: React.FC<Props> = ({
       fragment ProblemCard_problemNode on ProblemNode {
         id
         name
+        externalLink
         createdAt
         boulder {
           image {
@@ -68,10 +75,14 @@ const ProblemCard: React.FC<Props> = ({
     isEditing,
     setIsEditing,
     hasError,
-    fieldState: { name: nameState },
+    fieldState: { name: nameState, externalLink: externalLinkState },
     onReset,
   } = useForm({
     name: { initialValue: problem.name },
+    externalLink: {
+      initialValue: problem.externalLink,
+      validator: validateExternalLink,
+    },
   });
 
   // Pre-select first beta, if possible
@@ -103,11 +114,29 @@ const ProblemCard: React.FC<Props> = ({
       <CardContent>
         <Typography variant="h6" component="h3">
           {isDefined(problem.name) ? (
-            <TextFormField isEditing={isEditing} state={nameState} />
+            <TextFormField
+              isEditing={isEditing}
+              state={nameState}
+              placeholder="Problem Name"
+            />
           ) : (
-            // Missing name indicates it's still loading
+            // Missing value indicates it's still loading
             <Skeleton />
           )}
+        </Typography>
+        <Typography>
+          <Link href={externalLinkState.value}>
+            {isDefined(problem.externalLink) ? (
+              <TextFormField
+                isEditing={isEditing}
+                state={externalLinkState}
+                placeholder="External link (e.g. Mountain Project)"
+              />
+            ) : (
+              // Missing value indicates it's still loading
+              <Skeleton />
+            )}
+          </Link>
         </Typography>
         <Typography variant="subtitle1" component="span" color="text.secondary">
           {dateFormat.format(new Date(problem.createdAt))}
@@ -131,6 +160,7 @@ const ProblemCard: React.FC<Props> = ({
                   onSaveChanges({
                     problemId: problem.id,
                     name: nameState.value,
+                    externalLink: externalLinkState.value,
                   });
                 }
               }}
