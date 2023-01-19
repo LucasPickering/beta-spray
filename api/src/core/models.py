@@ -76,6 +76,9 @@ class Problem(models.Model):
         ordering = ["-created_at"]
 
     name = models.TextField(default=util.random_problem_name)
+    external_link = models.URLField(
+        blank=True, help_text="External link, e.g. to Mountain Project"
+    )
     holds = models.ManyToManyField(
         Hold, related_name="problems", through="ProblemHold", blank=True
     )

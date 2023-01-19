@@ -143,7 +143,14 @@ class ProblemNode(NodeType):
     class Meta:
         model = Problem
         interfaces = (relay.Node,)
-        fields = ("name", "created_at", "holds", "boulder", "betas")
+        fields = (
+            "name",
+            "external_link",
+            "created_at",
+            "holds",
+            "boulder",
+            "betas",
+        )
         filter_fields = []
 
 

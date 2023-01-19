@@ -138,6 +138,9 @@ type ProblemNodeEdge {
 
 type ProblemNode implements Node {
   name: String!
+
+  """External link, e.g. to Mountain Project"""
+  externalLink: String!
   holds(offset: Int, before: String, after: String, first: Int, last: Int): HoldNodeConnection!
   boulder: BoulderNode!
   createdAt: DateTime!
@@ -462,6 +465,7 @@ type CreateProblemMutationPayload {
 input CreateProblemMutationInput {
   boulderId: ID!
   name: String
+  externalLink: String
   clientMutationId: String
 }
 
@@ -473,6 +477,7 @@ type UpdateProblemMutationPayload {
 input UpdateProblemMutationInput {
   problemId: ID!
   name: String
+  externalLink: String
   clientMutationId: String
 }
 
