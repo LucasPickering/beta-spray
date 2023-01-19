@@ -118,13 +118,7 @@ const ProblemCard: React.FC<Props> = ({
         {isEditing ? (
           // Editing state - Cancel and Save buttons
           <>
-            <TooltipIconButton
-              title="Discard Changes"
-              onClick={() => {
-                setIsEditing(false);
-                onReset(); // Reset state back to initial values
-              }}
-            >
+            <TooltipIconButton title="Discard Changes" onClick={onReset}>
               <IconClose />
             </TooltipIconButton>
             <TooltipIconButton

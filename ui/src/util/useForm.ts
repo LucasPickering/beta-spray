@@ -21,6 +21,9 @@ interface ReturnValue<K extends string> {
   setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
   hasError: boolean;
   fieldState: Record<K, FieldState>;
+  /**
+   * Reset all fields to their initial values, *and* disable editing
+   */
   onReset: () => void;
 }
 
@@ -40,6 +43,8 @@ export default function useForm<K extends string>(
     mapValues(fields, ({ initialValue }) => initialValue)
   );
 
+  // TODO reset state when any initial values change
+
   const fieldState = mapValues(
     fields,
     ({ validator = validateString }, fieldName) => {
@@ -56,6 +61,7 @@ export default function useForm<K extends string>(
   );
 
   const onReset = (): void => {
+    setIsEditing(false);
     setFieldValues(mapValues(fields, ({ initialValue }) => initialValue));
   };
 
