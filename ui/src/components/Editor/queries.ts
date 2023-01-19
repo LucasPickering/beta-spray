@@ -21,7 +21,7 @@ export const problemQuery = graphql`
     problem(id: $problemId) {
       ...EditorHelmet_problemNode
       ...EditorSvg_problemNode
-      ...ProblemName_problemNode
+      ...ProblemMetadata_problemNode
       ...BetaList_problemNode
       ...HoldActions_problemNode
     }

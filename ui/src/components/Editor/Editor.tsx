@@ -16,7 +16,7 @@ import BetaList from "./EditorControls/BetaList";
 import EditorControls from "./EditorControls/EditorControls";
 import EditorSvg from "./EditorSvg/EditorSvg";
 import EditorHelmet from "./EditorHelmet";
-import ProblemName from "./EditorControls/ProblemName";
+import ProblemMetadata from "./EditorControls/ProblemMetadata";
 import EditorPalette from "./EditorPalette/EditorPalette";
 import HighlightActions from "./HighlightActions/HighlightActions";
 import EditorState from "./EditorState";
@@ -148,7 +148,7 @@ const Editor: React.FC = () => {
                 Back
               </Button>
               <Divider />
-              <ProblemName queryRef={problemQueryRef} />
+              <ProblemMetadata queryRef={problemQueryRef} />
               <BetaList
                 queryRef={problemQueryRef}
                 selectedBeta={selectedBeta}
