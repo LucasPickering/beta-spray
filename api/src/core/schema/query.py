@@ -130,7 +130,7 @@ class HoldNode(NodeType):
     class Meta:
         model = Hold
         interfaces = (relay.Node,)
-        fields = ("boulder",)
+        fields = ("boulder", "annotation")
         filter_fields = []
 
     position = graphene.Field(SVGPosition, required=True)

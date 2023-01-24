@@ -15,13 +15,14 @@ class CreateHoldMutation(relay.ClientIDMutation):
         boulder_id = graphene.ID(required=True)
         position = graphene.Field(SVGPositionInput, required=True)
         problem_id = graphene.ID()
+        annotation = graphene.String()
 
     hold = graphene.Field(HoldNode, required=True)
     problem = graphene.Field(ProblemNode)
 
     @classmethod
     def mutate_and_get_payload(
-        cls, root, info, boulder_id, position, problem_id
+        cls, root, info, boulder_id, position, problem_id=None, annotation=None
     ):
         # We need to grab the whole boulder object so we can access the img dims
         boulder = BoulderNode.get_node_from_global_id(info, boulder_id)
@@ -43,24 +44,34 @@ class CreateHoldMutation(relay.ClientIDMutation):
             )
         else:
             problem = None
+        # TODO validate annotation
+        if annotation is not None:
+            hold.annotation = annotation
 
         return cls(hold=hold, problem=problem)
 
 
-class RelocateHoldMutation(relay.ClientIDMutation):
-    """Change the position of an existing hold"""
+class UpdateHoldMutation(relay.ClientIDMutation):
+    """Modify an existing hold"""
 
     class Input:
         hold_id = graphene.ID(required=True)
         position = graphene.Field(SVGPositionInput, required=True)
+        annotation = graphene.String()
 
     hold = graphene.Field(HoldNode, required=True)
 
     @classmethod
-    def mutate_and_get_payload(cls, root, info, hold_id, position):
+    def mutate_and_get_payload(
+        cls, root, info, hold_id, position, annotation=None
+    ):
         hold = HoldNode.get_node_from_global_id(info, hold_id)
         # Convert position from SVG coords to normalized (DB) coords
         hold.position = position.to_normalized(hold.boulder.image)
+
+        if annotation is not None:
+            hold.annotation = annotation
+
         hold.save()
         return cls(hold=hold)
 
