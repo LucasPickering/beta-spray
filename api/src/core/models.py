@@ -63,6 +63,9 @@ class Hold(models.Model):
         choices=HoldAnnotationSource.choices,
         help_text="Source of this boulder-hold attribution (auto or manual)",
     )
+    annotation = models.TextField(
+        blank=True, help_text="Free-form annotations created by the user"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

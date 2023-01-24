@@ -93,6 +93,9 @@ type HoldNodeEdge {
 type HoldNode implements Node {
   boulder: BoulderNode!
 
+  """Free-form annotations created by the user"""
+  annotation: String!
+
   """The ID of the object"""
   id: ID!
   position: SVGPosition!
@@ -335,8 +338,8 @@ type Mutation {
   """
   createHold(input: CreateHoldMutationInput!): CreateHoldMutationPayload
 
-  """Change the position of an existing hold"""
-  relocateHold(input: RelocateHoldMutationInput!): RelocateHoldMutationPayload
+  """Modify an existing hold"""
+  updateHold(input: UpdateHoldMutationInput!): UpdateHoldMutationPayload
 
   """Delete a hold from a boulder"""
   deleteHold(input: DeleteHoldMutationInput!): DeleteHoldMutationPayload
@@ -419,6 +422,7 @@ input CreateHoldMutationInput {
   boulderId: ID!
   position: SVGPositionInput!
   problemId: ID
+  annotation: String
   clientMutationId: String
 }
 
@@ -430,15 +434,16 @@ input SVGPositionInput {
   y: Float!
 }
 
-"""Change the position of an existing hold"""
-type RelocateHoldMutationPayload {
+"""Modify an existing hold"""
+type UpdateHoldMutationPayload {
   hold: HoldNode!
   clientMutationId: String
 }
 
-input RelocateHoldMutationInput {
+input UpdateHoldMutationInput {
   holdId: ID!
   position: SVGPositionInput!
+  annotation: String
   clientMutationId: String
 }
 
