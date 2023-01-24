@@ -6,9 +6,10 @@
  * single type of highlightable item, in which case you can use `useHighlight`.
  */
 
-import React, { useContext, useCallback } from "react";
+import React, { useContext, useCallback, useMemo } from "react";
 import { StateContext } from "./context";
-import { noop } from "../../../util/func";
+import { findNode, isDefined, noop } from "util/func";
+import { Connection, Node } from "util/typing";
 
 /**
  * A UI item that can be highlighted on hover/tap. This will allow the user to
@@ -70,6 +71,29 @@ export function useHighlight<K extends Kind>(
   );
 
   return [restrictKind(kind, highlightedItem), highlightItem];
+}
+
+/**
+ * A convenience hook to get a full highlighted item rather than just the ID.
+ * This requires passing in a collection of items from Relay. The highlighted
+ * item will be selected from the collection by ID.
+ * @param kind Kind of the highlighted item
+ * @param connection Collection of items that could possibly be highlighted
+ * @returns The highlighted item (or undefined if none), and a setter to change it
+ */
+export function useHighlightItem<K extends Kind, T extends Node>(
+  kind: K,
+  connection: Connection<T>
+): [T | undefined, React.Dispatch<React.SetStateAction<string | undefined>>] {
+  const [highlightedId, setHighlightedId] = useHighlight(kind);
+  const highlightedItem = useMemo(
+    () =>
+      isDefined(highlightedId)
+        ? findNode(connection, highlightedId)
+        : undefined,
+    [connection, highlightedId]
+  );
+  return [highlightedItem, setHighlightedId];
 }
 
 /**

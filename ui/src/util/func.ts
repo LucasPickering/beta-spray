@@ -1,3 +1,5 @@
+import { Connection, Node } from "./typing";
+
 /**
  * Do nothing
  */
@@ -158,8 +160,8 @@ export function comparator<T>(
  * @param id ID of the node to find
  * @returns The node with the given ID, or undefined if not in the connection
  */
-export function findNode<T extends { readonly id: string }>(
-  connection: { readonly edges: ReadonlyArray<{ readonly node: T }> },
+export function findNode<T extends Node>(
+  connection: Connection<T>,
   id: string
 ): T | undefined {
   return connection.edges.find(({ node }) => node.id === id)?.node;
@@ -172,8 +174,8 @@ export function findNode<T extends { readonly id: string }>(
  * @returns The index of the node with the given ID, or undefined if not in the
  *  connection, or -1 if not present
  */
-export function findNodeIndex<T extends { readonly id: string }>(
-  connection: { readonly edges: ReadonlyArray<{ readonly node: T }> },
+export function findNodeIndex<T extends Node>(
+  connection: Connection<T>,
   id: string
 ): number {
   return connection.edges.findIndex(({ node }) => node.id === id);

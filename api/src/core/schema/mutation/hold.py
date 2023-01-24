@@ -56,18 +56,20 @@ class UpdateHoldMutation(relay.ClientIDMutation):
 
     class Input:
         hold_id = graphene.ID(required=True)
-        position = graphene.Field(SVGPositionInput, required=True)
+        position = graphene.Field(SVGPositionInput)
         annotation = graphene.String()
 
     hold = graphene.Field(HoldNode, required=True)
 
     @classmethod
     def mutate_and_get_payload(
-        cls, root, info, hold_id, position, annotation=None
+        cls, root, info, hold_id, position=None, annotation=None
     ):
         hold = HoldNode.get_node_from_global_id(info, hold_id)
-        # Convert position from SVG coords to normalized (DB) coords
-        hold.position = position.to_normalized(hold.boulder.image)
+
+        if position is not None:
+            # Convert position from SVG coords to normalized (DB) coords
+            hold.position = position.to_normalized(hold.boulder.image)
 
         if annotation is not None:
             hold.annotation = annotation
