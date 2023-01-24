@@ -26,7 +26,7 @@ spec:
           volumeMounts:
             - name: db-data
               mountPath: /var/lib/postgresql/data
-              subPath: data
+              subPath: "{{ .Release.Namespace }}/data"
           env:
             - name: POSTGRES_DB
               valueFrom:
@@ -45,12 +45,13 @@ spec:
                   key: password
           ports:
             - containerPort: 5432
-  # Request GCE persistent disk
+  # Request DO volume
   volumeClaimTemplates:
     - metadata:
         name: db-data
       spec:
-        accessModes: ["ReadWriteOnce"]
+        accessModes:
+          - ReadWriteMany
         resources:
           requests:
             storage: 1Gi
