@@ -1,15 +1,19 @@
-import { Fab } from "@mui/material";
+import { SpeedDial, SpeedDialAction, SpeedDialIcon } from "@mui/material";
 import useMutation from "util/useMutation";
 import { graphql, useFragment } from "react-relay";
 import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
 import { Delete as IconDelete } from "@mui/icons-material";
 import { HoldActions_deleteHoldMutation } from "./__generated__/HoldActions_deleteHoldMutation.graphql";
 import { isDefined } from "util/func";
-import { useHighlight } from "components/Editor/util/highlight";
+import { useHighlightItem } from "components/Editor/util/highlight";
 import { HoldActions_problemNode$key } from "./__generated__/HoldActions_problemNode.graphql";
 import { withQuery } from "relay-query-wrapper";
 import { queriesProblemQuery } from "../__generated__/queriesProblemQuery.graphql";
 import { problemQuery } from "../queries";
+import { Edit as IconEdit } from "@mui/icons-material";
+import EditAnnotationDialog from "./EditAnnotationDialog";
+import { useState } from "react";
+import { HoldActions_updateHoldMutation } from "./__generated__/HoldActions_updateHoldMutation.graphql";
 
 interface Props {
   problemKey: HoldActions_problemNode$key;
@@ -17,6 +21,9 @@ interface Props {
 
 /**
  * Buttons for editing and deleting the highlighted hold.
+ *
+ * This duplicates a lot from BetaMoveActions, but IMO not enough to justify
+ * the complicated abstraction needed to de-dupe that.
  */
 const HoldActions: React.FC<Props> = ({ problemKey }) => {
   const problem = useFragment(
@@ -25,13 +32,38 @@ const HoldActions: React.FC<Props> = ({ problemKey }) => {
         holds {
           # Needed to delete holds from the connection
           __id
+          edges {
+            node {
+              id
+              annotation
+            }
+          }
         }
       }
     `,
     problemKey
   );
 
-  const [highlightedHoldId, highlightHold] = useHighlight("hold");
+  const [isEditing, setIsEditing] = useState(false);
+
+  const [highlightedHold, highlightHold] = useHighlightItem(
+    "hold",
+    problem.holds
+  );
+
+  const { commit: updateHold, state: updateState } =
+    useMutation<HoldActions_updateHoldMutation>(graphql`
+      mutation HoldActions_updateHoldMutation(
+        $input: UpdateHoldMutationInput!
+      ) {
+        updateHold(input: $input) {
+          hold {
+            id
+            annotation
+          }
+        }
+      }
+    `);
   const { commit: deleteHold, state: deleteState } =
     useMutation<HoldActions_deleteHoldMutation>(graphql`
       mutation HoldActions_deleteHoldMutation(
@@ -46,38 +78,69 @@ const HoldActions: React.FC<Props> = ({ problemKey }) => {
       }
     `);
 
+  const onClose = (): void => setIsEditing(false);
+
   // This gets rendered in the SVG context, so we need to portal out of that
   return (
     <>
-      <Fab
-        color="primary"
-        onClick={() => {
-          // This *should* always be defined, but hypothetically if someone
-          // clicks the button while the element is being hidden, it could
-          // trigger this so we need to guard for that
-          if (isDefined(highlightedHoldId)) {
-            deleteHold({
+      <SpeedDial ariaLabel="Hold actions" icon={<SpeedDialIcon />}>
+        <SpeedDialAction
+          tooltipTitle="Delete Hold"
+          icon={<IconDelete />}
+          onClick={() => {
+            // This *should* always be defined, but hypothetically if someone
+            // clicks the button while the element is being hidden, it could
+            // trigger this so we need to guard for that
+            if (isDefined(highlightedHold)) {
+              deleteHold({
+                variables: {
+                  input: { holdId: highlightedHold.id },
+                  connections: [problem.holds.__id],
+                },
+                // Reset selection to prevent ghost highlight
+                onCompleted() {
+                  highlightHold(undefined);
+                },
+                optimisticResponse: {
+                  deleteHold: { hold: { id: highlightedHold.id } },
+                },
+              });
+            }
+          }}
+        />
+
+        <SpeedDialAction
+          tooltipTitle="Edit Notes"
+          icon={<IconEdit />}
+          onClick={() => setIsEditing(true)}
+        />
+      </SpeedDial>
+
+      {/* Opened by the Edit button */}
+      <EditAnnotationDialog
+        open={isEditing}
+        title="Edit Notes for Hold"
+        initialValue={highlightedHold?.annotation}
+        onSave={(annotation) => {
+          // This *shouldn't* ever be called while undefined
+          if (highlightedHold) {
+            updateHold({
               variables: {
-                input: { holdId: highlightedHoldId },
-                // TODO do we need to pass beta.holds here too?
-                connections: [problem.holds.__id],
-              },
-              // Reset selection to prevent ghost highlight
-              onCompleted() {
-                highlightHold(undefined);
+                input: { holdId: highlightedHold.id, annotation },
               },
               optimisticResponse: {
-                deleteHold: { hold: { id: highlightedHoldId } },
+                updateHold: { hold: { id: highlightedHold.id, annotation } },
               },
+              onCompleted: onClose,
             });
           }
         }}
-      >
-        <IconDelete />
-      </Fab>
+        onClose={onClose}
+      />
 
+      <MutationErrorSnackbar message="Error editing hold" state={updateState} />
       <MutationErrorSnackbar
-        message="Error deleting move"
+        message="Error deleting hold"
         state={deleteState}
       />
     </>

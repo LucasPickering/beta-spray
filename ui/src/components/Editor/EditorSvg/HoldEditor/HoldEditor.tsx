@@ -13,7 +13,7 @@ import { HoldEditor_appendBetaMoveMutation } from "./__generated__/HoldEditor_ap
 import { HoldEditor_createHoldMutation } from "./__generated__/HoldEditor_createHoldMutation.graphql";
 import { HoldEditor_insertBetaMoveMutation } from "./__generated__/HoldEditor_insertBetaMoveMutation.graphql";
 import { HoldEditor_problemNode$key } from "./__generated__/HoldEditor_problemNode.graphql";
-import { HoldEditor_relocateHoldMutation } from "./__generated__/HoldEditor_relocateHoldMutation.graphql";
+import { HoldEditor_updateHoldMutation } from "./__generated__/HoldEditor_updateHoldMutation.graphql";
 import { HoldEditor_updateBetaMoveMutation } from "./__generated__/HoldEditor_updateBetaMoveMutation.graphql";
 
 interface Props {
@@ -67,12 +67,10 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
         }
       }
     `);
-  const { commit: relocateHold, state: relocateHoldState } =
-    useMutation<HoldEditor_relocateHoldMutation>(graphql`
-      mutation HoldEditor_relocateHoldMutation(
-        $input: RelocateHoldMutationInput!
-      ) {
-        relocateHold(input: $input) {
+  const { commit: updateHold, state: updateHoldState } =
+    useMutation<HoldEditor_updateHoldMutation>(graphql`
+      mutation HoldEditor_updateHoldMutation($input: UpdateHoldMutationInput!) {
+        updateHold(input: $input) {
           hold {
             id # So relay knows how to update this node locally
             ...HoldMark_holdNode
@@ -185,12 +183,12 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
             });
             break;
           case "relocate":
-            relocateHold({
+            updateHold({
               variables: {
                 input: { holdId: item.holdId, position },
               },
               optimisticResponse: {
-                relocateHold: { hold: { id: item.holdId, position } },
+                updateHold: { hold: { id: item.holdId, position } },
               },
             });
             break;
@@ -339,7 +337,7 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
       />
       <MutationErrorSnackbar
         message="Error moving hold"
-        state={relocateHoldState}
+        state={updateHoldState}
       />
       <MutationErrorSnackbar
         message="Error adding move"

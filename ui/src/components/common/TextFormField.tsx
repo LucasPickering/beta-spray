@@ -21,7 +21,6 @@ const TextFormField: React.FC<Props> = ({
 
     return (
       <TextField
-        autoFocus
         size="small"
         value={value}
         error={hasError}

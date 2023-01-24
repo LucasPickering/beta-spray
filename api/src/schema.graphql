@@ -442,7 +442,7 @@ type UpdateHoldMutationPayload {
 
 input UpdateHoldMutationInput {
   holdId: ID!
-  position: SVGPositionInput!
+  position: SVGPositionInput = null
   annotation: String
   clientMutationId: String
 }

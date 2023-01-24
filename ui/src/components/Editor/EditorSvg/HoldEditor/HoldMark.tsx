@@ -5,6 +5,7 @@ import { HoldMark_holdNode$key } from "./__generated__/HoldMark_holdNode.graphql
 import Positioned from "../common/Positioned";
 import HoldIcon from "./HoldIcon";
 import { useHighlight } from "components/Editor/util/highlight";
+import { Portal, Tooltip } from "@mui/material";
 
 interface Props {
   holdKey: HoldMark_holdNode$key;
@@ -28,6 +29,7 @@ const HoldMark: React.FC<Props> = ({ holdKey, onDrop }) => {
           x
           y
         }
+        annotation
       }
     `,
     holdKey
@@ -71,19 +73,34 @@ const HoldMark: React.FC<Props> = ({ holdKey, onDrop }) => {
 
   drag(drop(ref));
   return (
-    <Positioned
-      ref={ref}
-      position={hold.position}
-      onClick={highlightThis}
-      onMouseEnter={highlightThis}
-    >
-      <HoldIcon
-        draggable
-        isDragging={isDragging}
-        isOver={isOver}
-        isHighlighted={isHighlighted}
-      />
-    </Positioned>
+    <>
+      <Positioned
+        ref={ref}
+        position={hold.position}
+        onClick={highlightThis}
+        onMouseEnter={highlightThis}
+      >
+        <HoldIcon
+          draggable
+          isDragging={isDragging}
+          isOver={isOver}
+          isHighlighted={isHighlighted}
+        />
+      </Positioned>
+
+      {hold.annotation && (
+        <Portal>
+          <Tooltip
+            open={isHighlighted}
+            title={hold.annotation}
+            placement="bottom"
+            PopperProps={{ anchorEl: ref.current }}
+          >
+            <span />
+          </Tooltip>
+        </Portal>
+      )}
+    </>
   );
 };
 
