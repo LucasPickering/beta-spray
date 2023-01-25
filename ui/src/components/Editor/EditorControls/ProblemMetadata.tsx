@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  Link,
   Skeleton,
   Stack,
   Typography,
@@ -23,6 +22,7 @@ import {
   Save as IconSave,
 } from "@mui/icons-material";
 import { validateExternalLink } from "util/validator";
+import ExternalProblemLink from "components/common/ExternalProblemLink";
 
 interface Props {
   problemKey: ProblemMetadata_problemNode$key;
@@ -83,21 +83,21 @@ const ProblemMetadata: React.FC<Props> = ({ problemKey }) => {
   return (
     <>
       <Box>
-        <Typography {...nameTypographyProps}>
-          <TextFormField
-            isEditing={isEditing}
-            state={nameState}
-            placeholder="Problem Name"
-          />
-        </Typography>
+        <TextFormField
+          isEditing={isEditing}
+          state={nameState}
+          placeholder="Problem Name"
+        >
+          <Typography {...nameTypographyProps} />
+        </TextFormField>
 
-        <Link href={externalLinkState.value}>
-          <TextFormField
-            isEditing={isEditing}
-            state={externalLinkState}
-            placeholder="External link"
-          />
-        </Link>
+        <TextFormField
+          isEditing={isEditing}
+          state={externalLinkState}
+          placeholder="External link"
+        >
+          <ExternalProblemLink />
+        </TextFormField>
       </Box>
 
       {isEditing ? (

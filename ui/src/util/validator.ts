@@ -1,5 +1,16 @@
-export const supportedProtocols = ["http:", "https:"];
-export const supportedExternalHosts = ["mountainproject.com"];
+import { isDefined } from "./func";
+
+/**
+ * These sites are approved targets for external links. Everything else is
+ * blocked, for security reasons.
+ */
+export const supportedExternalHosts = [
+  {
+    // Need to match sure we match with and without www.
+    hostnamePattern: /^(.*\.)?mountainproject\.com$/,
+    label: "Mountain Project",
+  },
+];
 
 /**
  * The default validator. Disallows empty and egregiously long strings.
@@ -13,6 +24,18 @@ export function validateString(value: string): string | undefined {
     return "Too long";
   }
   return undefined;
+}
+
+/**
+ * Get the text label for an external link, based on its hostname.
+ * @param url A possibly-valid external URL
+ * @returns A user-friendly label for the link, e.g. "Mountain Project" for a
+ *  mountainproject.com link. Returns undefined iff the URL is invalid
+ */
+export function getExternalLinkLabel(url: URL): string | undefined {
+  return supportedExternalHosts.find(({ hostnamePattern: pattern }) =>
+    pattern.test(url.host)
+  )?.label;
 }
 
 /**
@@ -30,13 +53,13 @@ export function validateExternalLink(value: string): string | undefined {
 
   try {
     const url = new URL(value);
-    if (!supportedProtocols.includes(url.protocol)) {
+    if (!/^https?:$/.test(url.protocol)) {
       return "Unsupported URL protocol";
     }
-    if (!supportedExternalHosts.includes(url.host)) {
+    if (!isDefined(getExternalLinkLabel(url))) {
       return "Unsupported external website";
     }
-    if (value.length > 100) {
+    if (value.length > 1000) {
       return "Too long";
     }
 
