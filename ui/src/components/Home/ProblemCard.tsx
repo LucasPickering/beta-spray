@@ -4,7 +4,6 @@ import {
   CardActions,
   CardContent,
   CardMedia,
-  Link,
   Skeleton,
   Typography,
 } from "@mui/material";
@@ -22,6 +21,7 @@ import TooltipIconButton from "components/common/TooltipIconButton";
 import useForm from "util/useForm";
 import TextFormField from "components/common/TextFormField";
 import { validateExternalLink } from "util/validator";
+import ExternalProblemLink from "components/common/ExternalProblemLink";
 
 const dateFormat = new Intl.DateTimeFormat(undefined, { dateStyle: "long" });
 
@@ -92,7 +92,7 @@ const ProblemCard: React.FC<Props> = ({
   }
 
   return (
-    <Card>
+    <Card sx={{ height: "100%" }}>
       <CardActionArea component={LinkBehavior} href={linkPath}>
         <CardMedia sx={{ height: 200 }}>
           {problem.boulder.image.url ? (
@@ -124,20 +124,20 @@ const ProblemCard: React.FC<Props> = ({
             <Skeleton />
           )}
         </Typography>
-        <Typography>
-          <Link href={externalLinkState.value}>
-            {isDefined(problem.externalLink) ? (
-              <TextFormField
-                isEditing={isEditing}
-                state={externalLinkState}
-                placeholder="External link (e.g. Mountain Project)"
-              />
-            ) : (
-              // Missing value indicates it's still loading
-              <Skeleton />
-            )}
-          </Link>
-        </Typography>
+
+        {/* Not all problems have a link, so hide it until it's loaded */}
+        {isDefined(problem.externalLink) && (
+          <div>
+            <TextFormField
+              isEditing={isEditing}
+              state={externalLinkState}
+              placeholder="External link (e.g. Mountain Project)"
+            >
+              <ExternalProblemLink />
+            </TextFormField>
+          </div>
+        )}
+
         <Typography variant="subtitle1" component="span" color="text.secondary">
           {dateFormat.format(new Date(problem.createdAt))}
         </Typography>
