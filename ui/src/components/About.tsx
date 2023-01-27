@@ -1,5 +1,5 @@
 import { Link, Stack, Typography } from "@mui/material";
-import { IconGitHub, IconTwitter } from "assets";
+import { IconGitHub } from "assets";
 
 const About: React.FC = () => (
   <>
@@ -23,9 +23,6 @@ const About: React.FC = () => (
     </Typography>
 
     <Stack direction="row" alignItems="center" spacing={2}>
-      <Link href="https://twitter.com/pucaslickering">
-        <IconTwitter fontSize="large" />
-      </Link>
       <Link href="https://github.com/LucasPickering/beta-spray">
         <IconGitHub fontSize="large" />
       </Link>
