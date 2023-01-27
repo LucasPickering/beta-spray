@@ -5,7 +5,6 @@ import { graphql } from "relay-runtime";
 import { EditorSelectedBetaContext } from "components/Editor/util/context";
 import { DropHandler, getItemWithKind } from "components/Editor/util/dnd";
 import { assertIsDefined } from "util/func";
-import { useHighlight } from "components/Editor/util/highlight";
 import useMutation from "util/useMutation";
 import HoldEditorDropZone from "./HoldEditorDropZone";
 import HoldOverlay from "./HoldOverlay";
@@ -15,6 +14,7 @@ import { HoldEditor_insertBetaMoveMutation } from "./__generated__/HoldEditor_in
 import { HoldEditor_problemNode$key } from "./__generated__/HoldEditor_problemNode.graphql";
 import { HoldEditor_updateHoldMutation } from "./__generated__/HoldEditor_updateHoldMutation.graphql";
 import { HoldEditor_updateBetaMoveMutation } from "./__generated__/HoldEditor_updateBetaMoveMutation.graphql";
+import { StanceContext } from "components/Editor/util/stance";
 
 interface Props {
   problemKey: HoldEditor_problemNode$key;
@@ -27,7 +27,7 @@ interface Props {
  */
 const HoldEditor: React.FC<Props> = ({ problemKey }) => {
   const selectedBeta = useContext(EditorSelectedBetaContext);
-  const [, highlightMove] = useHighlight("move");
+  const [, setStanceMoveId] = useContext(StanceContext);
 
   const problem = useFragment(
     graphql`
@@ -212,9 +212,9 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
                 },
               },
               onCompleted(result) {
-                // Highlight the new move
+                // Update stance to include the new move
                 assertIsDefined(result.appendBetaMove);
-                highlightMove(result.appendBetaMove.betaMove.id);
+                setStanceMoveId(result.appendBetaMove.betaMove.id);
               },
               // Punting on optimistic update because ordering is hard
               // We could hypothetically add this, but we'd need to pipe down
@@ -231,9 +231,9 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
                 },
               },
               onCompleted(result) {
-                // Highlight the new move
+                // Update stance to include the new move
                 assertIsDefined(result.insertBetaMove);
-                highlightMove(result.insertBetaMove.betaMove.id);
+                setStanceMoveId(result.insertBetaMove.betaMove.id);
               },
               // Punting on optimistic update because ordering is hard
             });
@@ -272,9 +272,9 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
             },
           },
           onCompleted(result) {
-            // Highlight the new move
+            // Update stance to include the new move
             assertIsDefined(result.appendBetaMove);
-            highlightMove(result.appendBetaMove.betaMove.id);
+            setStanceMoveId(result.appendBetaMove.betaMove.id);
           },
           // Punting on optimistic update because ordering is hard
           // We could hypothetically add this, but we'd need to pipe down
@@ -291,9 +291,9 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
             },
           },
           onCompleted(result) {
-            // Highlight the new move
+            // Update stance to include the new move
             assertIsDefined(result.insertBetaMove);
-            highlightMove(result.insertBetaMove.betaMove.id);
+            setStanceMoveId(result.insertBetaMove.betaMove.id);
           },
           // Punting on optimistic update because ordering is hard
         });

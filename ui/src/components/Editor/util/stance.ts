@@ -17,10 +17,9 @@ import {
  * look at the most recent move for each body part *before* the stance move.
  * This will be undefined iff the beta is empty.
  */
-const StanceContext = React.createContext<StateContext<string | undefined>>([
-  undefined,
-  noop,
-]);
+export const StanceContext = React.createContext<
+  StateContext<string | undefined>
+>([undefined, noop]);
 
 /**
  * Only export the provider. We want to restrict all read access to go through
