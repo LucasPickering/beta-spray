@@ -1,5 +1,5 @@
 import { Box, Divider, Link, Stack, Typography } from "@mui/material";
-import { IconGitHub, IconTwitter } from "assets";
+import { IconGitHub } from "assets";
 import useIsWide from "util/useIsWide";
 
 const Footer: React.FC = () => {
@@ -25,9 +25,6 @@ const Footer: React.FC = () => {
           <Stack direction="row" alignItems="center" spacing={1}>
             <div>Feedback?</div>
 
-            <Link href="https://twitter.com/pucaslickering">
-              <IconTwitter />
-            </Link>
             <Link href="https://github.com/LucasPickering/beta-spray">
               <IconGitHub />
             </Link>
