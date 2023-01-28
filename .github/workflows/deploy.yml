@@ -1,0 +1,82 @@
+name: Deploy Site
+
+on:
+  workflow_dispatch:
+
+jobs:
+  select-env:
+    name: Select deployment environment
+    runs-on: ubuntu-latest
+    outputs:
+      env_name: ${{ steps.select-env.outputs.env_name }}
+    steps:
+      - name: Check branch name
+        id: select-env
+        run: |
+          echo "Running on branch ${{ github.ref_name }}"
+          if [ "${{ github.ref_name }}" = "master" ]; then
+            ENV_NAME=production
+          else
+            ENV_NAME=development
+          fi
+          echo "Environment is $ENV_NAME"
+          echo "env_name=$ENV_NAME" >> $GITHUB_OUTPUT
+
+  # The hostname for the deployment is stored in the environment, which means
+  # we have to read it *after* selecting the environment, but *before* the job
+  # that needs it in the environment definition, so it has to be in its own job
+  read-env:
+    name: Read hostname from environment
+    runs-on: ubuntu-latest
+    environment: ${{ needs.select-env.outputs.env_name }}
+    outputs:
+      hostname: ${{ steps.read-env.outputs.hostname }}
+    needs:
+      - select-env
+    steps:
+      - name: Read hostname from environment
+        id: read-env
+        run: |
+          HOSTNAME=${{ vars.HOSTNAME }}
+          echo "Hostname is $HOSTNAME"
+          echo "hostname=$HOSTNAME" >> $GITHUB_OUTPUT
+
+  deploy-app:
+    name: Deploy Kubernetes app
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ needs.select-env.outputs.env_name }}
+      url: https://${{ needs.read-env.outputs.hostname }}/
+    needs:
+      - read-env
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Save kubeconfig
+        run: doctl kubernetes cluster kubeconfig save ${{ vars.CLUSTER_NAME }} --expiry-seconds 600
+
+      - name: Helm deploy
+        # The two TLS secrets have to be put in files because they're multi-line
+        run: |
+          echo "${{ secrets.TLS_CERT }}" > /tmp/tls_cert
+          echo "${{ secrets.TLS_KEY }}" > /tmp/tls_key
+          helm upgrade beta-spray ./deploy/helm/ \
+            --install \
+            --namespace ${{ secrets.NAMESPACE }} \
+            --create-namespace \
+            --set-string versionSha="${{ github.sha }}" \
+            --set-string hostname="${{ vars.HOSTNAME }}" \
+            --set-string mediaBucket="${{ secrets.MEDIA_BUCKET }}" \
+            --set-string staticAssetsHost=storage.googleapis.com \
+            --set-string staticAssetsBucket="${{ secrets.STATIC_ASSETS_BUCKET }}" \
+            --set-string apiGcpKey="${{ secrets.API_GCP_KEY }}" \
+            --set-string apiSecretKey="${{ secrets.API_SECRET_KEY }}" \
+            --set-string databasePassword="${{ secrets.DATABASE_PASSWORD }}" \
+            --set-file tlsCert=/tmp/tls_cert \
+            --set-file tlsKey=/tmp/tls_key
