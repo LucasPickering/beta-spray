@@ -14,8 +14,8 @@ on:
 
 jobs:
   # These run natively cause it's faster
-  check-ui:
-    name: "Lint & Test UI"
+  ui-test:
+    name: "UI/Test"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -43,8 +43,8 @@ jobs:
         working-directory: ui/
         run: npm run test
 
-  check-api:
-    name: "Lint API"
+  api-lint:
+    name: "API/Lint"
     runs-on: ubuntu-latest
     env:
       DJANGO_SETTINGS_MODULE: beta_spray.settings.settings_dev
@@ -83,13 +83,9 @@ jobs:
         working-directory: api/
         run: poetry run ./src/manage.py makemigrations --skip-checks --dry-run --check
 
-      - name: Run Django tests
-        working-directory: api/
-        run: poetry run ./src/manage.py test
-
-  # This runs in a docker container cause it needs DB access
-  test-api:
-    name: "Test API"
+  # This runs in a docker container because it needs DB access
+  api-test:
+    name: "API/Test"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

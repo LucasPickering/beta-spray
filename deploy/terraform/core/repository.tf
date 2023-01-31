@@ -14,7 +14,14 @@ resource "github_branch_protection" "master" {
   require_signed_commits          = false
 
   required_status_checks {
-    strict   = true
-    contexts = []
+    strict = true
+    contexts = [
+      "API/Build",
+      "UI/Build",
+      "General/Upload",
+      "UI/Test",
+      "API/Lint",
+      "API/Test",
+    ]
   }
 }
