@@ -321,7 +321,7 @@ export function useBetaMoveColor(): (betaMoveId: string) => string {
         // eslint-disable-next-line no-console
         console.warn(
           `No color for beta move ${betaMoveId}. Either the ID is unknown or` +
-            ` color was't initialized in this part of the component tree.`
+            ` color wasn't initialized in this part of the component tree.`
         );
         return "#000000";
       }
