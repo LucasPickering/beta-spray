@@ -14,7 +14,7 @@ import { AddBetaMoveMark_betaMoveNode$key } from "./__generated__/AddBetaMoveMar
 
 interface Props {
   betaMoveKey: AddBetaMoveMark_betaMoveNode$key;
-  onDragFinish?: DragFinishHandler<"overlayBetaMove", "dropZone" | "hold">;
+  onDragFinish?: DragFinishHandler<"overlayBetaMove">;
 }
 
 const offsetDistance = 4.5;

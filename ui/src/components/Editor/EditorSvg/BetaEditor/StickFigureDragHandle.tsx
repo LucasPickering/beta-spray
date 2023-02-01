@@ -7,7 +7,7 @@ import BetaMoveIcon from "./BetaMoveIcon";
 interface Props {
   bodyPart: BodyPart;
   position: OverlayPosition;
-  onDragFinish?: DragFinishHandler<"overlayBetaMove", "dropZone" | "hold">;
+  onDragFinish?: DragFinishHandler<"overlayBetaMove">;
 }
 
 const StickFigureDragHandle: React.FC<Props> = ({

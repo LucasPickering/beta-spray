@@ -96,16 +96,11 @@ export type DropResult<K extends DragKind = DragKind> =
 
 /**
  * A handler to be called *from a drag item* when a drag is finished. User must
- * declare both the expected drag item type as well as the expected drop type.
- * In most contexts where this is used, both will be known statically and thus
- * it makes our lives a bit easier.
+ * declare the expected drag item type.
  */
-export type DragFinishHandler<
-  K extends DragKind,
-  J extends DropResult<K>["kind"]
-> = (
+export type DragFinishHandler<K extends DragKind> = (
   item: DragItem<K>,
-  result: Extract<DropResult<K>, { kind: J }>,
+  result: DropResult<K>,
   monitor: DragSourceMonitor<DragItem<K>, DropResult<K>>
 ) => void;
 

@@ -176,10 +176,7 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
   const stance = useStance(beta.moves);
   const { select: selectStance } = useStanceControls(beta.moves);
 
-  const onDragFinish: DragFinishHandler<
-    "overlayBetaMove",
-    "dropZone" | "hold"
-  > = (item, result) => {
+  const onDragFinish: DragFinishHandler<"overlayBetaMove"> = (item, result) => {
     // Regardless of the mutation kind, we'll pass either `holdId` OR `position`
     // (but not both), based on the drop target.
     const mutationParams =
