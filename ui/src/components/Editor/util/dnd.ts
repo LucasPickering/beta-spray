@@ -25,7 +25,7 @@ import { DistributivePick } from "util/typing";
 export type DragType =
   | {
       kind: "overlayHold";
-      item: { action: "create" } | { action: "relocate"; holdId: string };
+      item: { action: "relocate"; holdId: string };
       drop: { kind: "dropZone"; position: OverlayPosition };
     }
   | {

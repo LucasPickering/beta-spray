@@ -19,7 +19,7 @@ const HelpTextContent: React.FC = () => {
   return (
     <>
       <div>
-        <strong>Drag from the palette</strong> to create holds
+        <strong>Click the hold button</strong> to add a new hold
       </div>
       <div>
         <strong>Drag a move or hold</strong> to relocate

@@ -98,11 +98,12 @@ BetaMoveIcon.displayName = "BetaMoveIcon";
  * HTML context (i.e. outside of an SVG).
  */
 export const BetaMoveIconWrapped: React.FC<
-  Props & Pick<SvgIconProps, "fontSize">
-> = ({ fontSize, ...rest }) => (
+  Props & Pick<SvgIconProps, "fontSize" | "children">
+> = ({ fontSize, children, ...rest }) => (
   // View box was determined experimentally, so it's slightly off but close enough
   <SvgIcon viewBox="-4.5 -4.5 9 9" fontSize={fontSize}>
     <BetaMoveIcon {...rest} />
+    {children}
   </SvgIcon>
 );
 
