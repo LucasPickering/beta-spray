@@ -24,6 +24,7 @@ export const problemQuery = graphql`
       ...ProblemMetadata_problemNode
       ...BetaList_problemNode
       ...HoldActions_problemNode
+      ...AddHoldButton_problemNode
     }
   }
 `;

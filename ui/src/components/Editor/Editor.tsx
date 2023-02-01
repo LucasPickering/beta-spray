@@ -110,7 +110,7 @@ const Editor: React.FC = () => {
             sx={{ overflow: "hidden" }}
           >
             {/* Wrapper for the SVG, to provide background color and spacing
-                  during loading */}
+                during loading */}
             <Box
               position="relative"
               width="100%"
@@ -125,10 +125,13 @@ const Editor: React.FC = () => {
               />
 
               {/* These buttons live with the SVG, so that they don't get
-                      covered by the drawer on desktop */}
+                  covered by the drawer on desktop */}
               {/* Top-left overlay buttons */}
               <Box sx={{ position: "absolute", top: 0, left: 0, margin: 1 }}>
-                <EditorPalette betaQueryRef={betaQueryRef} />
+                <EditorPalette
+                  problemQueryRef={problemQueryRef}
+                  betaQueryRef={betaQueryRef}
+                />
               </Box>
 
               {/* Buttons at the bottom of the screen */}
@@ -139,7 +142,7 @@ const Editor: React.FC = () => {
             </Box>
 
             {/* Top-right drawer button is mobile-only, rendered by
-                    ToggleDrawer */}
+                ToggleDrawer */}
 
             {/* Controls sidebar/drawer */}
             <EditorControls>

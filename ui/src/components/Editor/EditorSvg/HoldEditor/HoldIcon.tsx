@@ -6,7 +6,7 @@ import {
   styleHighlight,
 } from "styles/svg";
 import { Interpolation, Theme } from "@emotion/react";
-import { SvgIcon, useTheme } from "@mui/material";
+import { SvgIcon, SvgIconProps, useTheme } from "@mui/material";
 
 interface Props {
   clickable?: boolean;
@@ -57,10 +57,13 @@ const HoldIcon: React.FC<Props> = ({
  * A standalone version of a hold icon, which can be used in standard HTML
  * context (i.e. outside of an SVG).
  */
-export const HoldIconWrapped: React.FC<Props> = (props) => (
+export const HoldIconWrapped: React.FC<
+  Props & Pick<SvgIconProps, "children">
+> = ({ children, ...rest }) => (
   <SvgIcon viewBox="-6.5 -6.5 13 13">
     {/* The low opacity looks wonky in other contexts */}
-    <HoldIcon css={{ opacity: 1 }} {...props} />
+    <HoldIcon css={{ opacity: 1 }} {...rest} />
+    {children}
   </SvgIcon>
 );
 

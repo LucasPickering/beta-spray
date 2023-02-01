@@ -1,7 +1,6 @@
 import { useContext } from "react";
 import { Divider, IconButton, Paper, Stack } from "@mui/material";
 import HelpText from "./HelpText";
-import DragSourceButton from "./DragSourceButton";
 import {
   ArrowBack as IconArrowBack,
   Visibility as IconVisibility,
@@ -11,11 +10,13 @@ import { EditorVisibilityContext } from "components/Editor/util/context";
 import { PreloadedQuery } from "react-relay";
 import { queriesBetaQuery } from "../__generated__/queriesBetaQuery.graphql";
 import PlayPauseControls from "./PlayPauseControls";
-import { HoldIconWrapped } from "../EditorSvg/HoldEditor/HoldIcon";
 import TooltipIconButton from "components/common/TooltipIconButton";
 import { Link } from "react-router-dom";
+import AddHoldButton from "./AddHoldButton";
+import { queriesProblemQuery } from "../__generated__/queriesProblemQuery.graphql";
 
 interface Props {
+  problemQueryRef: PreloadedQuery<queriesProblemQuery> | null | undefined;
   betaQueryRef: PreloadedQuery<queriesBetaQuery> | null | undefined;
 }
 
@@ -25,7 +26,7 @@ interface Props {
  *
  * Appears in the top-left corner.
  */
-const EditorPalette: React.FC<Props> = ({ betaQueryRef }) => {
+const EditorPalette: React.FC<Props> = ({ problemQueryRef, betaQueryRef }) => {
   const [visibility, setVisibility] = useContext(EditorVisibilityContext);
 
   return (
@@ -50,13 +51,7 @@ const EditorPalette: React.FC<Props> = ({ betaQueryRef }) => {
             {visibility ? <IconVisibilityOff /> : <IconVisibility />}
           </TooltipIconButton>
 
-          <DragSourceButton
-            title="Hold"
-            disabled={!visibility}
-            dragSpec={{ type: "overlayHold", item: { action: "create" } }}
-          >
-            <HoldIconWrapped />
-          </DragSourceButton>
+          <AddHoldButton queryRef={problemQueryRef} disabled={!visibility} />
         </Stack>
 
         <Stack direction="row">

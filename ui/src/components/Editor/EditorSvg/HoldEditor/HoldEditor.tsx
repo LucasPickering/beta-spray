@@ -4,7 +4,6 @@ import { graphql } from "relay-runtime";
 import { DropHandler, getItemWithKind } from "components/Editor/util/dnd";
 import useMutation from "util/useMutation";
 import HoldEditorDropZone from "./HoldEditorDropZone";
-import { HoldEditor_createHoldMutation } from "./__generated__/HoldEditor_createHoldMutation.graphql";
 import { HoldEditor_problemNode$key } from "./__generated__/HoldEditor_problemNode.graphql";
 import { HoldEditor_updateHoldMutation } from "./__generated__/HoldEditor_updateHoldMutation.graphql";
 import HoldMark from "./HoldMark";
@@ -38,23 +37,6 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
     problemKey
   );
 
-  const { commit: createHold, state: createHoldState } =
-    useMutation<HoldEditor_createHoldMutation>(graphql`
-      mutation HoldEditor_createHoldMutation(
-        $input: CreateHoldMutationInput!
-        $connections: [ID!]!
-      ) {
-        createHold(input: $input) {
-          hold
-            @appendNode(
-              connections: $connections
-              edgeTypeName: "HoldNodeEdge"
-            ) {
-            ...HoldMark_holdNode
-          }
-        }
-      }
-    `);
   const { commit: updateHold, state: updateHoldState } =
     useMutation<HoldEditor_updateHoldMutation>(graphql`
       mutation HoldEditor_updateHoldMutation($input: UpdateHoldMutationInput!) {
@@ -87,25 +69,6 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
       const position = result.position;
       // Apply mutation based on what type of hold was being dragged - existing or new?
       switch (item.action) {
-        case "create":
-          createHold({
-            variables: {
-              input: {
-                boulderId: problem.boulder.id,
-                problemId: problem.id,
-                position,
-              },
-              // We only need to add to the problem holds here, because the
-              // boulder holds aren't accessed directly in the UI
-              connections: [problem.holds.__id],
-            },
-            // We'll create a phantom hold with no ID until the real one
-            // comes in
-            optimisticResponse: {
-              createHold: { hold: { id: "", position } },
-            },
-          });
-          break;
         case "relocate":
           updateHold({
             variables: {
@@ -130,10 +93,6 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
         <HoldMark key={node.id} holdKey={node} />
       ))}
 
-      <MutationErrorSnackbar
-        message="Error creating hold"
-        state={createHoldState}
-      />
       <MutationErrorSnackbar
         message="Error moving hold"
         state={updateHoldState}
