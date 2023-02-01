@@ -15,6 +15,7 @@ import Line from "../common/Line";
 import StickFigureDragHandle from "./StickFigureDragHandle";
 import { useStance } from "components/Editor/util/stance";
 import { SvgContext } from "components/Editor/util/context";
+import { DragFinishHandler } from "components/Editor/util/dnd";
 
 /**
  * The torso will always be this percentage of the distance between hands and
@@ -26,12 +27,16 @@ const headRadius = 3;
 
 interface Props {
   betaMoveConnectionKey: stance_betaMoveNodeConnection$key;
+  onDragFinish?: DragFinishHandler<"overlayBetaMove", "dropZone" | "hold">;
 }
 
 /**
  * A visual for the body's current position.
  */
-const StickFigure: React.FC<Props> = ({ betaMoveConnectionKey }) => {
+const StickFigure: React.FC<Props> = ({
+  betaMoveConnectionKey,
+  onDragFinish,
+}) => {
   // Find which moves are in the current body position
   const stance = useStance(betaMoveConnectionKey);
   const { dimensions: svgDimensions } = useContext(SvgContext);
@@ -85,6 +90,7 @@ const StickFigure: React.FC<Props> = ({ betaMoveConnectionKey }) => {
             <StickFigureDragHandle
               bodyPart={bodyPart}
               position={positions[bodyPart]}
+              onDragFinish={onDragFinish}
             />
           )}
         </React.Fragment>
