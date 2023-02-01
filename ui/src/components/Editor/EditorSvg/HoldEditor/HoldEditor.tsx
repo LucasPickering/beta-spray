@@ -1,34 +1,22 @@
 import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
-import { useContext } from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
-import { EditorSelectedBetaContext } from "components/Editor/util/context";
 import { DropHandler, getItemWithKind } from "components/Editor/util/dnd";
-import { assertIsDefined } from "util/func";
 import useMutation from "util/useMutation";
 import HoldEditorDropZone from "./HoldEditorDropZone";
-import HoldOverlay from "./HoldOverlay";
-import { HoldEditor_appendBetaMoveMutation } from "./__generated__/HoldEditor_appendBetaMoveMutation.graphql";
 import { HoldEditor_createHoldMutation } from "./__generated__/HoldEditor_createHoldMutation.graphql";
-import { HoldEditor_insertBetaMoveMutation } from "./__generated__/HoldEditor_insertBetaMoveMutation.graphql";
 import { HoldEditor_problemNode$key } from "./__generated__/HoldEditor_problemNode.graphql";
 import { HoldEditor_updateHoldMutation } from "./__generated__/HoldEditor_updateHoldMutation.graphql";
-import { HoldEditor_updateBetaMoveMutation } from "./__generated__/HoldEditor_updateBetaMoveMutation.graphql";
-import { StanceContext } from "components/Editor/util/stance";
+import HoldMark from "./HoldMark";
 
 interface Props {
   problemKey: HoldEditor_problemNode$key;
 }
 
 /**
- * A smart component for editing holds in an image or problem. This ALSO
- * handles mutation logic for moves, because the drop target is either the
- * hold drop zone, or individual holds.
+ * A smart component for editing holds in an image or problem.
  */
 const HoldEditor: React.FC<Props> = ({ problemKey }) => {
-  const selectedBeta = useContext(EditorSelectedBetaContext);
-  const [, setStanceMoveId] = useContext(StanceContext);
-
   const problem = useFragment(
     graphql`
       fragment HoldEditor_problemNode on ProblemNode {
@@ -38,10 +26,10 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
         }
         holds {
           __id
-          ...HoldOverlay_holdConnection
           edges {
             node {
               id
+              ...HoldMark_holdNode
             }
           }
         }
@@ -79,69 +67,6 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
       }
     `);
 
-  // These mutations are all for modifying moves, since they get called when
-  // a move is dropped *onto* a hold/drop zone
-  //
-  // Append new move to end of the beta
-  const { commit: appendBetaMove, state: appendBetaMoveState } =
-    useMutation<HoldEditor_appendBetaMoveMutation>(graphql`
-      mutation HoldEditor_appendBetaMoveMutation(
-        $input: AppendBetaMoveMutationInput!
-      ) {
-        appendBetaMove(input: $input) {
-          betaMove {
-            id
-            beta {
-              ...BetaEditor_betaNode # Refetch to update UI
-            }
-          }
-        }
-      }
-    `);
-  // Insert a new move into the middle of the beta
-  const { commit: insertBetaMove, state: insertBetaMoveState } =
-    useMutation<HoldEditor_insertBetaMoveMutation>(graphql`
-      mutation HoldEditor_insertBetaMoveMutation(
-        $input: InsertBetaMoveMutationInput!
-      ) {
-        insertBetaMove(input: $input) {
-          betaMove {
-            id
-            beta {
-              ...BetaEditor_betaNode # Refetch to update UI
-            }
-          }
-        }
-      }
-    `);
-  // Relocate an existing move
-  const { commit: updateBetaMove, state: updateBetaMoveState } =
-    useMutation<HoldEditor_updateBetaMoveMutation>(graphql`
-      mutation HoldEditor_updateBetaMoveMutation(
-        $input: UpdateBetaMoveMutationInput!
-      ) {
-        updateBetaMove(input: $input) {
-          betaMove {
-            id
-            # These are the only fields we modify
-            # Yes, we need to refetch both positions, in case the move was
-            # converted from free to attached or vice versa
-            hold {
-              id
-              position {
-                x
-                y
-              }
-            }
-            position {
-              x
-              y
-            }
-          }
-        }
-      }
-    `);
-
   /**
    * Callback when a dnd item is dropped on the drop zone (which covers the
    * whole image). The drop item can be a hold OR a move (in which case the move
@@ -155,166 +80,43 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
       monitor
     );
 
-    const position = result.position;
-
-    switch (itemWithKind.kind) {
-      // Hold was dropped
-      case "overlayHold": {
-        const item = itemWithKind.item;
-        // Apply mutation based on what type of hold was being dragged - existing or new?
-        switch (item.action) {
-          case "create":
-            createHold({
-              variables: {
-                input: {
-                  boulderId: problem.boulder.id,
-                  problemId: problem.id,
-                  position,
-                },
-                // We only need to add to the problem holds here, because the
-                // boulder holds aren't accessed directly in the UI
-                connections: [problem.holds.__id],
+    // Moves can also get dropped on the drop zone, but those get handled on
+    // the drag side
+    if (itemWithKind.kind === "overlayHold") {
+      const item = itemWithKind.item;
+      const position = result.position;
+      // Apply mutation based on what type of hold was being dragged - existing or new?
+      switch (item.action) {
+        case "create":
+          createHold({
+            variables: {
+              input: {
+                boulderId: problem.boulder.id,
+                problemId: problem.id,
+                position,
               },
-              // We'll create a phantom hold with no ID until the real one
-              // comes in
-              optimisticResponse: {
-                createHold: { hold: { id: "", position } },
-              },
-            });
-            break;
-          case "relocate":
-            updateHold({
-              variables: {
-                input: { holdId: item.holdId, position },
-              },
-              optimisticResponse: {
-                updateHold: { hold: { id: item.holdId, position } },
-              },
-            });
-            break;
-        }
-        break;
+              // We only need to add to the problem holds here, because the
+              // boulder holds aren't accessed directly in the UI
+              connections: [problem.holds.__id],
+            },
+            // We'll create a phantom hold with no ID until the real one
+            // comes in
+            optimisticResponse: {
+              createHold: { hold: { id: "", position } },
+            },
+          });
+          break;
+        case "relocate":
+          updateHold({
+            variables: {
+              input: { holdId: item.holdId, position },
+            },
+            optimisticResponse: {
+              updateHold: { hold: { id: item.holdId, position } },
+            },
+          });
+          break;
       }
-
-      // Move was dropped
-      case "overlayBetaMove": {
-        const item = itemWithKind.item;
-        switch (item.action) {
-          // Dragged a body part from the stick figure
-          case "create":
-            assertIsDefined(selectedBeta); // Beta must be selected to get this far
-            appendBetaMove({
-              variables: {
-                input: {
-                  betaId: selectedBeta,
-                  bodyPart: item.bodyPart,
-                  position,
-                },
-              },
-              onCompleted(result) {
-                // Update stance to include the new move
-                assertIsDefined(result.appendBetaMove);
-                setStanceMoveId(result.appendBetaMove.betaMove.id);
-              },
-              // Punting on optimistic update because ordering is hard
-              // We could hypothetically add this, but we'd need to pipe down
-              // the total number of moves so we can do n+1 here
-            });
-            break;
-          // Dragged a line between two moves (insert after the starting move)
-          case "insertAfter":
-            insertBetaMove({
-              variables: {
-                input: {
-                  previousBetaMoveId: item.betaMoveId,
-                  position,
-                },
-              },
-              onCompleted(result) {
-                // Update stance to include the new move
-                assertIsDefined(result.insertBetaMove);
-                setStanceMoveId(result.insertBetaMove.betaMove.id);
-              },
-              // Punting on optimistic update because ordering is hard
-            });
-            break;
-          // Dragged an existing move
-          case "relocate":
-            updateBetaMove({
-              variables: {
-                input: { betaMoveId: item.betaMoveId, position },
-              },
-              optimisticResponse: {
-                updateBetaMove: {
-                  betaMove: { id: item.betaMoveId, hold: null, position },
-                },
-              },
-            });
-        }
-      }
-    }
-  };
-
-  const onHoldDrop: DropHandler<"overlayBetaMove", "hold"> = (
-    item,
-    { holdId, position }
-  ) => {
-    switch (item.action) {
-      // Dragged a body part from the stick figure
-      case "create":
-        assertIsDefined(selectedBeta); // Beta must be selected to get this far
-        appendBetaMove({
-          variables: {
-            input: {
-              betaId: selectedBeta,
-              bodyPart: item.bodyPart,
-              holdId,
-            },
-          },
-          onCompleted(result) {
-            // Update stance to include the new move
-            assertIsDefined(result.appendBetaMove);
-            setStanceMoveId(result.appendBetaMove.betaMove.id);
-          },
-          // Punting on optimistic update because ordering is hard
-          // We could hypothetically add this, but we'd need to pipe down
-          // the total number of moves so we can do n+1 here
-        });
-        break;
-      // Dragged a line between two moves (insert after the starting move)
-      case "insertAfter":
-        insertBetaMove({
-          variables: {
-            input: {
-              previousBetaMoveId: item.betaMoveId,
-              holdId,
-            },
-          },
-          onCompleted(result) {
-            // Update stance to include the new move
-            assertIsDefined(result.insertBetaMove);
-            setStanceMoveId(result.insertBetaMove.betaMove.id);
-          },
-          // Punting on optimistic update because ordering is hard
-        });
-        break;
-      // Dragged an existing move
-      case "relocate":
-        updateBetaMove({
-          variables: {
-            input: { betaMoveId: item.betaMoveId, holdId },
-          },
-          optimisticResponse: {
-            updateBetaMove: {
-              betaMove: {
-                id: item.betaMoveId,
-                // Move is attached - position comes indirectly from the hold
-                hold: { id: holdId, position },
-                position: null,
-              },
-            },
-          },
-        });
     }
   };
 
@@ -323,13 +125,10 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
       {/* Invisible layer to capture holds being dropped */}
       <HoldEditorDropZone onDrop={onDropZoneDrop} />
 
-      {/* Overlay goes on top of the drop zones so holds are clickable */}
-      <HoldOverlay
-        // Always render all holds, but if we're editing a specific problem,
-        // highlight those holds
-        holdConnectionKey={problem.holds}
-        onDrop={onHoldDrop}
-      />
+      {/* Holds goes on top of the drop zones so they're clickable */}
+      {problem.holds.edges.map(({ node }) => (
+        <HoldMark key={node.id} holdKey={node} />
+      ))}
 
       <MutationErrorSnackbar
         message="Error creating hold"
@@ -338,18 +137,6 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
       <MutationErrorSnackbar
         message="Error moving hold"
         state={updateHoldState}
-      />
-      <MutationErrorSnackbar
-        message="Error adding move"
-        state={appendBetaMoveState}
-      />
-      <MutationErrorSnackbar
-        message="Error updating move"
-        state={updateBetaMoveState}
-      />
-      <MutationErrorSnackbar
-        message="Error adding move"
-        state={insertBetaMoveState}
       />
     </>
   );

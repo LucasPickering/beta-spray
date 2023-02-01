@@ -1,8 +1,5 @@
 import { useState } from "react";
-import {
-  EditorVisibilityContext,
-  EditorSelectedBetaContext,
-} from "./util/context";
+import { EditorVisibilityContext } from "./util/context";
 import {
   HighlightedItem,
   EditorHighlightedItemContext,
@@ -10,7 +7,6 @@ import {
 import { StanceContextProvider } from "./util/stance";
 
 interface Props {
-  selectedBeta: string | undefined;
   children?: React.ReactNode;
 }
 
@@ -18,7 +14,7 @@ interface Props {
  * A component to manage global state for the editor. All state fields will be
  * stored here, and provided to the entire Editor tree via context.
  */
-const EditorState: React.FC<Props> = ({ selectedBeta, children }) => {
+const EditorState: React.FC<Props> = ({ children }) => {
   // These *don't* unpack the array, so they can be passed to context without
   // unnecessarily creating a new array object (and thus re-render)
 
@@ -32,13 +28,11 @@ const EditorState: React.FC<Props> = ({ selectedBeta, children }) => {
 
   return (
     <EditorVisibilityContext.Provider value={visibilityState}>
-      <EditorSelectedBetaContext.Provider value={selectedBeta}>
-        <EditorHighlightedItemContext.Provider value={highlightedItemState}>
-          <StanceContextProvider value={stanceState}>
-            {children}
-          </StanceContextProvider>
-        </EditorHighlightedItemContext.Provider>
-      </EditorSelectedBetaContext.Provider>
+      <EditorHighlightedItemContext.Provider value={highlightedItemState}>
+        <StanceContextProvider value={stanceState}>
+          {children}
+        </StanceContextProvider>
+      </EditorHighlightedItemContext.Provider>
     </EditorVisibilityContext.Provider>
   );
 };

@@ -1,5 +1,5 @@
 import { useTheme } from "@mui/material";
-import { useDrag } from "components/Editor/util/dnd";
+import { DragFinishHandler, useDrag } from "components/Editor/util/dnd";
 import {
   add,
   BodyPart,
@@ -8,11 +8,14 @@ import {
 } from "components/Editor/util/svg";
 import { graphql, useFragment } from "react-relay";
 import { styleDraggable, styleDragging } from "styles/svg";
+import { isDefined } from "util/func";
 import Positioned from "../common/Positioned";
 import { AddBetaMoveMark_betaMoveNode$key } from "./__generated__/AddBetaMoveMark_betaMoveNode.graphql";
 
 interface Props {
   betaMoveKey: AddBetaMoveMark_betaMoveNode$key;
+  // TODO don't pass second type param
+  onDragFinish?: DragFinishHandler<"overlayBetaMove", "dropZone" | "hold">;
 }
 
 const offsetDistance = 4.5;
@@ -31,7 +34,7 @@ const offsets: Record<BodyPart, OverlayPosition> = {
  * A drag handle to add a new beta move. This should be associated with a
  * particular move.
  */
-const AddBetaMoveMark: React.FC<Props> = ({ betaMoveKey }) => {
+const AddBetaMoveMark: React.FC<Props> = ({ betaMoveKey, onDragFinish }) => {
   const betaMove = useFragment(
     graphql`
       fragment AddBetaMoveMark_betaMoveNode on BetaMoveNode {
@@ -64,6 +67,12 @@ const AddBetaMoveMark: React.FC<Props> = ({ betaMoveKey }) => {
       return {
         isDragging: Boolean(monitor.isDragging()),
       };
+    },
+    end(draggedItem, monitor) {
+      const dropResult = monitor.getDropResult();
+      if (onDragFinish && isDefined(dropResult)) {
+        onDragFinish(draggedItem, dropResult, monitor);
+      }
     },
   });
 

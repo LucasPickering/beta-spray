@@ -26,7 +26,7 @@ export type DragType =
   | {
       kind: "overlayHold";
       item: { action: "create" } | { action: "relocate"; holdId: string };
-      drop: { kind: "dropZone"; position: OverlayPosition } | { kind: "trash" };
+      drop: { kind: "dropZone"; position: OverlayPosition };
     }
   | {
       kind: "overlayBetaMove";
@@ -38,11 +38,9 @@ export type DragType =
         | { action: "insertAfter"; bodyPart: BodyPart; betaMoveId: string };
       // hold => attached move
       // drop zone => free move
-      // trash => delete
       drop:
         | { kind: "hold"; holdId: string; position: OverlayPosition }
-        | { kind: "dropZone"; position: OverlayPosition }
-        | { kind: "trash" };
+        | { kind: "dropZone"; position: OverlayPosition };
     }
   | {
       kind: "listBetaMove";
@@ -97,11 +95,26 @@ export type DropResult<K extends DragKind = DragKind> =
   DragTypeForKind<K>["drop"];
 
 /**
+ * A handler to be called *from a drag item* when a drag is finished. User must
+ * declare both the expected drag item type as well as the expected drop type.
+ * In most contexts where this is used, both will be known statically and thus
+ * it makes our lives a bit easier.
+ */
+export type DragFinishHandler<
+  K extends DragKind,
+  J extends DropResult<K>["kind"]
+> = (
+  item: DragItem<K>,
+  result: Extract<DropResult<K>, { kind: J }>,
+  monitor: DragSourceMonitor<DragItem<K>, DropResult<K>>
+) => void;
+
+/**
  * An onDrop handler. User must declare both the expected drag item type as
  * well as the expected drop type. In most contexts where this is used, both
  * will be known statically and thus it makes our lives a bit easier.
  */
-export type DropHandler<K extends DragKind, J extends DropResult["kind"]> = (
+export type DropHandler<K extends DragKind, J extends DropResult<K>["kind"]> = (
   item: DragItem<K>,
   result: Extract<DropResult<K>, { kind: J }>,
   monitor: DropTargetMonitor<DragItem<K>, DropResult<K>>

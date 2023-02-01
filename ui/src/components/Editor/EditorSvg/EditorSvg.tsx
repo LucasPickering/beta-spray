@@ -42,12 +42,6 @@ const EditorSvg: React.FC<Props> = ({ problemKey, betaQueryRef }) => {
           ...BoulderImage_boulderNode
         }
         ...HoldEditor_problemNode
-        holds {
-          edges {
-            cursor
-          }
-          ...HoldOverlay_holdConnection
-        }
       }
     `,
     problemKey
