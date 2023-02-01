@@ -1,5 +1,9 @@
 import { useRef } from "react";
-import { useDrag, useDragLayer } from "components/Editor/util/dnd";
+import {
+  DragFinishHandler,
+  useDrag,
+  useDragLayer,
+} from "components/Editor/util/dnd";
 import { Portal, Tooltip } from "@mui/material";
 import Positioned from "../common/Positioned";
 import BetaMoveIcon from "./BetaMoveIcon";
@@ -16,12 +20,18 @@ import AddBetaMoveMark from "./AddBetaMoveMark";
 interface Props {
   betaMoveKey: BetaChainMark_betaMoveNode$key;
   isInCurrentStance: boolean;
+  // TODO don't pass second type param
+  onDragFinish?: DragFinishHandler<"overlayBetaMove", "dropZone" | "hold">;
 }
 
 /**
  * An icon representing a single beta move in a chain
  */
-const BetaChainMark: React.FC<Props> = ({ betaMoveKey, isInCurrentStance }) => {
+const BetaChainMark: React.FC<Props> = ({
+  betaMoveKey,
+  isInCurrentStance,
+  onDragFinish,
+}) => {
   const betaMove = useFragment(
     graphql`
       fragment BetaChainMark_betaMoveNode on BetaMoveNode {
@@ -63,6 +73,12 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey, isInCurrentStance }) => {
         isDragging: Boolean(monitor.isDragging()),
       };
     },
+    end(draggedItem, monitor) {
+      const dropResult = monitor.getDropResult();
+      if (onDragFinish && isDefined(dropResult)) {
+        onDragFinish(draggedItem, dropResult, monitor);
+      }
+    },
   });
 
   // Check if we're dragging *anything*. We'll mask this with isDragging from
@@ -101,7 +117,9 @@ const BetaChainMark: React.FC<Props> = ({ betaMoveKey, isInCurrentStance }) => {
         />
       </Positioned>
 
-      {isInCurrentStance && <AddBetaMoveMark betaMoveKey={betaMove} />}
+      {isInCurrentStance && (
+        <AddBetaMoveMark betaMoveKey={betaMove} onDragFinish={onDragFinish} />
+      )}
 
       {betaMove.annotation && (
         <Portal>

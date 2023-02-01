@@ -96,7 +96,7 @@ const Editor: React.FC = () => {
     >
       <EditorHelmet queryRef={problemQueryRef} />
 
-      <EditorState selectedBeta={selectedBeta}>
+      <EditorState>
         <ZoomPanProvider>
           {/* The maximum possible display area (the full screen) */}
           <Box

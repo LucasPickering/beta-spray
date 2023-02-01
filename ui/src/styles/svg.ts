@@ -15,19 +15,7 @@ export const disambiguationDistance = 5;
  * Apply to elements that are draggable and currently being hovered or dragged
  */
 export const styleDraggableHover = css({
-  // We can't scale lines because that fucks up their length, so we need to
-  // just adjust stroke width for them instead.
-  "&:not(line)": {
-    transform: "scale(1.5)",
-  },
-
-  // This is really dumb, but I can't figure out how else to select only `line`
-  // elements
-  "&:not(:not(line))": {
-    // This is a bit hacky to hard-code the stroke width, but we only have one
-    // line type right now so it's fine
-    strokeWidth: 2.5,
-  },
+  transform: "scale(1.5)",
 });
 
 /**

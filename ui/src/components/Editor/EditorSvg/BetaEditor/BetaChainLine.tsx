@@ -1,5 +1,3 @@
-import { useDrag } from "components/Editor/util/dnd";
-import { styleDraggable, styleDragging } from "styles/svg";
 import { graphql } from "relay-runtime";
 import { useFragment } from "react-relay";
 import { BetaChainLine_startBetaMoveNode$key } from "./__generated__/BetaChainLine_startBetaMoveNode.graphql";
@@ -36,21 +34,6 @@ const BetaChainLine: React.FC<Props> = ({ startMoveKey, endMoveKey }) => {
     endMoveKey
   );
 
-  const [{ isDragging }, drag] = useDrag<
-    "overlayBetaMove",
-    { isDragging: boolean }
-  >({
-    type: "overlayBetaMove",
-    item: {
-      action: "insertAfter",
-      betaMoveId: startMove.id,
-      bodyPart: startMove.bodyPart,
-    },
-    collect: (monitor) => ({
-      isDragging: Boolean(monitor.isDragging()),
-    }),
-  });
-
   const getPosition = useBetaMoveVisualPosition();
   const startPos = getPosition(startMove.id);
   const endPos = getPosition(endMove.id);
@@ -80,8 +63,7 @@ const BetaChainLine: React.FC<Props> = ({ startMoveKey, endMoveKey }) => {
         </linearGradient>
       </defs>
       <line
-        ref={drag}
-        css={[{ strokeWidth: 1 }, styleDraggable, isDragging && styleDragging]}
+        css={{ strokeWidth: 1 }}
         stroke={`url(#${gradientId})`}
         {...coords}
       />

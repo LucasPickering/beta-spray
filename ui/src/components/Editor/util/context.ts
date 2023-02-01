@@ -27,14 +27,6 @@ export const EditorVisibilityContext = React.createContext<
   StateContext<boolean>
 >([true, noop]);
 
-/**
- * ID of the selected beta. This is just the value (and doesn't include the setter)
- * because access to the setter is restricted as a tradeoff for convenience.
- */
-export const EditorSelectedBetaContext = React.createContext<
-  string | undefined
->(undefined);
-
 export interface BetaContextType {
   betaMoveColors: Map<string, string>;
   betaMoveVisualPositions: Map<string, OverlayPosition>;
