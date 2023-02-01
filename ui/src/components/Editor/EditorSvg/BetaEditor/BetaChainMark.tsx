@@ -20,7 +20,6 @@ import AddBetaMoveMark from "./AddBetaMoveMark";
 interface Props {
   betaMoveKey: BetaChainMark_betaMoveNode$key;
   isInCurrentStance: boolean;
-  // TODO don't pass second type param
   onDragFinish?: DragFinishHandler<"overlayBetaMove", "dropZone" | "hold">;
 }
 
