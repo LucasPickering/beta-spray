@@ -1,7 +1,7 @@
 import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
-import { DropHandler, getItemWithKind } from "components/Editor/util/dnd";
+import { DragFinishHandler } from "components/Editor/util/dnd";
 import useMutation from "util/useMutation";
 import HoldEditorDropZone from "./HoldEditorDropZone";
 import { HoldEditor_problemNode$key } from "./__generated__/HoldEditor_problemNode.graphql";
@@ -43,54 +43,42 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
         updateHold(input: $input) {
           hold {
             id # So relay knows how to update this node locally
-            ...HoldMark_holdNode
+            position {
+              x
+              y
+            }
           }
         }
       }
     `);
 
-  /**
-   * Callback when a dnd item is dropped on the drop zone (which covers the
-   * whole image). The drop item can be a hold OR a move (in which case the move
-   * is free).
-   */
-  const onDropZoneDrop: DropHandler<
-    "overlayHold" | "overlayBetaMove",
-    "dropZone"
-  > = (_, result, monitor) => {
-    const itemWithKind = getItemWithKind<"overlayHold" | "overlayBetaMove">(
-      monitor
-    );
-
-    // Moves can also get dropped on the drop zone, but those get handled on
-    // the drag side
-    if (itemWithKind.kind === "overlayHold") {
-      const item = itemWithKind.item;
-      const position = result.position;
-      // Apply mutation based on what type of hold was being dragged - existing or new?
-      switch (item.action) {
-        case "relocate":
-          updateHold({
-            variables: {
-              input: { holdId: item.holdId, position },
-            },
-            optimisticResponse: {
-              updateHold: { hold: { id: item.holdId, position } },
-            },
-          });
-          break;
-      }
-    }
+  const onHoldDragFinish: DragFinishHandler<"overlayHold", "dropZone"> = (
+    item,
+    result
+  ) => {
+    const position = result.position;
+    updateHold({
+      variables: {
+        input: { holdId: item.holdId, position },
+      },
+      optimisticResponse: {
+        updateHold: { hold: { id: item.holdId, position } },
+      },
+    });
   };
 
   return (
     <>
-      {/* Invisible layer to capture holds being dropped */}
-      <HoldEditorDropZone onDrop={onDropZoneDrop} />
+      {/* Invisible layer to capture holds/moves being dropped */}
+      <HoldEditorDropZone />
 
       {/* Holds goes on top of the drop zones so they're clickable */}
       {problem.holds.edges.map(({ node }) => (
-        <HoldMark key={node.id} holdKey={node} />
+        <HoldMark
+          key={node.id}
+          holdKey={node}
+          onDragFinish={onHoldDragFinish}
+        />
       ))}
 
       <MutationErrorSnackbar

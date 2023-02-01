@@ -1,15 +1,25 @@
 import { useRef } from "react";
-import { DropHandler, useDrag, useDrop } from "components/Editor/util/dnd";
+import {
+  DragFinishHandler,
+  DropHandler,
+  useDrag,
+  useDrop,
+} from "components/Editor/util/dnd";
 import { graphql, useFragment } from "react-relay";
 import { HoldMark_holdNode$key } from "./__generated__/HoldMark_holdNode.graphql";
 import Positioned from "../common/Positioned";
 import HoldIcon from "./HoldIcon";
 import { useHighlight } from "components/Editor/util/highlight";
 import { Portal, Tooltip } from "@mui/material";
+import { isDefined } from "util/func";
 
 interface Props {
   holdKey: HoldMark_holdNode$key;
   draggable?: boolean;
+  /**
+   * Called when this hold is dropped onto something else
+   */
+  onDragFinish?: DragFinishHandler<"overlayHold", "dropZone">;
   /**
    * Called when something is dropped *onto* this hold
    */
@@ -19,7 +29,7 @@ interface Props {
 /**
  * An editable hold, in the context of the full interface editor.
  */
-const HoldMark: React.FC<Props> = ({ holdKey, onDrop }) => {
+const HoldMark: React.FC<Props> = ({ holdKey, onDragFinish, onDrop }) => {
   const ref = useRef<SVGCircleElement | null>(null);
   const hold = useFragment(
     graphql`
@@ -45,6 +55,12 @@ const HoldMark: React.FC<Props> = ({ holdKey, onDrop }) => {
     collect: (monitor) => ({
       isDragging: Boolean(monitor.isDragging()),
     }),
+    end(draggedItem, monitor) {
+      const dropResult = monitor.getDropResult();
+      if (onDragFinish && isDefined(dropResult)) {
+        onDragFinish(draggedItem, dropResult, monitor);
+      }
+    },
   });
 
   // Drop *moves* onto this hold
