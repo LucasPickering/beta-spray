@@ -52,10 +52,7 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
       }
     `);
 
-  const onHoldDragFinish: DragFinishHandler<"overlayHold", "dropZone"> = (
-    item,
-    result
-  ) => {
+  const onHoldDragFinish: DragFinishHandler<"overlayHold"> = (item, result) => {
     const position = result.position;
     updateHold({
       variables: {

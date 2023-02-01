@@ -27,7 +27,7 @@ const headRadius = 3;
 
 interface Props {
   betaMoveConnectionKey: stance_betaMoveNodeConnection$key;
-  onDragFinish?: DragFinishHandler<"overlayBetaMove", "dropZone" | "hold">;
+  onDragFinish?: DragFinishHandler<"overlayBetaMove">;
 }
 
 /**

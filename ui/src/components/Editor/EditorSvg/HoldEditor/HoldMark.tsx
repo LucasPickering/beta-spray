@@ -19,7 +19,7 @@ interface Props {
   /**
    * Called when this hold is dropped onto something else
    */
-  onDragFinish?: DragFinishHandler<"overlayHold", "dropZone">;
+  onDragFinish?: DragFinishHandler<"overlayHold">;
   /**
    * Called when something is dropped *onto* this hold
    */
