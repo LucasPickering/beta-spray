@@ -47,6 +47,19 @@ export const allBodyParts: BodyPart[] = [
   "RIGHT_FOOT",
 ];
 
+/**
+ * Body parts sorted counter-clockwise, which follows the unit circle
+ */
+const bodyPartsCCW: BodyPart[] = [
+  "RIGHT_HAND",
+  "LEFT_HAND",
+  "LEFT_FOOT",
+  "RIGHT_FOOT",
+];
+
+/**
+ * Format a body part key as a user-friendly string.
+ */
 export function formatBodyPart(bodyPart: BodyPart): string {
   switch (bodyPart) {
     case "LEFT_HAND":
@@ -165,24 +178,14 @@ export function getBetaMoveColors(
     const hex = lerpColor(
       startColor,
       endColor,
-      // Make sure we map first=>0, last=>1
-      (move.order - 1) / (moves.length - 1)
+      // Make sure we map first=>0, last=>1. Need to also prevent NaN
+      moves.length > 1 ? (move.order - 1) / (moves.length - 1) : 0.0
     );
     colorMap.set(move.id, hexToHtml(hex));
   }
 
   return colorMap;
 }
-
-/**
- * Body parts sorted counter-clockwise, which follows the unit circle
- */
-const bodyPartsCCW: BodyPart[] = [
-  "RIGHT_HAND",
-  "LEFT_HAND",
-  "LEFT_FOOT",
-  "RIGHT_FOOT",
-];
 
 /**
  * Get the visual position for each move in a beta. For each move, this will
