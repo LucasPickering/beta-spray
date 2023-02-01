@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   add,
   BodyPart,
+  Dimensions,
   midpoint,
   multiply,
   OverlayPosition,
@@ -13,6 +14,7 @@ import { stance_betaMoveNodeConnection$key } from "../../util/__generated__/stan
 import Line from "../common/Line";
 import StickFigureDragHandle from "./StickFigureDragHandle";
 import { useStance } from "components/Editor/util/stance";
+import { SvgContext } from "components/Editor/util/context";
 
 /**
  * The torso will always be this percentage of the distance between hands and
@@ -21,14 +23,6 @@ import { useStance } from "components/Editor/util/stance";
 const torsoLengthRatio = 0.5;
 
 const headRadius = 3;
-
-const defaultPositions: Record<BodyPart, OverlayPosition> = {
-  // TODO can we calculate actual center mark, using svg coordinates?
-  LEFT_HAND: { x: 25, y: 25 },
-  RIGHT_HAND: { x: 75, y: 25 },
-  LEFT_FOOT: { x: 25, y: 75 },
-  RIGHT_FOOT: { x: 75, y: 75 },
-};
 
 interface Props {
   betaMoveConnectionKey: stance_betaMoveNodeConnection$key;
@@ -40,18 +34,16 @@ interface Props {
 const StickFigure: React.FC<Props> = ({ betaMoveConnectionKey }) => {
   // Find which moves are in the current body position
   const stance = useStance(betaMoveConnectionKey);
+  const { dimensions: svgDimensions } = useContext(SvgContext);
 
   // Grab the visual position of each move
   const getPosition = useBetaMoveVisualPosition();
   const positions: Record<BodyPart, OverlayPosition> = Object.entries(
     stance
-  ).reduce(
-    (acc, [bodyPart, moveId]) => {
-      acc[bodyPart as BodyPart] = getPosition(moveId);
-      return acc;
-    },
-    { ...defaultPositions }
-  );
+  ).reduce((acc, [bodyPart, moveId]) => {
+    acc[bodyPart as BodyPart] = getPosition(moveId);
+    return acc;
+  }, getDefaultPositions(svgDimensions));
 
   // Calculate some rough positions for shoulder and hips. We'll calculate
   // midpoint of hands, then feet, and make the torso some fixed percentage of
@@ -100,5 +92,20 @@ const StickFigure: React.FC<Props> = ({ betaMoveConnectionKey }) => {
     </g>
   );
 };
+
+function getDefaultPositions(
+  svgDimensions: Dimensions
+): Record<BodyPart, OverlayPosition> {
+  const x1 = svgDimensions.width / 4;
+  const x2 = x1 * 3;
+  const y1 = svgDimensions.height / 4;
+  const y2 = y1 * 3;
+  return {
+    LEFT_HAND: { x: x1, y: y1 },
+    RIGHT_HAND: { x: x2, y: y1 },
+    LEFT_FOOT: { x: x1, y: y2 },
+    RIGHT_FOOT: { x: x2, y: y2 },
+  };
+}
 
 export default StickFigure;
