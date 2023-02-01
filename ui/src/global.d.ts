@@ -7,6 +7,10 @@ declare global {
       predicate: (value: T, index: number, array: T[]) => unknown,
       thisArg?: unknown
     ): T | undefined;
+    findLastIndex(
+      predicate: (value: T, index: number, array: T[]) => unknown,
+      thisArg?: unknown
+    ): number;
   }
   interface ReadonlyArray<T> {
     // TODO remove after es2023 upgrade https://github.com/microsoft/TypeScript/issues/48829
@@ -14,5 +18,9 @@ declare global {
       predicate: (value: T, index: number, array: T[]) => unknown,
       thisArg?: unknown
     ): T | undefined;
+    findLastIndex(
+      predicate: (value: T, index: number, array: T[]) => unknown,
+      thisArg?: unknown
+    ): number;
   }
 }

@@ -58,7 +58,9 @@ export function deleteBetaMoveLocal(
     edges: moves.edges
       .filter(({ node: { id } }) => id !== betaMoveId)
       .map(({ node: { id, isStart } }, i) => ({
-        // We intentionally don't recalculate isStart, it's just not worth it
+        // We intentionally don't recalculate isStart, it's just not worth it.
+        // This does lead to some flickering issues, maybe we could do it in
+        // the future?
         node: { id, isStart, order: i + 1 },
       })),
   };

@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
 import { BetaEditor_betaNode$key } from "./__generated__/BetaEditor_betaNode.graphql";
@@ -16,7 +16,7 @@ import {
 import { BetaContext } from "components/Editor/util/context";
 import { comparator } from "util/func";
 import { useHighlight } from "components/Editor/util/highlight";
-import { useStance, useStanceControls } from "components/Editor/util/stance";
+import { useStance } from "components/Editor/util/stance";
 
 interface Props {
   betaKey: BetaEditor_betaNode$key;
@@ -105,14 +105,6 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
     [moves, highlightedMoveId]
   );
   const stance = useStance(beta.moves);
-  const { selectFirst: selectFirstStance } = useStanceControls(beta.moves);
-
-  // Pre-select first stance in the beta.  We only want to do this when first
-  // loading a beta. `selectFirstStance` will change whenever we
-  // add/change/delete a move, but we don't want to constantly re-select the
-  // first stance in those cases
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(selectFirstStance, [beta.id]);
 
   // Render one "chain" of moves per body part
   return (
