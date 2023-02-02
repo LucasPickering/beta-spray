@@ -8,7 +8,6 @@ import {
   IconButton,
   ListItem,
   ListItemIcon,
-  ListItemSecondaryAction,
   ListItemText,
 } from "@mui/material";
 import { formatBodyPart, useBetaMoveColor } from "components/Editor/util/svg";
@@ -53,7 +52,22 @@ const BetaMoveListItem = React.forwardRef<HTMLLIElement, Props>(
     return (
       <ListItem
         ref={ref}
+        // Hide action for preview version
+        secondaryAction={
+          onDelete && (
+            <IconButton
+              aria-label={`delete move ${betaMove.order}`}
+              size="small"
+              onClick={onDelete}
+            >
+              <IconClose />
+            </IconButton>
+          )
+        }
         sx={[
+          // Normally this is inherit from the <ol>, but that isn't present for
+          // the preview version, so let's be a homie and fix it here
+          { listStyle: "none" },
           // If we're in the current stance, add a little indicator line
           isInCurrentStance && {
             // TODO make sure this color corresponds to the stick figure somehow
@@ -102,22 +116,6 @@ const BetaMoveListItem = React.forwardRef<HTMLLIElement, Props>(
           }
           secondary={betaMove.annotation}
         />
-
-        {/* Preview version of the element shouldn't show this button. Note: this
-            actually impacts the DOM layout! When this element isn't present, MUI
-            leaves out an extra container component, which fixes some other
-            styling issues. */}
-        {onDelete && (
-          <ListItemSecondaryAction>
-            <IconButton
-              aria-label={`delete move ${betaMove.order}`}
-              size="small"
-              onClick={onDelete}
-            >
-              <IconClose />
-            </IconButton>
-          </ListItemSecondaryAction>
-        )}
       </ListItem>
     );
   }
