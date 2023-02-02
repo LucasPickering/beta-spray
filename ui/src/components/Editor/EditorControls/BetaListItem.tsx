@@ -1,16 +1,12 @@
 import React, { useId } from "react";
 import {
-  Box,
-  FormControlLabel,
-  IconButton,
+  ListItem,
   ListItemIcon,
   ListItemText,
   Menu,
   MenuItem,
   Radio,
   Skeleton,
-  Tooltip,
-  Typography,
 } from "@mui/material";
 import {
   ContentCopy as IconContentCopy,
@@ -21,6 +17,7 @@ import { graphql, useFragment } from "react-relay";
 import { BetaListItem_betaNode$key } from "./__generated__/BetaListItem_betaNode.graphql";
 import Editable from "components/common/Editable";
 import { isDefined } from "util/func";
+import TooltipIconButton from "components/common/TooltipIconButton";
 
 interface Props {
   betaKey: BetaListItem_betaNode$key;
@@ -55,54 +52,51 @@ const BetaListItem: React.FC<Props> = ({
   const [actionsAnchorEl, setActionsAnchorEl] =
     React.useState<null | HTMLElement>(null);
   const actionsOpen = Boolean(actionsAnchorEl);
+  const controlId = useId();
   const menuId = useId();
 
   const onCloseActions = (): void => setActionsAnchorEl(null);
 
   return (
-    <Box
+    <ListItem
       key={beta.id}
+      disablePadding
       sx={{
         display: "flex",
         justifyContent: "space-between",
       }}
     >
-      <FormControlLabel
-        value={beta.id}
-        control={<Radio disabled={disabled} />}
-        label={
-          <>
-            <Typography>
-              {isDefined(beta.name) ? (
-                <Editable
-                  value={beta.name}
-                  onChange={(newValue) => onRename(beta.id, newValue)}
-                />
-              ) : (
-                // Missing name indicates it's still loading
-                <Skeleton />
-              )}
-            </Typography>
-
-            <Typography variant="subtitle2" color="text.secondary">
-              {beta.moves.edges.length} moves
-            </Typography>
-          </>
+      <ListItemIcon>
+        <Radio id={controlId} value={beta.id} disabled={disabled} />
+      </ListItemIcon>
+      <ListItemText
+        primary={
+          isDefined(beta.name) ? (
+            <label htmlFor={controlId}>
+              <Editable
+                value={beta.name}
+                onChange={(newValue) => onRename(beta.id, newValue)}
+              />
+            </label>
+          ) : (
+            // Missing name indicates it's still loading
+            <Skeleton />
+          )
         }
+        secondary={`${beta.moves.edges.length} moves`}
       />
 
-      <Tooltip title="Beta Actions">
-        <IconButton
-          aria-controls={actionsOpen ? menuId : undefined}
-          aria-haspopup
-          aria-expanded={actionsOpen}
-          onClick={(e) =>
-            setActionsAnchorEl((prev) => (prev ? null : e.currentTarget))
-          }
-        >
-          <IconMoreVert />
-        </IconButton>
-      </Tooltip>
+      <TooltipIconButton
+        title="Beta Actions"
+        aria-controls={actionsOpen ? menuId : undefined}
+        aria-haspopup
+        aria-expanded={actionsOpen}
+        onClick={(e) =>
+          setActionsAnchorEl((prev) => (prev ? null : e.currentTarget))
+        }
+      >
+        <IconMoreVert />
+      </TooltipIconButton>
 
       <Menu
         id={menuId}
@@ -133,7 +127,7 @@ const BetaListItem: React.FC<Props> = ({
           <ListItemText>Delete</ListItemText>
         </MenuItem>
       </Menu>
-    </Box>
+    </ListItem>
   );
 };
 
