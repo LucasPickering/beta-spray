@@ -1,11 +1,4 @@
-import {
-  Box,
-  Button,
-  Skeleton,
-  Stack,
-  Typography,
-  TypographyProps,
-} from "@mui/material";
+import { Box, Skeleton, Typography, TypographyProps } from "@mui/material";
 import { withQuery } from "relay-query-wrapper";
 import { problemQuery } from "../queries";
 import { queriesProblemQuery } from "../__generated__/queriesProblemQuery.graphql";
@@ -14,15 +7,9 @@ import { ProblemMetadata_problemNode$key } from "./__generated__/ProblemMetadata
 import useMutation from "util/useMutation";
 import { ProblemMetadata_updateProblemMutation } from "./__generated__/ProblemMetadata_updateProblemMutation.graphql";
 import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
-import useForm from "util/useForm";
-import TextFormField from "components/common/TextFormField";
-import {
-  Clear as IconClear,
-  Edit as IconEdit,
-  Save as IconSave,
-} from "@mui/icons-material";
 import { validateExternalLink } from "util/validator";
 import ExternalProblemLink from "components/common/ExternalProblemLink";
+import Editable from "components/common/Editable";
 
 interface Props {
   problemKey: ProblemMetadata_problemNode$key;
@@ -66,92 +53,56 @@ const ProblemMetadata: React.FC<Props> = ({ problemKey }) => {
       }
     `);
 
-  const {
-    isEditing,
-    setIsEditing,
-    hasError,
-    fieldState: { name: nameState, externalLink: externalLinkState },
-    onReset,
-  } = useForm({
-    name: { initialValue: problem.name },
-    externalLink: {
-      initialValue: problem.externalLink,
-      validator: validateExternalLink,
-    },
-  });
+  const onChange = ({
+    name,
+    externalLink,
+  }: {
+    name?: string;
+    externalLink?: string;
+  }): void => {
+    updateProblem({
+      variables: {
+        input: {
+          problemId: problem.id,
+          name,
+          externalLink,
+        },
+      },
+      optimisticResponse: {
+        updateProblem: {
+          problem: {
+            id: problem.id,
+            name: name ?? problem.name,
+            externalLink: externalLink ?? problem.externalLink,
+          },
+        },
+      },
+    });
+  };
 
   return (
     <>
       <Box>
-        <TextFormField
-          isEditing={isEditing}
-          state={nameState}
-          placeholder="Problem Name"
-        >
-          <Typography {...nameTypographyProps} />
-        </TextFormField>
+        <Typography {...nameTypographyProps}>
+          <Editable
+            value={problem.name}
+            placeholder="Problem Name"
+            onChange={(newValue) => onChange({ name: newValue })}
+          />
+        </Typography>
 
-        <TextFormField
-          isEditing={isEditing}
-          state={externalLinkState}
-          placeholder="External link"
+        <Editable
+          value={problem.externalLink}
+          placeholder="External Link"
+          validator={validateExternalLink}
+          onChange={(newValue) => onChange({ externalLink: newValue })}
         >
           <ExternalProblemLink />
-        </TextFormField>
+        </Editable>
       </Box>
 
-      {isEditing ? (
-        <Stack
-          direction="row"
-          spacing={1}
-          width="100%"
-          // Size children evenly
-          sx={{ "& > *": { flex: "1 1" } }}
-        >
-          <Button size="small" startIcon={<IconClear />} onClick={onReset}>
-            Cancel
-          </Button>
-          <Button
-            disabled={hasError}
-            size="small"
-            startIcon={<IconSave />}
-            onClick={() => {
-              setIsEditing(false);
-              updateProblem({
-                variables: {
-                  input: {
-                    problemId: problem.id,
-                    name: nameState.value,
-                    externalLink: externalLinkState.value,
-                  },
-                },
-                optimisticResponse: {
-                  updateProblem: {
-                    problem: {
-                      id: problem.id,
-                      name: nameState.value,
-                      externalLink: externalLinkState.value,
-                    },
-                  },
-                },
-              });
-            }}
-          >
-            Save
-          </Button>
-        </Stack>
-      ) : (
-        <Button
-          size="small"
-          startIcon={<IconEdit />}
-          onClick={() => setIsEditing(true)}
-        >
-          Edit
-        </Button>
-      )}
-
       <MutationErrorSnackbar
-        message="Error renaming problem"
+        message="Error updating problem"
         state={updateState}
       />
     </>

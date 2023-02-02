@@ -75,6 +75,7 @@ const BetaListItem: React.FC<Props> = ({
             <label htmlFor={controlId}>
               <Editable
                 value={beta.name}
+                placeholder="Beta Name"
                 onChange={(newValue) => onRename(beta.id, newValue)}
               />
             </label>

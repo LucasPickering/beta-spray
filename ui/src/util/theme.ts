@@ -35,6 +35,22 @@ const theme = createTheme({
         variant: "outlined",
       },
     },
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          display: "flex",
+          flexDirection: "column",
+        },
+      },
+    },
+    MuiCardActions: {
+      styleOverrides: {
+        root: {
+          // Staple actions to the bottom of the card
+          marginTop: "auto",
+        },
+      },
+    },
     MuiIconButton: {
       styleOverrides: {
         root: ({ theme }) => ({
