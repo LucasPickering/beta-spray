@@ -14,8 +14,6 @@ import {
   getBetaMoveVisualPositions,
 } from "components/Editor/util/svg";
 import { BetaContext } from "components/Editor/util/context";
-import { comparator } from "util/func";
-import { useHighlight } from "components/Editor/util/highlight";
 import { useStance, useStanceControls } from "components/Editor/util/stance";
 import { BetaEditor_appendBetaMoveMutation } from "./__generated__/BetaEditor_appendBetaMoveMutation.graphql";
 import useMutation from "util/useMutation";
@@ -152,27 +150,6 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
     [moves]
   );
 
-  // We need to reorder moves slightly, to put the highlighted move at the end.
-  // This forces it to render on top (SVG doesn't have any z-index equivalent).
-  // We need to do this to the underlying array rather than just rendering a
-  // separate element for the highlighted move at the end. With the latter, the
-  // element gets deleted and re-added by react when highlighting/unhighlighting,
-  // which makes it impossible to drag.
-  const [highlightedMoveId] = useHighlight("move");
-  const movesRenderOrder = useMemo(
-    () =>
-      highlightedMoveId
-        ? [...moves].sort(
-            // Sort the highlighted move at the end
-            comparator((move) =>
-              move.id === highlightedMoveId
-                ? Number.MAX_SAFE_INTEGER
-                : move.order
-            )
-          )
-        : moves,
-    [moves, highlightedMoveId]
-  );
   const stance = useStance(beta.moves);
   const { select: selectStance } = useStanceControls(beta.moves);
 
@@ -262,25 +239,31 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
         })
       )}
 
-      {/* Render body position. This will only show something if the user is
-          hovering a move. We want this above the move lines, but below the
-          move marks so it's not intrusive. */}
+      {/* Non-stance moves, then the stick figure, then stance moves */}
+      {moves
+        .filter((move) => stance[move.bodyPart] !== move.id)
+        .map((move) => (
+          <BetaChainMark
+            key={move.id}
+            betaMoveKey={move}
+            isInCurrentStance={false}
+            onDragFinish={onDragFinish}
+          />
+        ))}
       <StickFigure
         betaMoveConnectionKey={beta.moves}
         onDragFinish={onDragFinish}
       />
-
-      {/* Draw the actual move marks. We want to render the highlighted move
-          on top, which we can only do in SVG via ordering, so we need to make
-          sure that's rendered last */}
-      {movesRenderOrder.map((move) => (
-        <BetaChainMark
-          key={move.id}
-          betaMoveKey={move}
-          isInCurrentStance={stance[move.bodyPart] === move.id}
-          onDragFinish={onDragFinish}
-        />
-      ))}
+      {moves
+        .filter((move) => stance[move.bodyPart] === move.id)
+        .map((move) => (
+          <BetaChainMark
+            key={move.id}
+            betaMoveKey={move}
+            isInCurrentStance
+            onDragFinish={onDragFinish}
+          />
+        ))}
 
       <MutationErrorSnackbar
         message="Error adding move"

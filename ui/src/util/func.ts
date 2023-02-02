@@ -140,21 +140,6 @@ export function groupBy<T, K>(
 }
 
 /**
- * Convert a unary sort key function into a binary comparator.
- *
- * Warning: the key function will be called once per element *per comparison*,
- * meaning O(n log n) times per sort.
- *
- * @param keyFunc A mapping function, that gets a sortable numeric value for an array element
- * @returns A two-element comparator function, to be given to `Array.sort`
- */
-export function comparator<T>(
-  keyFunc: (value: T) => number
-): (a: T, b: T) => number {
-  return (a, b) => keyFunc(a) - keyFunc(b);
-}
-
-/**
  * Find a node in a connection, by ID
  * @param connection Relay connection
  * @param id ID of the node to find
