@@ -85,6 +85,7 @@ const Editable: React.FC<Props> = ({
             }}
             fullWidth
           />
+          {/* TODO add cancel/confirm buttons */}
         </Box>
       </ClickAwayListener>
     );
@@ -98,19 +99,21 @@ const Editable: React.FC<Props> = ({
       component="button" // Get clickable accesibility, tab focus, etc.
       aria-label="Edit Value"
       onClick={() => setIsEditing(true)}
-      sx={{
+      sx={({ palette, shape, spacing }) => ({
         all: "unset", // Remove default button style
+        width: "100%",
         "&:hover, &:focus": {
-          "&::after": {
-            // It'd be nice to use the proper MUI edit icon, but this is a lot
-            // easier and works well enough
-            content: '"✎"',
-            marginLeft: 1,
-            // Don't join document flow, to prevent text wrapping
-            position: "absolute",
-          },
+          margin: `${spacing(-0.5)} ${spacing(-1)}`,
+          padding: `${spacing(0.5)} ${spacing(1)}`,
+          borderRadius: shape.borderRadius,
         },
-      }}
+        "&:hover": {
+          backgroundColor: palette.action.hover,
+        },
+        "&:focus": {
+          backgroundColor: palette.action.focus,
+        },
+      })}
     >
       {value}
     </Box>
