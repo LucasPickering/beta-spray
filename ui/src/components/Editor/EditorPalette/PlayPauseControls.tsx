@@ -6,7 +6,7 @@ import {
   FirstPage as IconFirstPage,
   LastPage as IconLastPage,
 } from "@mui/icons-material";
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { graphql, useFragment } from "react-relay";
 import { withQuery } from "relay-query-wrapper";
 import { betaQuery } from "../queries";
@@ -57,11 +57,17 @@ const PlayPauseControls: React.FC<Props> = ({ betaKey }) => {
     [beta.moves.edges]
   );
 
-  const stanceControls = useStanceControls(beta.moves);
-  const { hasNext, selectNext } = stanceControls;
+  const {
+    hasPrevious,
+    hasNext,
+    selectFirst,
+    selectLast,
+    selectPrevious,
+    selectNext,
+  } = useStanceControls(beta.moves);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
-  const togglePlayPause = useCallback(() => setIsPlaying((prev) => !prev), []);
+  const pause = (): void => setIsPlaying(false);
 
   // When playing is enabled, trigger an interval to step through the moves.
   // Interval will cancel itself when play state changes.
@@ -76,7 +82,7 @@ const PlayPauseControls: React.FC<Props> = ({ betaKey }) => {
   // When we reach the last move, stop playing
   useEffect(() => {
     if (!hasNext) {
-      setIsPlaying(false);
+      pause();
     }
   }, [hasNext]);
 
@@ -85,8 +91,26 @@ const PlayPauseControls: React.FC<Props> = ({ betaKey }) => {
       // Disable buttons while the overlay is disabled
       disabled={!visibility || moveIds.length === 0}
       isPlaying={isPlaying}
-      togglePlayPause={togglePlayPause}
-      {...stanceControls}
+      togglePlayPause={() => setIsPlaying((prev) => !prev)}
+      hasPrevious={hasPrevious}
+      hasNext={hasNext}
+      // Whenever we step forward/back, we should pause the animation
+      selectFirst={() => {
+        pause();
+        selectFirst();
+      }}
+      selectLast={() => {
+        pause();
+        selectLast();
+      }}
+      selectPrevious={() => {
+        pause();
+        selectPrevious();
+      }}
+      selectNext={() => {
+        pause();
+        selectNext();
+      }}
     />
   );
 };
@@ -137,7 +161,7 @@ const PlayPauseControlsContent: React.FC<
     <TooltipIconButton
       title={isPlaying ? "Pause Sequence" : "Play Sequence"}
       placement="bottom"
-      disabled={disabled}
+      disabled={disabled || !hasNext}
       onClick={togglePlayPause}
     >
       {isPlaying ? <IconPause /> : <IconPlayArrow />}
