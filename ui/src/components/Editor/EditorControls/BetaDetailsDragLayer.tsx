@@ -6,7 +6,7 @@ import { BetaDetailsDragPreview_betaMoveNodeConnection$key } from "./__generated
 const layerStyles: React.CSSProperties = {
   position: "fixed",
   pointerEvents: "none",
-  zIndex: 100,
+  zIndex: 1400, // Drawer has 1200, we need to beat that
   left: 0,
   top: 0,
   width: "100%",
