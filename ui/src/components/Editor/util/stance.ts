@@ -169,7 +169,7 @@ export function useStanceControls(
         const newIndex = prevIndex + steps;
 
         // This shouldn't be called when a step isn't possible, so let's log it
-        if (newIndex < 0 || newIndex > betaMoveConnection.edges.length) {
+        if (newIndex < 0 || newIndex >= betaMoveConnection.edges.length) {
           // eslint-disable-next-line no-console
           console.warn(
             `Attempted to step ${steps} moves in stance when not possible`
