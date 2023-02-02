@@ -7,17 +7,47 @@ on:
         description: Deploy Environment
         type: environment
         required: true
+  # Auto-deploy master
+  workflow_run:
+    workflows:
+      - Build Images & Assets
+    types:
+      - completed
+    branches:
+      - master
 
 jobs:
+  select-env:
+    name: Select deployment environment
+    runs-on: ubuntu-latest
+    outputs:
+      env_name: ${{ inputs.environment || steps.select-env.outputs.env_name }}
+    steps:
+      - name: Check branch name
+        id: select-env
+        run: |
+          echo "Running on branch ${{ github.ref_name }}"
+          if [[ ! -z "${{ inputs.environment }}" ]]; then
+            ENV_NAME="${{ inputs.environment }}"
+          elif [ "${{ github.ref_name }}" = "master" ]; then
+            ENV_NAME=production
+          else
+            ENV_NAME=development
+          fi
+          echo "Environment is $ENV_NAME"
+          echo "env_name=$ENV_NAME" >> $GITHUB_OUTPUT
+
   # The hostname for the deployment is stored in the environment, which means
   # we have to read it *after* selecting the environment, but *before* the job
   # that needs it in the environment definition, so it has to be in its own job
   read-env:
     name: Read hostname from environment
     runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
+    environment: ${{ needs.select-env.outputs.env_name }}
     outputs:
       hostname: ${{ steps.read-env.outputs.hostname }}
+    needs:
+      - select-env
     steps:
       - name: Read hostname from environment
         id: read-env
@@ -30,9 +60,10 @@ jobs:
     name: Deploy Kubernetes app
     runs-on: ubuntu-latest
     environment:
-      name: ${{ inputs.environment }}
+      name: ${{ needs.select-env.outputs.env_name }}
       url: https://${{ needs.read-env.outputs.hostname }}/
     needs:
+      - select-env
       - read-env
     steps:
       - name: Checkout

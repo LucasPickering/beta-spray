@@ -99,6 +99,6 @@ terraform apply -var-file <environemtn>.tfvars
 
 ## CI
 
-Once all the infrastructure is created with Terraform, the CI will automatically handle deployment (although the Deploy job needs to be run manually). This is all defined in `.github/workflows/deploy.yml`. The deployment environment is selected based on branch name.
+Once all the infrastructure is created with Terraform, the CI will automatically handle deployment. This is all defined in `.github/workflows/deploy.yml`. The deployment environment is set manually when you run it, or based on branch name for automated runs.
 
 Generally you shouldn't need to run the deploy commands manually. If you do, you can figure it out on your own, then add instructions here :)

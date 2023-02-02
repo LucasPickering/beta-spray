@@ -36,7 +36,7 @@ https://docs.djangoproject.com/en/4.0/topics/migrations/
 
 ## Production
 
-Deployed via Kubernetes on the [Keskne](https://github.com/LucasPickering/keskne) cluster. Deployment is run via [this CI job](https://github.com/LucasPickering/beta-spray/actions/workflows/deploy.yml) into two environments:
+Deployed via Kubernetes on the [Keskne](https://github.com/LucasPickering/keskne) cluster. Deployment is run automatically on merge to `master` via [this CI job](https://github.com/LucasPickering/beta-spray/actions/workflows/deploy.yml) into two environments:
 
 | Environment | Namespace        | Domain                                         | When             |
 | ----------- | ---------------- | ---------------------------------------------- | ---------------- |
