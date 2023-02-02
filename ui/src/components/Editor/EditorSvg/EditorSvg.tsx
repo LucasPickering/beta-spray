@@ -130,7 +130,7 @@ const EditorSvgInner = React.forwardRef<
         touchAction: "none",
       }}
       // Zoom in/out on scroll
-      onWheel={(e) => updateZoom(e.deltaY * -1, { x: e.clientX, y: e.clientY })}
+      onWheel={(e) => updateZoom(-e.deltaY, { x: e.clientX, y: e.clientY })}
     >
       {children}
     </svg>

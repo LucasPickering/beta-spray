@@ -16,8 +16,8 @@ const zoomStep = 0.01;
 
 /**
  * Distance beyond the image that user can pan (to get around overlay obstructions)
- * */
-const panBufferSpace = 2;
+ */
+const panBufferSpace = 10;
 
 interface ZoomOffset {
   zoom: number;
