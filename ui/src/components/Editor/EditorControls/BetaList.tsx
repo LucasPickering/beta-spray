@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useId } from "react";
 import { graphql, useFragment } from "react-relay";
 import { BetaList_problemNode$key } from "./__generated__/BetaList_problemNode.graphql";
 import { BetaList_createBetaMutation } from "./__generated__/BetaList_createBetaMutation.graphql";
@@ -21,8 +21,6 @@ import BetaListItem from "./BetaListItem";
 import { BetaList_copyBetaMutation } from "./__generated__/BetaList_copyBetaMutation.graphql";
 import { BetaList_updateBetaMutation } from "./__generated__/BetaList_updateBetaMutation.graphql";
 import { isDefined } from "util/func";
-
-const labelId = "beta-select";
 
 interface Props {
   problemKey: BetaList_problemNode$key;
@@ -56,6 +54,8 @@ const BetaList: React.FC<Props> = ({
     problemKey
   );
   const connections = [problem.betas.__id];
+
+  const labelId = useId();
 
   // Auto-select the first beta if nothing else is selected
   useEffect(() => {
@@ -204,7 +204,7 @@ const BetaList: React.FC<Props> = ({
   };
 
   return (
-    <BetaListWrapper onClickAdd={() => onCreateNew()}>
+    <BetaListWrapper labelId={labelId} onClickAdd={() => onCreateNew()}>
       <RadioGroup
         aria-labelledby={labelId}
         // `undefined` makes the group think it's in uncontrolled state
@@ -245,9 +245,10 @@ const BetaList: React.FC<Props> = ({
  * Wrapper with static content that allows for a fleshed out loading state.
  */
 const BetaListWrapper: React.FC<{
+  labelId?: string;
   onClickAdd?: React.MouseEventHandler<HTMLButtonElement>;
   children?: React.ReactNode;
-}> = ({ onClickAdd, children }) => (
+}> = ({ labelId, onClickAdd, children }) => (
   <FormControl>
     <FormLabel id={labelId}>Beta</FormLabel>
 

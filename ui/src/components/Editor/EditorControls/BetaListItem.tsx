@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useId } from "react";
 import {
   Box,
   FormControlLabel,
@@ -55,6 +55,7 @@ const BetaListItem: React.FC<Props> = ({
   const [actionsAnchorEl, setActionsAnchorEl] =
     React.useState<null | HTMLElement>(null);
   const actionsOpen = Boolean(actionsAnchorEl);
+  const menuId = useId();
 
   const onCloseActions = (): void => setActionsAnchorEl(null);
 
@@ -92,9 +93,9 @@ const BetaListItem: React.FC<Props> = ({
 
       <Tooltip title="Beta Actions">
         <IconButton
-          aria-controls={actionsOpen ? "actions-menu" : undefined}
-          aria-haspopup="true"
-          aria-expanded={actionsOpen ? "true" : undefined}
+          aria-controls={actionsOpen ? menuId : undefined}
+          aria-haspopup
+          aria-expanded={actionsOpen}
           onClick={(e) =>
             setActionsAnchorEl((prev) => (prev ? null : e.currentTarget))
           }
@@ -104,7 +105,7 @@ const BetaListItem: React.FC<Props> = ({
       </Tooltip>
 
       <Menu
-        id={`${beta.id}-actions`}
+        id={menuId}
         anchorEl={actionsAnchorEl}
         open={actionsOpen}
         onClick={onCloseActions}
