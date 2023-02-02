@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useId, useState } from "react";
 import { Card, CardActionArea, CardContent, Typography } from "@mui/material";
 import { Upload as IconUpload } from "@mui/icons-material";
 import imageCompression from "browser-image-compression";
@@ -12,6 +12,7 @@ interface Props {
 
 const BoulderImageUpload: React.FC<Props> = ({ onUpload }) => {
   const [error, setError] = useState<Error | undefined>();
+  const inputId = useId();
 
   // Use height:100% everywhere so we match the other cards in the problem list
   return (
@@ -19,7 +20,7 @@ const BoulderImageUpload: React.FC<Props> = ({ onUpload }) => {
       <label htmlFor="upload-image-input">
         <input
           accept="image/*"
-          id="upload-image-input"
+          id={inputId}
           type="file"
           css={{ display: "none" }}
           onChange={(e) => {
