@@ -1,11 +1,14 @@
-import { Box, ClickAwayListener, TextField } from "@mui/material";
+import { Box, ClickAwayListener, TextField, Typography } from "@mui/material";
+import React from "react";
 import { FormEvent, useEffect, useState } from "react";
 import { isDefined } from "util/func";
 
 interface Props {
   value: string;
+  placeholder?: string;
   validator?: (value: string) => string | undefined;
   onChange?: (newValue: string) => void;
+  children?: React.ReactElement;
 }
 
 /**
@@ -34,8 +37,10 @@ function validateString(value: string): string | undefined {
  */
 const Editable: React.FC<Props> = ({
   value,
+  placeholder,
   validator = validateString,
   onChange,
+  children = <></>,
 }) => {
   const [currentValue, setCurrentValue] = useState<string>(value);
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -73,6 +78,7 @@ const Editable: React.FC<Props> = ({
             autoFocus
             size="small"
             value={currentValue}
+            placeholder={placeholder}
             error={hasError}
             helperText={validationError}
             onChange={(e) => setCurrentValue(e.target.value)}
@@ -92,12 +98,10 @@ const Editable: React.FC<Props> = ({
   }
 
   // Not editing yet, just render the text
-  // The parent should've wrapped this component in a Typography, so we'll just
-  // inherit those text styles
   return (
     <Box
       component="button" // Get clickable accesibility, tab focus, etc.
-      aria-label="Edit Value"
+      aria-label={`Edit ${placeholder}`}
       onClick={() => setIsEditing(true)}
       sx={({ palette, shape, spacing }) => ({
         all: "unset", // Remove default button style
@@ -115,7 +119,17 @@ const Editable: React.FC<Props> = ({
         },
       })}
     >
-      {value}
+      {/* If we were given a child, then re-instantiate that with the given
+          value. By default this will just rendered unwrapped text, but allows
+          us to do Typography, Link, etc. as children. If there is no value yet
+          though, then render placeholder text so there's something to click. */}
+      {value ? (
+        React.cloneElement(children, { children: value })
+      ) : (
+        <Typography sx={({ palette }) => ({ color: palette.text.disabled })}>
+          {placeholder}
+        </Typography>
+      )}
     </Box>
   );
 };
