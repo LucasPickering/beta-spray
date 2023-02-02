@@ -12,9 +12,9 @@ import {
   Button,
   FormControl,
   FormLabel,
+  List,
   RadioGroup,
   Skeleton,
-  Stack,
 } from "@mui/material";
 import { Add as IconAdd } from "@mui/icons-material";
 import BetaListItem from "./BetaListItem";
@@ -211,7 +211,7 @@ const BetaList: React.FC<Props> = ({
         value={selectedBeta ?? null}
         onChange={(e) => onSelectBeta(e.target.value)}
       >
-        <Stack direction="column">
+        <List disablePadding>
           {problem.betas.edges.map(({ node }) => (
             <BetaListItem
               key={node.id}
@@ -221,7 +221,7 @@ const BetaList: React.FC<Props> = ({
               onDelete={onDelete}
             />
           ))}
-        </Stack>
+        </List>
       </RadioGroup>
 
       <MutationErrorSnackbar
