@@ -13,6 +13,12 @@ from django.db.models.functions import Coalesce
 
 
 class BetaMoveQuerySet(QuerySet):
+    def annotate_all(self):
+        """
+        Annotate all common fields
+        """
+        return self.annotate_is_start().annotate_is_last_in_chain()
+
     def annotate_is_start(self):
         """
         Annotate a field that notates if each move is a start move for that

@@ -66,3 +66,13 @@ class BoulderPositionField(models.Field):
     def value_to_string(self, obj):
         value = self.value_from_object(obj)
         return self.get_prep_value(value)
+
+
+class MoveOrderField(models.PositiveIntegerField):
+    """
+    A field type for the `order` field on `BetaMove`. This field is commonly
+    populated via a subquery for INSERTs, which means it needs to be included
+    in the RETURNING clause to get the calculated value.
+    """
+
+    db_returning = True

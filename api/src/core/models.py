@@ -1,5 +1,5 @@
 from core import fields
-from django.db.models import F, Q, Max
+from django.db.models import F, Q, Max, Subquery
 from django.db.models.functions import Coalesce
 from django.db.models.signals import pre_save, post_delete
 from django.dispatch import receiver
@@ -193,7 +193,7 @@ class BetaMove(models.Model):
         help_text="Position of the move, if not attached to a hold."
         " Mutually exclusive with `hold`.",
     )
-    order = models.PositiveIntegerField(
+    order = fields.MoveOrderField(
         db_index=True,  # We sort and filter by this a lot
         help_text="Ordering number of the hold in the beta, starting at 1",
     )
@@ -259,7 +259,7 @@ def beta_move_on_pre_save(sender, instance, raw, **kwargs):
         if instance.order is None:
             # No order given, just do max+1 (or default to 1)
             # TODO make sure this is atomic
-            instance.order = (
+            instance.order = Subquery(
                 BetaMove.objects.filter(beta_id=beta_id)
                 # Remove annoying django clauses that break shit
                 .remove_group_by_order_by()

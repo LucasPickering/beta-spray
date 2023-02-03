@@ -188,7 +188,7 @@ class BetaMoveNode(NodeType):
         # Include is_start field. Hypothetically we could only include this if
         # it's actually requested, but the documentation for the `info` object
         # is horrendous and I don't feel like trying too hard on that.
-        return queryset.annotate_is_start().annotate_is_last_in_chain()
+        return queryset.annotate_all()
 
     def resolve_position(self, info):
         """
