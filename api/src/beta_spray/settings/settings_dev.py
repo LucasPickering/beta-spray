@@ -26,6 +26,8 @@ MEDIA_URL = "/api/media/"
 # Add debug middlewares
 INSTALLED_APPS.append("debug_toolbar")  # noqa F405
 MIDDLEWARE.append(  # noqa F405
+    # Note: you have to go to localhost:8000 (not 3000) to make this work
+    # TODO can we fix this with a fix to INTERNAL_IPS?
     "graphiql_debug_toolbar.middleware.DebugToolbarMiddleware"
 )
 GRAPHENE["MIDDLEWARE"].append(  # noqa F405

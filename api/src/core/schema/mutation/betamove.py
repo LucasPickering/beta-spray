@@ -39,12 +39,14 @@ class AppendBetaMoveMutation(relay.ClientIDMutation):
         )
 
         # TODO validate that hold and beta belong to the same problem
-        beta_move = BetaMove.objects.create(
+        created = BetaMove.objects.create(
             beta=beta,
             body_part=body_part,
             hold_id=hold_id,
             position=normalized_position,
         )
+        # We need to re-fetch the created row to populate annotated fields
+        beta_move = BetaMove.objects.annotate_all().get(id=created.id)
 
         return cls(beta_move=beta_move)
 
@@ -88,13 +90,15 @@ class InsertBetaMoveMutation(relay.ClientIDMutation):
         )
 
         # TODO validate that hold and beta belong to the same problem
-        beta_move = BetaMove.objects.create(
+        created = BetaMove.objects.create(
             beta=beta,
             body_part=previous_move.body_part,
             order=previous_move.order + 1,
             hold_id=hold_id,
             position=normalized_position,
         )
+        # We need to re-fetch the created row to populate annotated fields
+        beta_move = BetaMove.objects.annotate_all().get(id=created.id)
 
         return cls(beta_move=beta_move)
 
