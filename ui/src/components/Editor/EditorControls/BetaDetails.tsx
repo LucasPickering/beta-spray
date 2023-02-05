@@ -15,9 +15,9 @@ import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
 import { queriesBetaQuery } from "../__generated__/queriesBetaQuery.graphql";
 import { betaQuery } from "../queries";
 import { withQuery } from "relay-query-wrapper";
-import { getBetaMoveColors } from "components/Editor/util/svg";
 import {
   deleteBetaMoveLocal,
+  getBetaMoveColors,
   reorderBetaMoveLocal,
 } from "components/Editor/util/moves";
 import BetaDetailsDragLayer from "./BetaDetailsDragLayer";

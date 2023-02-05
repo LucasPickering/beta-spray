@@ -84,16 +84,9 @@ const BetaList: React.FC<Props> = ({
     `);
   const { commit: updateBeta, state: updateState } =
     useMutation<BetaList_updateBetaMutation>(graphql`
-      mutation BetaList_updateBetaMutation(
-        $input: UpdateBetaMutationInput!
-        $connections: [ID!]!
-      ) {
+      mutation BetaList_updateBetaMutation($input: UpdateBetaMutationInput!) {
         updateBeta(input: $input) {
-          beta
-            @appendNode(
-              connections: $connections
-              edgeTypeName: "BetaNodeEdge"
-            ) {
+          beta {
             id
             # Only refresh what we know could have changed
             name
@@ -146,6 +139,7 @@ const BetaList: React.FC<Props> = ({
       optimisticResponse: {
         createBeta: {
           beta: {
+            // TODO populate ID here?
             id: "",
             name: "",
             moves: { edges: [] },
@@ -162,7 +156,7 @@ const BetaList: React.FC<Props> = ({
   };
   const onRename = (betaId: string, newName: string): void => {
     updateBeta({
-      variables: { input: { betaId, name: newName }, connections },
+      variables: { input: { betaId, name: newName } },
       optimisticResponse: {
         updateBeta: {
           beta: { id: betaId, name: newName },
@@ -175,6 +169,7 @@ const BetaList: React.FC<Props> = ({
       variables: { input: { betaId }, connections },
       optimisticResponse: {
         copyBeta: {
+          // TODO populate ID and name here?
           beta: { id: "", name: "", moves: { edges: [] } },
         },
       },
