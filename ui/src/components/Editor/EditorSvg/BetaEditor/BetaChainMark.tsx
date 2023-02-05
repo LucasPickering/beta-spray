@@ -44,9 +44,6 @@ const BetaChainMark: React.FC<Props> = ({
         isStart
         isLastInChain
         annotation
-        beta {
-          id
-        }
       }
     `,
     betaMoveKey

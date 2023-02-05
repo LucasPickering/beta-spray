@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
 import { BetaEditor_betaNode$key } from "./__generated__/BetaEditor_betaNode.graphql";
-import { assertIsDefined, groupBy } from "util/func";
+import { isDefined, groupBy } from "util/func";
 import StickFigure from "./StickFigure";
 import BetaChainLine from "./BetaChainLine";
 import BetaChainMark from "./BetaChainMark";
@@ -37,6 +37,7 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
       fragment BetaEditor_betaNode on BetaNode {
         id
         moves {
+          __id
           ...stance_betaMoveNodeConnection
           edges {
             node {
@@ -67,21 +68,36 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
     betaKey
   );
 
-  // These mutations are all for modifying moves, since they get called when
-  // a move is dropped *onto* a hold/drop zone
-  //
   // Append new move to end of the beta
   const { commit: appendBetaMove, state: appendBetaMoveState } =
     useMutation<BetaEditor_appendBetaMoveMutation>(graphql`
       mutation BetaEditor_appendBetaMoveMutation(
         $input: AppendBetaMoveMutationInput!
+        $connections: [ID!]!
       ) {
         appendBetaMove(input: $input) {
-          betaMove {
+          betaMove
+            @appendNode(
+              connections: $connections
+              edgeTypeName: "BetaMoveNodeEdge"
+            ) {
             id
-            beta {
-              ...BetaEditor_betaNode # Refetch to update UI
+            # Fetch everything we use. We can't put this into a fragment :(
+            bodyPart
+            order
+            isStart
+            hold {
+              id
+              position {
+                x
+                y
+              }
             }
+            position {
+              x
+              y
+            }
+            ...BetaChainMark_betaMoveNode
           }
         }
       }
@@ -95,8 +111,9 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
         insertBetaMove(input: $input) {
           betaMove {
             id
+            # This can reorder moves, so we have to refetch the whole move list
             beta {
-              ...BetaEditor_betaNode # Refetch to update UI
+              ...BetaEditor_betaNode
             }
           }
         }
@@ -185,9 +202,21 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
       result.kind === "hold"
         ? { holdId: result.holdId }
         : { position: result.position };
+
+    // This is what we expect back for hold/position
+    const optimisticFields =
+      result.kind == "hold"
+        ? {
+            hold: { id: result.holdId, position: result.position },
+            position: null,
+          }
+        : {
+            hold: null,
+            position: result.position,
+          };
     switch (item.action) {
       // Dragged a body part from the stick figure
-      case "create":
+      case "create": {
         appendBetaMove({
           variables: {
             input: {
@@ -195,17 +224,17 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
               bodyPart: item.bodyPart,
               ...mutationParams,
             },
+            connections: [beta.moves.__id],
           },
-          onCompleted(result) {
-            // Update stance to include the new move
-            assertIsDefined(result.appendBetaMove);
-            selectStance(result.appendBetaMove.betaMove.id);
+          onCompleted(data) {
+            if (isDefined(data.appendBetaMove)) {
+              selectStance(data.appendBetaMove.betaMove.id);
+            }
           },
           // Punting on optimistic update because ordering is hard
-          // We could hypothetically add this, but we'd need to pipe down
-          // the total number of moves so we can do n+1 here
         });
         break;
+      }
       // Dragged a line between two moves (insert after the starting move)
       case "insertAfter":
         insertBetaMove({
@@ -217,8 +246,9 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
           },
           onCompleted(result) {
             // Update stance to include the new move
-            assertIsDefined(result.insertBetaMove);
-            selectStance(result.insertBetaMove.betaMove.id);
+            if (isDefined(result.insertBetaMove)) {
+              selectStance(result.insertBetaMove.betaMove.id);
+            }
           },
           // Punting on optimistic update because ordering is hard
         });
@@ -233,13 +263,7 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
             updateBetaMove: {
               betaMove: {
                 id: item.betaMoveId,
-                // We'll set either `hold` or `position`, based on the move
-                // being free/attached
-                hold:
-                  result.kind === "hold"
-                    ? { id: result.holdId, position: result.position }
-                    : null,
-                position: result.kind === "dropZone" ? result.position : null,
+                ...optimisticFields,
               },
             },
           },
