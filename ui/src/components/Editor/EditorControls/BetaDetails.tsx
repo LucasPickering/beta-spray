@@ -131,7 +131,7 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
       <BetaContext.Provider value={betaContextValue}>
         {moves.length === 0 && (
           <Typography variant="body2">
-            Drag a move from the palette to add
+            Drag a stick figure handle to add a move
           </Typography>
         )}
 
