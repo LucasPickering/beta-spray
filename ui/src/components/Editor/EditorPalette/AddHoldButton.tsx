@@ -9,7 +9,7 @@ import { withQuery } from "relay-query-wrapper";
 import { AddHoldButton_problemNode$key } from "./__generated__/AddHoldButton_problemNode.graphql";
 import { problemQuery } from "../queries";
 import { useHighlight } from "../util/highlight";
-import { assertIsDefined } from "util/func";
+import { isDefined } from "util/func";
 import { IconButtonProps, useTheme } from "@mui/material";
 
 interface Props {
@@ -88,8 +88,9 @@ const AddHoldButton: React.FC<Props> = ({ problemKey, disabled = false }) => {
             },
             onCompleted(result) {
               // Highlight the new hold
-              assertIsDefined(result.createHold);
-              highlightHold(result.createHold.hold.id);
+              if (isDefined(result.createHold)) {
+                highlightHold(result.createHold.hold.id);
+              }
             },
           });
         }}

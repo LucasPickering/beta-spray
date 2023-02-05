@@ -24,6 +24,7 @@ interface BetaMoves {
       readonly id: string;
       readonly order: number;
       readonly isStart: boolean;
+      readonly isLastInChain: boolean;
     };
   }>;
 }
@@ -168,9 +169,9 @@ export function reorderBetaMoveLocal(
   const newIndex = newOrder - 1;
   return {
     edges: moveArrayElement(moves.edges, oldIndex, newIndex).map(
-      ({ node: { id, isStart } }, i) => ({
-        // We intentionally don't recalculate isStart, it's just not worth it
-        node: { id, isStart, order: i + 1 },
+      ({ node: { id, isStart, isLastInChain } }, i) => ({
+        // We intentionally don't recalculate isStart and isLastInChain, it's just not worth it
+        node: { id, isStart, isLastInChain, order: i + 1 },
       })
     ),
   };
@@ -190,11 +191,11 @@ export function deleteBetaMoveLocal(
   return {
     edges: moves.edges
       .filter(({ node: { id } }) => id !== betaMoveId)
-      .map(({ node: { id, isStart } }, i) => ({
-        // We intentionally don't recalculate isStart, it's just not worth it.
+      .map(({ node: { id, isStart, isLastInChain } }, i) => ({
+        // We intentionally don't recalculate isStart and isLastInChain, it's just not worth it.
         // This does lead to some flickering issues, maybe we could do it in
         // the future?
-        node: { id, isStart, order: i + 1 },
+        node: { id, isStart, isLastInChain, order: i + 1 },
       })),
   };
 }

@@ -13,6 +13,7 @@ import { BetaMoveActions_betaNode$key } from "./__generated__/BetaMoveActions_be
 import { useHighlightItem } from "components/Editor/util/highlight";
 import EditAnnotationDialog from "./EditAnnotationDialog";
 import { BetaMoveActions_updateBetaMoveMutation } from "./__generated__/BetaMoveActions_updateBetaMoveMutation.graphql";
+import { deleteBetaMoveLocal } from "../util/moves";
 
 interface Props {
   betaKey: BetaMoveActions_betaNode$key;
@@ -28,11 +29,14 @@ const BetaMoveActions: React.FC<Props> = ({ betaKey }) => {
   const beta = useFragment(
     graphql`
       fragment BetaMoveActions_betaNode on BetaNode {
+        id
         moves {
           edges {
             node {
               id
               order
+              isStart
+              isLastInChain
               annotation
             }
           }
@@ -65,8 +69,20 @@ const BetaMoveActions: React.FC<Props> = ({ betaKey }) => {
       ) {
         deleteBetaMove(input: $input) {
           betaMove {
+            # This can reorder moves, so we have to refetch the whole move list
             beta {
-              ...BetaEditor_betaNode # Refetch to update UI
+              id
+              moves {
+                edges {
+                  node {
+                    id
+                    # These are the fields that can change after a delete
+                    order
+                    isStart
+                    isLastInChain
+                  }
+                }
+              }
             }
           }
         }
@@ -87,15 +103,26 @@ const BetaMoveActions: React.FC<Props> = ({ betaKey }) => {
             // clicks the button while the element is being hidden, it could
             // trigger this so we need to guard for that
             if (isDefined(highlightedMove)) {
+              const betaMoveId = highlightedMove.id;
               deleteBetaMove({
                 variables: {
-                  input: { betaMoveId: highlightedMove.id },
+                  input: { betaMoveId },
                 },
                 // Reset selection to prevent ghost highlight
                 onCompleted() {
                   highlightMove(undefined);
                 },
-                // Punting on optimisitic response for now
+                optimisticResponse: {
+                  deleteBetaMove: {
+                    betaMove: {
+                      id: betaMoveId,
+                      beta: {
+                        id: beta.id,
+                        moves: deleteBetaMoveLocal(beta.moves, betaMoveId),
+                      },
+                    },
+                  },
+                },
               });
             }
           }}
