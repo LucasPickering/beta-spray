@@ -9,10 +9,6 @@ import BetaChainMark from "./BetaChainMark";
 import { withQuery } from "relay-query-wrapper";
 import { queriesBetaQuery } from "components/Editor/__generated__/queriesBetaQuery.graphql";
 import { betaQuery } from "components/Editor/queries";
-import {
-  getBetaMoveColors,
-  getBetaMoveVisualPositions,
-} from "components/Editor/util/svg";
 import { BetaContext } from "components/Editor/util/context";
 import { comparator } from "util/func";
 import { useHighlight } from "components/Editor/util/highlight";
@@ -23,6 +19,10 @@ import { BetaEditor_insertBetaMoveMutation } from "./__generated__/BetaEditor_in
 import { BetaEditor_updateBetaMoveMutation } from "./__generated__/BetaEditor_updateBetaMoveMutation.graphql";
 import { DragFinishHandler } from "components/Editor/util/dnd";
 import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
+import {
+  getBetaMoveColors,
+  getBetaMoveVisualPositions,
+} from "components/Editor/util/moves";
 
 interface Props {
   betaKey: BetaEditor_betaNode$key;
@@ -138,14 +138,16 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
     [beta.moves.edges]
   );
 
-  // Calculate some derived data based on the full list of moves. It's better
-  // to do this in a single memoized object instead of separate ones, to save
-  // React memoization checks on each render
-  const { movesByBodyPart, betaMoveColors, betaMoveVisualPositions } = useMemo(
+  // Calculate some derived data based on the full list of moves.
+  const movesByBodyPart = useMemo(
+    // Group the moves by body part so we can draw chains. We assume the API
+    // response is ordered by `order`, so these should naturally be as well.
+    () => groupBy(moves, (move) => move.bodyPart),
+    [moves]
+  );
+  // Memoize these together to prevent re-renders in the context below
+  const betaContextValue = useMemo(
     () => ({
-      movesByBodyPart: groupBy(moves, (move) => move.bodyPart),
-      // Group the moves by body part so we can draw chains. We assume the API
-      // response is ordered by `order`, so these should naturally be as well.
       betaMoveColors: getBetaMoveColors(moves),
       betaMoveVisualPositions: getBetaMoveVisualPositions(moves),
     }),
@@ -245,9 +247,8 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
     }
   };
 
-  // Render one "chain" of moves per body part
   return (
-    <BetaContext.Provider value={{ betaMoveColors, betaMoveVisualPositions }}>
+    <BetaContext.Provider value={betaContextValue}>
       {/* Draw lines to connect the moves. Do this *first* so they go on bottom */}
       {Array.from(movesByBodyPart.values(), (moveChain) =>
         moveChain.map((move, i) => {
