@@ -17,7 +17,7 @@ const BoulderImageUpload: React.FC<Props> = ({ onUpload }) => {
   // Use height:100% everywhere so we match the other cards in the problem list
   return (
     <Card sx={{ height: "100%" }}>
-      <label htmlFor="upload-image-input">
+      <label htmlFor={inputId} css={{ height: "100%" }}>
         <input
           accept="image/*"
           id={inputId}
