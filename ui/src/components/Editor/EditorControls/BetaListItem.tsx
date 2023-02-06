@@ -3,7 +3,6 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-  Menu,
   MenuItem,
   Radio,
   Skeleton,
@@ -11,13 +10,12 @@ import {
 import {
   ContentCopy as IconContentCopy,
   Delete as IconDelete,
-  MoreVert as IconMoreVert,
 } from "@mui/icons-material";
 import { graphql, useFragment } from "react-relay";
 import { BetaListItem_betaNode$key } from "./__generated__/BetaListItem_betaNode.graphql";
 import Editable from "components/common/Editable";
 import { isDefined } from "util/func";
-import TooltipIconButton from "components/common/TooltipIconButton";
+import ActionsMenu from "components/common/ActionsMenu";
 
 interface Props {
   betaKey: BetaListItem_betaNode$key;
@@ -49,13 +47,7 @@ const BetaListItem: React.FC<Props> = ({
     betaKey
   );
 
-  const [actionsAnchorEl, setActionsAnchorEl] =
-    React.useState<null | HTMLElement>(null);
-  const actionsOpen = Boolean(actionsAnchorEl);
   const controlId = useId();
-  const menuId = useId();
-
-  const onCloseActions = (): void => setActionsAnchorEl(null);
 
   return (
     <ListItem
@@ -87,25 +79,7 @@ const BetaListItem: React.FC<Props> = ({
         secondary={`${beta.moves.edges.length} moves`}
       />
 
-      <TooltipIconButton
-        title="Beta Actions"
-        aria-controls={actionsOpen ? menuId : undefined}
-        aria-haspopup
-        aria-expanded={actionsOpen}
-        onClick={(e) =>
-          setActionsAnchorEl((prev) => (prev ? null : e.currentTarget))
-        }
-      >
-        <IconMoreVert />
-      </TooltipIconButton>
-
-      <Menu
-        id={menuId}
-        anchorEl={actionsAnchorEl}
-        open={actionsOpen}
-        onClick={onCloseActions}
-        onClose={onCloseActions}
-      >
+      <ActionsMenu title="Beta Actions">
         <MenuItem onClick={() => onCopy(beta.id)}>
           <ListItemIcon>
             <IconContentCopy />
@@ -127,7 +101,7 @@ const BetaListItem: React.FC<Props> = ({
           </ListItemIcon>
           <ListItemText>Delete</ListItemText>
         </MenuItem>
-      </Menu>
+      </ActionsMenu>
     </ListItem>
   );
 };
