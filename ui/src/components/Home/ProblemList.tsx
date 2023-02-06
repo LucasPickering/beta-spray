@@ -18,14 +18,16 @@ interface Props {
 }
 
 const ProblemList: React.FC<Props> = ({ queryKey }) => {
-  const { data, loadNext, hasNext } = usePaginationFragment<
-    ProblemListQueryType,
-    ProblemList_query$key
-  >(
+  const {
+    data: { problems },
+    loadNext,
+    hasNext,
+  } = usePaginationFragment<ProblemListQueryType, ProblemList_query$key>(
     graphql`
       fragment ProblemList_query on Query
       @refetchable(queryName: "ProblemListQuery") {
         problems(first: $count, after: $cursor)
+          @required(action: THROW)
           @connection(key: "ProblemList_query_problems") {
           __id
           edges {
@@ -78,12 +80,6 @@ const ProblemList: React.FC<Props> = ({ queryKey }) => {
       }
     `);
 
-  if (!data?.problems) {
-    return null;
-  }
-
-  const { problems } = data;
-
   return (
     <>
       <ProblemListGridItem>
@@ -129,7 +125,7 @@ const ProblemList: React.FC<Props> = ({ queryKey }) => {
         />
       </ProblemListGridItem>
 
-      {data.problems.edges.map(({ node }) => (
+      {problems.edges.map(({ node }) => (
         <ProblemListGridItem key={node.id}>
           <ProblemCard
             problemKey={node}
