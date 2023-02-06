@@ -4,7 +4,6 @@ import ProblemCard from "./ProblemCard";
 import BoulderImageUpload from "./BoulderImageUpload";
 import { ProblemList_query$key } from "./__generated__/ProblemList_query.graphql";
 import { ProblemList_deleteProblemMutation } from "./__generated__/ProblemList_deleteProblemMutation.graphql";
-import { ProblemList_updateProblemMutation } from "./__generated__/ProblemList_updateProblemMutation.graphql";
 import { ProblemList_createBoulderWithFriendsMutation } from "./__generated__/ProblemList_createBoulderWithFriendsMutation.graphql";
 import useMutation from "util/useMutation";
 import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
@@ -61,20 +60,6 @@ const ProblemList: React.FC<Props> = ({ queryKey }) => {
           }
           beta {
             id
-          }
-        }
-      }
-    `);
-  const { commit: updateProblem, state: updateState } =
-    useMutation<ProblemList_updateProblemMutation>(graphql`
-      mutation ProblemList_updateProblemMutation(
-        $input: UpdateProblemMutationInput!
-      ) {
-        updateProblem(input: $input) {
-          problem {
-            id
-            name
-            externalLink
           }
         }
       }
@@ -148,16 +133,6 @@ const ProblemList: React.FC<Props> = ({ queryKey }) => {
         <ProblemListGridItem key={node.id}>
           <ProblemCard
             problemKey={node}
-            onSaveChanges={({ problemId, name, externalLink }) =>
-              updateProblem({
-                variables: { input: { problemId, name, externalLink } },
-                optimisticResponse: {
-                  updateProblem: {
-                    problem: { id: problemId, name, externalLink },
-                  },
-                },
-              })
-            }
             onDelete={(problemId) =>
               deleteProblem({
                 variables: {
@@ -186,10 +161,6 @@ const ProblemList: React.FC<Props> = ({ queryKey }) => {
       <MutationErrorSnackbar
         message="Error uploading problem"
         state={createState}
-      />
-      <MutationErrorSnackbar
-        message="Error updating problem"
-        state={updateState}
       />
       <MutationErrorSnackbar
         message="Error deleting problem"

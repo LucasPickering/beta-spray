@@ -13,22 +13,12 @@ import { ProblemCard_problemNode$key } from "./__generated__/ProblemCard_problem
 import LinkBehavior from "components/common/LinkBehavior";
 import { isDefined } from "util/func";
 import TooltipIconButton from "components/common/TooltipIconButton";
-import { validateExternalLink } from "util/validator";
 import ExternalProblemLink from "components/common/ExternalProblemLink";
-import Editable from "components/common/Editable";
 
 const dateFormat = new Intl.DateTimeFormat(undefined, { dateStyle: "long" });
 
 interface Props {
   problemKey: ProblemCard_problemNode$key;
-  /**
-   * Called to save changes to metadata. Only provided fields will be modified.
-   */
-  onSaveChanges?: (args: {
-    problemId: string;
-    name?: string;
-    externalLink?: string;
-  }) => void;
   /**
    * Called to delete, *after* confirmation dialog
    */
@@ -37,7 +27,7 @@ interface Props {
 
 const ProblemCard: React.FC<Props> = ({
   problemKey,
-  onSaveChanges,
+
   onDelete,
 }) => {
   const problem = useFragment(
@@ -93,40 +83,14 @@ const ProblemCard: React.FC<Props> = ({
 
       <CardContent>
         <Typography variant="h6" component="h3">
-          {isDefined(problem.name) ? (
-            <Editable
-              value={problem.name}
-              placeholder="Problem Name"
-              onChange={
-                onSaveChanges &&
-                ((newValue) =>
-                  onSaveChanges({ problemId: problem.id, name: newValue }))
-              }
-            />
-          ) : (
-            // Missing value indicates it's still loading
-            <Skeleton />
-          )}
+          {/* Nullish value indicates it's still loading */}
+          {problem.name ?? <Skeleton />}
         </Typography>
 
+        {/* Nullish value indicates it's still loading */}
         {isDefined(problem.externalLink) ? (
-          <Editable
-            value={problem.externalLink}
-            placeholder="External Link"
-            validator={validateExternalLink}
-            onChange={
-              onSaveChanges &&
-              ((newValue) =>
-                onSaveChanges({
-                  problemId: problem.id,
-                  externalLink: newValue,
-                }))
-            }
-          >
-            <ExternalProblemLink />
-          </Editable>
+          <ExternalProblemLink>{problem.externalLink}</ExternalProblemLink>
         ) : (
-          // Missing value indicates it's still loading
           <Skeleton />
         )}
 
