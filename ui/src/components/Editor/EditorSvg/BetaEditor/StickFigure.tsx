@@ -8,7 +8,6 @@ import {
   OverlayPosition,
   subtract,
   unit,
-  useBetaMoveVisualPosition,
 } from "components/Editor/util/svg";
 import { stance_betaMoveNodeConnection$key } from "../../util/__generated__/stance_betaMoveNodeConnection.graphql";
 import Line from "../common/Line";
@@ -16,6 +15,7 @@ import StickFigureDragHandle from "./StickFigureDragHandle";
 import { useStance } from "components/Editor/util/stance";
 import { SvgContext } from "components/Editor/util/context";
 import { DragFinishHandler } from "components/Editor/util/dnd";
+import { useBetaMoveVisualPosition } from "components/Editor/util/moves";
 
 /**
  * The torso will always be this percentage of the distance between hands and

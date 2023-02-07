@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { graphql, useFragment } from "react-relay";
 import BetaDetailsMove from "./BetaDetailsMove";
 import {
@@ -17,7 +17,7 @@ import { betaQuery } from "../queries";
 import { withQuery } from "relay-query-wrapper";
 import {
   deleteBetaMoveLocal,
-  getBetaMoveColors,
+  useBetaMoveColors,
   reorderBetaMoveLocal,
 } from "components/Editor/util/moves";
 import BetaDetailsDragLayer from "./BetaDetailsDragLayer";
@@ -36,6 +36,7 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
         id
         moves {
           ...BetaDetailsDragPreview_betaMoveNodeConnection
+          ...moves_colors_betaMoveNodeConnection
           ...stance_betaMoveNodeConnection
           edges {
             node {
@@ -64,18 +65,12 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
     setMoves(beta.moves.edges.map(({ node }) => node));
   }, [beta.moves.edges]);
 
-  const betaContextValue = useMemo(
-    () => ({
-      // Calculate color for each move
-      betaMoveColors: getBetaMoveColors(
-        beta.moves.edges.map(({ node }) => node)
-      ),
-      // We don't need positions in this list, so leave this empty. If we try
-      // to access it within this tree, it'll just trigger an error
-      betaMoveVisualPositions: new Map(),
-    }),
-    [beta.moves.edges]
-  );
+  // We may want to memoize these together to prevent context-based rerenders:
+  // Calculate color for each move
+  const betaMoveColors = useBetaMoveColors(beta.moves);
+  // We don't need positions in this list, so leave this empty. If we try
+  // to access it within this tree, it'll just trigger an error
+  const betaMoveVisualPositions = new Map();
 
   const stance = useStance(beta.moves);
 
@@ -130,7 +125,7 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
 
   return (
     <BetaDetailsWrapper>
-      <BetaContext.Provider value={betaContextValue}>
+      <BetaContext.Provider value={{ betaMoveColors, betaMoveVisualPositions }}>
         {moves.length === 0 && (
           <Typography variant="body2">
             Drag a stick figure handle to add a move

@@ -5,7 +5,7 @@ import { BetaChainLine_endBetaMoveNode$key } from "./__generated__/BetaChainLine
 import {
   useBetaMoveColor,
   useBetaMoveVisualPosition,
-} from "components/Editor/util/svg";
+} from "components/Editor/util/moves";
 
 interface Props {
   startMoveKey: BetaChainLine_startBetaMoveNode$key;
