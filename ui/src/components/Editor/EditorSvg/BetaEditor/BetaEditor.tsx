@@ -20,6 +20,8 @@ import {
   useBetaMoveVisualPositions,
 } from "components/Editor/util/moves";
 import useBetaMoveMutations from "components/Editor/util/useBetaMoveMutations";
+import EditAnnotationDialog from "components/Editor/HighlightActions/EditAnnotationDialog";
+import { Portal } from "@mui/material";
 
 interface Props {
   betaKey: BetaEditor_betaNode$key;
@@ -41,6 +43,7 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
             node {
               id
               bodyPart
+              annotation
               order
               ...BetaChainMark_betaMoveNode
               ...BetaChainLine_startBetaMoveNode
@@ -100,6 +103,13 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
     append: { callback: appendBetaMove, state: appendBetaMoveState },
     insert: { callback: insertBetaMove, state: insertBetaMoveState },
     relocate: { callback: relocateBetaMove, state: relocateBetaMoveState },
+    edit: {
+      callback: editBetaMove,
+      state: editBetaMoveState,
+      editingMove,
+      setEditingMove,
+    },
+    delete: { callback: deleteBetaMove, state: deleteBetaMoveState },
   } = useBetaMoveMutations(beta);
 
   const onDragFinish: DragFinishHandler<"overlayBetaMove"> = (
@@ -152,9 +162,28 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
           key={move.id}
           betaMoveKey={move}
           isInCurrentStance={stance[move.bodyPart] === move.id}
+          onEdit={() => setEditingMove(move)}
+          // TODO include confirmation dialog here?
+          onDelete={() => deleteBetaMove({ betaMoveId: move.id })}
           onDragFinish={onDragFinish}
         />
       ))}
+
+      {/* Opened by the Edit button */}
+      <Portal>
+        <EditAnnotationDialog
+          open={Boolean(editingMove)}
+          title={`Edit Notes for Move ${editingMove?.order ?? "…"}`}
+          initialValue={editingMove?.annotation}
+          onSave={(annotation) => {
+            // This *shouldn't* ever be called while undefined
+            if (editingMove) {
+              editBetaMove({ betaMoveId: editingMove.id, annotation });
+            }
+          }}
+          onClose={() => setEditingMove(undefined)}
+        />
+      </Portal>
 
       <MutationErrorSnackbar
         message="Error adding move"
@@ -165,8 +194,16 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
         state={insertBetaMoveState}
       />
       <MutationErrorSnackbar
-        message="Error updating move"
+        message="Error relocating move"
         state={relocateBetaMoveState}
+      />
+      <MutationErrorSnackbar
+        message="Error editing move"
+        state={editBetaMoveState}
+      />
+      <MutationErrorSnackbar
+        message="Error deleting move"
+        state={deleteBetaMoveState}
       />
     </BetaContext.Provider>
   );

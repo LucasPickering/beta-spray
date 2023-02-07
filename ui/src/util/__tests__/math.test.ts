@@ -1,4 +1,4 @@
-import { coerce, lerpColor } from "../math";
+import { coerce, lerpColor, toRadians } from "../math";
 
 describe("coerce", () => {
   test("value in range", () => {
@@ -11,6 +11,16 @@ describe("coerce", () => {
 
   test("value above range", () => {
     expect(coerce(3.1, 1, 3)).toEqual(3);
+  });
+});
+
+describe("toRadians", () => {
+  test("degrees => radians", () => {
+    expect(toRadians(0)).toEqual(0);
+    expect(toRadians(30)).toEqual(Math.PI / 6);
+    expect(toRadians(90)).toEqual(Math.PI / 2);
+    expect(toRadians(180)).toEqual(Math.PI);
+    expect(toRadians(360)).toEqual(Math.PI * 2);
   });
 });
 

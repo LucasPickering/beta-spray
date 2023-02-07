@@ -16,12 +16,40 @@ import {
 import { isDefined } from "util/func";
 import { useHighlight } from "components/Editor/util/highlight";
 import AddBetaMoveMark from "./AddBetaMoveMark";
+import RadialActions from "../common/RadialActions";
+import { BodyPart } from "components/Editor/util/svg";
+import SvgButton from "../common/SvgButton";
 
 interface Props {
   betaMoveKey: BetaChainMark_betaMoveNode$key;
   isInCurrentStance: boolean;
+
+  /**
+   * Called when the Edit button is clicked for this move
+   */
+  onEdit?: () => void;
+
+  /**
+   * Called when the Delete button is clicked for this move
+   */
+  onDelete?: () => void;
+
+  /**
+   * Called when this move is finished being dragged
+   */
   onDragFinish?: DragFinishHandler<"overlayBetaMove">;
 }
+
+/**
+ * Props to be passed to RadialActions, based on body part.
+ */
+const actionsProps: Record<BodyPart, { startAngle: number; reverse: boolean }> =
+  {
+    LEFT_HAND: { startAngle: 90, reverse: false },
+    RIGHT_HAND: { startAngle: 90, reverse: true },
+    LEFT_FOOT: { startAngle: 270, reverse: true },
+    RIGHT_FOOT: { startAngle: 270, reverse: false },
+  };
 
 /**
  * An icon representing a single beta move in a chain
@@ -29,6 +57,8 @@ interface Props {
 const BetaChainMark: React.FC<Props> = ({
   betaMoveKey,
   isInCurrentStance,
+  onEdit,
+  onDelete,
   onDragFinish,
 }) => {
   const betaMove = useFragment(
@@ -112,9 +142,31 @@ const BetaChainMark: React.FC<Props> = ({
           onMouseEnter={highlightThis}
         />
 
-        {isInCurrentStance && (
-          <AddBetaMoveMark betaMoveKey={betaMove} onDragFinish={onDragFinish} />
-        )}
+        <RadialActions
+          actions={[
+            {
+              key: "edit",
+              element: <SvgButton onClick={onEdit} />,
+              visible: isHighlighted,
+            },
+            {
+              key: "add",
+              element: (
+                <AddBetaMoveMark
+                  betaMoveKey={betaMove}
+                  onDragFinish={onDragFinish}
+                />
+              ),
+              visible: isHighlighted || isInCurrentStance,
+            },
+            {
+              key: "delete",
+              element: <SvgButton color="error" onClick={onDelete} />,
+              visible: isHighlighted,
+            },
+          ]}
+          {...actionsProps[betaMove.bodyPart]}
+        />
       </Positioned>
 
       {betaMove.annotation && (

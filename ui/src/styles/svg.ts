@@ -21,6 +21,14 @@ export const styleDraggableHover = css({
 /**
  * Apply to elements that can be dragged
  */
+export const styleClickable = css({
+  cursor: "pointer",
+  "&:hover": styleDraggableHover,
+});
+
+/**
+ * Apply to elements that can be dragged
+ */
 export const styleDraggable = css({
   cursor: "grab",
   "&:hover": styleDraggableHover,

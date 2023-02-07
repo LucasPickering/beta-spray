@@ -150,7 +150,7 @@ export function useBetaMoveVisualPositions(
   // 2. Spread evenly within that 90° slice (if multiple moves per body part)
   // So iterate over each move and set its visual offset accordingly
 
-  const sliceSize = Math.PI / 2; // 90 degrees
+  const sliceSize = 90; // Degrees
 
   // Group by hold, then body part
   for (const movesByHold of groupBy(

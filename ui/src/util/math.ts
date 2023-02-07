@@ -35,6 +35,13 @@ export function hexToHtml(hex: number): string {
 }
 
 /**
+ * Convert degrees to radians
+ */
+export function toRadians(degrees: number): number {
+  return (degrees / 180) * Math.PI;
+}
+
+/**
  * Linearly interpolate between two colors
  * @param color1 Starting color
  * @param color2 Ending color

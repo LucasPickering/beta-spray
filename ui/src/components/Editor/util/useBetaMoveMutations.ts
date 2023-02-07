@@ -1,17 +1,28 @@
+import { useState } from "react";
 import { graphql, useFragment } from "react-relay";
 import { isDefined } from "util/func";
 import useMutation, { MutationState } from "util/useMutation";
 import { DropResult } from "./dnd";
+import { useHighlightItem } from "./highlight";
+import { deleteBetaMoveLocal } from "./moves";
 import { useStanceControls } from "./stance";
 import { BodyPart, OverlayPosition } from "./svg";
 import { useBetaMoveMutations_appendBetaMoveMutation } from "./__generated__/useBetaMoveMutations_appendBetaMoveMutation.graphql";
 import { useBetaMoveMutations_betaNode$key } from "./__generated__/useBetaMoveMutations_betaNode.graphql";
+import { useBetaMoveMutations_deleteBetaMoveMutation } from "./__generated__/useBetaMoveMutations_deleteBetaMoveMutation.graphql";
+import { useBetaMoveMutations_editBetaMoveMutation } from "./__generated__/useBetaMoveMutations_editBetaMoveMutation.graphql";
 import { useBetaMoveMutations_insertBetaMoveMutation } from "./__generated__/useBetaMoveMutations_insertBetaMoveMutation.graphql";
-import { useBetaMoveMutations_updateBetaMoveMutation } from "./__generated__/useBetaMoveMutations_updateBetaMoveMutation.graphql";
+import { useBetaMoveMutations_relocateBetaMoveMutation } from "./__generated__/useBetaMoveMutations_relocateBetaMoveMutation.graphql";
 
 interface Mutation<T> {
   callback: (data: T) => void;
   state: MutationState;
+}
+
+interface EditingMove {
+  readonly id: string;
+  readonly order: number;
+  readonly annotation: string;
 }
 
 /**
@@ -32,6 +43,13 @@ function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
     betaMoveId: string;
     dropResult: DropResult<"overlayBetaMove">;
   }>;
+  edit: Mutation<{ betaMoveId: string; annotation: string }> & {
+    editingMove: EditingMove | undefined;
+    setEditingMove: React.Dispatch<
+      React.SetStateAction<EditingMove | undefined>
+    >;
+  };
+  delete: Mutation<{ betaMoveId: string }>;
 } {
   const beta = useFragment(
     graphql`
@@ -40,13 +58,25 @@ function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
         moves {
           __id
           ...stance_betaMoveNodeConnection
+          edges {
+            node {
+              id
+              order
+              isStart
+              isLastInChain
+            }
+          }
         }
       }
     `,
     betaKey
   );
 
+  const [, highlightMove] = useHighlightItem("move", beta.moves);
   const { select: selectStance } = useStanceControls(beta.moves);
+  // State field for the Editing modal. We store this here so we can call the
+  // setter in onCompleted
+  const [editingMove, setEditingMove] = useState<EditingMove>();
 
   // Append new move to end of the beta
   const { commit: appendBetaMove, state: appendBetaMoveState } =
@@ -103,8 +133,8 @@ function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
     `);
   // Relocate an existing move
   const { commit: relocateBetaMove, state: relocateBetaMoveState } =
-    useMutation<useBetaMoveMutations_updateBetaMoveMutation>(graphql`
-      mutation useBetaMoveMutations_updateBetaMoveMutation(
+    useMutation<useBetaMoveMutations_relocateBetaMoveMutation>(graphql`
+      mutation useBetaMoveMutations_relocateBetaMoveMutation(
         $input: UpdateBetaMoveMutationInput!
       ) {
         updateBetaMove(input: $input) {
@@ -123,6 +153,48 @@ function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
             position {
               x
               y
+            }
+          }
+        }
+      }
+    `);
+  // Modify annotation on a move. Even though this calls the same mutation as
+  // `relocate`, the response is very different
+  const { commit: editBetaMove, state: editBetaMoveState } =
+    useMutation<useBetaMoveMutations_editBetaMoveMutation>(graphql`
+      mutation useBetaMoveMutations_editBetaMoveMutation(
+        $input: UpdateBetaMoveMutationInput!
+      ) {
+        updateBetaMove(input: $input) {
+          betaMove {
+            id
+            annotation
+          }
+        }
+      }
+    `);
+  // Delete a move
+  const { commit: deleteBetaMove, state: deleteBetaMoveState } =
+    useMutation<useBetaMoveMutations_deleteBetaMoveMutation>(graphql`
+      mutation useBetaMoveMutations_deleteBetaMoveMutation(
+        $input: DeleteBetaMoveMutationInput!
+      ) {
+        deleteBetaMove(input: $input) {
+          betaMove {
+            # This can reorder moves, so we have to refetch the whole move list
+            beta {
+              id
+              moves {
+                edges {
+                  node {
+                    id
+                    # These are the fields that can change after a delete
+                    order
+                    isStart
+                    isLastInChain
+                  }
+                }
+              }
             }
           }
         }
@@ -185,6 +257,54 @@ function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
         });
       },
       state: relocateBetaMoveState,
+    },
+    edit: {
+      callback: ({ betaMoveId, annotation }) => {
+        editBetaMove({
+          variables: {
+            input: { betaMoveId, annotation },
+          },
+          optimisticResponse: {
+            updateBetaMove: {
+              betaMove: { id: betaMoveId, annotation },
+            },
+          },
+          onCompleted(data) {
+            if (isDefined(data.updateBetaMove)) {
+              // Close the modal
+              setEditingMove(undefined);
+            }
+          },
+        });
+      },
+      state: editBetaMoveState,
+      editingMove,
+      setEditingMove,
+    },
+    delete: {
+      callback: ({ betaMoveId }) => {
+        deleteBetaMove({
+          variables: {
+            input: { betaMoveId },
+          },
+          // Reset selection to prevent ghost highlight
+          onCompleted() {
+            highlightMove(undefined);
+          },
+          optimisticResponse: {
+            deleteBetaMove: {
+              betaMove: {
+                id: betaMoveId,
+                beta: {
+                  id: beta.id,
+                  moves: deleteBetaMoveLocal(beta.moves, betaMoveId),
+                },
+              },
+            },
+          },
+        });
+      },
+      state: deleteBetaMoveState,
     },
   };
 }

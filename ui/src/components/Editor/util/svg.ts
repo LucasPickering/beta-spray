@@ -3,6 +3,7 @@ import { XYCoord } from "react-dnd";
 import { SvgContext } from "./context";
 import { assertIsDefined } from "util/func";
 import type { BodyPart as BodyPartAPI } from "../EditorSvg/BetaEditor/__generated__/BetaEditor_betaNode.graphql";
+import { toRadians } from "util/math";
 
 /**
  * 2D dimension of a rectangle
@@ -136,9 +137,10 @@ export function midpoint(
  * being +x and down being +y.
  *
  * @param radius Distance from the origin, in SVG coordinates (top-left is origin)
- * @param radians Offset angle, in *radians*, following the unit circle
+ * @param degrees Offset angle, in *degrees*, following the unit circle
  */
-export function polarToSvg(radius: number, radians: number): OverlayPosition {
+export function polarToSvg(radius: number, degrees: number): OverlayPosition {
+  const radians = toRadians(degrees);
   return {
     x: radius * Math.cos(radians),
     y: radius * -Math.sin(radians),
