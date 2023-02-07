@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
 import { BetaEditor_betaNode$key } from "./__generated__/BetaEditor_betaNode.graphql";
-import { isDefined, groupBy } from "util/func";
+import { groupBy } from "util/func";
 import StickFigure from "./StickFigure";
 import BetaChainLine from "./BetaChainLine";
 import BetaChainMark from "./BetaChainMark";
@@ -12,17 +12,14 @@ import { betaQuery } from "components/Editor/queries";
 import { BetaContext } from "components/Editor/util/context";
 import { comparator } from "util/func";
 import { useHighlight } from "components/Editor/util/highlight";
-import { useStance, useStanceControls } from "components/Editor/util/stance";
-import { BetaEditor_appendBetaMoveMutation } from "./__generated__/BetaEditor_appendBetaMoveMutation.graphql";
-import useMutation from "util/useMutation";
-import { BetaEditor_insertBetaMoveMutation } from "./__generated__/BetaEditor_insertBetaMoveMutation.graphql";
-import { BetaEditor_updateBetaMoveMutation } from "./__generated__/BetaEditor_updateBetaMoveMutation.graphql";
+import { useStance } from "components/Editor/util/stance";
 import { DragFinishHandler } from "components/Editor/util/dnd";
 import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
 import {
   getBetaMoveColors,
   getBetaMoveVisualPositions,
 } from "components/Editor/util/moves";
+import useBetaMoveMutations from "components/Editor/util/useBetaMoveMutations";
 
 interface Props {
   betaKey: BetaEditor_betaNode$key;
@@ -35,9 +32,8 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
   const beta = useFragment(
     graphql`
       fragment BetaEditor_betaNode on BetaNode {
-        id
+        ...useBetaMoveMutations_betaNode
         moves {
-          __id
           ...stance_betaMoveNodeConnection
           edges {
             node {
@@ -67,85 +63,6 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
     `,
     betaKey
   );
-
-  // Append new move to end of the beta
-  const { commit: appendBetaMove, state: appendBetaMoveState } =
-    useMutation<BetaEditor_appendBetaMoveMutation>(graphql`
-      mutation BetaEditor_appendBetaMoveMutation(
-        $input: AppendBetaMoveMutationInput!
-        $connections: [ID!]!
-      ) {
-        appendBetaMove(input: $input) {
-          betaMove
-            @appendNode(
-              connections: $connections
-              edgeTypeName: "BetaMoveNodeEdge"
-            ) {
-            id
-            # Fetch everything we use. We can't put this into a fragment :(
-            bodyPart
-            order
-            isStart
-            hold {
-              id
-              position {
-                x
-                y
-              }
-            }
-            position {
-              x
-              y
-            }
-            ...BetaChainMark_betaMoveNode
-          }
-        }
-      }
-    `);
-  // Insert a new move into the middle of the beta
-  const { commit: insertBetaMove, state: insertBetaMoveState } =
-    useMutation<BetaEditor_insertBetaMoveMutation>(graphql`
-      mutation BetaEditor_insertBetaMoveMutation(
-        $input: InsertBetaMoveMutationInput!
-      ) {
-        insertBetaMove(input: $input) {
-          betaMove {
-            id
-            # This can reorder moves, so we have to refetch the whole move list
-            beta {
-              ...BetaEditor_betaNode
-            }
-          }
-        }
-      }
-    `);
-  // Relocate an existing move
-  const { commit: updateBetaMove, state: updateBetaMoveState } =
-    useMutation<BetaEditor_updateBetaMoveMutation>(graphql`
-      mutation BetaEditor_updateBetaMoveMutation(
-        $input: UpdateBetaMoveMutationInput!
-      ) {
-        updateBetaMove(input: $input) {
-          betaMove {
-            id
-            # These are the only fields we modify
-            # Yes, we need to refetch both positions, in case the move was
-            # converted from free to attached or vice versa
-            hold {
-              id
-              position {
-                x
-                y
-              }
-            }
-            position {
-              x
-              y
-            }
-          }
-        }
-      }
-    `);
 
   // Just a little helper, since we access this a lot. Technically it's wasted
   // space since we never access this array directly, just map over it again,
@@ -193,81 +110,27 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
     [moves, highlightedMoveId]
   );
   const stance = useStance(beta.moves);
-  const { select: selectStance } = useStanceControls(beta.moves);
+  const {
+    append: { callback: appendBetaMove, state: appendBetaMoveState },
+    insert: { callback: insertBetaMove, state: insertBetaMoveState },
+    relocate: { callback: relocateBetaMove, state: relocateBetaMoveState },
+  } = useBetaMoveMutations(beta);
 
-  const onDragFinish: DragFinishHandler<"overlayBetaMove"> = (item, result) => {
-    // Regardless of the mutation kind, we'll pass either `holdId` OR `position`
-    // (but not both), based on the drop target.
-    const mutationParams =
-      result.kind === "hold"
-        ? { holdId: result.holdId }
-        : { position: result.position };
-
-    // This is what we expect back for hold/position
-    const optimisticFields =
-      result.kind == "hold"
-        ? {
-            hold: { id: result.holdId, position: result.position },
-            position: null,
-          }
-        : {
-            hold: null,
-            position: result.position,
-          };
+  const onDragFinish: DragFinishHandler<"overlayBetaMove"> = (
+    item,
+    dropResult
+  ) => {
     switch (item.action) {
-      // Dragged a body part from the stick figure
-      case "create": {
-        appendBetaMove({
-          variables: {
-            input: {
-              betaId: beta.id,
-              bodyPart: item.bodyPart,
-              ...mutationParams,
-            },
-            connections: [beta.moves.__id],
-          },
-          onCompleted(data) {
-            if (isDefined(data.appendBetaMove)) {
-              selectStance(data.appendBetaMove.betaMove.id);
-            }
-          },
-          // Punting on optimistic update because ordering is hard
-        });
+      case "create":
+        appendBetaMove({ bodyPart: item.bodyPart, dropResult });
         break;
-      }
-      // Dragged a line between two moves (insert after the starting move)
       case "insertAfter":
-        insertBetaMove({
-          variables: {
-            input: {
-              previousBetaMoveId: item.betaMoveId,
-              ...mutationParams,
-            },
-          },
-          onCompleted(result) {
-            // Update stance to include the new move
-            if (isDefined(result.insertBetaMove)) {
-              selectStance(result.insertBetaMove.betaMove.id);
-            }
-          },
-          // Punting on optimistic update because ordering is hard
-        });
+        insertBetaMove({ previousBetaMoveId: item.betaMoveId, dropResult });
         break;
       // Dragged an existing move
       case "relocate":
-        updateBetaMove({
-          variables: {
-            input: { betaMoveId: item.betaMoveId, ...mutationParams },
-          },
-          optimisticResponse: {
-            updateBetaMove: {
-              betaMove: {
-                id: item.betaMoveId,
-                ...optimisticFields,
-              },
-            },
-          },
-        });
+        relocateBetaMove({ betaMoveId: item.betaMoveId, dropResult });
+        break;
     }
   };
 
@@ -312,12 +175,12 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
         state={appendBetaMoveState}
       />
       <MutationErrorSnackbar
-        message="Error updating move"
-        state={updateBetaMoveState}
-      />
-      <MutationErrorSnackbar
         message="Error adding move"
         state={insertBetaMoveState}
+      />
+      <MutationErrorSnackbar
+        message="Error updating move"
+        state={relocateBetaMoveState}
       />
     </BetaContext.Provider>
   );
