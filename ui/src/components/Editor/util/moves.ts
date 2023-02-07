@@ -13,6 +13,12 @@ import { hexToHtml, htmlToHex, lerpColor } from "util/math";
 import theme from "util/theme";
 import { disambiguationDistance } from "styles/svg";
 import { add, BodyPart, OverlayPosition, polarToSvg } from "./svg";
+import { useContext, useCallback } from "react";
+import { BetaContext } from "./context";
+import { graphql } from "relay-runtime";
+import { useFragment } from "react-relay";
+import { moves_visualPositions_betaMoveNodeConnection$key } from "./__generated__/moves_visualPositions_betaMoveNodeConnection.graphql";
+import { moves_colors_betaMoveNodeConnection$key } from "./__generated__/moves_colors_betaMoveNodeConnection.graphql";
 
 /**
  * List of beta moves, from Relay, that we will update locally for the purpose
@@ -40,29 +46,44 @@ const bodyPartsCCW: BodyPart[] = [
 ];
 
 /**
- * Get the color pair representing each beta move. The primary color will be a
- * linear interpolation between two colors based on the ordering of the move
- * within the beta. The secondary color expresses further metadata.
+ * Get the color representing each beta move, which will be a linear
+ * interpolation between two colors based on the ordering of the move within
+ * the beta.
  *
- * @param move All moves in the beta (from Relay)
- * @returns Map of beta ID : color pair, to be passed to BetaContext
+ * @param betaMoveConnectionKey Relay fragment key for all beta moves
+ * @returns Map of beta ID : color, to be passed to BetaContext
  */
-export function getBetaMoveColors(
-  moves: Array<{ id: string; order: number; isStart: boolean }>
+export function useBetaMoveColors(
+  betaMoveConnectionKey: moves_colors_betaMoveNodeConnection$key
 ): Map<string, string> {
+  const betaMoveConnection = useFragment(
+    graphql`
+      fragment moves_colors_betaMoveNodeConnection on BetaMoveNodeConnection {
+        edges {
+          node {
+            id
+            order
+          }
+        }
+      }
+    `,
+    betaMoveConnectionKey
+  );
+
+  const moves = betaMoveConnection.edges;
   const startColor = htmlToHex(theme.palette.primary.main);
   const endColor = htmlToHex(theme.palette.secondary.main);
   const colorMap: Map<string, string> = new Map();
 
   // Generate a color for each move
-  for (const move of moves) {
+  for (const { node } of moves) {
     const hex = lerpColor(
       startColor,
       endColor,
       // Make sure we map first=>0, last=>1. Need to also prevent NaN
-      moves.length > 1 ? (move.order - 1) / (moves.length - 1) : 0.0
+      moves.length > 1 ? (node.order - 1) / (moves.length - 1) : 0.0
     );
-    colorMap.set(move.id, hexToHtml(hex));
+    colorMap.set(node.id, hexToHtml(hex));
   }
 
   return colorMap;
@@ -75,30 +96,51 @@ export function getBetaMoveColors(
  * can all be seen at once. These positions should be used for any rendering
  * purposes (so basically everywhere in the UI).
  *
- * @param moves All moves in the beta (from Relay). Readonly because mutating
- *  Relay state is a nono.
+ * @param betaMoveConnectionKey Relay fragment key for all beta moves
  * @returns Map of beta ID : visual position, to be passed to BetaContext
  */
-export function getBetaMoveVisualPositions(
-  moves: ReadonlyArray<{
-    readonly id: string;
-    readonly bodyPart: BodyPart;
-    readonly hold: { id: string; position: OverlayPosition } | null;
-    readonly position: OverlayPosition | null;
-  }>
+export function useBetaMoveVisualPositions(
+  betaMoveConnectionKey: moves_visualPositions_betaMoveNodeConnection$key
 ): Map<string, OverlayPosition> {
+  const betaMoveConnection = useFragment(
+    graphql`
+      fragment moves_visualPositions_betaMoveNodeConnection on BetaMoveNodeConnection {
+        edges {
+          node {
+            id
+            bodyPart
+            hold {
+              id
+              position {
+                x
+                y
+              }
+            }
+            position {
+              x
+              y
+            }
+          }
+        }
+      }
+    `,
+    betaMoveConnectionKey
+  );
+
+  // TODO memoize
+  const moves = betaMoveConnection.edges;
   const positionMap: Map<string, OverlayPosition> = new Map();
 
   // Start by just jamming every move into the map
-  for (const move of moves) {
+  for (const { node } of moves) {
     // Grab position from either the hold (for attached moves) or the move
     // itself (for free moves)
-    const position = move.position ?? move.hold?.position;
+    const position = node.position ?? node.hold?.position;
     if (position) {
-      positionMap.set(move.id, position);
+      positionMap.set(node.id, position);
     } else {
       // eslint-disable-next-line no-console
-      console.warn("No position available for move:", move);
+      console.warn("No position available for move:", node);
     }
   }
 
@@ -114,10 +156,10 @@ export function getBetaMoveVisualPositions(
   for (const movesByHold of groupBy(
     // Exclude free moves, since they'll never share the *exact* some position
     // Maybe we'll need a more dynamic disambiguation, but not yet
-    moves.filter((move) => isDefined(move.hold)),
-    (move) => move.hold?.id
+    moves.filter(({ node }) => isDefined(node.hold)),
+    ({ node }) => node.hold?.id
   ).values()) {
-    const movesByBodyPart = groupBy(movesByHold, (move) => move.bodyPart);
+    const movesByBodyPart = groupBy(movesByHold, ({ node }) => node.bodyPart);
 
     bodyPartsCCW.forEach((bodyPart, i) => {
       const bodyPartMoves = movesByBodyPart.get(bodyPart);
@@ -131,7 +173,7 @@ export function getBetaMoveVisualPositions(
         const subsliceSize = sliceSize / (bodyPartMoves.length + 1);
 
         // API wil pre-sort by order, and that ordering will persist here
-        bodyPartMoves.forEach((move, i) => {
+        bodyPartMoves.forEach(({ node }, i) => {
           // If the move is attached to a hold, we want to apply spreading
           const offset = polarToSvg(
             disambiguationDistance,
@@ -140,16 +182,71 @@ export function getBetaMoveVisualPositions(
           );
 
           // Apply the offset to create the visual position
-          const position = positionMap.get(move.id);
+          const position = positionMap.get(node.id);
           // The map is fully populated above so this assertion is safe
           assertIsDefined(position);
-          positionMap.set(move.id, add(position, offset));
+          positionMap.set(node.id, add(position, offset));
         });
       }
     });
   }
 
   return positionMap;
+}
+
+/**
+ * A hook for accessing the color of each move in the beta. This returns a
+ * getter than can then provide each move's color, so that you can easily
+ * handle multiple moves within one component. Relies on BetaContext being
+ * present and the colors being initialized within that context.
+ *
+ * @returns A function that takes in a move ID and returns its color
+ */
+export function useBetaMoveColor(): (betaMoveId: string) => string {
+  const { betaMoveColors } = useContext(BetaContext);
+  return useCallback(
+    (betaMoveId) => {
+      const color = betaMoveColors.get(betaMoveId);
+      if (!isDefined(color)) {
+        // TODO figure out why this gets triggered in BetaDetails after deletion
+        // eslint-disable-next-line no-console
+        console.warn(
+          `No color for beta move ${betaMoveId}. Either the ID is unknown or` +
+            ` color wasn't initialized in this part of the component tree.`
+        );
+        return "#000000";
+      }
+      return color;
+    },
+    [betaMoveColors]
+  );
+}
+
+/**
+ * A hook for accessing the visual position of each move in the beta. This
+ * returns a getter than can then provide each move's position, so that you can
+ * easily handle multiple moves within one component. Relies on BetaContext
+ * being present and the visual positions being initialized within that context.
+ *
+ * @returns A function that takes in a move ID and returns its position
+ */
+export function useBetaMoveVisualPosition(): (
+  betaMoveId: string
+) => OverlayPosition {
+  const { betaMoveVisualPositions } = useContext(BetaContext);
+  return useCallback(
+    (betaMoveId) => {
+      const visualPosition = betaMoveVisualPositions.get(betaMoveId);
+      if (!isDefined(visualPosition)) {
+        throw new Error(
+          `No visual position for beta move ${betaMoveId}. Either the ID is unknown or` +
+            ` positions weren't initialized in this part of the component tree.`
+        );
+      }
+      return visualPosition;
+    },
+    [betaMoveVisualPositions]
+  );
 }
 
 /**

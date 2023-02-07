@@ -1,11 +1,6 @@
 import { useTheme } from "@mui/material";
 import { DragFinishHandler, useDrag } from "components/Editor/util/dnd";
-import {
-  add,
-  BodyPart,
-  OverlayPosition,
-  useBetaMoveVisualPosition,
-} from "components/Editor/util/svg";
+import { BodyPart, OverlayPosition } from "components/Editor/util/svg";
 import { graphql, useFragment } from "react-relay";
 import { styleDraggable, styleDragging } from "styles/svg";
 import { isDefined } from "util/func";
@@ -45,8 +40,6 @@ const AddBetaMoveMark: React.FC<Props> = ({ betaMoveKey, onDragFinish }) => {
     betaMoveKey
   );
 
-  const position = useBetaMoveVisualPosition()(betaMove.id);
-
   const [{ isDragging }, drag] = useDrag<
     "overlayBetaMove",
     { isDragging: boolean }
@@ -76,7 +69,7 @@ const AddBetaMoveMark: React.FC<Props> = ({ betaMoveKey, onDragFinish }) => {
   });
 
   return (
-    <Positioned ref={drag} position={add(position, offsets[betaMove.bodyPart])}>
+    <Positioned ref={drag} position={offsets[betaMove.bodyPart]}>
       <IconAddBetaMoveRaw css={[styleDraggable, isDragging && styleDragging]} />
     </Positioned>
   );

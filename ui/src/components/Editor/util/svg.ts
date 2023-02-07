@@ -1,7 +1,7 @@
 import { useCallback, useContext } from "react";
 import { XYCoord } from "react-dnd";
-import { BetaContext, SvgContext } from "./context";
-import { assertIsDefined, isDefined } from "util/func";
+import { SvgContext } from "./context";
+import { assertIsDefined } from "util/func";
 import type { BodyPart as BodyPartAPI } from "../EditorSvg/BetaEditor/__generated__/BetaEditor_betaNode.graphql";
 
 /**
@@ -177,60 +177,5 @@ export function useDOMToSVGPosition(): (
       return { x: result.x, y: result.y };
     },
     [svgRef]
-  );
-}
-
-/**
- * A hook for accessing the color of each move in the beta. This returns a
- * getter than can then provide each move's color, so that you can easily
- * handle multiple moves within one component. Relies on BetaContext being
- * present and the colors being initialized within that context.
- *
- * @returns A function that takes in a move ID and returns its color
- */
-export function useBetaMoveColor(): (betaMoveId: string) => string {
-  const { betaMoveColors } = useContext(BetaContext);
-  return useCallback(
-    (betaMoveId) => {
-      const color = betaMoveColors.get(betaMoveId);
-      if (!isDefined(color)) {
-        // TODO figure out why this gets triggered in BetaDetails after deletion
-        // eslint-disable-next-line no-console
-        console.warn(
-          `No color for beta move ${betaMoveId}. Either the ID is unknown or` +
-            ` color wasn't initialized in this part of the component tree.`
-        );
-        return "#000000";
-      }
-      return color;
-    },
-    [betaMoveColors]
-  );
-}
-
-/**
- * A hook for accessing the visual position of each move in the beta. This
- * returns a getter than can then provide each move's position, so that you can
- * easily handle multiple moves within one component. Relies on BetaContext
- * being present and the visual positions being initialized within that context.
- *
- * @returns A function that takes in a move ID and returns its position
- */
-export function useBetaMoveVisualPosition(): (
-  betaMoveId: string
-) => OverlayPosition {
-  const { betaMoveVisualPositions } = useContext(BetaContext);
-  return useCallback(
-    (betaMoveId) => {
-      const visualPosition = betaMoveVisualPositions.get(betaMoveId);
-      if (!isDefined(visualPosition)) {
-        throw new Error(
-          `No visual position for beta move ${betaMoveId}. Either the ID is unknown or` +
-            ` positions weren't initialized in this part of the component tree.`
-        );
-      }
-      return visualPosition;
-    },
-    [betaMoveVisualPositions]
   );
 }

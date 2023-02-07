@@ -12,7 +12,7 @@ import { BetaChainMark_betaMoveNode$key } from "./__generated__/BetaChainMark_be
 import {
   useBetaMoveColor,
   useBetaMoveVisualPosition,
-} from "components/Editor/util/svg";
+} from "components/Editor/util/moves";
 import { isDefined } from "util/func";
 import { useHighlight } from "components/Editor/util/highlight";
 import AddBetaMoveMark from "./AddBetaMoveMark";
@@ -111,11 +111,11 @@ const BetaChainMark: React.FC<Props> = ({
           onClick={highlightThis}
           onMouseEnter={highlightThis}
         />
-      </Positioned>
 
-      {isInCurrentStance && (
-        <AddBetaMoveMark betaMoveKey={betaMove} onDragFinish={onDragFinish} />
-      )}
+        {isInCurrentStance && (
+          <AddBetaMoveMark betaMoveKey={betaMove} onDragFinish={onDragFinish} />
+        )}
+      </Positioned>
 
       {betaMove.annotation && (
         <Portal>

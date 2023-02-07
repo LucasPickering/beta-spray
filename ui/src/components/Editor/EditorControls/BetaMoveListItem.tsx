@@ -10,11 +10,12 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
-import { formatBodyPart, useBetaMoveColor } from "components/Editor/util/svg";
+import { formatBodyPart } from "components/Editor/util/svg";
 import { graphql, useFragment } from "react-relay";
 import { BetaMoveListItem_betaMoveNode$key } from "./__generated__/BetaMoveListItem_betaMoveNode.graphql";
 import { BetaMoveIconWrapped } from "../EditorSvg/BetaEditor/BetaMoveIcon";
 import { isDefined } from "util/func";
+import { useBetaMoveColor } from "../util/moves";
 
 interface Props extends React.ComponentProps<typeof ListItem> {
   betaMoveKey: BetaMoveListItem_betaMoveNode$key;

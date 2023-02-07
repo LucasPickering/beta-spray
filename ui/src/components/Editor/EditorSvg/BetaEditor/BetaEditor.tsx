@@ -16,8 +16,8 @@ import { useStance } from "components/Editor/util/stance";
 import { DragFinishHandler } from "components/Editor/util/dnd";
 import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
 import {
-  getBetaMoveColors,
-  getBetaMoveVisualPositions,
+  useBetaMoveColors,
+  useBetaMoveVisualPositions,
 } from "components/Editor/util/moves";
 import useBetaMoveMutations from "components/Editor/util/useBetaMoveMutations";
 
@@ -34,6 +34,8 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
       fragment BetaEditor_betaNode on BetaNode {
         ...useBetaMoveMutations_betaNode
         moves {
+          ...moves_colors_betaMoveNodeConnection
+          ...moves_visualPositions_betaMoveNodeConnection
           ...stance_betaMoveNodeConnection
           edges {
             node {
@@ -42,17 +44,6 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
               bodyPart
               order
               isStart
-              hold {
-                id
-                position {
-                  x
-                  y
-                }
-              }
-              position {
-                x
-                y
-              }
               ...BetaChainMark_betaMoveNode
               ...BetaChainLine_startBetaMoveNode
               ...BetaChainLine_endBetaMoveNode
@@ -79,14 +70,11 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
     () => groupBy(moves, (move) => move.bodyPart),
     [moves]
   );
-  // Memoize these together to prevent re-renders in the context below
-  const betaContextValue = useMemo(
-    () => ({
-      betaMoveColors: getBetaMoveColors(moves),
-      betaMoveVisualPositions: getBetaMoveVisualPositions(moves),
-    }),
-    [moves]
-  );
+
+  // These are individually memoized. We may want to memoize them together too
+  // to prevent re-renders in the context, requires profiling though
+  const betaMoveColors = useBetaMoveColors(beta.moves);
+  const betaMoveVisualPositions = useBetaMoveVisualPositions(beta.moves);
 
   // We need to reorder moves slightly, to put the highlighted move at the end.
   // This forces it to render on top (SVG doesn't have any z-index equivalent).
@@ -135,7 +123,7 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
   };
 
   return (
-    <BetaContext.Provider value={betaContextValue}>
+    <BetaContext.Provider value={{ betaMoveColors, betaMoveVisualPositions }}>
       {/* Draw lines to connect the moves. Do this *first* so they go on bottom */}
       {Array.from(movesByBodyPart.values(), (moveChain) =>
         moveChain.map((move, i) => {
