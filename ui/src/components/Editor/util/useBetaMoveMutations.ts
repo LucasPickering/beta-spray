@@ -62,23 +62,7 @@ function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
               edgeTypeName: "BetaMoveNodeEdge"
             ) {
             id
-            # Fetch everything we use. We can't put this into a fragment :(
-            # TODO put it into a fragment (no, really)
-            bodyPart
-            order
-            isStart
-            hold {
-              id
-              position {
-                x
-                y
-              }
-            }
-            position {
-              x
-              y
-            }
-            ...BetaChainMark_betaMoveNode
+            ...useBetaMoveMutations_all_betaMoveNode
           }
         }
       }
@@ -90,12 +74,28 @@ function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
         $input: InsertBetaMoveMutationInput!
       ) {
         insertBetaMove(input: $input) {
+          # We DON'T need appendNode here since we refetch the full list below.
+          # Relay will automatically merge the fields for the new node into the
+          # updated connection.
           betaMove {
             id
-            # This can reorder moves, so we have to refetch the whole move list
-            # TODO slim this down, and only retrieve all fields for the added node
+            # Get all used fields for the new move
+            ...useBetaMoveMutations_all_betaMoveNode
+            # Refetch a minimal version of the full list, since moves could
+            # have been reordered
             beta {
-              ...BetaEditor_betaNode
+              id
+              moves {
+                edges {
+                  node {
+                    id
+                    # These are the fields that can change during a reorder
+                    order
+                    isStart
+                    isLastInChain
+                  }
+                }
+              }
             }
           }
         }
@@ -188,6 +188,33 @@ function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
     },
   };
 }
+
+/**
+ * A shorthand fragment to refetching all fields on a new beta move. This should
+ * be spread in the response of any mutation that adds a new move. This captures
+ * all the fields that we use throughout the UI.
+ */
+graphql`
+  fragment useBetaMoveMutations_all_betaMoveNode on BetaMoveNode {
+    id
+    bodyPart
+    order
+    annotation
+    isStart
+    isLastInChain
+    hold {
+      id
+      position {
+        x
+        y
+      }
+    }
+    position {
+      x
+      y
+    }
+  }
+`;
 
 /**
  * Get a set of common parameters for a move mutation, related to the object it

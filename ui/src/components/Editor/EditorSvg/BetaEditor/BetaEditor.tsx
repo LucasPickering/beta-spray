@@ -39,11 +39,9 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
           ...stance_betaMoveNodeConnection
           edges {
             node {
-              # Yes these fields are all needed, to get positions and colors
               id
               bodyPart
               order
-              isStart
               ...BetaChainMark_betaMoveNode
               ...BetaChainLine_startBetaMoveNode
               ...BetaChainLine_endBetaMoveNode
