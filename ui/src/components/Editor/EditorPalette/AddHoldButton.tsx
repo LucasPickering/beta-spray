@@ -65,27 +65,19 @@ const AddHoldButton: React.FC<Props> = ({ problemKey, disabled = false }) => {
       <AddHoldButtonContent
         disabled={disabled}
         onClick={() => {
-          // Pick a random position on the SVG for the new hold
-          const position = {
-            x: Math.random() * problem.boulder.image.svgWidth,
-            y: Math.random() * problem.boulder.image.svgHeight,
-          };
           createHold({
             variables: {
               input: {
                 boulderId: problem.boulder.id,
                 problemId: problem.id,
-                position,
+                // Let the API pick a random position
               },
               // We only need to add to the problem holds here, because the
               // boulder holds aren't accessed directly in the UI
               connections: [problem.holds.__id],
             },
-            // We'll create a phantom hold with no ID until the real one
-            // comes in
-            optimisticResponse: {
-              createHold: { hold: { id: "", position, annotation: "" } },
-            },
+            // Can't do an optimistic response here since the position will be
+            // random
             onCompleted(result) {
               // Highlight the new hold
               if (isDefined(result.createHold)) {

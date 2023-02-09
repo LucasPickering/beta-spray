@@ -420,7 +420,9 @@ type CreateHoldMutationPayload {
 
 input CreateHoldMutationInput {
   boulderId: ID!
-  position: SVGPositionInput!
+
+  """Position of the new hold, or empty for random"""
+  position: SVGPositionInput = null
   problemId: ID
   annotation: String
   clientMutationId: String
