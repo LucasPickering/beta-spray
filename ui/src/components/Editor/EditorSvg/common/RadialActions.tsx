@@ -19,7 +19,7 @@ interface Props {
  */
 const RadialActions: React.FC<Props> = ({
   actions,
-  radius = 6,
+  radius = 7,
   startAngle = 90,
   sliceSize = 45,
   reverse = false,

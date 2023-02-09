@@ -11,7 +11,7 @@ const SvgButton: React.FC<Props> = ({ color = "info", icon, onClick }) => {
   const { palette } = useTheme();
   return (
     <g onClick={onClick}>
-      <circle r={1.5} fill={palette[color].main} css={styleClickable} />
+      <circle r={2} fill={palette[color].main} css={styleClickable} />
       {icon && <foreignObject>{icon}</foreignObject>}
     </g>
   );

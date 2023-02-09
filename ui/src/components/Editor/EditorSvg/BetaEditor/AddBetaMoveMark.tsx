@@ -70,7 +70,7 @@ const IconAddBetaMoveRaw = React.forwardRef<
   const { palette } = useTheme();
   return (
     <g ref={ref} {...props}>
-      <circle r={1.5} fill={palette.success.main} />
+      <circle r={2} fill={palette.success.main} />
       <text
         textAnchor="middle"
         dominantBaseline="middle"
