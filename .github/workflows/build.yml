@@ -1,16 +1,14 @@
 name: Build Images & Assets
 
 on:
-  push:
-    branches:
-      - master
+  workflow_call:
   pull_request:
 
 env:
   # github.sha doesn't always refer to the commit we're running on... which is fucking stupid
   # So we have to do this charade
   # https://github.com/orgs/community/discussions/25191
-  SHA: ${{ github.event.pull_request.head.sha || github.event.push.head_commit.sha }}
+  SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
 jobs:
   api-build:
