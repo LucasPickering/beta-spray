@@ -40,7 +40,7 @@ Deployed via Kubernetes on the [Keskne](https://github.com/LucasPickering/keskne
 
 | Environment | Namespace        | Domain                                         | When             |
 | ----------- | ---------------- | ---------------------------------------------- | ---------------- |
-| Development | `beta-spray-dev` | [dev.betaspray.net](https://dev.betaspray.net) | Pull Request     |
+| Development | `beta-spray-dev` | [dev.betaspray.net](https://dev.betaspray.net) | Manually         |
 | Production  | `beta-spray`     | [betaspray.net](https://betaspray.net)         | Push to `master` |
 
 See the [deployment-specific README](./deploy/README.md) for more info.

@@ -1,0 +1,24 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: Build
+    uses: LucasPickering/beta-spray/.github/workflows/build.yml@master
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    secrets: inherit
+  deploy:
+    name: Deploy
+    uses: LucasPickering/beta-spray/.github/workflows/deploy.yml@master
+    needs:
+      - build
+    with:
+      environment: production
+    secrets: inherit
