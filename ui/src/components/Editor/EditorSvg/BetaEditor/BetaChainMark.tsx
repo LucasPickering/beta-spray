@@ -107,9 +107,8 @@ const BetaChainMark: React.FC<Props> = ({
           isHighlighted={isHighlighted}
           // Don't block drop events when another element is being dragged
           css={isDraggingOther && { pointerEvents: "none" }}
-          // Hover (desktop) or click (mobile) => highlight the move
+          // Click => highlight the move
           onClick={highlightThis}
-          onMouseEnter={highlightThis}
         />
 
         {isInCurrentStance && (

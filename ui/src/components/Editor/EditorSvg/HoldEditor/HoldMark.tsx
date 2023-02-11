@@ -90,12 +90,7 @@ const HoldMark: React.FC<Props> = ({ holdKey, onDragFinish, onDrop }) => {
   drag(drop(ref));
   return (
     <>
-      <Positioned
-        ref={ref}
-        position={hold.position}
-        onClick={highlightThis}
-        onMouseEnter={highlightThis}
-      >
+      <Positioned ref={ref} position={hold.position} onClick={highlightThis}>
         <HoldIcon
           draggable
           isDragging={isDragging}
