@@ -82,7 +82,10 @@ const BetaMoveListItem = React.forwardRef<HTMLLIElement, Props>(
         <ListItemIcon>
           {/* Only use the drag icon for dragging, to prevent interfering with
               scrolling on mobile */}
-          <IconDragHandle ref={dragRef} sx={{ paddingRight: 1 }} />
+          <IconDragHandle
+            ref={dragRef}
+            sx={{ paddingRight: 1, cursor: "grab" }}
+          />
           <BetaMoveIconWrapped
             bodyPart={betaMove.bodyPart}
             order={betaMove.order}
