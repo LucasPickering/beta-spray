@@ -145,6 +145,7 @@ const BetaDetailsMove: React.FC<Props> = ({
   });
 
   const isHighlighted = highlightedMoveId === betaMove.id;
+  const highlightThis = (): void => highlightMove(betaMove.id);
 
   // Scroll the highlighted move into view
   useEffect(() => {
@@ -166,9 +167,7 @@ const BetaDetailsMove: React.FC<Props> = ({
       dragRef={drag}
       betaMoveKey={betaMove}
       isInCurrentStance={isInCurrentStance}
-      onMouseEnter={() => {
-        highlightMove(betaMove.id);
-      }}
+      onClick={highlightThis}
       onDelete={onDelete}
       sx={[
         { userSelect: "none" },
