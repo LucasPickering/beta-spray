@@ -4,9 +4,11 @@ import {
   Close as IconClose,
 } from "@mui/icons-material";
 import {
+  alpha,
   Box,
   IconButton,
   ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
@@ -20,6 +22,8 @@ import { useBetaMoveColor } from "../util/moves";
 interface Props extends React.ComponentProps<typeof ListItem> {
   betaMoveKey: BetaMoveListItem_betaMoveNode$key;
   isInCurrentStance?: boolean;
+  isHighlighted?: boolean;
+  isDragging?: boolean;
   dragRef?: React.Ref<SVGSVGElement>;
   onDelete?: () => void;
 }
@@ -29,7 +33,15 @@ interface Props extends React.ComponentProps<typeof ListItem> {
  */
 const BetaMoveListItem = React.forwardRef<HTMLLIElement, Props>(
   (
-    { betaMoveKey, isInCurrentStance = false, dragRef, onDelete, sx, ...rest },
+    {
+      betaMoveKey,
+      isInCurrentStance = false,
+      isHighlighted = false,
+      isDragging = false,
+      dragRef,
+      onDelete,
+      ...rest
+    },
     ref
   ) => {
     const betaMove = useFragment(
@@ -65,61 +77,80 @@ const BetaMoveListItem = React.forwardRef<HTMLLIElement, Props>(
             </IconButton>
           )
         }
+        disablePadding
         sx={[
-          // Normally this is inherit from the <ol>, but that isn't present for
-          // the preview version, so let's be a homie and fix it here
-          { listStyle: "none" },
-          // If we're in the current stance, add a little indicator line
-          isInCurrentStance && {
-            // TODO make sure this color corresponds to the stick figure somehow
-            borderLeft: "3px solid white",
-            marginLeft: "-3px", // Cancel out the space taken up by the border
+          {
+            userSelect: "none",
+            // Normally this is inherit from the <ol>, but that isn't present
+            // for the preview version, so let's be a homie and fix it here
+            listStyle: "none",
           },
-          ...(Array.isArray(sx) ? sx : [sx]),
+          isHighlighted &&
+            (({ palette }) => ({
+              // Match the color used in the SVG
+              backgroundColor: alpha(
+                palette.info.light,
+                palette.action.activatedOpacity
+              ),
+            })),
+          // Use opacity to hide the original move while dragging, because we
+          // want the element to remain in the doc flow and keep producing events
+          isDragging && { opacity: 0 },
         ]}
         {...rest}
       >
-        <ListItemIcon>
-          {/* Only use the drag icon for dragging, to prevent interfering with
+        <ListItemButton
+          sx={[
+            // If we're in the current stance, add a little indicator line
+            isInCurrentStance && {
+              // TODO make sure this color corresponds to the stick figure somehow
+              borderLeft: "3px solid white",
+              marginLeft: "-3px",
+            },
+          ]}
+        >
+          <ListItemIcon>
+            {/* Only use the drag icon for dragging, to prevent interfering with
               scrolling on mobile */}
-          <IconDragHandle
-            ref={dragRef}
-            sx={{ paddingRight: 1, cursor: "grab" }}
-          />
-          <BetaMoveIconWrapped
-            bodyPart={betaMove.bodyPart}
-            order={betaMove.order}
-            color={color}
-            isStart={betaMove.isStart}
-            isFree={isFree}
-          />
-        </ListItemIcon>
+            <IconDragHandle
+              ref={dragRef}
+              sx={{ paddingRight: 1, cursor: "grab" }}
+            />
+            <BetaMoveIconWrapped
+              bodyPart={betaMove.bodyPart}
+              order={betaMove.order}
+              color={color}
+              isStart={betaMove.isStart}
+              isFree={isFree}
+            />
+          </ListItemIcon>
 
-        <ListItemText
-          primary={
-            <Box
-              sx={[
-                { color },
-                // Apply text decoration to mimic the outline features on the
-                // move icon. Order here is important to get the proper
-                // precedence
-                isFree && {
-                  textDecorationLine: "underline",
-                  textDecorationStyle: "dashed",
-                  textDecorationColor: "white",
-                },
-                betaMove.isStart &&
-                  (({ palette }) => ({
+          <ListItemText
+            primary={
+              <Box
+                sx={[
+                  { color },
+                  // Apply text decoration to mimic the outline features on the
+                  // move icon. Order here is important to get the proper
+                  // precedence
+                  isFree && {
                     textDecorationLine: "underline",
-                    textDecorationColor: palette.secondary.main,
-                  })),
-              ]}
-            >
-              {formatBodyPart(betaMove.bodyPart)}
-            </Box>
-          }
-          secondary={betaMove.annotation}
-        />
+                    textDecorationStyle: "dashed",
+                    textDecorationColor: "white",
+                  },
+                  betaMove.isStart &&
+                    (({ palette }) => ({
+                      textDecorationLine: "underline",
+                      textDecorationColor: palette.secondary.main,
+                    })),
+                ]}
+              >
+                {formatBodyPart(betaMove.bodyPart)}
+              </Box>
+            }
+            secondary={betaMove.annotation}
+          />
+        </ListItemButton>
       </ListItem>
     );
   }
