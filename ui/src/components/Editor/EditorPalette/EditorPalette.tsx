@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { Divider, IconButton, Paper, Stack } from "@mui/material";
+import { Box, IconButton, Paper, Stack } from "@mui/material";
 import HelpText from "./HelpText";
 import {
   ArrowBack as IconArrowBack,
@@ -8,8 +8,6 @@ import {
 } from "@mui/icons-material";
 import { EditorVisibilityContext } from "components/Editor/util/context";
 import { PreloadedQuery } from "react-relay";
-import { queriesBetaQuery } from "../__generated__/queriesBetaQuery.graphql";
-import PlayPauseControls from "./PlayPauseControls";
 import TooltipIconButton from "components/common/TooltipIconButton";
 import { Link } from "react-router-dom";
 import AddHoldButton from "./AddHoldButton";
@@ -17,7 +15,6 @@ import { queriesProblemQuery } from "../__generated__/queriesProblemQuery.graphq
 
 interface Props {
   problemQueryRef: PreloadedQuery<queriesProblemQuery> | null | undefined;
-  betaQueryRef: PreloadedQuery<queriesBetaQuery> | null | undefined;
 }
 
 /**
@@ -26,15 +23,12 @@ interface Props {
  *
  * Appears in the top-left corner.
  */
-const EditorPalette: React.FC<Props> = ({ problemQueryRef, betaQueryRef }) => {
+const EditorPalette: React.FC<Props> = ({ problemQueryRef }) => {
   const [visibility, setVisibility] = useContext(EditorVisibilityContext);
 
   return (
-    <Paper>
-      <Stack
-        direction="column"
-        divider={<Divider orientation="horizontal" flexItem />}
-      >
+    <Box sx={{ position: "absolute", top: 0, left: 0, margin: 1 }}>
+      <Paper>
         <Stack direction="row">
           <IconButton component={Link} to="/">
             <IconArrowBack />
@@ -53,12 +47,8 @@ const EditorPalette: React.FC<Props> = ({ problemQueryRef, betaQueryRef }) => {
 
           <AddHoldButton queryRef={problemQueryRef} disabled={!visibility} />
         </Stack>
-
-        <Stack direction="row">
-          <PlayPauseControls queryRef={betaQueryRef} />
-        </Stack>
-      </Stack>
-    </Paper>
+      </Paper>
+    </Box>
   );
 };
 

@@ -19,6 +19,7 @@ import ProblemMetadata from "./EditorControls/ProblemMetadata";
 import EditorPalette from "./EditorPalette/EditorPalette";
 import HighlightActions from "./HighlightActions/HighlightActions";
 import EditorState from "./EditorState";
+import PlayPauseControls from "./EditorPalette/PlayPauseControls";
 
 /**
  * Main app component, for viewing+editing boulders/problems/betas. This is
@@ -127,14 +128,10 @@ const Editor: React.FC = () => {
               {/* These buttons live with the SVG, so that they don't get
                   covered by the drawer on desktop */}
               {/* Top-left overlay buttons */}
-              <Box sx={{ position: "absolute", top: 0, left: 0, margin: 1 }}>
-                <EditorPalette
-                  problemQueryRef={problemQueryRef}
-                  betaQueryRef={betaQueryRef}
-                />
-              </Box>
+              <EditorPalette problemQueryRef={problemQueryRef} />
 
               {/* Buttons at the bottom of the screen */}
+              <PlayPauseControls queryRef={betaQueryRef} />
               <HighlightActions
                 problemQueryRef={problemQueryRef}
                 betaQueryRef={betaQueryRef}
