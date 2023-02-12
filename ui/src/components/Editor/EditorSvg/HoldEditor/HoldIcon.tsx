@@ -1,5 +1,4 @@
 import {
-  styleAddObject,
   styleDraggable,
   styleDragging,
   styleDropHover,
@@ -22,7 +21,6 @@ interface Props {
  * just the inline SVG element, *without* the wrapping SVG.
  */
 const HoldIcon: React.FC<Props> = ({
-  clickable = false,
   draggable = false,
   isDragging = false,
   isHighlighted = false,
@@ -33,7 +31,7 @@ const HoldIcon: React.FC<Props> = ({
   const { palette } = useTheme();
   return (
     <circle
-      css={[
+      css={(theme) => [
         parentCss,
         {
           r: 6,
@@ -42,11 +40,10 @@ const HoldIcon: React.FC<Props> = ({
           fill: "white",
           stroke: palette.primary.main,
         },
-        clickable && styleAddObject,
         draggable && styleDraggable,
-        isDragging && styleDragging,
-        isHighlighted && styleHighlight,
-        isOver && styleDropHover,
+        isDragging && styleDragging(theme),
+        isHighlighted && styleHighlight(theme),
+        isOver && styleDropHover(theme),
       ]}
       {...rest}
     />
