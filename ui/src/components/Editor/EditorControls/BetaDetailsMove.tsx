@@ -10,7 +10,6 @@ import {
 } from "components/Editor/util/dnd";
 import BetaMoveListItem from "./BetaMoveListItem";
 import { useHighlight } from "components/Editor/util/highlight";
-import { alpha } from "@mui/material";
 
 interface Props {
   betaMoveKey: BetaDetailsMove_betaMoveNode$key;
@@ -168,22 +167,10 @@ const BetaDetailsMove: React.FC<Props> = ({
       dragRef={drag}
       betaMoveKey={betaMove}
       isInCurrentStance={isInCurrentStance}
+      isHighlighted={isHighlighted}
+      isDragging={isDragging}
       onClick={highlightThis}
       onDelete={onDelete}
-      sx={[
-        { userSelect: "none" },
-        // Use opacity because we want the element to remain in the doc flow
-        // and keep produce events
-        isDragging && { opacity: 0 },
-        isHighlighted &&
-          (({ palette }) => ({
-            // Match the color used in the SVG
-            backgroundColor: alpha(
-              palette.info.main,
-              palette.action.activatedOpacity
-            ),
-          })),
-      ]}
     />
   );
 };
