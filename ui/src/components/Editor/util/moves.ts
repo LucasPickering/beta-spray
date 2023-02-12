@@ -127,7 +127,6 @@ export function useBetaMoveVisualPositions(
     betaMoveConnectionKey
   );
 
-  // TODO memoize
   const moves = betaMoveConnection.edges;
   const positionMap: Map<string, OverlayPosition> = new Map();
 

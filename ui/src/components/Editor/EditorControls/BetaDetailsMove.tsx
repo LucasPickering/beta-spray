@@ -10,6 +10,7 @@ import {
 } from "components/Editor/util/dnd";
 import BetaMoveListItem from "./BetaMoveListItem";
 import { useHighlight } from "components/Editor/util/highlight";
+import { alpha } from "@mui/material";
 
 interface Props {
   betaMoveKey: BetaDetailsMove_betaMoveNode$key;
@@ -176,7 +177,11 @@ const BetaDetailsMove: React.FC<Props> = ({
         isDragging && { opacity: 0 },
         isHighlighted &&
           (({ palette }) => ({
-            backgroundColor: palette.action.hover,
+            // Match the color used in the SVG
+            backgroundColor: alpha(
+              palette.info.main,
+              palette.action.activatedOpacity
+            ),
           })),
       ]}
     />

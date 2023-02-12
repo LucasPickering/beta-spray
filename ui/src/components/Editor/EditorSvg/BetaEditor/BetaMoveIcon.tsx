@@ -46,11 +46,11 @@ const BetaMoveIcon = React.forwardRef<
     return (
       <g
         ref={ref}
-        css={[
+        css={(theme) => [
           { stroke: "#00000000" },
           draggable && styleDraggable,
-          isDragging && styleDragging,
-          isHighlighted && styleHighlight,
+          isDragging && styleDragging(theme),
+          isHighlighted && styleHighlight(theme),
           parentCss,
         ]}
         {...rest}

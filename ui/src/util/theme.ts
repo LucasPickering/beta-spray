@@ -1,5 +1,12 @@
-import { createTheme } from "@mui/material/styles";
+import { createTheme, Theme as MuiTheme } from "@mui/material/styles";
 import LinkBehavior from "components/common/LinkBehavior";
+
+declare module "@emotion/react/types" {
+  // Set Emotion's theme type to the same as Material's
+  // We have to use interface/extends because we can't redeclare the type
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  export interface Theme extends MuiTheme {}
+}
 
 const theme = createTheme({
   palette: {
