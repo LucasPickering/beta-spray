@@ -79,17 +79,13 @@ const IconAddBetaMoveRaw: React.FC<React.SVGProps<SVGPathElement>> = (
   props
 ) => {
   const { palette } = useTheme();
+  const lineProps = { stroke: "black", strokeWidth: 0.25 };
+  const lineLength = 0.75;
   return (
     <g {...props}>
       <circle r={1.5} fill={palette.success.main} />
-      <text
-        textAnchor="middle"
-        dominantBaseline="middle"
-        fontSize={3}
-        fill={palette.getContrastText(palette.success.main)}
-      >
-        +
-      </text>
+      <line x1={0} y1={-lineLength} x2={0} y2={lineLength} {...lineProps} />
+      <line x1={-lineLength} y1={0} x2={lineLength} y2={0} {...lineProps} />
     </g>
   );
 };
