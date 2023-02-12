@@ -119,7 +119,10 @@ const BetaChainMark: React.FC<Props> = ({
       {betaMove.annotation && (
         <Portal>
           <Tooltip
-            open={isInCurrentStance}
+            // On first render, ref.current will still be null. If we try to
+            // show the popover then, it'll spit out an error about anchorEl
+            // being null. So we need to stall it until the second render.
+            open={isDefined(ref.current) && isInCurrentStance}
             title={betaMove.annotation}
             placement="bottom"
             PopperProps={{ anchorEl: ref.current }}

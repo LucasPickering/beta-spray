@@ -102,7 +102,10 @@ const HoldMark: React.FC<Props> = ({ holdKey, onDragFinish, onDrop }) => {
       {hold.annotation && (
         <Portal>
           <Tooltip
-            open={isHighlighted}
+            // On first render, ref.current will still be null. If we try to
+            // show the popover then, it'll spit out an error about anchorEl
+            // being null. So we need to stall it until the second render.
+            open={isDefined(ref.current) && isHighlighted}
             title={hold.annotation}
             placement="bottom"
             PopperProps={{ anchorEl: ref.current }}
