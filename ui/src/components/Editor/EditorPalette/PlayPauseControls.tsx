@@ -13,8 +13,9 @@ import { betaQuery } from "../queries";
 import { queriesBetaQuery } from "../__generated__/queriesBetaQuery.graphql";
 import { PlayPauseControls_betaNode$key } from "./__generated__/PlayPauseControls_betaNode.graphql";
 import { EditorVisibilityContext } from "components/Editor/util/context";
-import { StanceControls, useStanceControls } from "../util/stance";
+import { useStanceControls } from "../util/stance";
 import TooltipIconButton from "components/common/TooltipIconButton";
+import { Box } from "@mui/material";
 
 /**
  * Length of time (in milliseconds) between steps while playing moves.
@@ -56,6 +57,7 @@ const PlayPauseControls: React.FC<Props> = ({ betaKey }) => {
     () => beta.moves.edges.map(({ node }) => node.id),
     [beta.moves.edges]
   );
+  const disabled = !visibility || moveIds.length === 0;
 
   const {
     hasPrevious,
@@ -87,111 +89,92 @@ const PlayPauseControls: React.FC<Props> = ({ betaKey }) => {
   }, [hasNext]);
 
   return (
-    <PlayPauseControlsContent
-      // Disable buttons while the overlay is disabled
-      disabled={!visibility || moveIds.length === 0}
-      isPlaying={isPlaying}
-      togglePlayPause={() => setIsPlaying((prev) => !prev)}
-      hasPrevious={hasPrevious}
-      hasNext={hasNext}
-      // Whenever we step forward/back, we should pause the animation
-      selectFirst={() => {
-        pause();
-        selectFirst();
-      }}
-      selectLast={() => {
-        pause();
-        selectLast();
-      }}
-      selectPrevious={() => {
-        pause();
-        selectPrevious();
-      }}
-      selectNext={() => {
-        pause();
-        selectNext();
-      }}
-    />
+    <Box
+      position="absolute"
+      bottom={({ spacing }) => spacing(2)}
+      width="100%"
+      display="flex"
+      justifyContent="center"
+      // Don't block pointer events for the SVG underneath
+      sx={{ pointerEvents: "none" }}
+    >
+      <Box
+        width="100%"
+        maxWidth="sm"
+        margin={({ spacing }) => `0 ${spacing(2)}`}
+        display="flex"
+        justifyContent="space-between"
+        // Let all child buttons consume pointer events
+        sx={{
+          "& > *": {
+            pointerEvents: "auto",
+          },
+        }}
+      >
+        <TooltipIconButton
+          title="Go to First Move"
+          placement="bottom"
+          disabled={disabled || !hasPrevious}
+          onClick={() => {
+            pause();
+            selectFirst();
+          }}
+        >
+          <IconFirstPage />
+        </TooltipIconButton>
+
+        <TooltipIconButton
+          title="Previous Move"
+          placement="bottom"
+          disabled={disabled || !hasPrevious}
+          onClick={() => {
+            pause();
+            selectPrevious();
+          }}
+        >
+          <IconKeyboardArrowLeft />
+        </TooltipIconButton>
+
+        <TooltipIconButton
+          title={isPlaying ? "Pause Sequence" : "Play Sequence"}
+          placement="bottom"
+          disabled={disabled || !hasNext}
+          onClick={() => setIsPlaying((prev) => !prev)}
+        >
+          {isPlaying ? <IconPause /> : <IconPlayArrow />}
+        </TooltipIconButton>
+
+        <TooltipIconButton
+          title="Next Move"
+          placement="bottom"
+          disabled={disabled || !hasNext}
+          onClick={() => {
+            pause();
+            selectNext();
+          }}
+        >
+          <IconKeyboardArrowRight />
+        </TooltipIconButton>
+
+        <TooltipIconButton
+          title="Go to Last Move"
+          placement="bottom"
+          disabled={disabled || !hasNext}
+          onClick={() => {
+            pause();
+            selectLast();
+          }}
+        >
+          <IconLastPage />
+        </TooltipIconButton>
+      </Box>
+    </Box>
   );
 };
-
-/**
- * A dumb helper component to render the buttons. This makes it easy to render
- * placeholder buttons when no beta is available.
- */
-const PlayPauseControlsContent: React.FC<
-  // All fields must be optional to support the visual-only preview element
-  {
-    disabled?: boolean;
-    isPlaying?: boolean;
-    togglePlayPause?: () => void;
-  } & Partial<StanceControls>
-> = ({
-  disabled = false,
-  isPlaying = false,
-  togglePlayPause,
-  hasPrevious = false,
-  hasNext = false,
-  selectPrevious,
-  selectNext,
-  selectFirst,
-  selectLast,
-}) => (
-  // <span> wrappers needed so Tooltip can track cursor events while buttons
-  // are disabled
-  <>
-    <TooltipIconButton
-      title="Go to First Move"
-      placement="bottom"
-      disabled={disabled || !hasPrevious}
-      onClick={selectFirst}
-    >
-      <IconFirstPage />
-    </TooltipIconButton>
-
-    <TooltipIconButton
-      title="Previous Move"
-      placement="bottom"
-      disabled={disabled || !hasPrevious}
-      onClick={selectPrevious}
-    >
-      <IconKeyboardArrowLeft />
-    </TooltipIconButton>
-
-    <TooltipIconButton
-      title={isPlaying ? "Pause Sequence" : "Play Sequence"}
-      placement="bottom"
-      disabled={disabled || !hasNext}
-      onClick={togglePlayPause}
-    >
-      {isPlaying ? <IconPause /> : <IconPlayArrow />}
-    </TooltipIconButton>
-
-    <TooltipIconButton
-      title="Next Move"
-      placement="bottom"
-      disabled={disabled || !hasNext}
-      onClick={selectNext}
-    >
-      <IconKeyboardArrowRight />
-    </TooltipIconButton>
-
-    <TooltipIconButton
-      title="Go to Last Move"
-      placement="bottom"
-      disabled={disabled || !hasNext}
-      onClick={selectLast}
-    >
-      <IconLastPage />
-    </TooltipIconButton>
-  </>
-);
 
 export default withQuery<queriesBetaQuery, Props>({
   query: betaQuery,
   dataToProps: (data) => data.beta && { betaKey: data.beta },
-  // We want to show the buttons before the initial load, *and* while doing the
-  // load. That way they're visible before creating/selecting a beta
-  fallbackElement: <PlayPauseControlsContent />,
-  preloadElement: <PlayPauseControlsContent />,
+  // Don't show anything until the beta loads
+  fallbackElement: null,
 })(PlayPauseControls);
