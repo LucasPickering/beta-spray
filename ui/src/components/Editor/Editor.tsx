@@ -17,7 +17,6 @@ import EditorSvg from "./EditorSvg/EditorSvg";
 import EditorHelmet from "./EditorHelmet";
 import ProblemMetadata from "./EditorControls/ProblemMetadata";
 import EditorPalette from "./EditorPalette/EditorPalette";
-import HighlightActions from "./HighlightActions/HighlightActions";
 import EditorState from "./EditorState";
 import PlayPauseControls from "./EditorPalette/PlayPauseControls";
 
@@ -128,14 +127,13 @@ const Editor: React.FC = () => {
               {/* These buttons live with the SVG, so that they don't get
                   covered by the drawer on desktop */}
               {/* Top-left overlay buttons */}
-              <EditorPalette problemQueryRef={problemQueryRef} />
-
-              {/* Buttons at the bottom of the screen */}
-              <PlayPauseControls queryRef={betaQueryRef} />
-              <HighlightActions
+              <EditorPalette
                 problemQueryRef={problemQueryRef}
                 betaQueryRef={betaQueryRef}
               />
+
+              {/* Buttons at the bottom of the screen */}
+              <PlayPauseControls queryRef={betaQueryRef} />
             </Box>
 
             {/* Top-right drawer button is mobile-only, rendered by

@@ -27,10 +27,6 @@ const AddHoldButton: React.FC<Props> = ({ problemKey, disabled = false }) => {
         id
         boulder {
           id
-          image {
-            svgWidth
-            svgHeight
-          }
         }
         holds {
           __id

@@ -1,8 +1,6 @@
-import { SpeedDial, SpeedDialAction, SpeedDialIcon } from "@mui/material";
 import useMutation from "util/useMutation";
 import { graphql, useFragment } from "react-relay";
 import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
-import { Delete as IconDelete } from "@mui/icons-material";
 import { HoldActions_deleteHoldMutation } from "./__generated__/HoldActions_deleteHoldMutation.graphql";
 import { isDefined } from "util/func";
 import { useHighlightItem } from "components/Editor/util/highlight";
@@ -10,10 +8,9 @@ import { HoldActions_problemNode$key } from "./__generated__/HoldActions_problem
 import { withQuery } from "relay-query-wrapper";
 import { queriesProblemQuery } from "../__generated__/queriesProblemQuery.graphql";
 import { problemQuery } from "../queries";
-import { Edit as IconEdit } from "@mui/icons-material";
-import EditAnnotationDialog from "./EditAnnotationDialog";
 import { useState } from "react";
 import { HoldActions_updateHoldMutation } from "./__generated__/HoldActions_updateHoldMutation.graphql";
+import ActionButtons from "./ActionButtons";
 
 interface Props {
   problemKey: HoldActions_problemNode$key;
@@ -78,50 +75,19 @@ const HoldActions: React.FC<Props> = ({ problemKey }) => {
       }
     `);
 
+  const onOpen = (): void => setIsEditing(true);
   const onClose = (): void => setIsEditing(false);
 
   // This gets rendered in the SVG context, so we need to portal out of that
   return (
     <>
-      <SpeedDial ariaLabel="Hold actions" icon={<SpeedDialIcon />}>
-        <SpeedDialAction
-          tooltipTitle="Delete Hold"
-          icon={<IconDelete />}
-          onClick={() => {
-            // This *should* always be defined, but hypothetically if someone
-            // clicks the button while the element is being hidden, it could
-            // trigger this so we need to guard for that
-            if (isDefined(highlightedHold)) {
-              deleteHold({
-                variables: {
-                  input: { holdId: highlightedHold.id },
-                  connections: [problem.holds.__id],
-                },
-                // Reset selection to prevent ghost highlight
-                onCompleted() {
-                  highlightHold(undefined);
-                },
-                optimisticResponse: {
-                  deleteHold: { hold: { id: highlightedHold.id } },
-                },
-              });
-            }
-          }}
-        />
-
-        <SpeedDialAction
-          tooltipTitle="Edit Notes"
-          icon={<IconEdit />}
-          onClick={() => setIsEditing(true)}
-        />
-      </SpeedDial>
-
-      {/* Opened by the Edit button */}
-      <EditAnnotationDialog
-        open={isEditing}
-        title="Edit Notes for Hold"
-        initialValue={highlightedHold?.annotation}
-        onSave={(annotation) => {
+      <ActionButtons
+        noun="Hold"
+        annotation={highlightedHold?.annotation}
+        editingAnnotation={isEditing}
+        onEditAnnotation={onOpen}
+        onCloseAnnotation={onClose}
+        onSaveAnnotation={(annotation) => {
           // This *shouldn't* ever be called while undefined
           if (highlightedHold) {
             updateHold({
@@ -135,7 +101,26 @@ const HoldActions: React.FC<Props> = ({ problemKey }) => {
             });
           }
         }}
-        onClose={onClose}
+        onDelete={() => {
+          // This *should* always be defined, but hypothetically if someone
+          // clicks the button while the element is being hidden, it could
+          // trigger this so we need to guard for that
+          if (isDefined(highlightedHold)) {
+            deleteHold({
+              variables: {
+                input: { holdId: highlightedHold.id },
+                connections: [problem.holds.__id],
+              },
+              // Reset selection to prevent ghost highlight
+              onCompleted() {
+                highlightHold(undefined);
+              },
+              optimisticResponse: {
+                deleteHold: { hold: { id: highlightedHold.id } },
+              },
+            });
+          }
+        }}
       />
 
       <MutationErrorSnackbar message="Error editing hold" state={updateState} />
@@ -150,6 +135,8 @@ const HoldActions: React.FC<Props> = ({ problemKey }) => {
 export default withQuery<queriesProblemQuery, Props, "problemKey">({
   query: problemQuery,
   dataToProps: (data) => data.problem && { problemKey: data.problem },
-  // Don't show any actions until a beta is selected
-  fallbackElement: null,
+  // Generally this shouldn't be rendered until the problem is loaded, because
+  // there's no way to highlight a hold until then. But let's include this to
+  // be safe
+  fallbackElement: <ActionButtons noun="Hold" disabled />,
 })(HoldActions);

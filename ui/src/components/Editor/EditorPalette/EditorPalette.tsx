@@ -12,9 +12,12 @@ import TooltipIconButton from "components/common/TooltipIconButton";
 import { Link } from "react-router-dom";
 import AddHoldButton from "./AddHoldButton";
 import { queriesProblemQuery } from "../__generated__/queriesProblemQuery.graphql";
+import HighlightActions from "../HighlightActions/HighlightActions";
+import { queriesBetaQuery } from "../__generated__/queriesBetaQuery.graphql";
 
 interface Props {
   problemQueryRef: PreloadedQuery<queriesProblemQuery> | null | undefined;
+  betaQueryRef: PreloadedQuery<queriesBetaQuery> | null | undefined;
 }
 
 /**
@@ -23,7 +26,7 @@ interface Props {
  *
  * Appears in the top-left corner.
  */
-const EditorPalette: React.FC<Props> = ({ problemQueryRef }) => {
+const EditorPalette: React.FC<Props> = ({ problemQueryRef, betaQueryRef }) => {
   const [visibility, setVisibility] = useContext(EditorVisibilityContext);
 
   return (
@@ -46,6 +49,11 @@ const EditorPalette: React.FC<Props> = ({ problemQueryRef }) => {
           </TooltipIconButton>
 
           <AddHoldButton queryRef={problemQueryRef} disabled={!visibility} />
+
+          <HighlightActions
+            problemQueryRef={problemQueryRef}
+            betaQueryRef={betaQueryRef}
+          />
         </Stack>
       </Paper>
     </Box>
