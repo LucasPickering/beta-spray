@@ -1,9 +1,7 @@
 import { useState } from "react";
-import { SpeedDial, SpeedDialAction, SpeedDialIcon } from "@mui/material";
 import useMutation from "util/useMutation";
 import { graphql, useFragment } from "react-relay";
 import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
-import { Delete as IconDelete, Edit as IconEdit } from "@mui/icons-material";
 import { BetaMoveActions_deleteBetaMoveMutation } from "./__generated__/BetaMoveActions_deleteBetaMoveMutation.graphql";
 import { isDefined } from "util/func";
 import { queriesBetaQuery } from "components/Editor/__generated__/queriesBetaQuery.graphql";
@@ -11,9 +9,9 @@ import { betaQuery } from "components/Editor/queries";
 import { withQuery } from "relay-query-wrapper";
 import { BetaMoveActions_betaNode$key } from "./__generated__/BetaMoveActions_betaNode.graphql";
 import { useHighlightItem } from "components/Editor/util/highlight";
-import EditAnnotationDialog from "./EditAnnotationDialog";
 import { BetaMoveActions_updateBetaMoveMutation } from "./__generated__/BetaMoveActions_updateBetaMoveMutation.graphql";
 import { deleteBetaMoveLocal } from "../util/moves";
+import ActionButtons from "./ActionButtons";
 
 interface Props {
   betaKey: BetaMoveActions_betaNode$key;
@@ -89,58 +87,19 @@ const BetaMoveActions: React.FC<Props> = ({ betaKey }) => {
       }
     `);
 
+  const onOpen = (): void => setIsEditing(true);
   const onClose = (): void => setIsEditing(false);
 
   // This gets rendered in the SVG context, so we need to portal out of that
   return (
     <>
-      <SpeedDial ariaLabel="Beta move actions" icon={<SpeedDialIcon />}>
-        <SpeedDialAction
-          tooltipTitle="Delete Move"
-          icon={<IconDelete />}
-          onClick={() => {
-            // This *should* always be defined, but hypothetically if someone
-            // clicks the button while the element is being hidden, it could
-            // trigger this so we need to guard for that
-            if (isDefined(highlightedMove)) {
-              const betaMoveId = highlightedMove.id;
-              deleteBetaMove({
-                variables: {
-                  input: { betaMoveId },
-                },
-                // Reset selection to prevent ghost highlight
-                onCompleted() {
-                  highlightMove(undefined);
-                },
-                optimisticResponse: {
-                  deleteBetaMove: {
-                    betaMove: {
-                      id: betaMoveId,
-                      beta: {
-                        id: beta.id,
-                        moves: deleteBetaMoveLocal(beta.moves, betaMoveId),
-                      },
-                    },
-                  },
-                },
-              });
-            }
-          }}
-        />
-
-        <SpeedDialAction
-          tooltipTitle="Edit Notes"
-          icon={<IconEdit />}
-          onClick={() => setIsEditing(true)}
-        />
-      </SpeedDial>
-
-      {/* Opened by the Edit button */}
-      <EditAnnotationDialog
-        open={isEditing}
-        title={`Edit Notes for Move ${highlightedMove?.order}`}
-        initialValue={highlightedMove?.annotation}
-        onSave={(annotation) => {
+      <ActionButtons
+        noun="Hold"
+        editingAnnotation={isEditing}
+        annotation={highlightedMove?.annotation}
+        onEditAnnotation={onOpen}
+        onCloseAnnotation={onClose}
+        onSaveAnnotation={(annotation) => {
           // This *shouldn't* ever be called while undefined
           if (highlightedMove) {
             updateBetaMove({
@@ -156,7 +115,34 @@ const BetaMoveActions: React.FC<Props> = ({ betaKey }) => {
             });
           }
         }}
-        onClose={onClose}
+        onDelete={() => {
+          // This *should* always be defined, but hypothetically if someone
+          // clicks the button while the element is being hidden, it could
+          // trigger this so we need to guard for that
+          if (isDefined(highlightedMove)) {
+            const betaMoveId = highlightedMove.id;
+            deleteBetaMove({
+              variables: {
+                input: { betaMoveId },
+              },
+              // Reset selection to prevent ghost highlight
+              onCompleted() {
+                highlightMove(undefined);
+              },
+              optimisticResponse: {
+                deleteBetaMove: {
+                  betaMove: {
+                    id: betaMoveId,
+                    beta: {
+                      id: beta.id,
+                      moves: deleteBetaMoveLocal(beta.moves, betaMoveId),
+                    },
+                  },
+                },
+              },
+            });
+          }
+        }}
       />
 
       <MutationErrorSnackbar message="Error editing move" state={updateState} />
@@ -171,6 +157,8 @@ const BetaMoveActions: React.FC<Props> = ({ betaKey }) => {
 export default withQuery<queriesBetaQuery, Props, "betaKey">({
   query: betaQuery,
   dataToProps: (data) => data.beta && { betaKey: data.beta },
-  // Don't show any actions until a beta is selected
-  fallbackElement: null,
+  // Generally this shouldn't be rendered until the beta is loaded, because
+  // there's no way to highlight a move until then. But let's include this to
+  // be safe
+  fallbackElement: <ActionButtons noun="Move" disabled />,
 })(BetaMoveActions);

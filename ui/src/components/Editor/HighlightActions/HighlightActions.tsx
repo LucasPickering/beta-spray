@@ -1,8 +1,8 @@
-import { Box } from "@mui/material";
 import { useContext } from "react";
 import { EditorHighlightedItemContext } from "components/Editor/util/highlight";
 import BetaMoveActions from "./BetaMoveActions";
 import HoldActions from "./HoldActions";
+import ActionButtons from "./ActionButtons";
 
 interface Props {
   problemQueryRef: React.ComponentProps<typeof HoldActions>["queryRef"];
@@ -15,15 +15,7 @@ interface Props {
  * possible children, then renders the appropriate one based on what's
  * currently highlighted (hold, move, etc.).
  */
-const HighlightActions: React.FC<Props> = (props) => {
-  return (
-    <Box sx={{ position: "absolute", bottom: 16, right: 16 }}>
-      <HighlightActionsContent {...props} />
-    </Box>
-  );
-};
-
-const HighlightActionsContent: React.FC<Props> = ({
+const HighlightActions: React.FC<Props> = ({
   problemQueryRef,
   betaQueryRef,
 }) => {
@@ -34,7 +26,7 @@ const HighlightActionsContent: React.FC<Props> = ({
     case "move":
       return <BetaMoveActions queryRef={betaQueryRef} />;
     case undefined:
-      return null;
+      return <ActionButtons disabled />;
   }
 };
 
