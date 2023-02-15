@@ -12,6 +12,7 @@ import ProblemListQuery, {
 } from "./__generated__/ProblemListQuery.graphql";
 import { withQuery } from "relay-query-wrapper";
 import { useNavigate } from "react-router-dom";
+import { generateUniqueClientID } from "relay-runtime";
 
 interface Props {
   queryKey: ProblemList_query$key;
@@ -98,17 +99,18 @@ const ProblemList: React.FC<Props> = ({ queryKey }) => {
               optimisticResponse: {
                 createBoulderWithFriends: {
                   problem: {
-                    id: "",
-                    name: "",
+                    id: generateUniqueClientID(),
+                    name: null,
+                    externalLink: null,
                     createdAt: new Date(),
                     boulder: {
-                      id: "",
+                      id: generateUniqueClientID(),
                       // Card should detect empty URL and render a placeholder
-                      image: { url: "" },
+                      image: { url: null },
                     },
                     betas: { edges: [] },
                   },
-                  beta: { id: "" },
+                  beta: { id: generateUniqueClientID() },
                 },
               },
               // Redirect to the newly uploaded problem

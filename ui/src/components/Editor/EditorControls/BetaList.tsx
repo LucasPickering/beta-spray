@@ -21,6 +21,7 @@ import BetaListItem from "./BetaListItem";
 import { BetaList_copyBetaMutation } from "./__generated__/BetaList_copyBetaMutation.graphql";
 import { BetaList_updateBetaMutation } from "./__generated__/BetaList_updateBetaMutation.graphql";
 import { isDefined } from "util/func";
+import { generateUniqueClientID } from "relay-runtime";
 
 interface Props {
   problemKey: BetaList_problemNode$key;
@@ -135,13 +136,11 @@ const BetaList: React.FC<Props> = ({
         },
         connections,
       },
-      // Unfortunately no static typing here, but Relay checks at runtime
       optimisticResponse: {
         createBeta: {
           beta: {
-            // TODO populate ID here?
-            id: "",
-            name: "",
+            id: generateUniqueClientID(),
+            name: null,
             moves: { edges: [] },
           },
         },
@@ -169,8 +168,13 @@ const BetaList: React.FC<Props> = ({
       variables: { input: { betaId }, connections },
       optimisticResponse: {
         copyBeta: {
-          // TODO populate ID and name here?
-          beta: { id: "", name: "", moves: { edges: [] } },
+          beta: {
+            id: generateUniqueClientID(),
+            // We *could* use the source beta name here, but the placeholder
+            // acts as a clear loading indicator
+            name: null,
+            moves: { edges: [] },
+          },
         },
       },
       // Select the new beta after creation

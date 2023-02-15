@@ -61,7 +61,7 @@ const ProblemCard: React.FC<Props> = ({ problemKey, onDelete }) => {
     <Card sx={{ height: "100%" }}>
       <CardActionArea component={LinkBehavior} href={linkPath}>
         <CardMedia sx={{ height: 200 }}>
-          {problem.boulder.image.url ? (
+          {isDefined(problem.boulder.image.url) ? (
             <img
               src={problem.boulder.image.url}
               alt={`${problem.name} boulder`}
@@ -70,8 +70,8 @@ const ProblemCard: React.FC<Props> = ({ problemKey, onDelete }) => {
               css={{ objectFit: "cover" }}
             />
           ) : (
-            // Empty URL indicates this object was optimistically inserted, and
-            // we're still waiting on the image URL from the server
+            // Nullish URL indicates this object was optimistically inserted,
+            // and we're still waiting on the image URL from the server
             <Skeleton variant="rectangular" width="100%" height="100%" />
           )}
         </CardMedia>
