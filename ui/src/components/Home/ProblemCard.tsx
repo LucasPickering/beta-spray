@@ -25,11 +25,7 @@ interface Props {
   onDelete?: (problemId: string) => void;
 }
 
-const ProblemCard: React.FC<Props> = ({
-  problemKey,
-
-  onDelete,
-}) => {
+const ProblemCard: React.FC<Props> = ({ problemKey, onDelete }) => {
   const problem = useFragment(
     graphql`
       fragment ProblemCard_problemNode on ProblemNode {
@@ -88,11 +84,13 @@ const ProblemCard: React.FC<Props> = ({
         </Typography>
 
         {/* Nullish value indicates it's still loading */}
-        {isDefined(problem.externalLink) ? (
-          <ExternalProblemLink>{problem.externalLink}</ExternalProblemLink>
-        ) : (
-          <Skeleton />
-        )}
+        <Typography>
+          {isDefined(problem.externalLink) ? (
+            <ExternalProblemLink>{problem.externalLink}</ExternalProblemLink>
+          ) : (
+            <Skeleton />
+          )}
+        </Typography>
 
         <Typography variant="subtitle1" component="span" color="text.secondary">
           {dateFormat.format(new Date(problem.createdAt))}
