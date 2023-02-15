@@ -216,7 +216,7 @@ function getFirstSelectableMove(
   betaMoveConnection: stance_betaMoveNodeConnection$data
 ): string | undefined {
   const index = getFirstSelectableIndex(betaMoveConnection);
-  return index >= 0 ? betaMoveConnection.edges[0].node.id : undefined;
+  return index >= 0 ? betaMoveConnection.edges[index].node.id : undefined;
 }
 
 /**
