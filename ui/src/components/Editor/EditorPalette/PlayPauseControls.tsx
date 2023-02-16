@@ -14,8 +14,7 @@ import { queriesBetaQuery } from "../__generated__/queriesBetaQuery.graphql";
 import { PlayPauseControls_betaNode$key } from "./__generated__/PlayPauseControls_betaNode.graphql";
 import { EditorVisibilityContext } from "components/Editor/util/context";
 import { useStanceControls } from "../util/stance";
-import TooltipIconButton from "components/common/TooltipIconButton";
-import { Box } from "@mui/material";
+import { Box, IconButton } from "@mui/material";
 
 /**
  * Length of time (in milliseconds) between steps while playing moves.
@@ -111,9 +110,8 @@ const PlayPauseControls: React.FC<Props> = ({ betaKey }) => {
           },
         }}
       >
-        <TooltipIconButton
-          title="Go to First Move"
-          placement="bottom"
+        <IconButton
+          aria-label="Go to First Move"
           disabled={disabled || !hasPrevious}
           onClick={() => {
             pause();
@@ -121,11 +119,10 @@ const PlayPauseControls: React.FC<Props> = ({ betaKey }) => {
           }}
         >
           <IconFirstPage />
-        </TooltipIconButton>
+        </IconButton>
 
-        <TooltipIconButton
-          title="Previous Move"
-          placement="bottom"
+        <IconButton
+          aria-label="Previous Move"
           disabled={disabled || !hasPrevious}
           onClick={() => {
             pause();
@@ -133,20 +130,18 @@ const PlayPauseControls: React.FC<Props> = ({ betaKey }) => {
           }}
         >
           <IconKeyboardArrowLeft />
-        </TooltipIconButton>
+        </IconButton>
 
-        <TooltipIconButton
-          title={isPlaying ? "Pause Sequence" : "Play Sequence"}
-          placement="bottom"
+        <IconButton
+          aria-label={isPlaying ? "Pause Sequence" : "Play Sequence"}
           disabled={disabled || !hasNext}
           onClick={() => setIsPlaying((prev) => !prev)}
         >
           {isPlaying ? <IconPause /> : <IconPlayArrow />}
-        </TooltipIconButton>
+        </IconButton>
 
-        <TooltipIconButton
-          title="Next Move"
-          placement="bottom"
+        <IconButton
+          aria-label="Next Move"
           disabled={disabled || !hasNext}
           onClick={() => {
             pause();
@@ -154,11 +149,10 @@ const PlayPauseControls: React.FC<Props> = ({ betaKey }) => {
           }}
         >
           <IconKeyboardArrowRight />
-        </TooltipIconButton>
+        </IconButton>
 
-        <TooltipIconButton
-          title="Go to Last Move"
-          placement="bottom"
+        <IconButton
+          aria-label="Go to Last Move"
           disabled={disabled || !hasNext}
           onClick={() => {
             pause();
@@ -166,7 +160,7 @@ const PlayPauseControls: React.FC<Props> = ({ betaKey }) => {
           }}
         >
           <IconLastPage />
-        </TooltipIconButton>
+        </IconButton>
       </Box>
     </Box>
   );
