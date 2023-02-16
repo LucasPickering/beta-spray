@@ -44,14 +44,16 @@ resource "random_password" "api_secret_key" {
 locals {
   # Use a mapping for secrets so we don't have to repeat a ton of boilerplate
   secrets = {
-    API_GCP_KEY          = google_service_account_key.api_sa_key.private_key
-    API_SECRET_KEY       = random_password.api_secret_key.result
-    DATABASE_PASSWORD    = random_password.database_password.result
-    MEDIA_BUCKET         = google_storage_bucket.media.name
-    NAMESPACE            = var.kube_namespace
-    STATIC_ASSETS_BUCKET = data.terraform_remote_state.core.outputs.static_assets_bucket
-    TLS_CERT             = cloudflare_origin_ca_certificate.main.certificate
-    TLS_KEY              = tls_private_key.main.private_key_pem
+    API_GCP_KEY             = google_service_account_key.api_sa_key.private_key
+    API_SECRET_KEY          = random_password.api_secret_key.result
+    DATABASE_BACKUP_BUCKET  = google_storage_bucket.database_backup.name
+    DATABASE_BACKUP_GCP_KEY = google_service_account_key.database_backup_sa_key.private_key
+    DATABASE_PASSWORD       = random_password.database_password.result
+    MEDIA_BUCKET            = google_storage_bucket.media.name
+    NAMESPACE               = var.kube_namespace
+    STATIC_ASSETS_BUCKET    = data.terraform_remote_state.core.outputs.static_assets_bucket
+    TLS_CERT                = cloudflare_origin_ca_certificate.main.certificate
+    TLS_KEY                 = tls_private_key.main.private_key_pem
     # TODO re-enable as a plain variable when possible
     # HOSTNAME             = cloudflare_record.main.hostname
   }

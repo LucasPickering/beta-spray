@@ -16,6 +16,12 @@ variable "cloudflare_zone" {
   type        = string
 }
 
+variable "database_backup_bucket" {
+  description = "Name of storage bucket for database backups"
+  default     = "beta-spray-backup"
+  type        = string
+}
+
 variable "deployment_branch_policy" {
   description = "Deployment branch policy for GitHub Actions Environment"
   type = object({

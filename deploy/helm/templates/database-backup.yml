@@ -1,0 +1,59 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: database-backup
+  namespace: "{{ .Release.Namespace }}"
+spec:
+  # Every 6 hours
+  schedule: "0 */6 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          volumes:
+            - name: secret-volume
+              projected:
+                sources:
+                  - secret:
+                      name: database-creds
+                      items:
+                        - key: password
+                          path: database-password
+                  - secret:
+                      name: database-backup-gcp-key
+                      items:
+                        - key: secret-key
+                          path: database-backup-gcp-key
+          containers:
+            - name: database-backup
+              image: ghcr.io/lucaspickering/db-backup:latest
+              resources:
+                requests:
+                  cpu: 5m
+                  memory: 20Mi
+              volumeMounts:
+                - name: secret-volume
+                  mountPath: /secrets/
+                  readOnly: true
+              env:
+                - name: DATABASE_TYPE
+                  value: postgres
+                - name: DATABASE_HOST
+                  value: db
+                - name: DATABASE_NAME
+                  value: beta_spray
+                - name: DATABASE_USER
+                  # This one isn't super sensitive so it doesn't need a file
+                  valueFrom:
+                    secretKeyRef:
+                      name: database-creds
+                      key: username
+                - name: DATABASE_PASSWORD_FILE
+                  value: /secrets/database-password
+                - name: CLOUD_STORAGE_BUCKET
+                  value: "{{ .Values.databaseBackupBucket }}"
+                - name: CLOUD_STORAGE_PREFIX
+                  value: "{{ .Release.Namespace }}/"
+                - name: CLOUD_STORAGE_KEY_FILE
+                  value: /secrets/database-backup-gcp-key
