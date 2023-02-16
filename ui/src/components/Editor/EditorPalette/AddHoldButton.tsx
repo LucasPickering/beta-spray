@@ -109,17 +109,14 @@ const AddHoldIcon: React.FC<React.ComponentProps<typeof HoldIcon>> = (
   props
 ) => {
   const { palette } = useTheme();
+  const lineProps = { stroke: palette.success.main, strokeWidth: 0.2 };
+  const x = 0.5;
+  const y = -0.5;
+  const size = 0.7;
   return (
     <HoldIconWrapped {...props}>
-      <text
-        fill={palette.success.main}
-        strokeWidth={0}
-        fontSize={14}
-        x={-1}
-        y={1}
-      >
-        +
-      </text>
+      <line x1={x - size} y1={y} x2={x + size} y2={y} {...lineProps} />
+      <line x1={x} y1={y - size} x2={x} y2={y + size} {...lineProps} />
     </HoldIconWrapped>
   );
 };

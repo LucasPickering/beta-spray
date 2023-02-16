@@ -7,7 +7,7 @@ import {
 import { Interpolation, Theme } from "@emotion/react";
 import { SvgIcon, SvgIconProps, useTheme } from "@mui/material";
 
-interface Props {
+interface Props extends React.SVGProps<SVGCircleElement> {
   clickable?: boolean;
   draggable?: boolean;
   isDragging?: boolean;
@@ -34,11 +34,11 @@ const HoldIcon: React.FC<Props> = ({
       css={(theme) => [
         parentCss,
         {
-          r: 6,
-          opacity: 0.6,
+          r: 3,
           strokeWidth: 0.5,
-          fill: "white",
           stroke: palette.primary.main,
+          // We want the fill to be present so it captures events, but invisible
+          fillOpacity: 0,
         },
         draggable && styleDraggable,
         isDragging && styleDragging(theme),
@@ -57,9 +57,10 @@ const HoldIcon: React.FC<Props> = ({
 export const HoldIconWrapped: React.FC<
   Props & Pick<SvgIconProps, "children">
 > = ({ children, ...rest }) => (
-  <SvgIcon viewBox="-6.5 -6.5 13 13">
-    {/* The low opacity looks wonky in other contexts */}
-    <HoldIcon css={{ opacity: 1 }} {...rest} />
+  // Center and viewbox need to account for the radius *and* stroke width
+  <SvgIcon viewBox="-1.25 -1.25 2.5 2.5">
+    {/* Normalize scale for generic contexts*/}
+    <HoldIcon css={{ fillOpacity: 1, transform: "scale(0.333)" }} {...rest} />
     {children}
   </SvgIcon>
 );

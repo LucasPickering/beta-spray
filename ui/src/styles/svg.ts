@@ -45,8 +45,9 @@ export const styleDragging: StyleFunction = (theme) =>
 export const styleHighlight: StyleFunction = ({ palette }) =>
   css({
     // Create a glow effect with overlapping shadows
-    filter: `drop-shadow(0px 0px 2px ${palette.info.light})
-      drop-shadow(0px 0px 4px ${palette.info.light})`,
+    filter: `drop-shadow(0px 0px 2px ${palette.info.dark})
+      drop-shadow(0px 0px 2px ${palette.info.dark})
+      drop-shadow(0px 0px 4px ${palette.info.dark})`,
   });
 
 /**
@@ -56,4 +57,5 @@ export const styleDropHover: StyleFunction = ({ palette }) =>
   css({
     stroke: palette.info.light,
     fill: palette.info.light,
+    fillOpacity: 1,
   });
