@@ -11,3 +11,13 @@ resource "google_service_account" "api_service_account" {
 resource "google_service_account_key" "api_sa_key" {
   service_account_id = google_service_account.api_service_account.name
 }
+
+resource "google_service_account" "database_backup_service_account" {
+  account_id   = "db-backup-pod-${terraform.workspace}"
+  display_name = "Database Backup Service Account"
+  description  = "Service account for the database backup pod to access GCP resources"
+}
+
+resource "google_service_account_key" "database_backup_sa_key" {
+  service_account_id = google_service_account.database_backup_service_account.name
+}

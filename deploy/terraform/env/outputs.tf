@@ -10,6 +10,12 @@ output "api_secret_key" {
   sensitive   = true
 }
 
+output "database_backup_gcp_key" {
+  value       = google_service_account_key.database_backup_sa_key.private_key
+  description = "Private key for the Database Backup=>GCP service account"
+  sensitive   = true
+}
+
 output "database_password" {
   value       = random_password.database_password.result
   description = "Generated database password"

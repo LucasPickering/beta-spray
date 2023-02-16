@@ -62,6 +62,8 @@ jobs:
             --create-namespace \
             --set-string versionSha="${{ github.sha }}" \
             --set-string hostname="${{ vars.HOSTNAME }}" \
+            --set-string databaseBackupBucket="${{ secrets.DATABASE_BACKUP_BUCKET }}" \
+            --set-string databaseBackupGcpKey="${{ secrets.DATABASE_BACKUP_GCP_KEY }}" \
             --set-string mediaBucket="${{ secrets.MEDIA_BUCKET }}" \
             --set-string staticAssetsHost=storage.googleapis.com \
             --set-string staticAssetsBucket="${{ secrets.STATIC_ASSETS_BUCKET }}" \
