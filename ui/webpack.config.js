@@ -4,9 +4,13 @@ const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const {
   RelayCompilerPlugin,
 } = require("@ch1ffa/relay-compiler-webpack-plugin");
+const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin");
+
+const environment = process.env.NODE_ENV || "development";
+const isDevelopment = environment === "development";
 
 module.exports = {
-  mode: process.env.NODE_ENV || "development",
+  mode: environment,
   entry: "./src/index.tsx",
   target: "web",
   output: {
@@ -18,13 +22,18 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.svg$/,
-        use: ["@svgr/webpack"],
-      },
-      {
         test: /\.tsx?$/,
         exclude: /node_modules/,
         loader: "babel-loader",
+        options: {
+          plugins: [
+            isDevelopment && require.resolve("react-refresh/babel"),
+          ].filter(Boolean),
+        },
+      },
+      {
+        test: /\.svg$/,
+        use: ["@svgr/webpack"],
       },
       {
         test: /\.m?js$/,
@@ -43,7 +52,8 @@ module.exports = {
     new BundleAnalyzerPlugin({
       analyzerMode: process.env.WEBPACK_BUNDLE_ANALYZER_MODE || "disabled",
     }),
-  ],
+    isDevelopment && new ReactRefreshWebpackPlugin(),
+  ].filter(Boolean),
 
   resolve: {
     modules: [path.resolve(__dirname, "src"), "node_modules"],
