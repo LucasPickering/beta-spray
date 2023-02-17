@@ -4,9 +4,8 @@ import useMutation, { MutationState } from "util/useMutation";
 import { DropResult } from "./dnd";
 import { useStanceControls } from "./stance";
 import { BodyPart, OverlayPosition } from "./svg";
-import { useBetaMoveMutations_appendBetaMoveMutation } from "./__generated__/useBetaMoveMutations_appendBetaMoveMutation.graphql";
+import { useBetaMoveMutations_createBetaMoveMutation } from "./__generated__/useBetaMoveMutations_createBetaMoveMutation.graphql";
 import { useBetaMoveMutations_betaNode$key } from "./__generated__/useBetaMoveMutations_betaNode.graphql";
-import { useBetaMoveMutations_insertBetaMoveMutation } from "./__generated__/useBetaMoveMutations_insertBetaMoveMutation.graphql";
 import { useBetaMoveMutations_updateBetaMoveMutation } from "./__generated__/useBetaMoveMutations_updateBetaMoveMutation.graphql";
 
 interface Mutation<T> {
@@ -20,12 +19,9 @@ interface Mutation<T> {
  * layout.
  */
 function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
-  append: Mutation<{
+  create: Mutation<{
     bodyPart: BodyPart;
-    dropResult: DropResult<"overlayBetaMove">;
-  }>;
-  insert: Mutation<{
-    previousBetaMoveId: string;
+    previousBetaMoveId?: string;
     dropResult: DropResult<"overlayBetaMove">;
   }>;
   relocate: Mutation<{
@@ -38,7 +34,6 @@ function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
       fragment useBetaMoveMutations_betaNode on BetaNode {
         id
         moves {
-          __id
           ...stance_betaMoveNodeConnection
         }
       }
@@ -49,51 +44,32 @@ function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
   const { select: selectStance } = useStanceControls(beta.moves);
 
   // Append new move to end of the beta
-  const { commit: appendBetaMove, state: appendBetaMoveState } =
-    useMutation<useBetaMoveMutations_appendBetaMoveMutation>(graphql`
-      mutation useBetaMoveMutations_appendBetaMoveMutation(
-        $input: AppendBetaMoveMutationInput!
-        $connections: [ID!]!
+  const { commit: createBetaMove, state: createBetaMoveState } =
+    useMutation<useBetaMoveMutations_createBetaMoveMutation>(graphql`
+      mutation useBetaMoveMutations_createBetaMoveMutation(
+        $input: CreateBetaMoveMutationInput!
       ) {
-        appendBetaMove(input: $input) {
-          betaMove
-            @appendNode(
-              connections: $connections
-              edgeTypeName: "BetaMoveNodeEdge"
-            ) {
-            id
-            ...useBetaMoveMutations_all_betaMoveNode
-          }
-        }
-      }
-    `);
-  // Insert a new move into the middle of the beta
-  const { commit: insertBetaMove, state: insertBetaMoveState } =
-    useMutation<useBetaMoveMutations_insertBetaMoveMutation>(graphql`
-      mutation useBetaMoveMutations_insertBetaMoveMutation(
-        $input: InsertBetaMoveMutationInput!
-      ) {
-        insertBetaMove(input: $input) {
-          # We DON'T need appendNode here since we refetch the full list below.
+        createBetaMove(input: $input) {
+          # We DON'T need createNode here since we refetch the full list below.
           # Relay will automatically merge the fields for the new node into the
           # updated connection.
           betaMove {
             id
             # Get all used fields for the new move
             ...useBetaMoveMutations_all_betaMoveNode
-            # Refetch a minimal version of the full list, since moves could
-            # have been reordered
-            beta {
-              id
-              moves {
-                edges {
-                  node {
-                    id
-                    # These are the fields that can change during a reorder
-                    order
-                    isStart
-                    isLastInChain
-                  }
+          }
+          # Refetch a minimal version of the full list, since moves could
+          # have been reordered
+          beta {
+            id
+            moves {
+              edges {
+                node {
+                  id
+                  # These are the fields that can change during a reorder
+                  order
+                  isStart
+                  isLastInChain
                 }
               }
             }
@@ -130,43 +106,26 @@ function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
     `);
 
   return {
-    append: {
-      callback: ({ bodyPart, dropResult }) => {
-        appendBetaMove({
+    create: {
+      callback: ({ bodyPart, previousBetaMoveId, dropResult }) => {
+        createBetaMove({
           variables: {
             input: {
               betaId: beta.id,
+              previousBetaMoveId,
               bodyPart,
               ...getDropParams(dropResult),
             },
-            connections: [beta.moves.__id],
           },
           onCompleted(data) {
-            if (isDefined(data.appendBetaMove)) {
-              selectStance(data.appendBetaMove.betaMove.id);
+            if (isDefined(data.createBetaMove)) {
+              selectStance(data.createBetaMove.betaMove.id);
             }
           },
           // Punting on optimistic update because ordering is hard
         });
       },
-      state: appendBetaMoveState,
-    },
-    insert: {
-      callback: ({ previousBetaMoveId, dropResult }) => {
-        insertBetaMove({
-          variables: {
-            input: { previousBetaMoveId, ...getDropParams(dropResult) },
-          },
-          onCompleted(result) {
-            // Update stance to include the new move
-            if (isDefined(result.insertBetaMove)) {
-              selectStance(result.insertBetaMove.betaMove.id);
-            }
-          },
-          // Punting on optimistic update because ordering is hard
-        });
-      },
-      state: insertBetaMoveState,
+      state: createBetaMoveState,
     },
     relocate: {
       callback: ({ betaMoveId, dropResult }) => {
