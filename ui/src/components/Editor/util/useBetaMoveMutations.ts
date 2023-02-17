@@ -69,7 +69,6 @@ function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
                   # These are the fields that can change during a reorder
                   order
                   isStart
-                  isLastInChain
                 }
               }
             }
@@ -160,7 +159,6 @@ graphql`
     order
     annotation
     isStart
-    isLastInChain
     hold {
       id
       position {

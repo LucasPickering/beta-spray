@@ -34,7 +34,6 @@ const BetaMoveActions: React.FC<Props> = ({ betaKey }) => {
               id
               order
               isStart
-              isLastInChain
               annotation
             }
           }
@@ -77,7 +76,6 @@ const BetaMoveActions: React.FC<Props> = ({ betaKey }) => {
                     # These are the fields that can change after a delete
                     order
                     isStart
-                    isLastInChain
                   }
                 }
               }

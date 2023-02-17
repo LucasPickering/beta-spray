@@ -43,7 +43,6 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
               id
               order
               isStart
-              isLastInChain
               bodyPart
               ...BetaDetailsMove_betaMoveNode
             }
@@ -89,7 +88,6 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
                     id
                     order
                     isStart
-                    isLastInChain
                   }
                 }
               }
