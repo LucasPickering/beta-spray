@@ -363,6 +363,12 @@ type Mutation {
   deleteBeta(input: DeleteBetaMutationInput!): DeleteBetaMutationPayload
 
   """
+  Add a new move to a beta. The move can either be appended to the end, or
+  inserted in the middle (by specifying a previous_beta_move_id).
+  """
+  createBetaMove(input: CreateBetaMoveMutationInput!): CreateBetaMoveMutationPayload
+
+  """
   Add a new move to the end of an existing beta. The order of the new move
   will simply be the current final move, plus one.
   """
@@ -563,6 +569,33 @@ type DeleteBetaMutationPayload {
 
 input DeleteBetaMutationInput {
   betaId: ID!
+  clientMutationId: String
+}
+
+"""
+Add a new move to a beta. The move can either be appended to the end, or
+inserted in the middle (by specifying a previous_beta_move_id).
+"""
+type CreateBetaMoveMutationPayload {
+  betaMove: BetaMoveNode!
+  beta: BetaNode!
+  clientMutationId: String
+}
+
+input CreateBetaMoveMutationInput {
+  betaId: ID!
+  bodyPart: BodyPart!
+
+  """Hold to connect the move to. Mutually exclusive with `position`."""
+  holdId: ID
+
+  """
+  Position of the move, for free moves. Mutually exclusive with `hold_id`.
+  """
+  position: SVGPositionInput = null
+
+  """Move *preceding* this one in the beta. Null to add to the end."""
+  previousBetaMoveId: ID
   clientMutationId: String
 }
 

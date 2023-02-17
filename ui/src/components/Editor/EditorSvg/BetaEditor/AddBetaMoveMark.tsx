@@ -45,16 +45,10 @@ const AddBetaMoveMark: React.FC<Props> = ({ betaMoveKey, onDragFinish }) => {
     { isDragging: boolean }
   >({
     type: "overlayBetaMove",
-    item: betaMove.isLastInChain
-      ? {
-          action: "create",
-          bodyPart: betaMove.bodyPart,
-        }
-      : {
-          action: "insertAfter",
-          bodyPart: betaMove.bodyPart,
-          betaMoveId: betaMove.id,
-        },
+    item: {
+      action: "create",
+      bodyPart: betaMove.bodyPart,
+    },
     collect(monitor) {
       return {
         isDragging: Boolean(monitor.isDragging()),

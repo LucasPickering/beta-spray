@@ -12,7 +12,7 @@ import { betaQuery } from "components/Editor/queries";
 import { BetaContext } from "components/Editor/util/context";
 import { comparator } from "util/func";
 import { useHighlight } from "components/Editor/util/highlight";
-import { useStance } from "components/Editor/util/stance";
+import { useLastMoveInStance, useStance } from "components/Editor/util/stance";
 import { DragFinishHandler } from "components/Editor/util/dnd";
 import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
 import {
@@ -96,9 +96,9 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
     [moves, highlightedMoveId]
   );
   const stance = useStance(beta.moves);
+  const lastStanceMoveId = useLastMoveInStance();
   const {
-    append: { callback: appendBetaMove, state: appendBetaMoveState },
-    insert: { callback: insertBetaMove, state: insertBetaMoveState },
+    create: { callback: createBetaMove, state: createBetaMoveState },
     relocate: { callback: relocateBetaMove, state: relocateBetaMoveState },
   } = useBetaMoveMutations(beta);
 
@@ -108,10 +108,14 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
   ) => {
     switch (item.action) {
       case "create":
-        appendBetaMove({ bodyPart: item.bodyPart, dropResult });
-        break;
-      case "insertAfter":
-        insertBetaMove({ previousBetaMoveId: item.betaMoveId, dropResult });
+        // Insert the new move immediately after the current stance. If there
+        // is no stance, that means this is the first move, so we'll just
+        // insert anywhere
+        createBetaMove({
+          previousBetaMoveId: lastStanceMoveId,
+          bodyPart: item.bodyPart,
+          dropResult,
+        });
         break;
       // Dragged an existing move
       case "relocate":
@@ -158,11 +162,7 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
 
       <MutationErrorSnackbar
         message="Error adding move"
-        state={appendBetaMoveState}
-      />
-      <MutationErrorSnackbar
-        message="Error adding move"
-        state={insertBetaMoveState}
+        state={createBetaMoveState}
       />
       <MutationErrorSnackbar
         message="Error updating move"

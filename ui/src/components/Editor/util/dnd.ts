@@ -30,12 +30,10 @@ export type DragType =
     }
   | {
       kind: "overlayBetaMove";
-      item: // Create a new move (dragging from palette)
+      item: // Create a new move
       | { action: "create"; bodyPart: BodyPart }
         // Relocate an existing move to a new hold/position
-        | { action: "relocate"; bodyPart: BodyPart; betaMoveId: string }
-        // Insert a new move *after* the dragged one (dragging a line)
-        | { action: "insertAfter"; bodyPart: BodyPart; betaMoveId: string };
+        | { action: "relocate"; bodyPart: BodyPart; betaMoveId: string };
       // hold => attached move
       // drop zone => free move
       drop:

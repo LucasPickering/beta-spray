@@ -141,6 +141,20 @@ export interface StanceControls {
 }
 
 /**
+ * Get the last move in the current stance.
+ * @returns ID of the move in the current stance with the highest order, or
+ * `undefined` if there is no current stance
+ */
+export function useLastMoveInStance(): string | undefined {
+  // This might seem pointless since we could just expose the context, but this
+  // abstraction allows us to potentially change the way we define the stance
+  // internally (e.g. defined by first move instead of last) without having
+  // to change an external consumers.
+  const [stanceMoveId] = useContext(StanceContext);
+  return stanceMoveId;
+}
+
+/**
  * Get controls for modifying the stance
  * @returns See StanceControls
  */
