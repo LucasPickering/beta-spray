@@ -61,6 +61,7 @@ export function useStance(
   // few scenarios where an invalid move can be selected for the stance:
   // - Reodering moves causes the stance move to be *before* the first selectable one
   // - Selected move got deleted
+  // - Switched betas
   // We handle both these cases by comparing the index of the selected move to
   // the first selectable move (i.e. the final *start* move), and taking the
   // later of the two (since nothing before the start is valid, including -1)
@@ -69,6 +70,7 @@ export function useStance(
   const stanceMoveIndexSketchy = stanceMoveId
     ? findNodeIndex(betaMoveConnection, stanceMoveId)
     : -1;
+  // This will be -1 iff the beta is empty
   const stanceMoveIndex = Math.max(
     firstSelectableIndex,
     stanceMoveIndexSketchy
@@ -77,18 +79,19 @@ export function useStance(
 
   // Update stance state to match the normalization we just did. This makes sure
   // the controls state stays in sync with what we've established here.
+  const stanceInSync =
+    // Captures if move is deleted
+    stanceMoveIndexSketchy == stanceMoveIndex &&
+    // Needed to catch last move being deleted, or changing to empty beta
+    stanceMoveIndex >= 0 == isDefined(stanceMoveId);
   useEffect(() => {
-    if (stanceMoveIndexSketchy !== stanceMoveIndex) {
-      setStanceMoveId(
-        stanceMoveIndex >= 0
-          ? betaMoveConnection.edges[stanceMoveIndex].node.id
-          : undefined
-      );
+    if (!stanceInSync) {
+      setStanceMoveId(betaMoveConnection.edges[stanceMoveIndex]?.node.id);
     }
   }, [
-    betaMoveConnection,
+    betaMoveConnection.edges,
     setStanceMoveId,
-    stanceMoveIndexSketchy,
+    stanceInSync,
     stanceMoveIndex,
   ]);
 

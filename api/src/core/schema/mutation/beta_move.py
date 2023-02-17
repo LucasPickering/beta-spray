@@ -3,6 +3,7 @@ from core.schema.mutation.position import SVGPositionInput
 from core.schema.query import BetaMoveNode, BetaNode, BodyPartType, HoldNode
 from graphene import relay
 import graphene
+from graphql import GraphQLError
 
 
 class CreateBetaMoveMutation(relay.ClientIDMutation):
@@ -49,12 +50,15 @@ class CreateBetaMoveMutation(relay.ClientIDMutation):
             beta.problem.boulder.image
         )
 
-        # TODO validate previous move belongs to the same beta
         previous_move = (
             BetaMoveNode.get_node_from_global_id(info, previous_beta_move_id)
             if previous_beta_move_id
             else None
         )
+
+        # TODO better validation error (include path)
+        if previous_move is not None and previous_move.beta_id != beta.id:
+            return GraphQLError("Previous move must belong to the given beta")
 
         # TODO validate that hold and beta belong to the same problem
         created = BetaMove.objects.create(
