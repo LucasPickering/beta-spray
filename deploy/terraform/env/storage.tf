@@ -47,23 +47,9 @@ resource "google_storage_bucket" "database_backup" {
   uniform_bucket_level_access = true
 }
 
-resource "google_project_iam_custom_role" "database_backup" {
-  role_id     = "storage.databaseBackup"
-  title       = "Database Backup storage user"
-  description = "Role to upload database backup objects to a bucket"
-  permissions = [
-    "storage.buckets.get",
-    "storage.objects.create",
-    "storage.objects.delete", # Needed to overwrite
-    "storage.multipartUploads.create",
-    "storage.multipartUploads.abort",
-    "storage.multipartUploads.listParts",
-  ]
-}
-
 # Backup SA can upload objects to DB Backup bucket
 resource "google_storage_bucket_iam_binding" "database_backup_write" {
   bucket  = google_storage_bucket.database_backup.name
-  role    = google_project_iam_custom_role.database_backup.name
+  role    = data.terraform_remote_state.core.outputs.database_backup_role
   members = ["serviceAccount:${google_service_account.database_backup_service_account.email}"]
 }

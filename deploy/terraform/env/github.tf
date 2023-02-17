@@ -12,15 +12,6 @@ resource "github_repository_environment" "main" {
   }
 }
 
-data "terraform_remote_state" "core" {
-  backend = "gcs"
-
-  config = {
-    bucket = "beta-spray-tfstate"
-    prefix = "core"
-  }
-}
-
 # TODO encrypt tfstate https://www.terraform.io/language/settings/backends/gcs#encryption_key
 # Special characters seem to cause issues in helm. It's easier to avoid than fix
 
