@@ -1,7 +1,6 @@
 from django.db.models import (
     Q,
     Min,
-    Max,
     Value,
     ExpressionWrapper,
     Subquery,
@@ -17,7 +16,7 @@ class BetaMoveQuerySet(QuerySet):
         """
         Annotate all common fields
         """
-        return self.annotate_is_start().annotate_is_last_in_chain()
+        return self.annotate_is_start()
 
     def annotate_is_start(self):
         """
@@ -54,35 +53,6 @@ class BetaMoveQuerySet(QuerySet):
                         .annotate(
                             first_non_start=Coalesce(Min("order"), 9999)
                         ).values("first_non_start")
-                    )
-                ),
-                output_field=BooleanField(),
-            )
-        )
-
-    def annotate_is_last_in_chain(self):
-        """
-        Annotate a field that notates if each move is the last in the beta *for
-        its corresponding body part*. Each body part gets a different visual
-        chain in the UI, and this field indicates which move is the final one
-        in each chain. See, doesn't it make sense now?
-        """
-        return self.annotate(
-            is_last_in_chain=ExpressionWrapper(
-                Q(
-                    # For each move, check if it's the highest order for that
-                    # body part.
-                    # This subquery may be inefficient, not sure if pg is smart
-                    # enough to only run the MAX query once per beta/body part.
-                    order=Subquery(
-                        self.model.objects.filter(
-                            beta_id=OuterRef("beta_id"),
-                            body_part=OuterRef("body_part"),
-                        )
-                        # Remove annoying django clauses that break shit
-                        .remove_group_by_order_by()
-                        .annotate(last_in_chain=Max("order"))
-                        .values("last_in_chain")
                     )
                 ),
                 output_field=BooleanField(),

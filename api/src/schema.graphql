@@ -220,9 +220,6 @@ type BetaMoveNode implements Node {
 
   """Is this one of the initial moves for the beta?"""
   isStart: Boolean!
-
-  """Is this the last move in the beta *for its body part*?"""
-  isLastInChain: Boolean!
 }
 
 """A body part that someone could put on a hold"""

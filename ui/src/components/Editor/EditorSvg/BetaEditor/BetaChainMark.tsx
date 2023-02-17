@@ -42,7 +42,6 @@ const BetaChainMark: React.FC<Props> = ({
           id
         }
         isStart
-        isLastInChain
         annotation
       }
     `,

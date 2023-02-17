@@ -34,7 +34,6 @@ const AddBetaMoveMark: React.FC<Props> = ({ betaMoveKey, onDragFinish }) => {
       fragment AddBetaMoveMark_betaMoveNode on BetaMoveNode {
         id
         bodyPart
-        isLastInChain
       }
     `,
     betaMoveKey

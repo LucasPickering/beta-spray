@@ -178,10 +178,6 @@ class BetaMoveNode(NodeType):
         required=True,
         description="Is this one of the initial moves for the beta?",
     )
-    is_last_in_chain = graphene.Boolean(
-        required=True,
-        description="Is this the last move in the beta *for its body part*?",
-    )
 
     @classmethod
     def get_queryset(cls, queryset, info):
@@ -209,10 +205,6 @@ class BetaMoveNode(NodeType):
     def resolve_is_start(self, info):
         # This is populated by annotation, so we need to resolve it explicitly
         return self.is_start
-
-    def resolve_is_last_in_chain(self, info):
-        # This is populated by annotation, so we need to resolve it explicitly
-        return self.is_last_in_chain
 
 
 class Query(graphene.ObjectType):
