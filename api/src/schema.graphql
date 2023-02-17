@@ -367,19 +367,6 @@ type Mutation {
   inserted in the middle (by specifying a previous_beta_move_id).
   """
   createBetaMove(input: CreateBetaMoveMutationInput!): CreateBetaMoveMutationPayload
-
-  """
-  Add a new move to the end of an existing beta. The order of the new move
-  will simply be the current final move, plus one.
-  """
-  appendBetaMove(input: AppendBetaMoveMutationInput!): AppendBetaMoveMutationPayload
-
-  """
-  Insert a beta move into the middle of an existing beta. The new move will
-  *directly precede* the given move ID, and all following moves will be
-  shifted down the list by one to accomodate the new move.
-  """
-  insertBetaMove(input: InsertBetaMoveMutationInput!): InsertBetaMoveMutationPayload
   updateBetaMove(input: UpdateBetaMoveMutationInput!): UpdateBetaMoveMutationPayload
   deleteBetaMove(input: DeleteBetaMoveMutationInput!): DeleteBetaMoveMutationPayload
 }
@@ -596,55 +583,6 @@ input CreateBetaMoveMutationInput {
 
   """Move *preceding* this one in the beta. Null to add to the end."""
   previousBetaMoveId: ID
-  clientMutationId: String
-}
-
-"""
-Add a new move to the end of an existing beta. The order of the new move
-will simply be the current final move, plus one.
-"""
-type AppendBetaMoveMutationPayload {
-  betaMove: BetaMoveNode!
-  beta: BetaNode!
-  clientMutationId: String
-}
-
-input AppendBetaMoveMutationInput {
-  betaId: ID!
-  bodyPart: BodyPart!
-
-  """Hold to connect the move to. Mutually exclusive with `position`."""
-  holdId: ID
-
-  """
-  Position of the move, for free moves. Mutually exclusive with `hold_id`.
-  """
-  position: SVGPositionInput = null
-  clientMutationId: String
-}
-
-"""
-Insert a beta move into the middle of an existing beta. The new move will
-*directly precede* the given move ID, and all following moves will be
-shifted down the list by one to accomodate the new move.
-"""
-type InsertBetaMoveMutationPayload {
-  betaMove: BetaMoveNode!
-  beta: BetaNode!
-  clientMutationId: String
-}
-
-input InsertBetaMoveMutationInput {
-  """Move *preceding* this one in the beta"""
-  previousBetaMoveId: ID!
-
-  """Hold to connect the move to. Mutually exclusive with `position`."""
-  holdId: ID
-
-  """
-  Position of the move, for free moves. Mutually exclusive with `hold_id`.
-  """
-  position: SVGPositionInput = null
   clientMutationId: String
 }
 
