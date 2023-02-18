@@ -1,4 +1,12 @@
-import { Box, ClickAwayListener, TextField, Typography } from "@mui/material";
+import { Check as IconCheck, Clear as IconClear } from "@mui/icons-material";
+import {
+  Box,
+  ClickAwayListener,
+  IconButton,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import React from "react";
 import { FormEvent, useEffect, useState } from "react";
 import { isDefined } from "util/func";
@@ -70,6 +78,7 @@ const Editable: React.FC<Props> = ({
         {/* Use a form so we can capture enter presses */}
         <Box
           component="form"
+          position="relative"
           // Submission does nothing while there's an error. This feels the
           // most natural to me - better than resetting
           onSubmit={hasError ? (e: FormEvent) => e.preventDefault() : onSave}
@@ -91,7 +100,22 @@ const Editable: React.FC<Props> = ({
             }}
             fullWidth
           />
-          {/* TODO add cancel/confirm buttons */}
+
+          <Stack
+            // Position at the bottom-right of the text box
+            position="absolute"
+            right={0}
+            bottom={-26}
+            direction="row"
+            spacing={1}
+          >
+            <IconButton aria-label="cancel" size="small" onClick={onReset}>
+              <IconClear />
+            </IconButton>
+            <IconButton aria-label="save" size="small" onClick={onSave}>
+              <IconCheck />
+            </IconButton>
+          </Stack>
         </Box>
       </ClickAwayListener>
     );
