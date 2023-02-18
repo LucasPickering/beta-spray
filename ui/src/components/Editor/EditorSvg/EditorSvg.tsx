@@ -19,6 +19,7 @@ import { withQuery } from "relay-query-wrapper";
 import Loading from "components/common/Loading";
 import { queriesBetaQuery } from "../__generated__/queriesBetaQuery.graphql";
 import ErrorBoundary from "components/common/ErrorBoundary";
+import PanZone from "./PanZone";
 
 interface Props {
   problemKey: EditorSvg_problemNode$key;
@@ -64,6 +65,9 @@ const EditorSvg: React.FC<Props> = ({ problemKey, betaQueryRef }) => {
           {/* This has to go before other interactive stuff so it doesn't eat
             events from other components */}
           <SvgDragLayer />
+          {/* Invisible layer to capture SVG panning, as well as holds/moves
+              being dropped */}
+          <PanZone />
 
           {visibility && (
             <>

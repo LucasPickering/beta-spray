@@ -3,7 +3,6 @@ import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
 import { DragFinishHandler } from "components/Editor/util/dnd";
 import useMutation from "util/useMutation";
-import HoldEditorDropZone from "./HoldEditorDropZone";
 import { HoldEditor_problemNode$key } from "./__generated__/HoldEditor_problemNode.graphql";
 import { HoldEditor_updateHoldMutation } from "./__generated__/HoldEditor_updateHoldMutation.graphql";
 import HoldMark from "./HoldMark";
@@ -66,9 +65,6 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
 
   return (
     <>
-      {/* Invisible layer to capture holds/moves being dropped */}
-      <HoldEditorDropZone />
-
       {/* Holds goes on top of the drop zones so they're clickable */}
       {problem.holds.edges.map(({ node }) => (
         <HoldMark
