@@ -1,11 +1,25 @@
 import { createTheme, Theme as MuiTheme } from "@mui/material/styles";
 import LinkBehavior from "components/common/LinkBehavior";
 
+declare module "@mui/material/styles" {
+  interface Palette {
+    opacity: {
+      translucent: 0.6;
+    };
+  }
+
+  interface PaletteOptions {
+    opacity: {
+      translucent: 0.6;
+    };
+  }
+}
+
 declare module "@emotion/react/types" {
   // Set Emotion's theme type to the same as Material's
   // We have to use interface/extends because we can't redeclare the type
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  export interface Theme extends MuiTheme {}
+  interface Theme extends MuiTheme {}
 }
 
 const theme = createTheme({
@@ -24,6 +38,9 @@ const theme = createTheme({
     },
     warning: {
       main: "#FFBE26",
+    },
+    opacity: {
+      translucent: 0.6,
     },
   },
   components: {

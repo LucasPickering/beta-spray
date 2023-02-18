@@ -36,7 +36,7 @@ export const styleDraggable: StyleFunction = (theme) =>
  */
 export const styleDragging: StyleFunction = (theme) =>
   css({
-    opacity: 0.6,
+    opacity: theme.palette.opacity.translucent,
     cursor: "grabbing",
     pointerEvents: "none",
     "&": styleDraggableHover(theme),

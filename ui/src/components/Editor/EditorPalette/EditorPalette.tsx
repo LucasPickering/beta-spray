@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { Box, IconButton, Paper, Stack } from "@mui/material";
+import { alpha, Box, IconButton, Paper } from "@mui/material";
 import HelpText from "./HelpText";
 import {
   ArrowBack as IconArrowBack,
@@ -31,30 +31,36 @@ const EditorPalette: React.FC<Props> = ({ problemQueryRef, betaQueryRef }) => {
 
   return (
     <Box sx={{ position: "absolute", top: 0, left: 0, margin: 1 }}>
-      <Paper>
-        <Stack direction="row">
-          <IconButton component={Link} to="/">
-            <IconArrowBack />
-          </IconButton>
+      <Paper
+        sx={({ palette }) => ({
+          display: "flex",
+          backgroundColor: alpha(
+            palette.background.paper,
+            palette.opacity.translucent
+          ),
+        })}
+      >
+        <IconButton component={Link} to="/">
+          <IconArrowBack />
+        </IconButton>
 
-          <HelpText />
+        <HelpText />
 
-          <TooltipIconButton
-            title={visibility ? "Hide Overlay" : "Show Overlay"}
-            placement="right"
-            color={visibility ? "default" : "primary"}
-            onClick={() => setVisibility((prev) => !prev)}
-          >
-            {visibility ? <IconVisibilityOff /> : <IconVisibility />}
-          </TooltipIconButton>
+        <TooltipIconButton
+          title={visibility ? "Hide Overlay" : "Show Overlay"}
+          placement="right"
+          color={visibility ? "default" : "primary"}
+          onClick={() => setVisibility((prev) => !prev)}
+        >
+          {visibility ? <IconVisibilityOff /> : <IconVisibility />}
+        </TooltipIconButton>
 
-          <AddHoldButton queryRef={problemQueryRef} disabled={!visibility} />
+        <AddHoldButton queryRef={problemQueryRef} disabled={!visibility} />
 
-          <HighlightActions
-            problemQueryRef={problemQueryRef}
-            betaQueryRef={betaQueryRef}
-          />
-        </Stack>
+        <HighlightActions
+          problemQueryRef={problemQueryRef}
+          betaQueryRef={betaQueryRef}
+        />
       </Paper>
     </Box>
   );

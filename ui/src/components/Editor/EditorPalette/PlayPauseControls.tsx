@@ -14,7 +14,7 @@ import { queriesBetaQuery } from "../__generated__/queriesBetaQuery.graphql";
 import { PlayPauseControls_betaNode$key } from "./__generated__/PlayPauseControls_betaNode.graphql";
 import { EditorVisibilityContext } from "components/Editor/util/context";
 import { useStanceControls } from "../util/stance";
-import { Box, IconButton } from "@mui/material";
+import { alpha, Box, IconButton, Paper } from "@mui/material";
 
 /**
  * Length of time (in milliseconds) between steps while playing moves.
@@ -90,25 +90,29 @@ const PlayPauseControls: React.FC<Props> = ({ betaKey }) => {
   return (
     <Box
       position="absolute"
-      bottom={({ spacing }) => spacing(2)}
+      bottom={({ spacing }) => spacing(1)}
       width="100%"
       display="flex"
       justifyContent="center"
       // Don't block pointer events for the SVG underneath
       sx={{ pointerEvents: "none" }}
     >
-      <Box
-        width="100%"
-        maxWidth="sm"
-        margin={({ spacing }) => `0 ${spacing(2)}`}
-        display="flex"
-        justifyContent="space-between"
-        // Let all child buttons consume pointer events
-        sx={{
-          "& > *": {
-            pointerEvents: "auto",
-          },
-        }}
+      <Paper
+        sx={({ palette, shape, spacing }) => ({
+          width: "100%",
+          maxWidth: "sm",
+          display: "flex",
+          justifyContent: "space-between",
+          margin: `0 ${spacing(1)}`,
+          padding: 1,
+          backgroundColor: alpha(
+            palette.background.paper,
+            palette.opacity.translucent
+          ),
+          borderRadius: shape.borderRadius,
+          // Let all child buttons consume pointer events
+          pointerEvents: "auto",
+        })}
       >
         <IconButton
           aria-label="Go to First Move"
@@ -161,7 +165,7 @@ const PlayPauseControls: React.FC<Props> = ({ betaKey }) => {
         >
           <IconLastPage />
         </IconButton>
-      </Box>
+      </Paper>
     </Box>
   );
 };
