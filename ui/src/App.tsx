@@ -1,7 +1,9 @@
 import React, { Suspense } from "react";
 
 // Defer loading MUI into another chunk
-const CoreContent = React.lazy(() => import("components/CoreContent"));
+const CoreContent = React.lazy(
+  () => import(/* webpackChunkName: "CoreContent" */ "components/CoreContent")
+);
 
 /**
  * The root React node. All content is deferred to another chunk so the only

@@ -10,13 +10,20 @@ import NotFound from "components/common/NotFound";
 import theme from "util/theme";
 import PageLayout from "components/PageLayout/PageLayout";
 import ErrorBoundary from "components/common/ErrorBoundary";
-import Home from "components/Home/Home";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import About from "./About";
 import TextLayout from "./PageLayout/TextLayout";
 
-// Code splitting! Don't split the home page since it's tiny
-const Editor = React.lazy(() => import("components/Editor/Editor"));
+// Code splitting!
+const Home = React.lazy(
+  () => import(/* webpackChunkName: "Home" */ "components/Home/Home")
+);
+const Editor = React.lazy(
+  () =>
+    import(
+      /* webpackChunkName: "Editor", webpackPrefetch: true */ "components/Editor/Editor"
+    )
+);
 
 /**
  * The main visible page content. This should be loaded as a separate chunk from
