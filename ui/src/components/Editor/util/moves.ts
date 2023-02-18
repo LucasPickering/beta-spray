@@ -10,7 +10,6 @@ import {
   moveArrayElement,
 } from "util/func";
 import { hexToHtml, htmlToHex, lerpColor } from "util/math";
-import theme from "util/theme";
 import { disambiguationDistance } from "styles/svg";
 import { add, BodyPart, OverlayPosition, polarToSvg } from "./svg";
 import { useContext, useCallback } from "react";
@@ -19,6 +18,7 @@ import { graphql } from "relay-runtime";
 import { useFragment } from "react-relay";
 import { moves_visualPositions_betaMoveNodeConnection$key } from "./__generated__/moves_visualPositions_betaMoveNodeConnection.graphql";
 import { moves_colors_betaMoveNodeConnection$key } from "./__generated__/moves_colors_betaMoveNodeConnection.graphql";
+import { useTheme } from "@mui/material";
 
 /**
  * List of beta moves, from Relay, that we will update locally for the purpose
@@ -69,9 +69,10 @@ export function useBetaMoveColors(
     betaMoveConnectionKey
   );
 
+  const { palette } = useTheme();
   const moves = betaMoveConnection.edges;
-  const startColor = htmlToHex(theme.palette.primary.main);
-  const endColor = htmlToHex(theme.palette.secondary.main);
+  const startColor = htmlToHex(palette.primary.main);
+  const endColor = htmlToHex(palette.secondary.main);
   const colorMap: Map<string, string> = new Map();
 
   // Generate a color for each move

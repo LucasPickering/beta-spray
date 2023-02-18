@@ -22,6 +22,9 @@ export function coerce(
  * @returns 24-bit hex code, e.g. 0xff0000
  */
 export function htmlToHex(html: string): number {
+  if (!/^#[0-9a-fA-F]{6}$/.test(html)) {
+    return NaN;
+  }
   return parseInt(html.substring(1), 16);
 }
 
@@ -31,7 +34,10 @@ export function htmlToHex(html: string): number {
  * @returns HTML color string, e.g. #ff0000
  */
 export function hexToHtml(hex: number): string {
-  return `#${hex.toString(16)}`;
+  if (hex < 0 || 0xffffff < hex) {
+    return "";
+  }
+  return `#${hex.toString(16).padStart(6, "0")}`;
 }
 
 /**
@@ -61,4 +67,29 @@ export function lerpColor(
   }, 0);
 
   return mixed;
+}
+
+/**
+ * Average a series of numbers
+ * @param numbers List of numbers to average
+ * @returns The average, or 0 if the list is empty
+ */
+export function average(numbers: number[]): number {
+  if (numbers.length === 0) {
+    return 0;
+  }
+  return numbers.reduce((acc, number) => acc + number, 0) / numbers.length;
+}
+
+/**
+ * Average a series of colors. Each component (red/green/blue) will be averaged
+ * separately, them combined back together.
+ * @param colors List of colors to average
+ * @returns Averaged color, or black if the list is empty.
+ */
+export function averageColors(colors: number[]): number {
+  return [16, 8, 0].reduce((acc, bits) => {
+    const component = average(colors.map((color) => (color >> bits) & 0xff));
+    return acc | (component << bits);
+  }, 0);
 }
