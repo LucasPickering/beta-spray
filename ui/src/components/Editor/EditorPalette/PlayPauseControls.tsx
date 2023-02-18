@@ -56,7 +56,7 @@ const PlayPauseControls: React.FC<Props> = ({ betaKey }) => {
     () => beta.moves.edges.map(({ node }) => node.id),
     [beta.moves.edges]
   );
-  const disabled = !visibility || moveIds.length === 0;
+  const disabled = moveIds.length === 0;
 
   const {
     hasPrevious,
@@ -80,12 +80,17 @@ const PlayPauseControls: React.FC<Props> = ({ betaKey }) => {
     }
   }, [isPlaying, selectNext]);
 
-  // When we reach the last move, stop playing
+  // When we reach the last move, stop playing. Also, pause if the overlay is hidden
   useEffect(() => {
-    if (!hasNext) {
+    if (!hasNext || !visibility) {
       pause();
     }
-  }, [hasNext]);
+  }, [hasNext, visibility]);
+
+  // This check has to go after all the hooks
+  if (!visibility) {
+    return null;
+  }
 
   return (
     <Box
