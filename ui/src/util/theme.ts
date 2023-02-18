@@ -74,6 +74,12 @@ const theme = createTheme({
       styleOverrides: {
         root: ({ theme }) => ({
           borderRadius: theme.shape.borderRadius,
+          // The `disabled` override class doesn't work because of specificity,
+          // so we have to do this instead.
+          "&.Mui-disabled": {
+            // Fixes wonky looking SVG icons
+            strokeOpacity: theme.palette.action.disabledOpacity,
+          },
         }),
         sizeSmall: {
           padding: 1,

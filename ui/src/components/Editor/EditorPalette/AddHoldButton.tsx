@@ -96,7 +96,6 @@ const AddHoldButton: React.FC<Props> = ({ problemKey, disabled = false }) => {
  * Inner component, for live and fallback purposes
  */
 const AddHoldButtonContent: React.FC<IconButtonProps> = (props) => (
-  // TODO fix disabled styles
   <TooltipIconButton title="Add Hold" {...props}>
     <AddHoldIcon />
   </TooltipIconButton>
