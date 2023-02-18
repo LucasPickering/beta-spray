@@ -21,7 +21,7 @@ import { useBetaMoveColor } from "../util/moves";
 
 interface Props extends React.ComponentProps<typeof ListItem> {
   betaMoveKey: BetaMoveListItem_betaMoveNode$key;
-  isInCurrentStance?: boolean;
+  stanceColor?: string;
   isHighlighted?: boolean;
   isDragging?: boolean;
   dragRef?: React.Ref<SVGSVGElement>;
@@ -35,7 +35,7 @@ const BetaMoveListItem = React.forwardRef<HTMLLIElement, Props>(
   (
     {
       betaMoveKey,
-      isInCurrentStance = false,
+      stanceColor,
       isHighlighted = false,
       isDragging = false,
       dragRef,
@@ -89,7 +89,7 @@ const BetaMoveListItem = React.forwardRef<HTMLLIElement, Props>(
             (({ palette }) => ({
               // Match the color used in the SVG
               backgroundColor: alpha(
-                palette.info.light,
+                palette.info.main,
                 palette.action.activatedOpacity
               ),
             })),
@@ -102,9 +102,8 @@ const BetaMoveListItem = React.forwardRef<HTMLLIElement, Props>(
         <ListItemButton
           sx={[
             // If we're in the current stance, add a little indicator line
-            isInCurrentStance && {
-              // TODO make sure this color corresponds to the stick figure somehow
-              borderLeft: "3px solid white",
+            isDefined(stanceColor) && {
+              borderLeft: `3px solid ${stanceColor}`,
               marginLeft: "-3px",
             },
           ]}

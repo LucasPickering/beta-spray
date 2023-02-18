@@ -14,7 +14,7 @@ import { useHighlight } from "components/Editor/util/highlight";
 interface Props {
   betaMoveKey: BetaDetailsMove_betaMoveNode$key;
   index: number;
-  isInCurrentStance: boolean;
+  stanceColor: string | undefined;
   onReorder?: (dragItem: DragItem<"listBetaMove">, newIndex: number) => void;
   onDrop?: DropHandler<"listBetaMove", "list">;
   onDelete?: () => void;
@@ -22,11 +22,13 @@ interface Props {
 
 /**
  * A smart(ish) component to render one move in a list of a beta's moves.
+ *
+ * TODO figure out a better name for this vs BetaMoveListItem
  */
 const BetaDetailsMove: React.FC<Props> = ({
   betaMoveKey,
   index,
-  isInCurrentStance,
+  stanceColor,
   onReorder,
   onDrop,
   onDelete,
@@ -166,7 +168,7 @@ const BetaDetailsMove: React.FC<Props> = ({
       ref={childRef}
       dragRef={drag}
       betaMoveKey={betaMove}
-      isInCurrentStance={isInCurrentStance}
+      stanceColor={stanceColor}
       isHighlighted={isHighlighted}
       isDragging={isDragging}
       onClick={highlightThis}

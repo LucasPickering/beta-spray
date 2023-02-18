@@ -58,6 +58,7 @@ const ActionButtons: React.FC<Props> = ({
     <>
       <TooltipIconButton
         title={noun ? `Edit Notes for ${noun}` : "Select Item to Edit"}
+        color="info"
         disabled={disabled}
         onClick={onEditAnnotation}
       >
@@ -66,6 +67,7 @@ const ActionButtons: React.FC<Props> = ({
 
       <TooltipIconButton
         title={noun ? `Delete ${noun}` : "Select Item to Delete"}
+        color="info"
         disabled={disabled}
         onClick={onDelete}
       >

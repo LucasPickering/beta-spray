@@ -30,15 +30,10 @@ const theme = createTheme({
       default: "#0F1C2E",
       paper: "#1D3557",
     },
-    primary: {
-      main: "#FF9233",
-    },
-    secondary: {
-      main: "#48CFEA",
-    },
-    warning: {
-      main: "#FFBE26",
-    },
+    primary: { main: "#FF9233" },
+    secondary: { main: "#48CFEA" },
+    info: { main: "#FFC848" },
+    warning: { main: "#FFBE26" },
     opacity: {
       translucent: 0.6,
     },

@@ -3,7 +3,9 @@ import { useContext } from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
 import { findNodeIndex, isDefined, last, noop } from "util/func";
+import { hexToHtml, averageColors, htmlToHex } from "util/math";
 import { StateContext } from "./context";
+import { useBetaMoveColor } from "./moves";
 import { Stance } from "./svg";
 import {
   stance_betaMoveNodeConnection$data,
@@ -107,6 +109,39 @@ export function useStance(
 }
 
 /**
+ * Get the last move in the current stance.
+ * @returns ID of the move in the current stance with the highest order, or
+ * `undefined` if there is no current stance
+ */
+export function useLastMoveInStance(): string | undefined {
+  // This might seem pointless since we could just expose the context, but this
+  // abstraction allows us to potentially change the way we define the stance
+  // internally (e.g. defined by first move instead of last) without having
+  // to change an external consumers.
+  const [stanceMoveId] = useContext(StanceContext);
+  return stanceMoveId;
+}
+
+/**
+ * Get the color of the stick figure, which is the average of the colors of
+ * each move in the stance.
+ * @param stance Current stance (from useStance)
+ * @returns The current stick figure color (defaults to white)
+ */
+export function useStickFigureColor(stance: Partial<Stance>): string {
+  const getBetaMoveColor = useBetaMoveColor();
+  const moves = Object.values(stance);
+  if (moves.length === 0) {
+    return "#ffffff";
+  }
+  return hexToHtml(
+    averageColors(
+      moves.map((betaMoveId) => htmlToHex(getBetaMoveColor(betaMoveId)))
+    )
+  );
+}
+
+/**
  * Controls for modifying the current stance
  */
 export interface StanceControls {
@@ -141,20 +176,6 @@ export interface StanceControls {
    * last stance is already selected.
    */
   selectNext(): void;
-}
-
-/**
- * Get the last move in the current stance.
- * @returns ID of the move in the current stance with the highest order, or
- * `undefined` if there is no current stance
- */
-export function useLastMoveInStance(): string | undefined {
-  // This might seem pointless since we could just expose the context, but this
-  // abstraction allows us to potentially change the way we define the stance
-  // internally (e.g. defined by first move instead of last) without having
-  // to change an external consumers.
-  const [stanceMoveId] = useContext(StanceContext);
-  return stanceMoveId;
 }
 
 /**

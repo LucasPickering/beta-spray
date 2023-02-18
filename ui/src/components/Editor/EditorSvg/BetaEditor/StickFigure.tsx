@@ -12,7 +12,7 @@ import {
 import { stance_betaMoveNodeConnection$key } from "../../util/__generated__/stance_betaMoveNodeConnection.graphql";
 import Line from "../common/Line";
 import StickFigureDragHandle from "./StickFigureDragHandle";
-import { useStance } from "components/Editor/util/stance";
+import { useStance, useStickFigureColor } from "components/Editor/util/stance";
 import { SvgContext } from "components/Editor/util/context";
 import { DragFinishHandler } from "components/Editor/util/dnd";
 import { useBetaMoveVisualPosition } from "components/Editor/util/moves";
@@ -40,6 +40,7 @@ const StickFigure: React.FC<Props> = ({
   // Find which moves are in the current body position
   const stance = useStance(betaMoveConnectionKey);
   const { dimensions: svgDimensions } = useContext(SvgContext);
+  const color = useStickFigureColor(stance);
 
   // Grab the visual position of each move
   const getPosition = useBetaMoveVisualPosition();
@@ -77,7 +78,7 @@ const StickFigure: React.FC<Props> = ({
     { bodyPart: "RIGHT_FOOT", joint: hips },
   ];
   return (
-    <g strokeWidth={1} stroke="#dddddd" fill="none">
+    <g strokeWidth={1} stroke={color} fill="none">
       {/* Head */}
       <circle r={headRadius} cx={head.x} cy={head.y} />
       {/* Torso */}
