@@ -17,7 +17,6 @@ def decrement_orders(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("core", "0005_alter_betamove_order"),
     ]
