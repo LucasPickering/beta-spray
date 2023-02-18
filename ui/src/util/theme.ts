@@ -63,6 +63,9 @@ const theme = createTheme({
         root: ({ theme }) => ({
           borderRadius: theme.shape.borderRadius,
         }),
+        sizeSmall: {
+          padding: 1,
+        },
       },
     },
     MuiLink: {
