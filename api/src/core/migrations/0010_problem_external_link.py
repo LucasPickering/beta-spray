@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("core", "0009_remove_hold_position_x_remove_hold_position_y_and_more"),
     ]

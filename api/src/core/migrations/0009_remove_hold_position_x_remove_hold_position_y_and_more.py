@@ -18,7 +18,6 @@ def to_combined_position(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("core", "0008_betamove_annotation"),
     ]

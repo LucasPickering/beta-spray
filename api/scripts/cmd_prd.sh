@@ -1,5 +1,4 @@
-#!/bin/bash
-# bash needed to source poetry
+#!/bin/sh
 
 set -ex
 

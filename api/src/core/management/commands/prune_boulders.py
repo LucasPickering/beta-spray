@@ -6,7 +6,7 @@ from core.models import Boulder, Problem
 
 class Command(BaseCommand):
     help = (
-        "Remove orphaned boulder DB rows and  boulder images. A boulder is"
+        "Remove orphaned boulder DB rows and boulder images. A boulder is"
         " orphaned if it no longer has any problems. An image is orphaned if no"
         " boulder references it. Both of these will typically be deleted"
         " automatically upon deletion of the referencing row, so this command"
@@ -52,7 +52,6 @@ class Command(BaseCommand):
         print(f"Deleted {num_deleted} boulders")
 
     def prune_images(self, dry_run):
-
         # Get a set of all the images that *are* referenced
         live_images = set(Boulder.objects.all().values_list("image", flat=True))
 

@@ -6,6 +6,7 @@ resource "google_project_iam_custom_role" "database_backup" {
   description = "Role to upload database backup objects to a bucket"
   permissions = [
     "storage.buckets.get",
+    "storage.objects.get",
     "storage.objects.create",
     "storage.objects.delete", # Needed to overwrite
     "storage.multipartUploads.create",

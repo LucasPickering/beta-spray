@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_extensions",
     "django_filters",
+    "dbbackup",
     "graphene_django",
     "graphiql_debug_toolbar",
     "core",
@@ -85,6 +86,13 @@ DATABASES = {
     }
 }
 
+DBBACKUP_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
+DBBACKUP_STORAGE_OPTIONS = {
+    "bucket_name": os.getenv("BETA_SPRAY_BACKUP_BUCKET"),
+    "blob_chunk_size": 1024 * 1024,
+    # Needed to override the default ACL from the media bucket
+    "default_acl": None,
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
