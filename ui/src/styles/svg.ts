@@ -12,7 +12,7 @@ import { Theme } from "@mui/material";
 export type StyleFunction = (theme: Theme) => SerializedStyles;
 
 /** The distance to shift a disambiguated move from the center of the hold */
-export const disambiguationDistance = 5;
+export const disambiguationDistance = 4;
 
 /**
  * Apply to elements that are draggable and currently being hovered or dragged
