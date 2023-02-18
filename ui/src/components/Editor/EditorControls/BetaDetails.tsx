@@ -1,13 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { graphql, useFragment } from "react-relay";
 import BetaDetailsMove from "./BetaDetailsMove";
-import {
-  BetaDetails_betaNode$data,
-  BetaDetails_betaNode$key,
-} from "./__generated__/BetaDetails_betaNode.graphql";
+import { BetaDetails_betaNode$key } from "./__generated__/BetaDetails_betaNode.graphql";
 import { BetaDetails_deleteBetaMoveMutation } from "./__generated__/BetaDetails_deleteBetaMoveMutation.graphql";
 import { FormLabel, List, Skeleton, Typography } from "@mui/material";
-import { moveArrayElement } from "util/func";
 import { BetaDetails_updateBetaMoveMutation } from "./__generated__/BetaDetails_updateBetaMoveMutation.graphql";
 import { BetaContext } from "components/Editor/util/context";
 import useMutation from "util/useMutation";
@@ -22,12 +18,11 @@ import {
 } from "components/Editor/util/moves";
 import BetaDetailsDragLayer from "./BetaDetailsDragLayer";
 import { useStance } from "../util/stance";
+import { findNodeIndex, isDefined, moveArrayElement } from "util/func";
 
 interface Props {
   betaKey: BetaDetails_betaNode$key;
 }
-
-type BetaMove = BetaDetails_betaNode$data["moves"]["edges"][0]["node"];
 
 const BetaDetails: React.FC<Props> = ({ betaKey }) => {
   const beta = useFragment(
@@ -53,15 +48,32 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
     betaKey
   );
 
-  // Track moves in internal state so we can reorder them without constantly
-  // saving to the API. We'll reorder on hover, then persist on drop.
-  const [moves, setMoves] = useState<BetaMove[]>(() =>
-    beta.moves.edges.map(({ node }) => node)
-  );
+  // When reordering moves, we need to track temporary state of where the
+  // dragged move is. We'll use this to reorder the moves locally. Once the
+  // move is dropped, we'll persist changes to the DB
+  const [draggingMove, setDraggingMove] = useState<{
+    // Move being dragged
+    id: string;
+    // *Current* index, which changes as we drag around
+    index: number;
+  }>();
 
-  // Whenever the beta updates from the API, refresh the local state to match
+  // Calculate a local copy of the moves. This only differs if we're dragging,
+  // in which case we'll reorder the moves to match the current drag state
+  const moves = useMemo(() => {
+    const moves = beta.moves.edges.map(({ node }) => node);
+    if (isDefined(draggingMove)) {
+      const oldIndex = findNodeIndex(beta.moves, draggingMove.id);
+      if (oldIndex >= 0) {
+        moveArrayElement(moves, oldIndex, draggingMove.index);
+      }
+    }
+    return moves;
+  }, [beta.moves, draggingMove]);
+
+  // Whenever the beta updates from the API, clear dragging state
   useEffect(() => {
-    setMoves(beta.moves.edges.map(({ node }) => node));
+    setDraggingMove(undefined);
   }, [beta.moves.edges]);
 
   // We may want to memoize these together to prevent context-based rerenders:
@@ -140,17 +152,7 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
               onReorder={(dragItem, newIndex) => {
                 // This is called on the *hovered* move, so the passed item is
                 // the one being dragged
-                // IMPORTANT: We need to store this value *outside* the lambda
-                // below, because the caller of this function is going to mutate
-                // the dragItem object to update the index value. This is an
-                // unfortunate necessity to prevent flickering in the UI, but it
-                // means that if we don't capture this value now, then by the
-                // time the state setter executes, `dragItem` will be mutated
-                // with the new index and we won't end up swapping anything.
-                const oldIndex = dragItem.index;
-                setMoves((oldMoves) =>
-                  moveArrayElement(oldMoves, oldIndex, newIndex)
-                );
+                setDraggingMove({ id: dragItem.betaMoveId, index: newIndex });
               }}
               onDrop={(item) => {
                 if (item) {
@@ -183,6 +185,7 @@ const BetaDetails: React.FC<Props> = ({ betaKey }) => {
                     },
                   });
                 }
+                setDraggingMove(undefined);
               }}
               onDelete={() =>
                 deleteBetaMove({

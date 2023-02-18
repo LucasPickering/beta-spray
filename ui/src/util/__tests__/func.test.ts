@@ -1,22 +1,36 @@
 import { comparator, moveArrayElement } from "../func";
 
 describe("moveArrayElement", () => {
-  const array = ["a", "b", "c", "d", "e"];
+  let array: string[];
+
+  beforeEach(() => {
+    // The method mutates, so we need a new array for each test
+    array = ["a", "b", "c", "d", "e"];
+  });
+
+  test("no change", () => {
+    moveArrayElement(array, 1, 1);
+    expect(array).toEqual(["a", "b", "c", "d", "e"]);
+  });
 
   test("move element down list", () => {
-    expect(moveArrayElement(array, 1, 3)).toEqual(["a", "c", "d", "b", "e"]);
+    moveArrayElement(array, 1, 3);
+    expect(array).toEqual(["a", "c", "d", "b", "e"]);
   });
 
   test("move element up list", () => {
-    expect(moveArrayElement(array, 3, 1)).toEqual(["a", "d", "b", "c", "e"]);
+    moveArrayElement(array, 3, 1);
+    expect(array).toEqual(["a", "d", "b", "c", "e"]);
   });
 
   test("move up from first slot", () => {
-    expect(moveArrayElement(array, 0, 2)).toEqual(["b", "c", "a", "d", "e"]);
+    moveArrayElement(array, 0, 2);
+    expect(array).toEqual(["b", "c", "a", "d", "e"]);
   });
 
   test("move down to last slot", () => {
-    expect(moveArrayElement(array, 4, 2)).toEqual(["a", "b", "e", "c", "d"]);
+    moveArrayElement(array, 4, 2);
+    expect(array).toEqual(["a", "b", "e", "c", "d"]);
   });
 });
 

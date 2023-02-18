@@ -206,7 +206,6 @@ export function useBetaMoveColor(): (betaMoveId: string) => string {
     (betaMoveId) => {
       const color = betaMoveColors.get(betaMoveId);
       if (!isDefined(color)) {
-        // TODO figure out why this gets triggered in BetaDetails after deletion
         // eslint-disable-next-line no-console
         console.warn(
           `No color for beta move ${betaMoveId}. Either the ID is unknown or` +
@@ -262,13 +261,13 @@ export function reorderBetaMoveLocal(
 ): BetaMoves {
   const oldIndex = findNodeIndex(moves, betaMoveId);
   const newIndex = newOrder - 1;
+  const edges = [...moves.edges];
+  moveArrayElement(edges, oldIndex, newIndex);
   return {
-    edges: moveArrayElement(moves.edges, oldIndex, newIndex).map(
-      ({ node: { id, isStart } }, i) => ({
-        // We intentionally don't recalculate isStart, it's just not worth it
-        node: { id, isStart, order: i + 1 },
-      })
-    ),
+    edges: edges.map(({ node: { id, isStart } }, i) => ({
+      // We intentionally don't recalculate isStart, it's just not worth it
+      node: { id, isStart, order: i + 1 },
+    })),
   };
 }
 
