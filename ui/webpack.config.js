@@ -98,7 +98,7 @@ module.exports = {
     historyApiFallback: true,
     hot: true,
     proxy: {
-      "/api": process.env.BETA_SPRAY_API_HOST,
+      "/api": process.env.BETA_SPRAY_API_HOST || "http://localhost:8000",
     },
   },
 };

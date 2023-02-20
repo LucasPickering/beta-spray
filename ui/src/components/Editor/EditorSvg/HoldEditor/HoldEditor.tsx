@@ -55,6 +55,7 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
       variables: {
         input: { id: item.holdId, position },
       },
+      deferred: true,
       optimisticResponse: {
         updateHold: { id: item.holdId, position },
       },

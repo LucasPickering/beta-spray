@@ -3,11 +3,12 @@ import { alpha, Box, IconButton, Paper } from "@mui/material";
 import HelpText from "./HelpText";
 import {
   ArrowBack as IconArrowBack,
+  Upload as IconUpload,
   Visibility as IconVisibility,
   VisibilityOff as IconVisibilityOff,
 } from "@mui/icons-material";
 import { EditorVisibilityContext } from "components/Editor/util/context";
-import { PreloadedQuery } from "react-relay";
+import { PreloadedQuery, useRelayEnvironment } from "react-relay";
 import TooltipIconButton from "components/common/TooltipIconButton";
 import { Link } from "react-router-dom";
 import AddHoldButton from "./AddHoldButton";
@@ -28,6 +29,7 @@ interface Props {
  */
 const EditorPalette: React.FC<Props> = ({ problemQueryRef, betaQueryRef }) => {
   const [visibility, setVisibility] = useContext(EditorVisibilityContext);
+  const environment = useRelayEnvironment();
 
   return (
     <Box sx={{ position: "absolute", top: 0, left: 0, margin: 1 }}>
@@ -61,6 +63,14 @@ const EditorPalette: React.FC<Props> = ({ problemQueryRef, betaQueryRef }) => {
           problemQueryRef={problemQueryRef}
           betaQueryRef={betaQueryRef}
         />
+
+        <IconButton
+          onClick={() => {
+            environment.publishQueue();
+          }}
+        >
+          <IconUpload />
+        </IconButton>
       </Paper>
     </Box>
   );

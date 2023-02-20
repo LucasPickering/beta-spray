@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import {
   // eslint-disable-next-line no-restricted-syntax
   useMutation as useMutationRelay,
-  UseMutationConfig,
+  UseMutationConfig as UseMutationConfigRelay,
 } from "react-relay";
 import {
   Disposable,
@@ -35,6 +35,11 @@ export type MutationState =
           }
         | { kind: "network"; data: Error };
     };
+
+export interface UseMutationConfig<T extends MutationParameters>
+  extends UseMutationConfigRelay<T> {
+  deferred?: boolean;
+}
 
 /**
  * A wrapper around Relay's useMutation. Takes the same inputs, but has

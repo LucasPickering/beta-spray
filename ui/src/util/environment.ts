@@ -4,7 +4,13 @@ import {
   RecordSource,
   Store,
   FetchFunction,
+  GraphQLResponse,
+  Observable,
+  OperationDescriptor,
+  SelectorStoreUpdater,
+  UploadableMap,
 } from "relay-runtime";
+import RelayObservable from "relay-runtime/lib/network/RelayObservable";
 import { HTTPError } from "./error";
 
 const fetchQuery: FetchFunction = (
@@ -69,7 +75,80 @@ const fetchQuery: FetchFunction = (
     });
 };
 
-const environment = new Environment({
+class AssEnvironment extends Environment {
+  private deferredQueue: Array<{
+    promise: Promise<unknown>;
+    resolve: (value: unknown) => void;
+  }> = [];
+
+  executeMutation({
+    operation,
+    deferred,
+    optimisticResponse,
+    optimisticUpdater,
+    updater,
+    uploadables,
+  }: {
+    operation: OperationDescriptor;
+    optimisticUpdater?: SelectorStoreUpdater<object> | null | undefined;
+    optimisticResponse?: { [key: string]: unknown } | null | undefined;
+    updater?: SelectorStoreUpdater<object> | null | undefined;
+    uploadables?: UploadableMap | null | undefined;
+  }): Observable<GraphQLResponse> {
+    console.log("deferred?", deferred);
+    let optimisticConfig;
+    if (optimisticResponse || optimisticUpdater) {
+      optimisticConfig = {
+        operation,
+        response: optimisticResponse,
+        updater: optimisticUpdater,
+      };
+    }
+
+    const createSource = deferred
+      ? () => {
+          const promise = new Promise((resolve) => {
+            this.deferredQueue.push({ promise, resolve });
+          }).then(() =>
+            this.getNetwork().execute(
+              operation.request.node.params,
+              operation.request.variables,
+              {
+                ...operation.request.cacheConfig,
+                force: true,
+              },
+              uploadables
+            )
+          );
+          return RelayObservable.from(promise);
+        }
+      : () =>
+          this.getNetwork().execute(
+            operation.request.node.params,
+            operation.request.variables,
+            {
+              ...operation.request.cacheConfig,
+              force: true,
+            },
+            uploadables
+          );
+    return super._execute({
+      createSource,
+      isClientPayload: false,
+      operation,
+      optimisticConfig,
+      updater,
+    });
+  }
+
+  publishQueue(): void {
+    for (const { resolve } of this.deferredQueue) {
+      resolve(undefined);
+    }
+  }
+}
+
+const environment = new AssEnvironment({
   network: Network.create(fetchQuery),
   store: new Store(new RecordSource()),
 });
