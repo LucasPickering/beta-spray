@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { graphql, useFragment } from "react-relay";
-import { BetaDetailsMove_betaMoveNode$key } from "./__generated__/BetaDetailsMove_betaMoveNode.graphql";
+import { BetaMoveListItemSmart_betaMoveNode$key } from "./__generated__/BetaMoveListItemSmart_betaMoveNode.graphql";
 import { XYCoord } from "react-dnd";
 import {
   DragItem,
@@ -12,7 +12,7 @@ import BetaMoveListItem from "./BetaMoveListItem";
 import { useHighlight } from "components/Editor/util/highlight";
 
 interface Props {
-  betaMoveKey: BetaDetailsMove_betaMoveNode$key;
+  betaMoveKey: BetaMoveListItemSmart_betaMoveNode$key;
   index: number;
   stanceColor: string | undefined;
   onReorder?: (dragItem: DragItem<"listBetaMove">, newIndex: number) => void;
@@ -23,9 +23,10 @@ interface Props {
 /**
  * A smart(ish) component to render one move in a list of a beta's moves.
  *
- * TODO figure out a better name for this vs BetaMoveListItem
+ * This is a wonky name, but I couldn't figure out a better name given the
+ * component tree.
  */
-const BetaDetailsMove: React.FC<Props> = ({
+const BetaMoveListItemSmart: React.FC<Props> = ({
   betaMoveKey,
   index,
   stanceColor,
@@ -35,7 +36,7 @@ const BetaDetailsMove: React.FC<Props> = ({
 }) => {
   const betaMove = useFragment(
     graphql`
-      fragment BetaDetailsMove_betaMoveNode on BetaMoveNode {
+      fragment BetaMoveListItemSmart_betaMoveNode on BetaMoveNode {
         id
         ...BetaMoveListItem_betaMoveNode
       }
@@ -177,4 +178,4 @@ const BetaDetailsMove: React.FC<Props> = ({
   );
 };
 
-export default BetaDetailsMove;
+export default BetaMoveListItemSmart;

@@ -10,7 +10,7 @@ import {
   useStickFigureColor as useStanceColor,
 } from "../util/stance";
 import BetaDetailsDragLayer from "./BetaDetailsDragLayer";
-import BetaDetailsMove from "./BetaDetailsMove";
+import BetaMoveListItemSmart from "./BetaMoveListItemSmart";
 import { BetaMoveList_betaNode$key } from "./__generated__/BetaMoveList_betaNode.graphql";
 import { BetaMoveList_deleteBetaMoveMutation } from "./__generated__/BetaMoveList_deleteBetaMoveMutation.graphql";
 import { BetaMoveList_updateBetaMoveMutation } from "./__generated__/BetaMoveList_updateBetaMoveMutation.graphql";
@@ -37,7 +37,7 @@ const BetaMoveList: React.FC<Props> = ({ betaKey }) => {
               order
               isStart
               bodyPart
-              ...BetaDetailsMove_betaMoveNode
+              ...BetaMoveListItemSmart_betaMoveNode
             }
           }
         }
@@ -134,7 +134,7 @@ const BetaMoveList: React.FC<Props> = ({ betaKey }) => {
       )}
 
       {moves.map((node, moveIndex) => (
-        <BetaDetailsMove
+        <BetaMoveListItemSmart
           key={node.id}
           betaMoveKey={node}
           index={moveIndex}
