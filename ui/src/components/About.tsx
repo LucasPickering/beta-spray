@@ -1,5 +1,5 @@
 import { Link, Stack, Typography } from "@mui/material";
-import { IconGitHub } from "assets";
+import { IconGitHub, IconMountainProject } from "assets";
 
 const About: React.FC = () => (
   <>
@@ -26,7 +26,9 @@ const About: React.FC = () => (
       <Link href="https://github.com/LucasPickering/beta-spray">
         <IconGitHub fontSize="large" />
       </Link>
-      {/* TODO add link to MP post once it's up */}
+      <Link href="https://www.mountainproject.com/forum/topic/123244142">
+        <IconMountainProject fontSize="large" />
+      </Link>
     </Stack>
   </>
 );

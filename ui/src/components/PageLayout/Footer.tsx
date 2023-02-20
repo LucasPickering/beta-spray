@@ -1,5 +1,5 @@
 import { Box, Divider, Link, Stack, Typography } from "@mui/material";
-import { IconGitHub } from "assets";
+import { IconGitHub, IconMountainProject } from "assets";
 import useIsWide from "util/useIsWide";
 
 const Footer: React.FC = () => {
@@ -27,6 +27,9 @@ const Footer: React.FC = () => {
 
             <Link href="https://github.com/LucasPickering/beta-spray">
               <IconGitHub />
+            </Link>
+            <Link href="https://www.mountainproject.com/forum/topic/123244142">
+              <IconMountainProject />
             </Link>
           </Stack>
         </Stack>
