@@ -38,6 +38,7 @@ const BetaMoveIcon = React.forwardRef<
       isDragging = false,
       isHighlighted = false,
       css: parentCss,
+      children,
       ...rest
     },
     ref
@@ -86,6 +87,8 @@ const BetaMoveIcon = React.forwardRef<
             {order}
           </text>
         )}
+
+        {children}
       </g>
     );
   }

@@ -34,7 +34,6 @@ const BetaChainMark: React.FC<Props> = ({
   const betaMove = useFragment(
     graphql`
       fragment BetaChainMark_betaMoveNode on BetaMoveNode {
-        ...AddBetaMoveMark_betaMoveNode
         id
         bodyPart
         order
@@ -111,7 +110,11 @@ const BetaChainMark: React.FC<Props> = ({
         />
 
         {isInCurrentStance && (
-          <AddBetaMoveMark betaMoveKey={betaMove} onDragFinish={onDragFinish} />
+          <AddBetaMoveMark
+            bodyPart={betaMove.bodyPart}
+            variant="move"
+            onDragFinish={onDragFinish}
+          />
         )}
       </Positioned>
 

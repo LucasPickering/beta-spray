@@ -11,11 +11,12 @@ import {
 } from "components/Editor/util/svg";
 import { stance_betaMoveNodeConnection$key } from "../../util/__generated__/stance_betaMoveNodeConnection.graphql";
 import Line from "../common/Line";
-import StickFigureDragHandle from "./StickFigureDragHandle";
 import { useStance, useStickFigureColor } from "components/Editor/util/stance";
 import { SvgContext } from "components/Editor/util/context";
 import { DragFinishHandler } from "components/Editor/util/dnd";
 import { useBetaMoveVisualPosition } from "components/Editor/util/moves";
+import AddBetaMoveMark from "./AddBetaMoveMark";
+import Positioned from "../common/Positioned";
 
 /**
  * The torso will always be this percentage of the distance between hands and
@@ -88,11 +89,13 @@ const StickFigure: React.FC<Props> = ({
         <React.Fragment key={bodyPart}>
           <Line p1={positions[bodyPart]} p2={joint} />
           {!stance[bodyPart] && (
-            <StickFigureDragHandle
-              bodyPart={bodyPart}
-              position={positions[bodyPart]}
-              onDragFinish={onDragFinish}
-            />
+            <Positioned position={positions[bodyPart]}>
+              <AddBetaMoveMark
+                bodyPart={bodyPart}
+                variant="stickFigure"
+                onDragFinish={onDragFinish}
+              />
+            </Positioned>
           )}
         </React.Fragment>
       ))}
