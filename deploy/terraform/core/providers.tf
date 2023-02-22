@@ -1,9 +1,8 @@
 terraform {
   required_providers {
     google = {
-      source = "hashicorp/google"
-      # Upgrade after https://github.com/hashicorp/terraform-provider-google/issues/10782
-      version = "4.3.0"
+      source  = "hashicorp/google"
+      version = "~> 4.0"
     }
 
     github = {

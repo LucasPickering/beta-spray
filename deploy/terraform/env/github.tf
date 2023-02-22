@@ -12,9 +12,7 @@ resource "github_repository_environment" "main" {
   }
 }
 
-# TODO encrypt tfstate https://www.terraform.io/language/settings/backends/gcs#encryption_key
 # Special characters seem to cause issues in helm. It's easier to avoid than fix
-
 resource "random_password" "database_password" {
   length  = 24
   special = false
@@ -29,7 +27,6 @@ resource "random_password" "api_secret_key" {
 # Not all of these are strictly sensitive, but the GH provider doesn't allow us
 # to create plaintext environment variables from here, so we just stick everything
 # in secrets.
-# TODO use encrypted values here? Probably not useful if we already encrypt tfstate
 # TODO convert some of these to configuration variables after https://github.com/integrations/terraform-provider-github/issues/1479
 
 locals {

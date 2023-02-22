@@ -9,9 +9,8 @@ Deployment is managed in two parts:
 
 The Terraform for this app is split into three segments:
 
-- `ci` - CI infrastructure for building the app
-- `server` - DNS and other underlying resources for a singular deployment
-- `app` - Helm deployment for the actual app
+- `core` - Core infrastructure for CI and shared resources for all environments
+- `env` - Environment-specific resources
 
 These need to be applied in the above order, because of dependencies.
 
@@ -22,11 +21,13 @@ You will need the following tools:
 - google-cloud-sdk
 - terraform
 
+And you'll need access to the Terraform state encryption key.
+
 ### Core
 
 These are one-time "singleton" resources. Resources include:
 
-- Google Cloud OIDC crets ([see here](https://github.com/google-github-actions/auth#setup))
+- Google Cloud OIDC creds ([see here](https://github.com/google-github-actions/auth#setup))
 - GCS static assets bucket
 - GitHub Actions secrets to auth with DigitalOcean and GCP
 
@@ -46,7 +47,8 @@ These are one-time "singleton" resources. Resources include:
    1. Create a new token with the scopes: `Read`
    1. Add `digitalocean_token = "<token>"` to the `tfvars` file
 1. Auth to Google with `gcloud auth login`
-1. `terraform init`
+1. ` terraform init -backend-config encryption_key="<key>"`
+   1. MAKE SURE TO INCLUDE THE SPACE AT THE BEGINNING, so your shell doesn't store the key in command history
 
 Then apply changes with:
 
@@ -84,7 +86,8 @@ This setup only needs to be run once, then these creds can be used for all envir
 1. Follow the steps in the Core section above to create a GitHub token (you can also re-use that token)
    1. Add `github_token = "<token>"` to the `tfvars` file
 1. Auth to Google with `gcloud auth login`
-1. `terraform init`
+1. ` terraform init -backend-config encryption_key="<key>"`
+   1. MAKE SURE TO INCLUDE THE SPACE AT THE BEGINNING, so your shell doesn't store the key in command history
 
 #### Per-Environment Setup
 
