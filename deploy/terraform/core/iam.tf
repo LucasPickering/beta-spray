@@ -7,8 +7,9 @@ resource "google_project_iam_custom_role" "database_backup" {
   permissions = [
     "storage.buckets.get",
     "storage.objects.get",
+    "storage.objects.list", # Needed to clean up old backups
     "storage.objects.create",
-    "storage.objects.delete", # Needed to overwrite
+    "storage.objects.delete", # Needed to clean up old backups
     "storage.multipartUploads.create",
     "storage.multipartUploads.abort",
     "storage.multipartUploads.listParts",

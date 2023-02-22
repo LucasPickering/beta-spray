@@ -86,6 +86,8 @@ DATABASES = {
     }
 }
 
+# TODO encrypt backups
+# https://django-dbbackup.readthedocs.io/en/master/configuration.html#encrypting-your-backups
 DBBACKUP_STORAGE = "storages.backends.gcloud.GoogleCloudStorage"
 DBBACKUP_STORAGE_OPTIONS = {
     "bucket_name": os.getenv("BETA_SPRAY_BACKUP_BUCKET"),
@@ -93,6 +95,11 @@ DBBACKUP_STORAGE_OPTIONS = {
     # Needed to override the default ACL from the media bucket
     "default_acl": None,
 }
+DBBACKUP_FILENAME_TEMPLATE = "backup-db-{databasename}-{datetime}.{extension}"
+DBBACKUP_MEDIA_FILENAME_TEMPLATE = "backup-media-{datetime}.{extension}"
+# 3 days worth of history
+DBBACKUP_CLEANUP_KEEP = 12
+DBBACKUP_CLEANUP_KEEP_MEDIA = 12
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators

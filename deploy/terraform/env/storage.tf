@@ -45,7 +45,6 @@ resource "google_storage_bucket" "database_backup" {
     }
   }
   uniform_bucket_level_access = true
-  # TODO encrypt data in bucket
 }
 
 # Backup SA can upload objects to DB Backup bucket
