@@ -1,4 +1,4 @@
 #!/bin/sh
 
-./m.sh dbbackup
-./m.sh mediabackup
+./m.sh dbbackup --clean
+./m.sh mediabackup --clean
