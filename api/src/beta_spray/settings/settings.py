@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     "debug_toolbar",  # Disabled in prod via INTERNAL_IPS
     "strawberry.django",
     "strawberry_django_plus",
+    "guest_user",
     "core",
 ]
 
@@ -102,27 +103,12 @@ DBBACKUP_MEDIA_FILENAME_TEMPLATE = "backup-media-{datetime}.{extension}"
 DBBACKUP_CLEANUP_KEEP = 12
 DBBACKUP_CLEANUP_KEEP_MEDIA = 12
 
-# Password validation
-# https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation."
-        "UserAttributeSimilarityValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation."
-        "MinimumLengthValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation."
-        "CommonPasswordValidator",
-    },
-    {
-        "NAME": "django.contrib.auth.password_validation."
-        "NumericPasswordValidator",
-    },
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "guest_user.backends.GuestBackend",
 ]
+
+GUEST_USER_NAME_GENERATOR = "guest_user.functions.generate_friendly_username"
 
 
 # Internationalization

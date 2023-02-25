@@ -1,12 +1,16 @@
 from typing import Optional
 
+from django.contrib.auth.models import User
 from django.db.models.fields.files import ImageFieldFile
+from guest_user.functions import is_guest_user
+from strawberry.types import Info
 from strawberry_django_plus import gql
 from strawberry_django_plus.gql import relay
 from typing_extensions import Self
 
-from core import models, util
+from core import util
 from core.fields import BoulderPosition
+from core.models import Beta, BetaMove, BodyPart, Boulder, Hold, Problem
 
 
 @gql.type
@@ -69,7 +73,25 @@ class SVGPosition:
         )
 
 
-@gql.django.type(models.Boulder)
+@gql.django.type(User)
+class UserNode(relay.Node):
+    """
+    A user of Beta Spray
+    """
+
+    username: gql.auto = gql.field(description="Username")
+
+    @gql.field
+    def is_guest(self) -> bool:
+        """
+        Is this user a guest? True if the user has not created an account. Only
+        exposed to self.
+        """
+        # TODO only expose to current user
+        return is_guest_user(self)
+
+
+@gql.django.type(Boulder)
 class BoulderNode(relay.Node):
     """
     A boulder is a wall or rock that has holds on it. In the context of this
@@ -83,7 +105,7 @@ class BoulderNode(relay.Node):
     holds: relay.Connection["HoldNode"] = gql.django.connection()
 
 
-@gql.django.type(models.Hold)
+@gql.django.type(Hold)
 class HoldNode(relay.Node):
     """
     A hold is a particular point on a boulder that can be grabbed or otherwise
@@ -103,7 +125,7 @@ class HoldNode(relay.Node):
         )
 
 
-@gql.django.type(models.Problem)
+@gql.django.type(Problem)
 class ProblemNode(relay.Node):
     """
     A "problem" is a boulder route. It consists of a series of holds on a
@@ -120,7 +142,7 @@ class ProblemNode(relay.Node):
     betas: relay.Connection["BetaNode"] = gql.django.connection()
 
 
-@gql.django.type(models.Beta)
+@gql.django.type(Beta)
 class BetaNode(relay.Node):
     """
     A beta is a sequence of moves that solves a problem. The word is really used
@@ -134,7 +156,7 @@ class BetaNode(relay.Node):
     moves: relay.Connection["BetaMoveNode"] = gql.django.connection()
 
 
-@gql.django.type(models.BetaMove)
+@gql.django.type(BetaMove)
 class BetaMoveNode(relay.Node):
     """
     A singular move within a beta, which is a body part+location pairing. This
@@ -149,7 +171,7 @@ class BetaMoveNode(relay.Node):
 
     created_at: gql.auto = gql.field(description="Date+time of object creation")
     beta: BetaNode = gql.field()
-    body_part: models.BodyPart = gql.field(description="Body part being moved")
+    body_part: BodyPart = gql.field(description="Body part being moved")
     order: int = gql.field(
         description="The ordering of this move within the beta, starting at 1"
     )
@@ -192,3 +214,11 @@ class Query:
         description="Get a problem by ID"
     )
     beta: Optional[BetaNode] = relay.node(description="Get a beta by ID")
+
+    @gql.field()
+    def current_user(self, info: Info) -> UserNode:
+        """
+        Get data on the requesting user (you). Unautheticated users will have a
+        guest account created.
+        """
+        return info.context.request.user

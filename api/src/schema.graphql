@@ -480,6 +480,12 @@ type Query {
     """The ID of the object."""
     id: ID!
   ): BetaNode
+
+  """
+  Get data on the requesting user (you). Unautheticated users will have a
+  guest account created.
+  """
+  currentUser: UserNode!
 }
 
 """
@@ -538,4 +544,18 @@ input UpdateProblemInput {
 
   """External link, e.g. to Mountain Project"""
   externalLink: String
+}
+
+"""A user of Beta Spray"""
+type UserNode implements Node {
+  id: ID!
+
+  """Username"""
+  username: String!
+
+  """
+  Is this user a guest? True if the user has not created an account. Only
+  exposed to self.
+  """
+  isGuest: Boolean!
 }

@@ -80,7 +80,9 @@ jobs:
 
       - name: Check for DB schema changes
         working-directory: api/
-        run: poetry run ./src/manage.py makemigrations --skip-checks --dry-run --check
+        # We need to scope down to our apps here, in case a dependency has a
+        # dangling migration
+        run: poetry run ./src/manage.py makemigrations core --skip-checks --dry-run --check
 
   # This runs in a docker container because it needs DB access
   api-test:
