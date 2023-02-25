@@ -11,7 +11,13 @@ RUN apk add --no-cache \
     libpq-dev \
     musl-dev \
     openssl
-RUN pip install poetry
+
+# Install poetry
+ENV PATH=$PATH:/root/.local/bin/ \
+    POETRY_VERSION=1.3.2
+RUN apk add --no-cache --virtual .build-deps curl && \
+    curl -sSL https://install.python-poetry.org | python - && \
+    apk del .build-deps
 
 ADD poetry.toml pyproject.toml poetry.lock ./
 RUN poetry install

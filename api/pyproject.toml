@@ -11,11 +11,13 @@ Pillow = "^9.4.0"
 django-dbbackup = "^4.0.2"
 django-debug-toolbar = "^3.5.0"
 django-extensions = "^3.1.5"
+django-guest-user = "^0.5.3"
 django-storages = {extras = ["google"], version = "^1.12.3"}
 gunicorn = "^20.1.0"
 psycopg2 = "^2.9.3"
 python = "^3.9"
 strawberry-django-plus = "^2.0.5"
+random-username = "^1.0.2"
 
 [tool.poetry.group.dev.dependencies]
 debugpy = "^1.6.6"
@@ -40,9 +42,5 @@ disallow_incomplete_defs = true
 disallow_untyped_calls = true
 disallow_untyped_defs = true
 files = ["src/"]
-plugins = "strawberry.ext.mypy_plugin"
-
-[[tool.mypy.overrides]]
-# Known modules with no type annotations :(
 ignore_missing_imports = true
-module = ["debugpy", "django.*"]
+plugins = "strawberry.ext.mypy_plugin"

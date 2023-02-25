@@ -310,6 +310,18 @@ files = [
 Django = ">=3.2"
 
 [[package]]
+name = "django-guest-user"
+version = "0.5.3"
+description = "A Django app that lets visitors interact with your site without registration."
+category = "main"
+optional = false
+python-versions = ">=3.7,<4.0"
+files = [
+    {file = "django_guest_user-0.5.3-py3-none-any.whl", hash = "sha256:3d5873f7d2a756079b1501d45cf268ed9f96ba0d275ad56a67f39b197a11b5b6"},
+    {file = "django_guest_user-0.5.3.tar.gz", hash = "sha256:383b6e200700cc57c539ea94da307824ab72cfe2beb82b62414e09a6b1b5ba69"},
+]
+
+[[package]]
 name = "django-storages"
 version = "1.13.2"
 description = "Support for many storage backends in Django"
@@ -986,6 +998,18 @@ files = [
 ]
 
 [[package]]
+name = "random-username"
+version = "1.0.2"
+description = "Randomly generate compelling usernames."
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "random-username-1.0.2.tar.gz", hash = "sha256:5fdc0604b5d1bdfe4acf4cd7491a9de1caf41bbdd890f646b434e09ae2a1b7ce"},
+    {file = "random_username-1.0.2-py3-none-any.whl", hash = "sha256:2536feb63fecde7e01ede4a541aadb6f0b58794a7ab327ca5369d2a4b7664c06"},
+]
+
+[[package]]
 name = "requests"
 version = "2.28.2"
 description = "Python HTTP for Humans."
@@ -1189,4 +1213,4 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "c896c9e428695bc03507a70bab39bac2a13b862e869a25354c2959c34b26c7c8"
+content-hash = "6dfdc54916779a4b9f843ada78d483d1ed90c9a6cc2a2aa4001ff0ff55960f07"
