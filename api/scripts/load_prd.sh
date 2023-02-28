@@ -14,7 +14,7 @@ API_POD=$(kubectl get pod -o json | jq -r '.items[].metadata | select(.labels.ap
 cd $API_DIR
 
 echo "Copying from pod $API_POD"
-kubectl exec $API_POD -- bash -c "./m.sh dumpdata core > $DUMP_FILE"
+kubectl exec $API_POD -- sh -c "./m.sh dumpdata core > $DUMP_FILE"
 kubectl cp "$API_POD:$DUMP_FILE" "$FIXTURE_PATH"
 kubectl exec $API_POD -- rm "$DUMP_FILE"
 
