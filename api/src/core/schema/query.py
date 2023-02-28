@@ -1,103 +1,37 @@
-import graphene
-from graphene import ObjectType, relay
-from graphene_django import DjangoObjectType
-from graphene_django.filter import DjangoFilterConnectionField
-from graphene_django.debug import DjangoDebug
-import graphql_relay
-
-from core.models import Beta, BetaMove, BodyPart, Boulder, Hold, Problem
-from core import util
+from typing import Optional
+from core import models, util
+from strawberry_django_plus import gql
+from strawberry_django_plus.gql import relay
 
 
-# Generate a GQL enum for BodyPart
-BodyPartType = graphene.Enum.from_enum(BodyPart)
-
-
-class NodeType(DjangoObjectType):
-    """
-    Base class for all node types
-    """
-
-    class Meta:
-        abstract = True
-
-    @classmethod
-    def get_pk_from_global_id(cls, info, global_id):
-        """
-        Convert a global Relay ID into a database primary key. If the global
-        ID doesn't match this node's model type, raise an exception.
-
-        This is the same as get_node_from_global_id, but it avoids any queries.
-        """
-        # This is mostly ripped from relay.Node.get_node_from_global_id
-        try:
-            _type, _id = graphql_relay.from_global_id(global_id)
-        except Exception as e:
-            raise Exception(
-                f'Unable to parse global ID "{global_id}". '
-                "Make sure it is a base64 encoded string in the format: "
-                f'"TypeName:id". Exception message: {str(e)}'
-            )
-
-        graphene_type = info.schema.get_type(_type)
-        if graphene_type is None:
-            raise Exception(f'Relay Node "{_type}" not found in schema')
-        graphene_type = graphene_type.graphene_type
-
-        # Make sure the ID's type matches this class
-        assert graphene_type == cls, f"Must receive a {cls._meta.name} id."
-
-        # We make sure the ObjectType implements the "Node" interface
-        if relay.Node not in graphene_type._meta.interfaces:
-            raise Exception(
-                f'ObjectType "{_type}" does not implement the "{cls}" interface'
-            )
-
-        return _id
-
-    @classmethod
-    def get_node_from_global_id(cls, info, global_id):
-        """
-        Get a node object based on a global ID, restricted to this class type.
-        If the node exists but isn't of this type, raise an exception.
-        """
-        return relay.Node.get_node_from_global_id(
-            info, global_id, only_type=cls
-        )
-
-
-class Image(ObjectType):
+@gql.type
+class Image:
     """
     An image, e.g. JPG or PNG
     """
 
-    url = graphene.String(required=True)
-    # Rename these two externally to be more descriptive
-    width = graphene.Int(
-        name="pixelWidth", required=True, description="Image width, in pixels"
-    )
-    height = graphene.Int(
-        name="pixelHeight", required=True, description="Image height, in pixels"
-    )
-    svg_width = graphene.Float(
-        required=True,
-        description="Image width, either `100` if portrait or"
-        " `width/height*100` if landscape",
-    )
-    svg_height = graphene.Float(
-        required=True,
-        description="Image width, either `100` if landscape or"
-        " `height/width*100` if portrait",
-    )
+    url: str = gql.field(description="Image access URL")
+    width: int = gql.field(description="Image width, in pixels")
+    height: int = gql.field(description="Image height, in pixels")
 
-    def resolve_svg_width(self, info):
+    @gql.field
+    def svg_width(self) -> float:
+        """
+        Image width, either `100` if portrait or `width/height*100` if landscape
+        """
         return util.get_svg_dimensions(self)[0]
 
-    def resolve_svg_height(self, info):
+    @gql.field
+    def svg_height(self) -> float:
+        """
+        Image height, either `100` if landscape or `height/width*100` if
+        portrait
+        """
         return util.get_svg_dimensions(self)[1]
 
 
-class SVGPosition(ObjectType):
+@gql.type
+class SVGPosition:
     """
     A 2D position in an image, in the terms that the UI uses. The bounds of the
     coordinates are:
@@ -112,106 +46,142 @@ class SVGPosition(ObjectType):
     image resolutions.
     """
 
-    x = graphene.Float(required=True, description="X position, 0-100ish")
-    y = graphene.Float(required=True, description="Y position, 0-100ish")
-
-
-class BoulderNode(NodeType):
-    class Meta:
-        model = Boulder
-        interfaces = (relay.Node,)
-        fields = ("holds", "problems", "created_at")
-        filter_fields = []
-
-    image = graphene.Field(Image, required=True)
-
-
-class HoldNode(NodeType):
-    class Meta:
-        model = Hold
-        interfaces = (relay.Node,)
-        fields = ("boulder", "annotation")
-        filter_fields = []
-
-    position = graphene.Field(SVGPosition, required=True)
-
-    def resolve_position(self, info):
-        return util.to_svg_position(self.position, self.boulder.image)
-
-
-class ProblemNode(NodeType):
-    class Meta:
-        model = Problem
-        interfaces = (relay.Node,)
-        fields = (
-            "name",
-            "external_link",
-            "created_at",
-            "holds",
-            "boulder",
-            "betas",
-        )
-        filter_fields = []
-
-
-class BetaNode(NodeType):
-    class Meta:
-        model = Beta
-        interfaces = (relay.Node,)
-        fields = ("name", "created_at", "problem", "moves")
-        filter_fields = []
-
-
-class BetaMoveNode(NodeType):
-    class Meta:
-        model = BetaMove
-        interfaces = (relay.Node,)
-        filter_fields = []
-        fields = ("beta", "hold", "order", "annotation")
-
-    body_part = BodyPartType(required=True, description="Body part being moved")
-    position = graphene.Field(
-        SVGPosition,
-        description="Position of a free move. Null for hold-attached moves.",
-    )
-    is_start = graphene.Boolean(
-        required=True,
-        description="Is this one of the initial moves for the beta?",
-    )
+    x: float = gql.field(description="X position, 0-100ish")
+    y: float = gql.field(description="Y position, 0-100ish")
 
     @classmethod
-    def get_queryset(cls, queryset, info):
-        # Include is_start field. Hypothetically we could only include this if
-        # it's actually requested, but the documentation for the `info` object
-        # is horrendous and I don't feel like trying too hard on that.
-        return queryset.annotate_all()
-
-    def resolve_position(self, info):
+    def from_boulder_position(cls, boulder_position, image):
         """
-        Resolve the position of a free move.
-
-        Note: You may be tempted to have this return the hold position when
-        available so the frontend doesn't have to handle that logic. But wait!
-        That doesn't work because then if the hold move is modified, Relay
-        doesn't know to update the associated move position(s) in local state,
-        so the data gets out of sync.
+        Map a normalized position, where both components are [0,1], to an SVG
+        position, where X and Y are in SVG coordinates, based on image
+        dimensions.
         """
-        if self.position:
-            return util.to_svg_position(
-                self.position, self.beta.problem.boulder.image
-            )
-        return None
-
-    def resolve_is_start(self, info):
-        # This is populated by annotation, so we need to resolve it explicitly
-        return self.is_start
+        (svg_width, svg_height) = util.get_svg_dimensions(image)
+        return cls(
+            x=boulder_position.x * svg_width, y=boulder_position.y * svg_height
+        )
 
 
-class Query(graphene.ObjectType):
-    boulders = DjangoFilterConnectionField(BoulderNode)
-    boulder = relay.Node.Field(BoulderNode)
-    problems = DjangoFilterConnectionField(ProblemNode)
-    problem = relay.Node.Field(ProblemNode)
-    beta = relay.Node.Field(BetaNode)
-    # This just returns null if the debug middleware isn't enabled
-    debug = graphene.Field(DjangoDebug, name="_debug")
+@gql.django.type(models.Boulder)
+class BoulderNode(relay.Node):
+    """
+    A boulder is a wall or rock that has holds on it. In the context of this
+    API, a boulder is defined by a 2D raster image of it. The holds are then
+    defined in X/Y coordinates, in reference to the image.
+    """
+
+    created_at: gql.auto = gql.field(description="Date+time of object creation")
+    image: Image = gql.field()
+    problems: relay.Connection["ProblemNode"] = gql.django.connection()
+    holds: relay.Connection["HoldNode"] = gql.django.connection()
+
+
+@gql.django.type(models.Hold)
+class HoldNode(relay.Node):
+    """
+    A hold is a particular point on a boulder that can be grabbed or otherwise
+    used by a climber.
+    """
+
+    boulder: BoulderNode = gql.field()
+    created_at: gql.auto = gql.field(description="Date+time of object creation")
+    annotation: gql.auto = gql.field(
+        description="Informative text related to the hold, created by the user"
+    )
+
+    @gql.field
+    def position(self) -> SVGPosition:
+        return SVGPosition.from_boulder_position(
+            self.position, self.boulder.image
+        )
+
+
+@gql.django.type(models.Problem)
+class ProblemNode(relay.Node):
+    """
+    A "problem" is a boulder route. It consists of a series of holds on a
+    boulder.
+    """
+
+    name: gql.auto = gql.field(description="User-friendly name of the problem")
+    external_link: gql.auto = gql.field(
+        description="External link, e.g. to Mountain Project"
+    )
+    created_at: gql.auto = gql.field(description="Date+time of object creation")
+    boulder: BoulderNode = gql.field()
+    holds: relay.Connection[HoldNode] = gql.django.connection()
+    betas: relay.Connection["BetaNode"] = gql.django.connection()
+
+
+@gql.django.type(models.Beta)
+class BetaNode(relay.Node):
+    """
+    A beta is a sequence of moves that solves a problem. The word is really used
+    as a mass known so the phrase "a beta" is actually incorrect, but treating
+    it as a singular noun makes the verbiage much easier in code.
+    """
+
+    name: gql.auto = gql.field(description="User-friendly name of the beta")
+    created_at: gql.auto = gql.field(description="Date+time of object creation")
+    problem: ProblemNode = gql.field()
+    moves: relay.Connection["BetaMoveNode"] = gql.django.connection()
+
+
+@gql.django.type(models.BetaMove)
+class BetaMoveNode(relay.Node):
+    """
+    A singular move within a beta, which is a body part+location pairing. This
+    may be confusing because a "move" can also refer to the motion of a body
+    part from point A to point B, but in the context of this API, a move
+    always refers to a particular body part in a particular position.
+
+    Most moves are attached to a particular hold, but not all. For example,
+    flagging a leg or smearing a foot will apply to a general area on the
+    boulder rather than a particular hold.
+    """
+
+    created_at: gql.auto = gql.field(description="Date+time of object creation")
+    beta: BetaNode = gql.field()
+    body_part: models.BodyPart = gql.field(description="Body part being moved")
+    order: int = gql.field(
+        description="The ordering of this move within the beta, starting at 1"
+    )
+    is_start: bool = gql.field(
+        description="Is this one of the initial moves for the beta?"
+    )
+    annotation: gql.auto = gql.field(
+        description="Informative text related to the move, created by the user"
+    )
+    # TODO is there a better way to represent mutually exclusive fields?
+    hold: Optional[HoldNode] = gql.field(
+        description="The optional hold that this move is attached to. If null,"
+        " the move is 'free', e.g. a flag or smear."
+    )
+
+    @gql.field(description="Position of a free move. Null for attached moves.")
+    def position(self) -> Optional[SVGPosition]:
+        # Note: You may be tempted to have this return the hold position when
+        # available so the frontend doesn't have to handle that logic. But wait!
+        # That doesn't work because then if the hold position is modified, Relay
+        # doesn't know to update the associated move position(s) in local state,
+        # so the data gets out of sync.
+        return self.position and SVGPosition.from_boulder_position(
+            self.position, self.beta.problem.boulder.image
+        )
+
+
+@gql.type
+class Query:
+    boulders: relay.Connection[BoulderNode] = gql.django.connection(
+        description="Access boulders by list"
+    )
+    boulder: Optional[BoulderNode] = relay.node(
+        description="Get a boulder by ID"
+    )
+    problems: relay.Connection[ProblemNode] = gql.django.connection(
+        description="Access problems by list"
+    )
+    problem: Optional[ProblemNode] = relay.node(
+        description="Get a problem by ID"
+    )
+    beta: Optional[BetaNode] = relay.node(description="Get a beta by ID")

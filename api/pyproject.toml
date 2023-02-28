@@ -11,14 +11,11 @@ Pillow = "^9.4.0"
 django-dbbackup = "^4.0.2"
 django-debug-toolbar = "^3.5.0"
 django-extensions = "^3.1.5"
-django-filter = "^21.1"
-django-graphiql-debug-toolbar = "^0.2.0"
 django-storages = {extras = ["google"], version = "^1.12.3"}
-graphene = {git = "https://github.com/LucasPickering/graphene.git", branch = "master"}# Need to pull in a couple hacks from here
-graphene-django = "^3.0.0"
 gunicorn = "^20.1.0"
 psycopg2 = "^2.9.3"
 python = "^3.9"
+strawberry-django-plus = "^2.0.5"
 
 [tool.poetry.dev-dependencies]
 debugpy = "^1.6.6"

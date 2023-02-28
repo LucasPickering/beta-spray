@@ -7,7 +7,6 @@ WORKDIR /app
 # Dependencies first, for layer caching
 RUN apk add --no-cache \
     gcc \
-    git \
     libffi-dev \
     libpq-dev \
     musl-dev \

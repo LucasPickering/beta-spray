@@ -25,17 +25,6 @@ STATIC_URL = "/api/static/"
 MEDIA_ROOT = BASE_DIR / "media"  # noqa F405
 MEDIA_URL = "/api/media/"
 
-# Add debug middlewares
-INSTALLED_APPS.append("debug_toolbar")  # noqa F405
-MIDDLEWARE.append(  # noqa F405
-    # Note: you have to go to localhost:8000 (not 3000) to make this work
-    # TODO can we fix this with a fix to INTERNAL_IPS?
-    "graphiql_debug_toolbar.middleware.DebugToolbarMiddleware"
-)
-GRAPHENE["MIDDLEWARE"].append(  # noqa F405
-    "graphene_django.debug.DjangoDebugMiddleware"
-)
-
 # Enable remote debug attachment
 if os.environ.get("RUN_MAIN") or os.environ.get("WERKZEUG_RUN_MAIN"):
     import debugpy

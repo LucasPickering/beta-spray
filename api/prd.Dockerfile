@@ -23,8 +23,6 @@ ADD poetry.toml pyproject.toml poetry.lock ./
 # re-builds than installing poetry+dependencies together
 RUN apk add --no-cache --virtual .build-deps \
     gcc \
-    # Needed for git dependencies in poetry
-    git \
     libffi-dev \
     libpq-dev \
     musl-dev && \
