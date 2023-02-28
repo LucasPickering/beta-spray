@@ -31,14 +31,15 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django_extensions",
-    "django_filters",
     "dbbackup",
-    "graphene_django",
-    "graphiql_debug_toolbar",
+    "debug_toolbar",  # Disabled in prod via INTERNAL_IPS
+    "strawberry.django",
+    "strawberry_django_plus",
     "core",
 ]
 
 MIDDLEWARE = [
+    "strawberry_django_plus.middlewares.debug_toolbar.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -139,17 +140,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-GRAPHENE = {
-    "SCHEMA": "core.schema.schema",
-    "SCHEMA_OUTPUT": "schema.graphql",
-    "SCHEMA_INDENT": 2,
-    "MIDDLEWARE": ["core.middleware.LogMiddleware"],
-}
+# Home-rolled field, we'll export the schema to this path on every startup
+GRAPHQL_SCHEMA_PATH = "./schema.graphql"
 
 APPEND_SLASH = False
 
 LOGGING = {
     "version": 1,
+    "disable_existing_loggers": False,
     "filters": {
         "require_debug_true": {
             "()": "django.utils.log.RequireDebugTrue",

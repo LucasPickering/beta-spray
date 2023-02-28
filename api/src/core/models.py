@@ -1,10 +1,19 @@
 from core import fields
-from django.db.models import F, Q, Max, Subquery
+from django.db.models import (
+    F,
+    Q,
+    Max,
+    Subquery,
+    Min,
+    ExpressionWrapper,
+    OuterRef,
+)
 from django.db.models.functions import Coalesce
-from django.db.models.signals import pre_save, post_delete
+from django.db.models.signals import pre_save, post_save, post_delete
 from django.dispatch import receiver
 from django.db import models
 from enum import Enum
+from strawberry_django_plus import gql
 from .queryset import BetaMoveQuerySet
 from . import util
 
@@ -14,6 +23,7 @@ class SlideDirection(Enum):
     UP = "up"
 
 
+@gql.enum
 class BodyPart(models.TextChoices):
     """A body part that someone could put on a hold"""
 
@@ -172,6 +182,7 @@ class BetaMove(models.Model):
                 fields=("beta", "order"),
                 deferrable=models.Deferrable.DEFERRED,
             )
+            # TODO enforce that orders are always consecutive
         ]
         ordering = ["order"]
 
@@ -185,17 +196,33 @@ class BetaMove(models.Model):
         Hold,
         on_delete=models.CASCADE,
         null=True,
+        blank=True,
         help_text="Destination hold for this move."
         " Mutually exclusive with `position`.",
     )
     position = fields.BoulderPositionField(
         null=True,
+        blank=True,
         help_text="Position of the move, if not attached to a hold."
         " Mutually exclusive with `hold`.",
     )
     order = fields.MoveOrderField(
-        db_index=True,  # We sort and filter by this a lot
+        blank=True,  # If omitted, will be auto-populated by a signal handler
+        db_index=True,  # We sort by this a lot
         help_text="Ordering number of the hold in the beta, starting at 1",
+    )
+    is_start = models.BooleanField(
+        # Technically this can be annotated on, but because it's interdependent
+        # with other moves in the beta, it adds complexity at query time. It's
+        # easier to store in the DB. At some point we should be able to make
+        # this a generated column in postgres
+        # TODO replace with generated column
+        # https://code.djangoproject.com/ticket/31300
+        # https://github.com/django/django/pull/16417
+        editable=False,
+        blank=True,  # Auto-populated, so don't require in forms
+        help_text="Is this move part of the beta's starting body position? "
+        "Calculated automatically whenever a beta is modified.",
     )
     body_part = models.CharField(
         max_length=2,
@@ -207,6 +234,44 @@ class BetaMove(models.Model):
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    @classmethod
+    def get_is_start_expression(cls):
+        """
+        Get a query expression used to calculate is_start. This can be passed
+        as the is_start keyword to an update query to re-calculate is_start for
+        all moves in the queryset.
+        """
+        # Make sure we scope all operations to the move's beta
+        filt = cls.objects.filter(beta_id=OuterRef("beta_id"))
+        # This query is pretty complicated, but it's the best I can come up with
+        # The strategy is:
+        # - Figure our the first *non*-start move in the beta
+        # - Check if the move is before/after that move
+        return ExpressionWrapper(
+            Q(
+                order__lt=Subquery(
+                    # Get the first non-start move by finding the lowest
+                    # order that isn't the first of its body part
+                    filt.exclude(
+                        # Find the first move for each body part
+                        order__in=filt.values("body_part")
+                        .annotate(min_order=Min("order"))
+                        .values("min_order")
+                    )
+                    # Remove annoying django clauses that break shit
+                    .remove_group_by_order_by()
+                    # If no body part has more than 1 move, everything is
+                    # a start move so make up a fake "non-start" order. By
+                    # the pigeon hole principle, this magic number just
+                    # needs to be more than the number of body parts
+                    .annotate(
+                        first_non_start=Coalesce(Min("order"), 9999)
+                    ).values("first_non_start")
+                ),
+            ),
+            output_field=models.BooleanField(),
+        )
 
 
 # ========== SIGNALS ==========
@@ -256,6 +321,8 @@ def beta_move_on_pre_save(sender, instance, raw, **kwargs):
     beta_id = instance.beta_id
     if instance.id is None:
         # Creating a new move
+        # is_start will be fixed by the post-save hook
+        instance.is_start = False
         if instance.order is None:
             # No order given, just do max+1 (or default to 1)
             # TODO make sure this is atomic
@@ -300,6 +367,22 @@ def beta_move_on_pre_save(sender, instance, raw, **kwargs):
         else:
             # Order didn't change, do nothing
             pass
+
+
+@receiver(post_save, sender=BetaMove)
+def beta_move_on_post_save(sender, instance, raw, **kwargs):
+    """
+    After creating/updating a move, re-calculate is_start for the whole beta.
+    This kinda sucks because doubles the number of updates, but it should go
+    away once we can use generated columns.
+    """
+    # Don't do anything for loaded fixtures
+    if raw:
+        return
+
+    BetaMove.objects.filter(beta_id=instance.beta_id).update(
+        is_start=BetaMove.get_is_start_expression(),
+    )
 
 
 @receiver(post_delete, sender=BetaMove)

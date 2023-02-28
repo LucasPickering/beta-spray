@@ -1,32 +1,357 @@
-type Query {
-  boulders(offset: Int, before: String, after: String, first: Int, last: Int): BoulderNodeConnection
-  boulder(
-    """The ID of the object"""
-    id: ID!
-  ): BoulderNode
-  problems(offset: Int, before: String, after: String, first: Int, last: Int): ProblemNodeConnection
-  problem(
-    """The ID of the object"""
-    id: ID!
-  ): ProblemNode
-  beta(
-    """The ID of the object"""
-    id: ID!
-  ): BetaNode
-  _debug: DjangoDebug
+"""
+A singular move within a beta, which is a body part+location pairing. This
+may be confusing because a "move" can also refer to the motion of a body
+part from point A to point B, but in the context of this API, a move
+always refers to a particular body part in a particular position.
+
+Most moves are attached to a particular hold, but not all. For example,
+flagging a leg or smearing a foot will apply to a general area on the
+boulder rather than a particular hold.
+"""
+type BetaMoveNode implements Node {
+  id: ID!
+
+  """Date+time of object creation"""
+  createdAt: DateTime!
+  beta: BetaNode!
+
+  """Body part being moved"""
+  bodyPart: BodyPart!
+
+  """The ordering of this move within the beta, starting at 1"""
+  order: Int!
+
+  """Is this one of the initial moves for the beta?"""
+  isStart: Boolean!
+
+  """Informative text related to the move, created by the user"""
+  annotation: String!
+
+  """
+  The optional hold that this move is attached to. If null, the move is 'free', e.g. a flag or smear.
+  """
+  hold: HoldNode
+
+  """Position of a free move. Null for attached moves."""
+  position: SVGPosition
 }
 
-type BoulderNodeConnection {
-  """Pagination data for this connection."""
+"""A connection to a list of items."""
+type BetaMoveNodeConnection {
+  """Pagination data for this connection"""
   pageInfo: PageInfo!
 
-  """Contains the nodes in this connection."""
-  edges: [BoulderNodeEdge!]!
+  """Contains the nodes in this connection"""
+  edges: [BetaMoveNodeEdge!]!
+
+  """Total quantity of existing nodes"""
+  totalCount: Int
+}
+
+"""An edge in a connection."""
+type BetaMoveNodeEdge {
+  """A cursor for use in pagination"""
+  cursor: String!
+
+  """The item at the end of the edge"""
+  node: BetaMoveNode!
 }
 
 """
-The Relay compliant `PageInfo` type, containing data necessary to paginate this connection.
+A beta is a sequence of moves that solves a problem. The word is really used
+as a mass known so the phrase "a beta" is actually incorrect, but treating
+it as a singular noun makes the verbiage much easier in code.
 """
+type BetaNode implements Node {
+  id: ID!
+
+  """User-friendly name of the beta"""
+  name: String!
+
+  """Date+time of object creation"""
+  createdAt: DateTime!
+  problem: ProblemNode!
+  moves(
+    """Returns the items in the list that come before the specified cursor."""
+    before: String = null
+
+    """Returns the items in the list that come after the specified cursor."""
+    after: String = null
+
+    """Returns the first n items from the list."""
+    first: Int = null
+
+    """Returns the items in the list that come after the specified cursor."""
+    last: Int = null
+  ): BetaMoveNodeConnection!
+}
+
+"""A connection to a list of items."""
+type BetaNodeConnection {
+  """Pagination data for this connection"""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection"""
+  edges: [BetaNodeEdge!]!
+
+  """Total quantity of existing nodes"""
+  totalCount: Int
+}
+
+"""An edge in a connection."""
+type BetaNodeEdge {
+  """A cursor for use in pagination"""
+  cursor: String!
+
+  """The item at the end of the edge"""
+  node: BetaNode!
+}
+
+"""A body part that someone could put on a hold"""
+enum BodyPart {
+  LEFT_HAND
+  RIGHT_HAND
+  LEFT_FOOT
+  RIGHT_FOOT
+}
+
+"""
+A boulder is a wall or rock that has holds on it. In the context of this
+API, a boulder is defined by a 2D raster image of it. The holds are then
+defined in X/Y coordinates, in reference to the image.
+"""
+type BoulderNode implements Node {
+  id: ID!
+
+  """Date+time of object creation"""
+  createdAt: DateTime!
+  image: Image!
+  problems(
+    """Returns the items in the list that come before the specified cursor."""
+    before: String = null
+
+    """Returns the items in the list that come after the specified cursor."""
+    after: String = null
+
+    """Returns the first n items from the list."""
+    first: Int = null
+
+    """Returns the items in the list that come after the specified cursor."""
+    last: Int = null
+  ): ProblemNodeConnection!
+  holds(
+    """Returns the items in the list that come before the specified cursor."""
+    before: String = null
+
+    """Returns the items in the list that come after the specified cursor."""
+    after: String = null
+
+    """Returns the first n items from the list."""
+    first: Int = null
+
+    """Returns the items in the list that come after the specified cursor."""
+    last: Int = null
+  ): HoldNodeConnection!
+}
+
+"""A connection to a list of items."""
+type BoulderNodeConnection {
+  """Pagination data for this connection"""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection"""
+  edges: [BoulderNodeEdge!]!
+
+  """Total quantity of existing nodes"""
+  totalCount: Int
+}
+
+"""An edge in a connection."""
+type BoulderNodeEdge {
+  """A cursor for use in pagination"""
+  cursor: String!
+
+  """The item at the end of the edge"""
+  node: BoulderNode!
+}
+
+"""Input data for `copyBeta` mutation"""
+input CopyBetaInput {
+  id: ID!
+}
+
+input CreateBetaInput {
+  problem: ID!
+}
+
+"""Input data for `createBetaMove` mutation"""
+input CreateBetaMoveInput {
+  beta: ID!
+  bodyPart: BodyPart!
+  hold: ID
+  position: SVGPositionInput
+  previousBetaMove: ID
+}
+
+"""Input data for `createBoulderWithFriends` mutation"""
+input CreateBoulderWithFriendsInput {
+  image: ImageUpload!
+}
+
+"""Input data for `createHold` mutation"""
+input CreateHoldInput {
+  """
+  The ID of the problem to add the hold to. If the ID references a boulder, then the hold will be created on that boulder. If a problem is given, it will be added to the problem's parent boulder as well as the problem itself.
+  """
+  problem: ID!
+  position: SVGPositionInput
+}
+
+"""Date with time (isoformat)"""
+scalar DateTime
+
+"""
+A hold is a particular point on a boulder that can be grabbed or otherwise
+used by a climber.
+"""
+type HoldNode implements Node {
+  id: ID!
+  boulder: BoulderNode!
+
+  """Date+time of object creation"""
+  createdAt: DateTime!
+
+  """Informative text related to the hold, created by the user"""
+  annotation: String!
+
+  """Position of the hold within the boulder image"""
+  position: SVGPosition!
+}
+
+"""A connection to a list of items."""
+type HoldNodeConnection {
+  """Pagination data for this connection"""
+  pageInfo: PageInfo!
+
+  """Contains the nodes in this connection"""
+  edges: [HoldNodeEdge!]!
+
+  """Total quantity of existing nodes"""
+  totalCount: Int
+}
+
+"""An edge in a connection."""
+type HoldNodeEdge {
+  """A cursor for use in pagination"""
+  cursor: String!
+
+  """The item at the end of the edge"""
+  node: HoldNode!
+}
+
+"""An image, e.g. JPG or PNG"""
+type Image {
+  """Image access URL"""
+  url: String!
+
+  """Image width, in pixels"""
+  width: Int!
+
+  """Image height, in pixels"""
+  height: Int!
+
+  """
+  Image width, either `100` if portrait or `width/height*100` if landscape
+  """
+  svgWidth: Float!
+
+  """
+  Image height, either `100` if landscape or `height/width*100` if
+  portrait
+  """
+  svgHeight: Float!
+}
+
+"""
+An uploaded image. To upload a file, see: https://strawberry.rocks/docs/guides/file-upload#sending-file-upload-requests
+"""
+scalar ImageUpload
+
+type Mutation {
+  deleteHold(
+    """Input of an object that implements the `Node` interface."""
+    input: NodeInput!
+  ): HoldNode!
+  updateProblem(input: UpdateProblemInput!): ProblemNode!
+  deleteProblem(
+    """Input of an object that implements the `Node` interface."""
+    input: NodeInput!
+  ): ProblemNode!
+  createBeta(input: CreateBetaInput!): BetaNode!
+  updateBeta(input: UpdateBetaInput!): BetaNode!
+  deleteBeta(
+    """Input of an object that implements the `Node` interface."""
+    input: NodeInput!
+  ): BetaNode!
+  deleteBetaMove(
+    """Input of an object that implements the `Node` interface."""
+    input: NodeInput!
+  ): BetaMoveNode!
+
+  """
+  Create a new boulder from an image, and create a default problem and
+  beta along with it.
+  
+  Returns the created beta, which can be used to grab the created problem
+  and boulder as well (via nested objects).
+  """
+  createBoulderWithFriends(
+    """Input data for `createBoulderWithFriends` mutation"""
+    input: CreateBoulderWithFriendsInput!
+  ): BetaNode!
+
+  """
+  Create a new hold and add it to a problem. There is no option to create a hold just on a boulder, because there's no use case for that yet.
+  """
+  createHold(
+    """Input data for `createHold` mutation"""
+    input: CreateHoldInput!
+  ): HoldNode!
+  updateHold(
+    """Input data for `updateHold` mutation"""
+    input: UpdateHoldInput!
+  ): HoldNode!
+  copyBeta(
+    """Input data for `copyBeta` mutation"""
+    input: CopyBetaInput!
+  ): BetaNode!
+
+  """
+  Add a new move to a beta. The move can either be appended to the end,
+  or inserted in the middle (by specifying a previousBetaMove).
+  """
+  createBetaMove(
+    """Input data for `createBetaMove` mutation"""
+    input: CreateBetaMoveInput!
+  ): BetaMoveNode!
+  updateBetaMove(
+    """Input data for `updateBetaMove` mutation"""
+    input: UpdateBetaMoveInput!
+  ): BetaMoveNode!
+}
+
+"""An object with a Globally Unique ID"""
+interface Node {
+  """The Globally Unique ID of this object"""
+  id: ID!
+}
+
+"""Input of an object that implements the `Node` interface."""
+input NodeInput {
+  id: ID!
+}
+
+"""Information to aid in pagination."""
 type PageInfo {
   """When paginating forwards, are there more items?"""
   hasNextPage: Boolean!
@@ -41,64 +366,119 @@ type PageInfo {
   endCursor: String
 }
 
-"""A Relay edge containing a `BoulderNode` and its cursor."""
-type BoulderNodeEdge {
-  """The item at the end of the edge"""
-  node: BoulderNode!
+"""
+A "problem" is a boulder route. It consists of a series of holds on a
+boulder.
+"""
+type ProblemNode implements Node {
+  id: ID!
 
-  """A cursor for use in pagination"""
-  cursor: String!
-}
+  """User-friendly name of the problem"""
+  name: String!
 
-type BoulderNode implements Node {
+  """External link, e.g. to Mountain Project"""
+  externalLink: String!
+
+  """Date+time of object creation"""
   createdAt: DateTime!
-  holds(offset: Int, before: String, after: String, first: Int, last: Int): HoldNodeConnection!
-  problems(offset: Int, before: String, after: String, first: Int, last: Int): ProblemNodeConnection!
+  boulder: BoulderNode!
+  holds(
+    """Returns the items in the list that come before the specified cursor."""
+    before: String = null
 
-  """The ID of the object"""
-  id: ID!
-  image: Image!
+    """Returns the items in the list that come after the specified cursor."""
+    after: String = null
+
+    """Returns the first n items from the list."""
+    first: Int = null
+
+    """Returns the items in the list that come after the specified cursor."""
+    last: Int = null
+  ): HoldNodeConnection!
+  betas(
+    """Returns the items in the list that come before the specified cursor."""
+    before: String = null
+
+    """Returns the items in the list that come after the specified cursor."""
+    after: String = null
+
+    """Returns the first n items from the list."""
+    first: Int = null
+
+    """Returns the items in the list that come after the specified cursor."""
+    last: Int = null
+  ): BetaNodeConnection!
 }
 
-"""An object with an ID"""
-interface Node {
-  """The ID of the object"""
-  id: ID!
-}
-
-"""
-The `DateTime` scalar type represents a DateTime
-value as specified by
-[iso8601](https://en.wikipedia.org/wiki/ISO_8601).
-"""
-scalar DateTime
-
-type HoldNodeConnection {
-  """Pagination data for this connection."""
+"""A connection to a list of items."""
+type ProblemNodeConnection {
+  """Pagination data for this connection"""
   pageInfo: PageInfo!
 
-  """Contains the nodes in this connection."""
-  edges: [HoldNodeEdge!]!
+  """Contains the nodes in this connection"""
+  edges: [ProblemNodeEdge!]!
+
+  """Total quantity of existing nodes"""
+  totalCount: Int
 }
 
-"""A Relay edge containing a `HoldNode` and its cursor."""
-type HoldNodeEdge {
-  """The item at the end of the edge"""
-  node: HoldNode!
-
+"""An edge in a connection."""
+type ProblemNodeEdge {
   """A cursor for use in pagination"""
   cursor: String!
+
+  """The item at the end of the edge"""
+  node: ProblemNode!
 }
 
-type HoldNode implements Node {
-  boulder: BoulderNode!
+type Query {
+  """Access boulders by list"""
+  boulders(
+    """Returns the items in the list that come before the specified cursor."""
+    before: String = null
 
-  """Free-form annotations created by the user"""
-  annotation: String!
+    """Returns the items in the list that come after the specified cursor."""
+    after: String = null
 
-  """The ID of the object"""
-  id: ID!
-  position: SVGPosition!
+    """Returns the first n items from the list."""
+    first: Int = null
+
+    """Returns the items in the list that come after the specified cursor."""
+    last: Int = null
+  ): BoulderNodeConnection!
+
+  """Get a boulder by ID"""
+  boulder(
+    """The ID of the object."""
+    id: ID!
+  ): BoulderNode
+
+  """Access problems by list"""
+  problems(
+    """Returns the items in the list that come before the specified cursor."""
+    before: String = null
+
+    """Returns the items in the list that come after the specified cursor."""
+    after: String = null
+
+    """Returns the first n items from the list."""
+    first: Int = null
+
+    """Returns the items in the list that come after the specified cursor."""
+    last: Int = null
+  ): ProblemNodeConnection!
+
+  """Get a problem by ID"""
+  problem(
+    """The ID of the object."""
+    id: ID!
+  ): ProblemNode
+
+  """Get a beta by ID"""
+  beta(
+    """The ID of the object."""
+    id: ID!
+  ): BetaNode
 }
 
 """
@@ -122,302 +502,6 @@ type SVGPosition {
   y: Float!
 }
 
-type ProblemNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfo!
-
-  """Contains the nodes in this connection."""
-  edges: [ProblemNodeEdge!]!
-}
-
-"""A Relay edge containing a `ProblemNode` and its cursor."""
-type ProblemNodeEdge {
-  """The item at the end of the edge"""
-  node: ProblemNode!
-
-  """A cursor for use in pagination"""
-  cursor: String!
-}
-
-type ProblemNode implements Node {
-  name: String!
-
-  """External link, e.g. to Mountain Project"""
-  externalLink: String!
-  holds(offset: Int, before: String, after: String, first: Int, last: Int): HoldNodeConnection!
-  boulder: BoulderNode!
-  createdAt: DateTime!
-  betas(offset: Int, before: String, after: String, first: Int, last: Int): BetaNodeConnection!
-
-  """The ID of the object"""
-  id: ID!
-}
-
-type BetaNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfo!
-
-  """Contains the nodes in this connection."""
-  edges: [BetaNodeEdge!]!
-}
-
-"""A Relay edge containing a `BetaNode` and its cursor."""
-type BetaNodeEdge {
-  """The item at the end of the edge"""
-  node: BetaNode!
-
-  """A cursor for use in pagination"""
-  cursor: String!
-}
-
-type BetaNode implements Node {
-  name: String!
-  problem: ProblemNode!
-  createdAt: DateTime!
-  moves(offset: Int, before: String, after: String, first: Int, last: Int): BetaMoveNodeConnection!
-
-  """The ID of the object"""
-  id: ID!
-}
-
-type BetaMoveNodeConnection {
-  """Pagination data for this connection."""
-  pageInfo: PageInfo!
-
-  """Contains the nodes in this connection."""
-  edges: [BetaMoveNodeEdge!]!
-}
-
-"""A Relay edge containing a `BetaMoveNode` and its cursor."""
-type BetaMoveNodeEdge {
-  """The item at the end of the edge"""
-  node: BetaMoveNode!
-
-  """A cursor for use in pagination"""
-  cursor: String!
-}
-
-type BetaMoveNode implements Node {
-  beta: BetaNode!
-
-  """Destination hold for this move. Mutually exclusive with `position`."""
-  hold: HoldNode
-
-  """Ordering number of the hold in the beta, starting at 1"""
-  order: Int!
-
-  """Free-form annotations created by the user"""
-  annotation: String!
-
-  """The ID of the object"""
-  id: ID!
-
-  """Body part being moved"""
-  bodyPart: BodyPart!
-
-  """Position of a free move. Null for hold-attached moves."""
-  position: SVGPosition
-
-  """Is this one of the initial moves for the beta?"""
-  isStart: Boolean!
-}
-
-"""A body part that someone could put on a hold"""
-enum BodyPart {
-  LEFT_HAND
-  RIGHT_HAND
-  LEFT_FOOT
-  RIGHT_FOOT
-}
-
-"""An image, e.g. JPG or PNG"""
-type Image {
-  url: String!
-
-  """Image width, in pixels"""
-  pixelWidth: Int!
-
-  """Image height, in pixels"""
-  pixelHeight: Int!
-
-  """
-  Image width, either `100` if portrait or `width/height*100` if landscape
-  """
-  svgWidth: Float!
-
-  """
-  Image width, either `100` if landscape or `height/width*100` if portrait
-  """
-  svgHeight: Float!
-}
-
-"""Debugging information for the current query."""
-type DjangoDebug {
-  """Executed SQL queries for this API query."""
-  sql: [DjangoDebugSQL]
-
-  """Raise exceptions for this API query."""
-  exceptions: [DjangoDebugException]
-}
-
-"""Represents a single database query made to a Django managed DB."""
-type DjangoDebugSQL {
-  """The type of database being used (e.g. postrgesql, mysql, sqlite)."""
-  vendor: String!
-
-  """The Django database alias (e.g. 'default')."""
-  alias: String!
-
-  """The actual SQL sent to this database."""
-  sql: String
-
-  """Duration of this database query in seconds."""
-  duration: Float!
-
-  """The raw SQL of this query, without params."""
-  rawSql: String!
-
-  """JSON encoded database query parameters."""
-  params: String!
-
-  """Start time of this database query."""
-  startTime: Float!
-
-  """Stop time of this database query."""
-  stopTime: Float!
-
-  """Whether this database query took more than 10 seconds."""
-  isSlow: Boolean!
-
-  """Whether this database query was a SELECT."""
-  isSelect: Boolean!
-
-  """Postgres transaction ID if available."""
-  transId: String
-
-  """Postgres transaction status if available."""
-  transStatus: String
-
-  """Postgres isolation level if available."""
-  isoLevel: String
-
-  """Postgres connection encoding if available."""
-  encoding: String
-}
-
-"""Represents a single exception raised."""
-type DjangoDebugException {
-  """The class of the exception"""
-  excType: String!
-
-  """The message of the exception"""
-  message: String!
-
-  """The stack trace"""
-  stack: String!
-}
-
-type Mutation {
-  createBoulder(input: CreateBoulderMutationInput!): CreateBoulderMutationPayload
-
-  """
-  Create a new boulder, problem, and beta together. Intended to streamline
-  the process of uploading a new boulder picture for the user.
-  
-  All initial data for the new problem and beta will be automatically
-  generated.
-  """
-  createBoulderWithFriends(input: CreateBoulderWithFriendsMutationInput!): CreateBoulderWithFriendsMutationPayload
-
-  """
-  Add a hold to a boulder. Optionally, also bind the hold to a pre-existing
-  problem.
-  """
-  createHold(input: CreateHoldMutationInput!): CreateHoldMutationPayload
-
-  """Modify an existing hold"""
-  updateHold(input: UpdateHoldMutationInput!): UpdateHoldMutationPayload
-
-  """Delete a hold from a boulder"""
-  deleteHold(input: DeleteHoldMutationInput!): DeleteHoldMutationPayload
-
-  """
-  Create a new problem for a specific boulder. If not given, a name will be
-  generated.
-  """
-  createProblem(input: CreateProblemMutationInput!): CreateProblemMutationPayload
-  updateProblem(input: UpdateProblemMutationInput!): UpdateProblemMutationPayload
-  deleteProblem(input: DeleteProblemMutationInput!): DeleteProblemMutationPayload
-
-  """Add a hold to a problem"""
-  createProblemHold(input: CreateProblemHoldMutationInput!): CreateProblemHoldMutationPayload
-
-  """Remove a hold from a problem"""
-  deleteProblemHold(input: DeleteProblemHoldMutationInput!): DeleteProblemHoldMutationPayload
-  createBeta(input: CreateBetaMutationInput!): CreateBetaMutationPayload
-  updateBeta(input: UpdateBetaMutationInput!): UpdateBetaMutationPayload
-  copyBeta(input: CopyBetaMutationInput!): CopyBetaMutationPayload
-  deleteBeta(input: DeleteBetaMutationInput!): DeleteBetaMutationPayload
-
-  """
-  Add a new move to a beta. The move can either be appended to the end, or
-  inserted in the middle (by specifying a previous_beta_move_id).
-  """
-  createBetaMove(input: CreateBetaMoveMutationInput!): CreateBetaMoveMutationPayload
-  updateBetaMove(input: UpdateBetaMoveMutationInput!): UpdateBetaMoveMutationPayload
-  deleteBetaMove(input: DeleteBetaMoveMutationInput!): DeleteBetaMoveMutationPayload
-}
-
-type CreateBoulderMutationPayload {
-  boulder: BoulderNode!
-  clientMutationId: String
-}
-
-input CreateBoulderMutationInput {
-  imageFile: String!
-  clientMutationId: String
-}
-
-"""
-Create a new boulder, problem, and beta together. Intended to streamline
-the process of uploading a new boulder picture for the user.
-
-All initial data for the new problem and beta will be automatically
-generated.
-"""
-type CreateBoulderWithFriendsMutationPayload {
-  boulder: BoulderNode!
-  problem: ProblemNode!
-  beta: BetaNode!
-  clientMutationId: String
-}
-
-input CreateBoulderWithFriendsMutationInput {
-  """Name of the field in the HTTP body containing the boulder image data"""
-  imageFile: String!
-  clientMutationId: String
-}
-
-"""
-Add a hold to a boulder. Optionally, also bind the hold to a pre-existing
-problem.
-"""
-type CreateHoldMutationPayload {
-  hold: HoldNode!
-  problem: ProblemNode
-  clientMutationId: String
-}
-
-input CreateHoldMutationInput {
-  boulderId: ID!
-
-  """Position of the new hold, or empty for random"""
-  position: SVGPositionInput = null
-  problemId: ID
-  annotation: String
-  clientMutationId: String
-}
-
 input SVGPositionInput {
   """X position, 0-100ish"""
   x: Float!
@@ -426,189 +510,31 @@ input SVGPositionInput {
   y: Float!
 }
 
-"""Modify an existing hold"""
-type UpdateHoldMutationPayload {
-  hold: HoldNode!
-  clientMutationId: String
-}
-
-input UpdateHoldMutationInput {
-  holdId: ID!
-  position: SVGPositionInput = null
-  annotation: String
-  clientMutationId: String
-}
-
-"""Delete a hold from a boulder"""
-type DeleteHoldMutationPayload {
-  hold: HoldNode!
-  clientMutationId: String
-}
-
-input DeleteHoldMutationInput {
-  holdId: ID!
-  clientMutationId: String
-}
-
-"""
-Create a new problem for a specific boulder. If not given, a name will be
-generated.
-"""
-type CreateProblemMutationPayload {
-  problem: ProblemNode!
-  clientMutationId: String
-}
-
-input CreateProblemMutationInput {
-  boulderId: ID!
+input UpdateBetaInput {
+  id: ID!
   name: String
-  externalLink: String
-  clientMutationId: String
 }
 
-type UpdateProblemMutationPayload {
-  problem: ProblemNode!
-  clientMutationId: String
-}
-
-input UpdateProblemMutationInput {
-  problemId: ID!
-  name: String
-  externalLink: String
-  clientMutationId: String
-}
-
-type DeleteProblemMutationPayload {
-  problem: ProblemNode!
-  clientMutationId: String
-}
-
-input DeleteProblemMutationInput {
-  problemId: ID!
-  clientMutationId: String
-}
-
-"""Add a hold to a problem"""
-type CreateProblemHoldMutationPayload {
-  problem: ProblemNode!
-  hold: HoldNode!
-  clientMutationId: String
-}
-
-input CreateProblemHoldMutationInput {
-  problemId: ID!
-  holdId: ID!
-  clientMutationId: String
-}
-
-"""Remove a hold from a problem"""
-type DeleteProblemHoldMutationPayload {
-  problem: ProblemNode!
-  hold: HoldNode!
-  clientMutationId: String
-}
-
-input DeleteProblemHoldMutationInput {
-  problemId: ID!
-  holdId: ID!
-  clientMutationId: String
-}
-
-type CreateBetaMutationPayload {
-  beta: BetaNode!
-  clientMutationId: String
-}
-
-input CreateBetaMutationInput {
-  problemId: ID!
-  name: String
-  clientMutationId: String
-}
-
-type UpdateBetaMutationPayload {
-  beta: BetaNode!
-  clientMutationId: String
-}
-
-input UpdateBetaMutationInput {
-  betaId: ID!
-  name: String
-  clientMutationId: String
-}
-
-type CopyBetaMutationPayload {
-  beta: BetaNode!
-  clientMutationId: String
-}
-
-input CopyBetaMutationInput {
-  betaId: ID!
-  clientMutationId: String
-}
-
-type DeleteBetaMutationPayload {
-  beta: BetaNode!
-  clientMutationId: String
-}
-
-input DeleteBetaMutationInput {
-  betaId: ID!
-  clientMutationId: String
-}
-
-"""
-Add a new move to a beta. The move can either be appended to the end, or
-inserted in the middle (by specifying a previous_beta_move_id).
-"""
-type CreateBetaMoveMutationPayload {
-  betaMove: BetaMoveNode!
-  beta: BetaNode!
-  clientMutationId: String
-}
-
-input CreateBetaMoveMutationInput {
-  betaId: ID!
-  bodyPart: BodyPart!
-
-  """Hold to connect the move to. Mutually exclusive with `position`."""
-  holdId: ID
-
-  """
-  Position of the move, for free moves. Mutually exclusive with `hold_id`.
-  """
-  position: SVGPositionInput = null
-
-  """Move *preceding* this one in the beta. Null to add to the end."""
-  previousBetaMoveId: ID
-  clientMutationId: String
-}
-
-type UpdateBetaMoveMutationPayload {
-  betaMove: BetaMoveNode!
-  clientMutationId: String
-}
-
-input UpdateBetaMoveMutationInput {
-  betaMoveId: ID!
+"""Input data for `updateBetaMove` mutation"""
+input UpdateBetaMoveInput {
+  id: ID!
   order: Int
-
-  """Hold to connect the move to. Mutually exclusive with `position`."""
-  holdId: ID
-
-  """
-  Position of the move, for free moves. Mutually exclusive with `hold_id`.
-  """
-  position: SVGPositionInput = null
+  hold: ID
+  position: SVGPositionInput
   annotation: String
-  clientMutationId: String
 }
 
-type DeleteBetaMoveMutationPayload {
-  betaMove: BetaMoveNode!
-  clientMutationId: String
+"""Input data for `updateHold` mutation"""
+input UpdateHoldInput {
+  id: ID!
+  position: SVGPositionInput
+  annotation: String
 }
 
-input DeleteBetaMoveMutationInput {
-  betaMoveId: ID!
-  clientMutationId: String
+input UpdateProblemInput {
+  id: ID!
+  name: String
+
+  """External link, e.g. to Mountain Project"""
+  externalLink: String
 }

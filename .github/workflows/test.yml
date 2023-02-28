@@ -71,7 +71,7 @@ jobs:
       - name: Check for GraphQL schema changes
         working-directory: api/
         run: |-
-          poetry run ./src/manage.py graphql_schema
+          poetry run ./src/manage.py export_schema core.schema:schema --path schema.graphql
           git diff --exit-code
 
       - name: Check for DB schema changes

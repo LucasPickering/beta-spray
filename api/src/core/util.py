@@ -1,5 +1,6 @@
 import random
 import uuid
+from strawberry.file_uploads import Upload
 
 problem_name_phrase_groups = [
     ["Up Up", "Monster", "Slab", "Crack", "Lateral"],
@@ -49,10 +50,13 @@ def random_beta_name():
     return random_phrase(beta_name_phrase_groups)
 
 
-def get_request_file(info, file_key):
-    """Get an attached file object for a request"""
-    # TODO validate file type and max size
-    file = info.context.FILES.get(file_key)
+def clean_input_file(file: Upload):
+    """
+    Clean an uploaded file. This will generate a random file name for the file,
+    with an extension based on its declared content type. Used by the
+    ImageUpload type.
+    """
+    # TODO validate file is an image and max size
     extension = file.content_type.split("/")[-1]
     # Replace file name with a UUID
     file.name = f"{uuid.uuid4()}.{extension}"
