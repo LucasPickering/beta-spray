@@ -1,6 +1,7 @@
 version: "3"
 
 volumes:
+  db_data:
   api_poetry_cache:
   ui_node_modules:
 
@@ -11,6 +12,10 @@ services:
       - POSTGRES_DB=beta_spray
       - POSTGRES_USER=beta_spray
       - POSTGRES_PASSWORD=beta_spray
+    volumes:
+      # The postgres image already creates a volume for this directory, but by
+      # overriding it we can give it a friendly name
+      - db_data:/var/lib/postgresql/data
 
   api:
     build: ./api/
