@@ -49,19 +49,17 @@ const BetaMoveList: React.FC<Props> = ({ betaKey }) => {
   const { commit: updateBetaMove, state: updateState } =
     useMutation<BetaMoveList_updateBetaMoveMutation>(graphql`
       mutation BetaMoveList_updateBetaMoveMutation(
-        $input: UpdateBetaMoveMutationInput!
+        $input: UpdateBetaMoveInput!
       ) {
         updateBetaMove(input: $input) {
-          betaMove {
-            beta {
-              # Refetch all moves to get the new ordering
-              moves {
-                edges {
-                  node {
-                    id
-                    order
-                    isStart
-                  }
+          beta {
+            # Refetch all moves to get the new ordering
+            moves {
+              edges {
+                node {
+                  id
+                  order
+                  isStart
                 }
               }
             }
@@ -71,20 +69,17 @@ const BetaMoveList: React.FC<Props> = ({ betaKey }) => {
     `);
   const { commit: deleteBetaMove, state: deleteState } =
     useMutation<BetaMoveList_deleteBetaMoveMutation>(graphql`
-      mutation BetaMoveList_deleteBetaMoveMutation(
-        $input: DeleteBetaMoveMutationInput!
-      ) {
+      mutation BetaMoveList_deleteBetaMoveMutation($input: NodeInput!) {
         deleteBetaMove(input: $input) {
-          betaMove {
-            beta {
-              # Refetch all moves to get the new ordering
-              moves {
-                edges {
-                  node {
-                    id
-                    order
-                    isStart
-                  }
+          beta {
+            # Refetch all moves to get the new ordering
+            moves {
+              totalCount
+              edges {
+                node {
+                  id
+                  order
+                  isStart
                 }
               }
             }
@@ -156,22 +151,20 @@ const BetaMoveList: React.FC<Props> = ({ betaKey }) => {
               updateBetaMove({
                 variables: {
                   input: {
-                    betaMoveId: item.betaMoveId,
+                    id: item.betaMoveId,
                     order: newOrder,
                   },
                 },
                 optimisticResponse: {
                   updateBetaMove: {
-                    betaMove: {
-                      id: node.id,
-                      beta: {
-                        id: beta.id,
-                        moves: reorderBetaMoveLocal(
-                          beta.moves,
-                          item.betaMoveId,
-                          newOrder
-                        ),
-                      },
+                    id: node.id,
+                    beta: {
+                      id: beta.id,
+                      moves: reorderBetaMoveLocal(
+                        beta.moves,
+                        item.betaMoveId,
+                        newOrder
+                      ),
                     },
                   },
                 },
@@ -182,16 +175,14 @@ const BetaMoveList: React.FC<Props> = ({ betaKey }) => {
           onDelete={() =>
             deleteBetaMove({
               variables: {
-                input: { betaMoveId: node.id },
+                input: { id: node.id },
               },
               optimisticResponse: {
                 deleteBetaMove: {
-                  betaMove: {
-                    id: node.id,
-                    beta: {
-                      id: beta.id,
-                      moves: deleteBetaMoveLocal(beta.moves, node.id),
-                    },
+                  id: node.id,
+                  beta: {
+                    id: beta.id,
+                    moves: deleteBetaMoveLocal(beta.moves, node.id),
                   },
                 },
               },

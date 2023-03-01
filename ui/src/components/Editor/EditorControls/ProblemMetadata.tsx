@@ -41,14 +41,12 @@ const ProblemMetadata: React.FC<Props> = ({ problemKey }) => {
   const { commit: updateProblem, state: updateState } =
     useMutation<ProblemMetadata_updateProblemMutation>(graphql`
       mutation ProblemMetadata_updateProblemMutation(
-        $input: UpdateProblemMutationInput!
+        $input: UpdateProblemInput!
       ) {
         updateProblem(input: $input) {
-          problem {
-            id
-            name
-            externalLink
-          }
+          id
+          name
+          externalLink
         }
       }
     `);
@@ -63,18 +61,16 @@ const ProblemMetadata: React.FC<Props> = ({ problemKey }) => {
     updateProblem({
       variables: {
         input: {
-          problemId: problem.id,
+          id: problem.id,
           name,
           externalLink,
         },
       },
       optimisticResponse: {
         updateProblem: {
-          problem: {
-            id: problem.id,
-            name: name ?? problem.name,
-            externalLink: externalLink ?? problem.externalLink,
-          },
+          id: problem.id,
+          name: name ?? problem.name,
+          externalLink: externalLink ?? problem.externalLink,
         },
       },
     });

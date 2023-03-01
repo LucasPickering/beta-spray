@@ -282,15 +282,14 @@ export function reorderBetaMoveLocal(
 export function deleteBetaMoveLocal(
   moves: BetaMoves,
   betaMoveId: string
-): BetaMoves {
-  return {
-    edges: moves.edges
-      .filter(({ node: { id } }) => id !== betaMoveId)
-      .map(({ node: { id, isStart } }, i) => ({
-        // We intentionally don't recalculate isStart, it's just not worth it.
-        // This does lead to some flickering issues, maybe we could do it in
-        // the future?
-        node: { id, isStart, order: i + 1 },
-      })),
-  };
+): BetaMoves & { readonly totalCount: number } {
+  const edges = moves.edges
+    .filter(({ node: { id } }) => id !== betaMoveId)
+    .map(({ node: { id, isStart } }, i) => ({
+      // We intentionally don't recalculate isStart, it's just not worth it.
+      // This does lead to some flickering issues, maybe we could do it in
+      // the future?
+      node: { id, isStart, order: i + 1 },
+    }));
+  return { totalCount: edges.length, edges };
 }

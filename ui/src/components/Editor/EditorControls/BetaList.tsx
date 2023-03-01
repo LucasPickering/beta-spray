@@ -68,61 +68,47 @@ const BetaList: React.FC<Props> = ({
   const { commit: createBeta, state: createState } =
     useMutation<BetaList_createBetaMutation>(graphql`
       mutation BetaList_createBetaMutation(
-        $input: CreateBetaMutationInput!
+        $input: CreateBetaInput!
         $connections: [ID!]!
       ) {
-        createBeta(input: $input) {
-          beta
-            @appendNode(
-              connections: $connections
-              edgeTypeName: "BetaNodeEdge"
-            ) {
-            id
-            ...BetaListItem_betaNode
-          }
+        createBeta(input: $input)
+          @appendNode(connections: $connections, edgeTypeName: "BetaNodeEdge") {
+          id
+          ...BetaListItem_betaNode
         }
       }
     `);
   const { commit: updateBeta, state: updateState } =
     useMutation<BetaList_updateBetaMutation>(graphql`
-      mutation BetaList_updateBetaMutation($input: UpdateBetaMutationInput!) {
+      mutation BetaList_updateBetaMutation($input: UpdateBetaInput!) {
         updateBeta(input: $input) {
-          beta {
-            id
-            # Only refresh what we know could have changed
-            name
-          }
+          id
+          # Only refresh what we know could have changed
+          name
         }
       }
     `);
   const { commit: copyBeta, state: copyState } =
     useMutation<BetaList_copyBetaMutation>(graphql`
       mutation BetaList_copyBetaMutation(
-        $input: CopyBetaMutationInput!
+        $input: CopyBetaInput!
         $connections: [ID!]!
       ) {
-        copyBeta(input: $input) {
-          beta
-            @appendNode(
-              connections: $connections
-              edgeTypeName: "BetaNodeEdge"
-            ) {
-            id
-            ...BetaListItem_betaNode
-          }
+        copyBeta(input: $input)
+          @appendNode(connections: $connections, edgeTypeName: "BetaNodeEdge") {
+          id
+          ...BetaListItem_betaNode
         }
       }
     `);
   const { commit: deleteBeta, state: deleteState } =
     useMutation<BetaList_deleteBetaMutation>(graphql`
       mutation BetaList_deleteBetaMutation(
-        $input: DeleteBetaMutationInput!
+        $input: NodeInput!
         $connections: [ID!]!
       ) {
         deleteBeta(input: $input) {
-          beta {
-            id @deleteEdge(connections: $connections) @deleteRecord
-          }
+          id @deleteEdge(connections: $connections) @deleteRecord
         }
       }
     `);
@@ -131,66 +117,61 @@ const BetaList: React.FC<Props> = ({
   const onCreateNew = (): void => {
     createBeta({
       variables: {
-        input: {
-          problemId: problem.id,
-        },
+        input: { problem: problem.id },
         connections,
       },
       optimisticResponse: {
         createBeta: {
-          beta: {
-            id: generateUniqueClientID(),
-            name: null,
-            moves: { edges: [] },
-          },
+          id: generateUniqueClientID(),
+          name: null,
+          moves: { totalCount: 0 },
         },
       },
       // Select the new beta after creation
       onCompleted(data) {
         if (data.createBeta) {
-          onSelectBeta(data.createBeta.beta.id);
+          onSelectBeta(data.createBeta.id);
         }
       },
     });
   };
   const onRename = (betaId: string, newName: string): void => {
     updateBeta({
-      variables: { input: { betaId, name: newName } },
+      variables: { input: { id: betaId, name: newName } },
       optimisticResponse: {
         updateBeta: {
-          beta: { id: betaId, name: newName },
+          id: betaId,
+          name: newName,
         },
       },
     });
   };
   const onCopy = (betaId: string): void => {
     copyBeta({
-      variables: { input: { betaId }, connections },
+      variables: { input: { id: betaId }, connections },
       optimisticResponse: {
         copyBeta: {
-          beta: {
-            id: generateUniqueClientID(),
-            // We *could* use the source beta name here, but the placeholder
-            // acts as a clear loading indicator
-            name: null,
-            moves: { edges: [] },
-          },
+          id: generateUniqueClientID(),
+          // We *could* use the source beta name here, but the placeholder
+          // acts as a clear loading indicator
+          name: null,
+          moves: { edges: [] },
         },
       },
       // Select the new beta after creation
       onCompleted(data) {
         if (data.copyBeta) {
-          onSelectBeta(data.copyBeta.beta.id);
+          onSelectBeta(data.copyBeta.id);
         }
       },
     });
   };
   const onDelete = (betaId: string): void => {
     deleteBeta({
-      variables: { input: { betaId }, connections },
+      variables: { input: { id: betaId }, connections },
       optimisticResponse: {
         deleteBeta: {
-          beta: { id: betaId },
+          id: betaId,
         },
       },
       onCompleted() {

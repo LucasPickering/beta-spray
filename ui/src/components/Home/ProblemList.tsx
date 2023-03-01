@@ -49,10 +49,11 @@ const ProblemList: React.FC<Props> = ({ queryKey }) => {
   const { commit: createBoulderWithFriends, state: createState } =
     useMutation<ProblemList_createBoulderWithFriendsMutation>(graphql`
       mutation ProblemList_createBoulderWithFriendsMutation(
-        $input: CreateBoulderWithFriendsMutationInput!
+        $input: CreateBoulderWithFriendsInput!
         $connections: [ID!]!
       ) {
         createBoulderWithFriends(input: $input) {
+          id # Created beta is returned
           problem
             @prependNode(
               connections: $connections
@@ -61,22 +62,17 @@ const ProblemList: React.FC<Props> = ({ queryKey }) => {
             id
             ...ProblemCard_problemNode
           }
-          beta {
-            id
-          }
         }
       }
     `);
   const { commit: deleteProblem, state: deleteState } =
     useMutation<ProblemList_deleteProblemMutation>(graphql`
       mutation ProblemList_deleteProblemMutation(
-        $input: DeleteProblemMutationInput!
+        $input: NodeInput!
         $connections: [ID!]!
       ) {
         deleteProblem(input: $input) {
-          problem {
-            id @deleteEdge(connections: $connections) @deleteRecord
-          }
+          id @deleteEdge(connections: $connections) @deleteRecord
         }
       }
     `);
@@ -88,16 +84,20 @@ const ProblemList: React.FC<Props> = ({ queryKey }) => {
           onUpload={(file) => {
             createBoulderWithFriends({
               variables: {
-                input: { imageFile: "boulderImage" },
+                // null is a placeholder for the file data, which will be
+                // pulled from the request body and injected by the API
+                input: { image: null },
                 connections: [problems.__id],
               },
               uploadables: {
-                boulderImage: file,
+                // This has to match the variable path above
+                ["input.image"]: file,
               },
               // Optimistically create the new problem
               // Unfortunately no static typing here, but Relay checks at runtime
               optimisticResponse: {
                 createBoulderWithFriends: {
+                  id: generateUniqueClientID(),
                   problem: {
                     id: generateUniqueClientID(),
                     name: null,
@@ -110,16 +110,15 @@ const ProblemList: React.FC<Props> = ({ queryKey }) => {
                     },
                     betas: { edges: [] },
                   },
-                  beta: { id: generateUniqueClientID() },
                 },
               },
               // Redirect to the newly uploaded problem
               onCompleted(data) {
                 // This shouldn't ever be null if the mutation succeeded
                 if (data.createBoulderWithFriends) {
-                  const { problem, beta } = data.createBoulderWithFriends;
+                  const { id: betaId, problem } = data.createBoulderWithFriends;
                   // Pre-select the created beta, to avoid waterfalled requests
-                  navigate(`/problems/${problem.id}/beta/${beta.id}`);
+                  navigate(`/problems/${problem.id}/beta/${betaId}`);
                 }
               },
             });
@@ -134,13 +133,11 @@ const ProblemList: React.FC<Props> = ({ queryKey }) => {
             onDelete={(problemId) =>
               deleteProblem({
                 variables: {
-                  input: { problemId },
+                  input: { id: problemId },
                   connections: [problems.__id],
                 },
                 optimisticResponse: {
-                  deleteProblem: {
-                    problem: { id: problemId },
-                  },
+                  deleteProblem: { id: problemId },
                 },
               })
             }
