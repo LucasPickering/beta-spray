@@ -1,3 +1,4 @@
+import ipaddress
 import socket
 from .settings import *  # noqa: F401,F403
 
@@ -8,11 +9,11 @@ SECRET_KEY = (
 )
 
 # Configure INTERNAL_IPS correctly for docker
-hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
-INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + [
-    "127.0.0.1",
-    "10.0.2.2",
-]
+ip = socket.gethostbyname(socket.gethostname())
+# Include the full docker subnet in INTERNAL_IPS, so requests proxied from the
+# UI container are considered internal
+subnet = ip[: ip.rfind(".")] + ".0/24"
+INTERNAL_IPS = ["127.0.0.1", *(str(ip) for ip in ipaddress.ip_network(subnet))]
 
 # In dev, we store static files and media on the local FS. In prod, both live
 # in GCS buckets and are served directly by nginx, so we don't need any of these
