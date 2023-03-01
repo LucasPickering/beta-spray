@@ -38,9 +38,7 @@ const BetaListItem: React.FC<Props> = ({
         id
         name
         moves {
-          edges {
-            cursor
-          }
+          totalCount
         }
       }
     `,
@@ -76,7 +74,7 @@ const BetaListItem: React.FC<Props> = ({
             <Skeleton />
           )
         }
-        secondary={`${beta.moves.edges.length} moves`}
+        secondary={`${beta.moves.totalCount} moves`}
       />
 
       <ActionsMenu title="Beta Actions">

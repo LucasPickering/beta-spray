@@ -38,14 +38,12 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
 
   const { commit: updateHold, state: updateHoldState } =
     useMutation<HoldEditor_updateHoldMutation>(graphql`
-      mutation HoldEditor_updateHoldMutation($input: UpdateHoldMutationInput!) {
+      mutation HoldEditor_updateHoldMutation($input: UpdateHoldInput!) {
         updateHold(input: $input) {
-          hold {
-            id # So relay knows how to update this node locally
-            position {
-              x
-              y
-            }
+          id # So relay knows how to update this node locally
+          position {
+            x
+            y
           }
         }
       }
@@ -55,10 +53,10 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
     const position = result.position;
     updateHold({
       variables: {
-        input: { holdId: item.holdId, position },
+        input: { id: item.holdId, position },
       },
       optimisticResponse: {
-        updateHold: { hold: { id: item.holdId, position } },
+        updateHold: { id: item.holdId, position },
       },
     });
   };

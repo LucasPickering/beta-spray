@@ -20,16 +20,25 @@ const fetchQuery: FetchFunction = (
     },
   };
 
+  // Request format depends on whether or not we're attaching files
   if (uploadables) {
+    // Structure the request according to strawberry's instructions:
+    // https://strawberry.rocks/docs/guides/file-upload#sending-file-upload-requests
     const formData = new FormData();
-    formData.append("query", operation.text ?? "");
-    formData.append("variables", JSON.stringify(variables));
+    formData.append(
+      "operations",
+      JSON.stringify({ query: operation.text, variables })
+    );
 
-    Object.keys(uploadables).forEach((key) => {
-      if (Object.prototype.hasOwnProperty.call(uploadables, key)) {
-        formData.append(key, uploadables[key]);
-      }
+    // We need to build a map to tell the API how to map the attached file(s)
+    // to the input variables. The caller should name each file to correspond
+    // to the query variables.
+    const variableMap: Record<string, string[]> = {};
+    Object.entries(uploadables).forEach(([key, uploadable]) => {
+      variableMap[key] = [`variables.${key}`];
+      formData.append(key, uploadable);
     });
+    formData.append("map", JSON.stringify(variableMap));
 
     request.body = formData;
   } else {

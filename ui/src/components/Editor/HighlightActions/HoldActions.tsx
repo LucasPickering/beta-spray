@@ -50,27 +50,21 @@ const HoldActions: React.FC<Props> = ({ problemKey }) => {
 
   const { commit: updateHold, state: updateState } =
     useMutation<HoldActions_updateHoldMutation>(graphql`
-      mutation HoldActions_updateHoldMutation(
-        $input: UpdateHoldMutationInput!
-      ) {
+      mutation HoldActions_updateHoldMutation($input: UpdateHoldInput!) {
         updateHold(input: $input) {
-          hold {
-            id
-            annotation
-          }
+          id
+          annotation
         }
       }
     `);
   const { commit: deleteHold, state: deleteState } =
     useMutation<HoldActions_deleteHoldMutation>(graphql`
       mutation HoldActions_deleteHoldMutation(
-        $input: DeleteHoldMutationInput!
+        $input: NodeInput!
         $connections: [ID!]!
       ) {
         deleteHold(input: $input) {
-          hold {
-            id @deleteEdge(connections: $connections) @deleteRecord
-          }
+          id @deleteEdge(connections: $connections) @deleteRecord
         }
       }
     `);
@@ -92,10 +86,10 @@ const HoldActions: React.FC<Props> = ({ problemKey }) => {
           if (highlightedHold) {
             updateHold({
               variables: {
-                input: { holdId: highlightedHold.id, annotation },
+                input: { id: highlightedHold.id, annotation },
               },
               optimisticResponse: {
-                updateHold: { hold: { id: highlightedHold.id, annotation } },
+                updateHold: { id: highlightedHold.id, annotation },
               },
               onCompleted: onClose,
             });
@@ -108,7 +102,7 @@ const HoldActions: React.FC<Props> = ({ problemKey }) => {
           if (isDefined(highlightedHold)) {
             deleteHold({
               variables: {
-                input: { holdId: highlightedHold.id },
+                input: { id: highlightedHold.id },
                 connections: [problem.holds.__id],
               },
               // Reset selection to prevent ghost highlight
@@ -116,7 +110,7 @@ const HoldActions: React.FC<Props> = ({ problemKey }) => {
                 highlightHold(undefined);
               },
               optimisticResponse: {
-                deleteHold: { hold: { id: highlightedHold.id } },
+                deleteHold: { id: highlightedHold.id },
               },
             });
           }

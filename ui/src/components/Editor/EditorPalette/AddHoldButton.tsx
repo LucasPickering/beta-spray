@@ -38,18 +38,13 @@ const AddHoldButton: React.FC<Props> = ({ problemKey, disabled = false }) => {
   const { commit: createHold, state: createHoldState } =
     useMutation<AddHoldButton_createHoldMutation>(graphql`
       mutation AddHoldButton_createHoldMutation(
-        $input: CreateHoldMutationInput!
+        $input: CreateHoldInput!
         $connections: [ID!]!
       ) {
-        createHold(input: $input) {
-          hold
-            @appendNode(
-              connections: $connections
-              edgeTypeName: "HoldNodeEdge"
-            ) {
-            id
-            ...HoldMark_holdNode
-          }
+        createHold(input: $input)
+          @appendNode(connections: $connections, edgeTypeName: "HoldNodeEdge") {
+          id
+          ...HoldMark_holdNode
         }
       }
     `);
@@ -63,11 +58,8 @@ const AddHoldButton: React.FC<Props> = ({ problemKey, disabled = false }) => {
         onClick={() => {
           createHold({
             variables: {
-              input: {
-                boulderId: problem.boulder.id,
-                problemId: problem.id,
-                // Let the API pick a random position
-              },
+              // Let the API pick a random position
+              input: { problem: problem.id },
               // We only need to add to the problem holds here, because the
               // boulder holds aren't accessed directly in the UI
               connections: [problem.holds.__id],
@@ -77,7 +69,7 @@ const AddHoldButton: React.FC<Props> = ({ problemKey, disabled = false }) => {
             onCompleted(result) {
               // Highlight the new hold
               if (isDefined(result.createHold)) {
-                highlightHold(result.createHold.hold.id);
+                highlightHold(result.createHold.id);
               }
             },
           });

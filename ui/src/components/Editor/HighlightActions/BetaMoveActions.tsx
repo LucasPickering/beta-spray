@@ -49,34 +49,29 @@ const BetaMoveActions: React.FC<Props> = ({ betaKey }) => {
   const { commit: updateBetaMove, state: updateState } =
     useMutation<BetaMoveActions_updateBetaMoveMutation>(graphql`
       mutation BetaMoveActions_updateBetaMoveMutation(
-        $input: UpdateBetaMoveMutationInput!
+        $input: UpdateBetaMoveInput!
       ) {
         updateBetaMove(input: $input) {
-          betaMove {
-            id
-            annotation # The only field we modify
-          }
+          id
+          annotation # The only field we modify
         }
       }
     `);
   const { commit: deleteBetaMove, state: deleteState } =
     useMutation<BetaMoveActions_deleteBetaMoveMutation>(graphql`
-      mutation BetaMoveActions_deleteBetaMoveMutation(
-        $input: DeleteBetaMoveMutationInput!
-      ) {
+      mutation BetaMoveActions_deleteBetaMoveMutation($input: NodeInput!) {
         deleteBetaMove(input: $input) {
-          betaMove {
-            # This can reorder moves, so we have to refetch the whole move list
-            beta {
-              id
-              moves {
-                edges {
-                  node {
-                    id
-                    # These are the fields that can change after a delete
-                    order
-                    isStart
-                  }
+          # This can reorder moves, so we have to refetch the whole move list
+          beta {
+            id
+            moves {
+              totalCount
+              edges {
+                node {
+                  id
+                  # These are the fields that can change after a delete
+                  order
+                  isStart
                 }
               }
             }
@@ -102,11 +97,12 @@ const BetaMoveActions: React.FC<Props> = ({ betaKey }) => {
           if (highlightedMove) {
             updateBetaMove({
               variables: {
-                input: { betaMoveId: highlightedMove.id, annotation },
+                input: { id: highlightedMove.id, annotation },
               },
               optimisticResponse: {
                 updateBetaMove: {
-                  betaMove: { id: highlightedMove.id, annotation },
+                  id: highlightedMove.id,
+                  annotation,
                 },
               },
               onCompleted: onClose,
@@ -121,7 +117,7 @@ const BetaMoveActions: React.FC<Props> = ({ betaKey }) => {
             const betaMoveId = highlightedMove.id;
             deleteBetaMove({
               variables: {
-                input: { betaMoveId },
+                input: { id: betaMoveId },
               },
               // Reset selection to prevent ghost highlight
               onCompleted() {
@@ -129,12 +125,10 @@ const BetaMoveActions: React.FC<Props> = ({ betaKey }) => {
               },
               optimisticResponse: {
                 deleteBetaMove: {
-                  betaMove: {
-                    id: betaMoveId,
-                    beta: {
-                      id: beta.id,
-                      moves: deleteBetaMoveLocal(beta.moves, betaMoveId),
-                    },
+                  id: betaMoveId,
+                  beta: {
+                    id: beta.id,
+                    moves: deleteBetaMoveLocal(beta.moves, betaMoveId),
                   },
                 },
               },

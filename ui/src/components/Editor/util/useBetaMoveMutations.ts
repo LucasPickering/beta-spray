@@ -47,22 +47,22 @@ function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
   const { commit: createBetaMove, state: createBetaMoveState } =
     useMutation<useBetaMoveMutations_createBetaMoveMutation>(graphql`
       mutation useBetaMoveMutations_createBetaMoveMutation(
-        $input: CreateBetaMoveMutationInput!
+        $input: CreateBetaMoveInput!
       ) {
         createBetaMove(input: $input) {
-          # We DON'T need createNode here since we refetch the full list below.
+          # We DON'T need appendNode here since we refetch the full list below.
           # Relay will automatically merge the fields for the new node into the
           # updated connection.
-          betaMove {
-            id
-            # Get all used fields for the new move
-            ...useBetaMoveMutations_all_betaMoveNode
-          }
+          id
+          # Get all used fields for the new move
+          ...useBetaMoveMutations_all_betaMoveNode
+
           # Refetch a minimal version of the full list, since moves could
           # have been reordered
           beta {
             id
             moves {
+              totalCount
               edges {
                 node {
                   id
@@ -77,28 +77,26 @@ function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
       }
     `);
   // Relocate an existing move
-  const { commit: relocateBetaMove, state: relocateBetaMoveState } =
+  const { commit: updateBetaMove, state: updateBetaMoveState } =
     useMutation<useBetaMoveMutations_updateBetaMoveMutation>(graphql`
       mutation useBetaMoveMutations_updateBetaMoveMutation(
-        $input: UpdateBetaMoveMutationInput!
+        $input: UpdateBetaMoveInput!
       ) {
         updateBetaMove(input: $input) {
-          betaMove {
+          id
+          # These are the only fields we modify
+          # Yes, we need to refetch both positions, in case the move was
+          # converted from free to attached or vice versa
+          hold {
             id
-            # These are the only fields we modify
-            # Yes, we need to refetch both positions, in case the move was
-            # converted from free to attached or vice versa
-            hold {
-              id
-              position {
-                x
-                y
-              }
-            }
             position {
               x
               y
             }
+          }
+          position {
+            x
+            y
           }
         }
       }
@@ -110,15 +108,15 @@ function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
         createBetaMove({
           variables: {
             input: {
-              betaId: beta.id,
-              previousBetaMoveId,
+              beta: beta.id,
+              previousBetaMove: previousBetaMoveId,
               bodyPart,
               ...getDropParams(dropResult),
             },
           },
           onCompleted(data) {
             if (isDefined(data.createBetaMove)) {
-              selectStance(data.createBetaMove.betaMove.id);
+              selectStance(data.createBetaMove.id);
             }
           },
           // Punting on optimistic update because ordering is hard
@@ -128,21 +126,19 @@ function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
     },
     relocate: {
       callback: ({ betaMoveId, dropResult }) => {
-        relocateBetaMove({
+        updateBetaMove({
           variables: {
-            input: { betaMoveId, ...getDropParams(dropResult) },
+            input: { id: betaMoveId, ...getDropParams(dropResult) },
           },
           optimisticResponse: {
             updateBetaMove: {
-              betaMove: {
-                id: betaMoveId,
-                ...getDropResponse(dropResult),
-              },
+              id: betaMoveId,
+              ...getDropResponse(dropResult),
             },
           },
         });
       },
-      state: relocateBetaMoveState,
+      state: updateBetaMoveState,
     },
   };
 }
@@ -181,10 +177,10 @@ graphql`
  */
 function getDropParams(
   dropResult: DropResult<"overlayBetaMove">
-): { holdId: string } | { position: OverlayPosition } {
+): { hold: string } | { position: OverlayPosition } {
   switch (dropResult.kind) {
     case "hold":
-      return { holdId: dropResult.holdId };
+      return { hold: dropResult.holdId };
     case "dropZone":
       return { position: dropResult.position };
   }
