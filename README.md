@@ -12,16 +12,34 @@ Run the stack with:
 docker-compose up
 ```
 
-### First Time Setup
+### Local Dependencies
 
-#### API
+While not necessary for development, it's helpful to install dependencies outside of Docker so your editor can access them and do typechecking/autocomplete.
 
-You'll need to run migrations, and load some fixture data:
+### API
+
+Requires [pyenv](https://github.com/pyenv/pyenv) and [poetry](https://python-poetry.org/docs/).
 
 ```sh
-api/m.sh migrate
-api/m.sh loaddata basic
+cd api
+pyenv install
+poetry install # Installs dependencies to api/.venv/
 ```
+
+### UI
+
+Requires [nvm](https://github.com/nvm-sh/nvm).
+
+```sh
+cd ui
+nvm install
+nvm use
+npm install
+```
+
+### Debugging
+
+The API container will automatically start `debugpy` and expose it on port 8001. There is already a VSCode debug config defined to attach to this (called `Attach to Django`). This should allow you to breakpoint and debug code from within VSCode. If you've installed dependencies locally (using steps above), VSCode should automatically load them and they should match the path layout used inside the container, meaning you can breakpoint dependency code as well.
 
 ### Migrations
 

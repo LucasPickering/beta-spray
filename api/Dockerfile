@@ -14,5 +14,7 @@ RUN apk add --no-cache \
     openssl
 RUN pip install poetry
 
-ADD pyproject.toml poetry.lock ./
+ADD poetry.toml pyproject.toml poetry.lock ./
 RUN poetry install
+
+CMD ["./scripts/cmd_dev.sh"]

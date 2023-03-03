@@ -17,7 +17,7 @@ RUN apk add --no-cache --virtual .build-deps \
     apk del .build-deps
 
 # Dependencies first, for caching
-ADD pyproject.toml poetry.lock ./
+ADD poetry.toml pyproject.toml poetry.lock ./
 # We need to reinstall some of the dependencies from before. Most of the time
 # though we won't need to re-run the above commands, so this will be faster for
 # re-builds than installing poetry+dependencies together
