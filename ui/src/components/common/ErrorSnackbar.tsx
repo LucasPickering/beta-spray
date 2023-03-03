@@ -4,6 +4,7 @@ import {
   AccordionDetails,
   AccordionSummary,
   Alert,
+  AlertTitle,
   Snackbar,
 } from "@mui/material";
 import {
@@ -54,10 +55,13 @@ function ErrorSnackbar<E extends object = Error>({
       // Once the user has expanded the accordion, we don't want to auto-hide
       // since they're probably reading the error (which may be long)
       autoHideDuration={visibility !== "detail" ? 5000 : null}
+      sx={{ maxWidth: "sm" }}
       onClose={() => setVisibility("hidden")}
     >
       <Alert severity="error">
         <Accordion
+          elevation={0}
+          disableGutters
           expanded={visibility === "detail"}
           // If already expanded, another click will *close the whole snackbar*.
           // At that point, we assume the user is done with the error entirely.
@@ -71,8 +75,14 @@ function ErrorSnackbar<E extends object = Error>({
             expandIcon={
               visibility === "detail" ? <IconClose /> : <IconExpandMore />
             }
+            sx={{
+              minHeight: 0,
+              "& .MuiAccordionSummary-content": {
+                margin: 0,
+              },
+            }}
           >
-            {summary}
+            <AlertTitle>{summary}</AlertTitle>
           </AccordionSummary>
           <AccordionDetails>{error && renderError(error)}</AccordionDetails>
         </Accordion>
