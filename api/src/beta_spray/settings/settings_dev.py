@@ -1,3 +1,4 @@
+import os
 import ipaddress
 import socket
 from .settings import *  # noqa: F401,F403
@@ -34,3 +35,9 @@ MIDDLEWARE.append(  # noqa F405
 GRAPHENE["MIDDLEWARE"].append(  # noqa F405
     "graphene_django.debug.DjangoDebugMiddleware"
 )
+
+# Enable remote debug attachment
+if os.environ.get("RUN_MAIN") or os.environ.get("WERKZEUG_RUN_MAIN"):
+    import debugpy
+
+    debugpy.listen(("0.0.0.0", 8001))

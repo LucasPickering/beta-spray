@@ -2,7 +2,7 @@ version: "3"
 
 volumes:
   db_data:
-  api_poetry_cache:
+  api_poetry_venv:
   ui_node_modules:
 
 services:
@@ -19,7 +19,6 @@ services:
 
   api:
     build: ./api/
-    command: ./scripts/cmd_dev.sh
     init: true # Fixes slow shutdown
     tty: true # Colors!
     environment:
@@ -30,30 +29,10 @@ services:
       - db
     ports:
       - "8000:8000"
+      - "8001:8001" # debugpy
     volumes:
       - ./api:/app
-      - api_poetry_cache:/root/.cache/poetry
-
-  # Jank way of testing prd image
-  # api:
-  #   build:
-  #     context: ./api/
-  #     dockerfile: prd.Dockerfile
-  #   init: true # Fixes slow shutdown
-  #   environment:
-  #     - BETA_SPRAY_DB_NAME=beta_spray
-  #     - BETA_SPRAY_DB_USER=beta_spray
-  #     - BETA_SPRAY_DB_PASSWORD=beta_spray
-  #     - BETA_SPRAY_HOSTNAME=localhost
-  #     - BETA_SPRAY_SECRET_KEY=bad-secret-key
-  #     - BETA_SPRAY_MEDIA_BUCKET=bad-bucket-name
-  #     - DJANGO_SETTINGS_MODULE=beta_spray.settings.settings_prd
-  #   depends_on:
-  #     - db
-  #   ports:
-  #     - "8000:8000"
-  #   volumes:
-  #     - ./api:/app:rw
+      - api_poetry_venv:/app/.venv
 
   ui:
     build: ./ui/
