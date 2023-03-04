@@ -1,8 +1,8 @@
 import logging
+
 from django.apps import AppConfig
 from django.conf import settings
 from strawberry.printer import print_schema
-
 
 logger = logging.getLogger(__name__)
 

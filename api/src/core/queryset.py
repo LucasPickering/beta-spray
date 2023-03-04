@@ -1,4 +1,4 @@
-from django.db.models import Value, QuerySet
+from django.db.models import QuerySet, Value
 
 
 class BetaMoveQuerySet(QuerySet):

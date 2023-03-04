@@ -1,7 +1,9 @@
 from typing import Optional
-from core import models, util
+
 from strawberry_django_plus import gql
 from strawberry_django_plus.gql import relay
+
+from core import models, util
 
 
 @gql.type

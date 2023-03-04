@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Beta, BetaMove, Hold, Boulder, Problem
+from .models import Beta, BetaMove, Boulder, Hold, Problem
 
 
 @admin.register(Boulder)

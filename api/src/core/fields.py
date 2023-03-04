@@ -1,5 +1,5 @@
-from typing_extensions import Self
 from django.db import models
+from typing_extensions import Self
 
 
 class BoulderPosition:

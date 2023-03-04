@@ -1,6 +1,7 @@
-import os
 import ipaddress
+import os
 import socket
+
 from .settings import *  # noqa: F401,F403
 
 ALLOWED_HOSTS = ["*"]
