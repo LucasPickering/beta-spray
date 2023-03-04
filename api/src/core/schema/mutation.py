@@ -120,8 +120,11 @@ class Mutation:
             normal_position = position.to_normalized(problem.boulder.image)
             source = models.HoldAnnotationSource.USER
         else:
-            # Pick a random position on the image
-            normal_position = BoulderPosition(random.random(), random.random())
+            # Pick a random position on the image. # Bias toward the middle,
+            # so the new hold is easy to see
+            normal_position = BoulderPosition(
+                random.triangular(), random.triangular()
+            )
             source = models.HoldAnnotationSource.AUTO
 
         # Create the hold, then link it to the problem

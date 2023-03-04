@@ -1,27 +1,29 @@
+from typing_extensions import Self
 from django.db import models
-from collections import namedtuple
 
 
-"""
-Positions are *0-1*, not in pixels!! This allows for scaling on the image
-without messing up these positions
-"""
-BoulderPosition = namedtuple("BoulderPosition", "x y")
-
-
-def parse_position(value: str) -> BoulderPosition:
+class BoulderPosition:
     """
-    Parse a string position to a struct value
-    """
-    x, y = (float(v) for v in value.split(","))
-    return BoulderPosition(x, y)
+    Positions are *0-1*, not in pixels!! This allows for scaling on the image
+    without messing up these positions"""
 
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
 
-def serialize_position(position: BoulderPosition) -> str:
-    """
-    Serialize a BoulderPosition into a string
-    """
-    return f"{position.x},{position.y}"
+    @staticmethod
+    def parse(value: str) -> Self:
+        """
+        Parse a string position to a struct value
+        """
+        x, y = (float(v) for v in value.split(","))
+        return BoulderPosition(x, y)
+
+    def serialize(self) -> str:
+        """
+        Serialize a BoulderPosition into a string
+        """
+        return f"{self.x},{self.y}"
 
 
 class BoulderPositionField(models.Field):
@@ -46,7 +48,7 @@ class BoulderPositionField(models.Field):
     def from_db_value(self, value, expression, connection):
         if value is None:
             return None
-        return parse_position(value)
+        return BoulderPosition.parse(value)
 
     def to_python(self, value):
         if isinstance(value, BoulderPosition):
@@ -56,12 +58,12 @@ class BoulderPositionField(models.Field):
             return value
 
         # Value is assumed to be a string
-        return parse_position(value)
+        return BoulderPosition.parse(value)
 
     def get_prep_value(self, position):
         if position is None:
             return None
-        return serialize_position(position)
+        return position.serialize()
 
     def value_to_string(self, obj):
         value = self.value_from_object(obj)
