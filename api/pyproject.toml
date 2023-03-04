@@ -19,7 +19,7 @@ python = "^3.10"
 random-username = "^1.0.2"
 rules = "^3.3"
 social-auth-app-django = "^5.0.0"
-strawberry-django-plus = "^2.0.5"
+strawberry-django-plus = "^2.1.0"
 
 [tool.poetry.group.dev.dependencies]
 debugpy = "^1.6.6"
