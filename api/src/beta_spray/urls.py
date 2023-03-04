@@ -21,20 +21,18 @@ from strawberry.django.views import GraphQLView
 
 from core.schema import schema
 
-urlpatterns = [
-    path(
-        "api/",
-        include(
-            [
-                path("admin", admin.site.urls),
-                path("graphql", GraphQLView.as_view(schema=schema)),
-            ]
-        ),
-    ),
+api_routes = [
+    path("admin", admin.site.urls),
+    path("graphql", GraphQLView.as_view(schema=schema)),
 ]
 
 if settings.DEBUG:
-    urlpatterns.append(path("__debug__/", include("debug_toolbar.urls")))
+    api_routes.append(path("__debug__/", include("debug_toolbar.urls")))
+
+urlpatterns = [
+    path("api/", include(api_routes)),
+]
+
 
 # Only include media route in dev
 if settings.MEDIA_ROOT:
