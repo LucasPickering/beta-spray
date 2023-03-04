@@ -1,5 +1,6 @@
 from typing import Any, Literal, Optional
 
+from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import (
     ExpressionWrapper,
@@ -32,6 +33,15 @@ class BodyPart(models.TextChoices):  # type: ignore
     RIGHT_HAND = "RH"
     LEFT_FOOT = "LF"
     RIGHT_FOOT = "RF"
+
+
+@gql.enum
+class Visibility(models.TextChoices):  # type: ignore
+    """Visibility of an object within the platform, i.e. who else can see it?"""
+
+    PRIVATE = "private"
+    UNLISTED = "unlisted"
+    PUBLIC = "public"
 
 
 class HoldAnnotationSource(models.TextChoices):
@@ -92,13 +102,17 @@ class Problem(models.Model):
     external_link = models.URLField(
         blank=True, help_text="External link, e.g. to Mountain Project"
     )
-    holds = models.ManyToManyField(
-        Hold, related_name="problems", through="ProblemHold", blank=True
+    owner = models.ForeignKey(User, on_delete=models.PROTECT)
+    visibility = models.TextField(
+        choices=Visibility.choices,
+        default=Visibility.PUBLIC,
+        help_text="Access level for other users to this problem",
     )
-    # Technically we could get this by going through holds, but having an extra
-    # FK makes it a lot easier
     boulder = models.ForeignKey(
         Boulder, related_name="problems", on_delete=models.CASCADE
+    )
+    holds = models.ManyToManyField(
+        Hold, related_name="problems", through="ProblemHold", blank=True
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -132,6 +146,7 @@ class Beta(models.Model):
     problem = models.ForeignKey(
         Problem, related_name="betas", on_delete=models.CASCADE
     )
+    owner = models.ForeignKey(User, on_delete=models.PROTECT)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

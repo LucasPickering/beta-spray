@@ -70,6 +70,7 @@ type BetaNode implements Node {
 
   """Date+time of object creation"""
   createdAt: DateTime!
+  owner: UserNode!
   problem: ProblemNode!
   moves(
     """Returns the items in the list that come before the specified cursor."""
@@ -180,6 +181,7 @@ input CopyBetaInput {
   id: ID!
 }
 
+"""Input data for `createBeta` mutation"""
 input CreateBetaInput {
   problem: ID!
 }
@@ -287,7 +289,6 @@ type Mutation {
     """Input of an object that implements the `Node` interface."""
     input: NodeInput!
   ): ProblemNode!
-  createBeta(input: CreateBetaInput!): BetaNode!
   updateBeta(input: UpdateBetaInput!): BetaNode!
   deleteBeta(
     """Input of an object that implements the `Node` interface."""
@@ -322,6 +323,10 @@ type Mutation {
     """Input data for `updateHold` mutation"""
     input: UpdateHoldInput!
   ): HoldNode!
+  createBeta(
+    """Input data for `createBeta` mutation"""
+    input: CreateBetaInput!
+  ): BetaNode!
   copyBeta(
     """Input data for `copyBeta` mutation"""
     input: CopyBetaInput!
@@ -382,6 +387,10 @@ type ProblemNode implements Node {
 
   """Date+time of object creation"""
   createdAt: DateTime!
+  owner: UserNode!
+
+  """Access level for other users to this problem"""
+  visibility: Visibility!
   boulder: BoulderNode!
   holds(
     """Returns the items in the list that come before the specified cursor."""
@@ -544,6 +553,9 @@ input UpdateProblemInput {
 
   """External link, e.g. to Mountain Project"""
   externalLink: String
+
+  """Access level for other users to this problem"""
+  visibility: Visibility
 }
 
 """A user of Beta Spray"""
@@ -558,4 +570,11 @@ type UserNode implements Node {
   exposed to self.
   """
   isGuest: Boolean!
+}
+
+"""Visibility of an object within the platform, i.e. who else can see it?"""
+enum Visibility {
+  PRIVATE
+  UNLISTED
+  PUBLIC
 }
