@@ -64,6 +64,10 @@ jobs:
         working-directory: api/
         run: poetry install
 
+      - name: Type check
+        working-directory: api/
+        run: poetry run mypy
+
       - name: Lint
         working-directory: api/
         run: poetry run flake8

@@ -21,6 +21,7 @@ strawberry-django-plus = "^2.0.5"
 debugpy = "^1.6.6"
 flake8-black = "0.3.6"
 flake8-isort = "^6.0.0"
+mypy = "^1.0.1"
 
 [build-system]
 build-backend = "poetry.core.masonry.api"
@@ -33,3 +34,14 @@ line-length = 80
 line_length = 80
 profile = "black"
 skip_gitignore = true
+
+[tool.mypy]
+disallow_incomplete_defs = true
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+files = ["src/"]
+
+[[tool.mypy.overrides]]
+# Known modules with no type annotations :(
+ignore_missing_imports = true
+module = ["debugpy", "django.*"]
