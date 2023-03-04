@@ -1,4 +1,5 @@
 import os
+
 from .settings import *  # noqa: F401,F403
 
 BETA_SPRAY_HOSTNAME = os.getenv("BETA_SPRAY_HOSTNAME")

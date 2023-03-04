@@ -1,21 +1,24 @@
-from core import fields
+from enum import Enum
+
+from django.db import models
 from django.db.models import (
-    F,
-    Q,
-    Max,
-    Subquery,
-    Min,
     ExpressionWrapper,
+    F,
+    Max,
+    Min,
     OuterRef,
+    Q,
+    Subquery,
 )
 from django.db.models.functions import Coalesce
-from django.db.models.signals import pre_save, post_save, post_delete
+from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch import receiver
-from django.db import models
-from enum import Enum
 from strawberry_django_plus import gql
-from .queryset import BetaMoveQuerySet
+
+from core import fields
+
 from . import util
+from .queryset import BetaMoveQuerySet
 
 
 class SlideDirection(Enum):

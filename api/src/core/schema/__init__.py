@@ -1,9 +1,10 @@
 from graphql import GraphQLID
-from strawberry.schema.types.scalar import DEFAULT_SCALAR_REGISTRY
 from strawberry.custom_scalar import ScalarDefinition
+from strawberry.schema.types.scalar import DEFAULT_SCALAR_REGISTRY
 from strawberry_django_plus import gql, relay
-from .query import Query
+
 from .mutation import Mutation
+from .query import Query
 
 # https://github.com/blb-ventures/strawberry-django-plus/issues/166#issuecomment-1414420627
 # Sets the name from GlobalID! to ID!

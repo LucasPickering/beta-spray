@@ -26,7 +26,7 @@ RUN apk add --no-cache --virtual .build-deps \
     libffi-dev \
     libpq-dev \
     musl-dev && \
-    poetry install --no-dev && \
+    poetry install --without dev && \
     apk del .build-deps
 
 ADD . .
