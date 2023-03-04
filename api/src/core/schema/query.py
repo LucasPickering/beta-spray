@@ -1,9 +1,12 @@
 from typing import Optional
 
+from django.db.models.fields.files import ImageFieldFile
 from strawberry_django_plus import gql
 from strawberry_django_plus.gql import relay
+from typing_extensions import Self
 
 from core import models, util
+from core.fields import BoulderPosition
 
 
 @gql.type
@@ -52,7 +55,9 @@ class SVGPosition:
     y: float = gql.field(description="Y position, 0-100ish")
 
     @classmethod
-    def from_boulder_position(cls, boulder_position, image):
+    def from_boulder_position(
+        cls, boulder_position: BoulderPosition, image: Image | ImageFieldFile
+    ) -> Self:
         """
         Map a normalized position, where both components are [0,1], to an SVG
         position, where X and Y are in SVG coordinates, based on image

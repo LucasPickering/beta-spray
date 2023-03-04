@@ -2,6 +2,7 @@ __pycache__/
 *.pyc
 .DS_Store
 .venv/
+.mypy_cache
 
 build/
 node_modules/

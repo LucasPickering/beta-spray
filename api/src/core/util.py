@@ -1,16 +1,23 @@
+from __future__ import annotations
+
 import random
 import uuid
+from typing import TYPE_CHECKING, Optional
 
-from strawberry.file_uploads import Upload
+from django.core.files.uploadedfile import UploadedFile
+from django.db.models.fields.files import ImageFieldFile
 
-problem_name_phrase_groups = [
+if TYPE_CHECKING:
+    from core.schema.query import Image
+
+problem_name_phrase_groups: list[list[Optional[str]]] = [
     ["Up Up", "Monster", "Slab", "Crack", "Lateral"],
     ["Up", "And Away", "Sauce", "Joy", "Wolves", "Psoriasis"],
     # repetition => weighted odds
     [None, None, None, "2.0", "But Harder"],
 ]
 
-beta_name_phrase_groups = [
+beta_name_phrase_groups: list[list[Optional[str]]] = [
     ["Simply", "Just", "You", "All you have to do is"],
     [
         "Hang On",
@@ -25,7 +32,7 @@ beta_name_phrase_groups = [
 ]
 
 
-def random_phrase(phrase_groups):
+def random_phrase(phrase_groups: list[list[Optional[str]]]) -> str:
     """
     Generate a phrase by picking one element from each phrase group and joining
     them together.
@@ -43,15 +50,15 @@ def random_phrase(phrase_groups):
     )
 
 
-def random_problem_name():
+def random_problem_name() -> str:
     return random_phrase(problem_name_phrase_groups)
 
 
-def random_beta_name():
+def random_beta_name() -> str:
     return random_phrase(beta_name_phrase_groups)
 
 
-def clean_input_file(file: Upload):
+def clean_input_file(file: UploadedFile) -> UploadedFile:
     """
     Clean an uploaded file. This will generate a random file name for the file,
     with an extension based on its declared content type. Used by the
@@ -64,7 +71,9 @@ def clean_input_file(file: Upload):
     return file
 
 
-def get_svg_dimensions(image):
+def get_svg_dimensions(
+    image: ImageFieldFile | Image,
+) -> tuple[float, float]:
     """
     Get the dimensions of this image in the SVG system. The smaller of the
     two dimensions will always be 100, and the larger will be multiplied
@@ -80,15 +89,3 @@ def get_svg_dimensions(image):
         if aspect_ratio < 1
         else (100 * aspect_ratio, 100)
     )
-
-
-def to_svg_position(boulder_position, image):
-    """
-    Map a normalized position, where both components are [0,1], to an SVG
-    position, where X and Y are in SVG coordinates, based on image dimensions.
-    """
-    (svg_width, svg_height) = get_svg_dimensions(image)
-    return {
-        "x": boulder_position.x * svg_width,
-        "y": boulder_position.y * svg_height,
-    }

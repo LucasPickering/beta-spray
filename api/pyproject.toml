@@ -40,6 +40,7 @@ disallow_incomplete_defs = true
 disallow_untyped_calls = true
 disallow_untyped_defs = true
 files = ["src/"]
+plugins = "strawberry.ext.mypy_plugin"
 
 [[tool.mypy.overrides]]
 # Known modules with no type annotations :(
