@@ -1,7 +1,7 @@
 import os.path
 
 from django.core.files.storage import default_storage
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandParser
 
 from core.models import Boulder, Problem
 
@@ -15,7 +15,7 @@ class Command(BaseCommand):
         " serves as a manual backup."
     )
 
-    def add_arguments(self, parser):
+    def add_arguments(self, parser: CommandParser) -> None:
         parser.add_argument(
             "--dry-run",
             action="store_true",
@@ -28,18 +28,17 @@ class Command(BaseCommand):
             " image files that have no boulders",
         )
 
-    def handle(self, *args, **options):
-        dry_run = options["dry_run"]
+    def handle(self, dry_run: bool, images_only: bool) -> None:
         if dry_run:
             print("Dry run, nothing will be modified")
 
         # Prune boulders first, so we know for sure we're not leaving images
-        if not options["images_only"]:
+        if not images_only:
             self.prune_boulders(dry_run)
 
         self.prune_images(dry_run)
 
-    def prune_boulders(self, dry_run):
+    def prune_boulders(self, dry_run: bool) -> None:
         # We may want to remove this logic at some point, if the UI ever starts
         # presenting the DB schema as it is (rather than pretending that
         # boulders and problems are 1:1). That seems unlikely though.
@@ -53,7 +52,7 @@ class Command(BaseCommand):
             (num_deleted, _) = dangling_boulders.delete()
         print(f"Deleted {num_deleted} boulders")
 
-    def prune_images(self, dry_run):
+    def prune_images(self, dry_run: bool) -> None:
         # Get a set of all the images that *are* referenced
         live_images = set(Boulder.objects.all().values_list("image", flat=True))
 

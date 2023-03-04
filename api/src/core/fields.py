@@ -1,3 +1,5 @@
+from typing import Any, Optional
+
 from django.db import models
 from typing_extensions import Self
 
@@ -7,17 +9,20 @@ class BoulderPosition:
     Positions are *0-1*, not in pixels!! This allows for scaling on the image
     without messing up these positions"""
 
-    def __init__(self, x, y):
+    x: float
+    y: float
+
+    def __init__(self, x: float, y: float):
         self.x = x
         self.y = y
 
-    @staticmethod
-    def parse(value: str) -> Self:
+    @classmethod
+    def parse(cls, value: str) -> Self:
         """
         Parse a string position to a struct value
         """
         x, y = (float(v) for v in value.split(","))
-        return BoulderPosition(x, y)
+        return cls(x, y)
 
     def serialize(self) -> str:
         """
@@ -42,15 +47,19 @@ class BoulderPositionField(models.Field):
     that need, then we can migrate this to a composite type.
     """
 
-    def db_type(self, connection):
+    def db_type(self, connection: Any) -> str:
         return "char(50)"
 
-    def from_db_value(self, value, expression, connection):
+    def from_db_value(
+        self, value: Optional[str], expression: Any, connection: Any
+    ) -> Optional[BoulderPosition]:
         if value is None:
             return None
         return BoulderPosition.parse(value)
 
-    def to_python(self, value):
+    def to_python(
+        self, value: Optional[BoulderPosition | str]
+    ) -> Optional[BoulderPosition]:
         if isinstance(value, BoulderPosition):
             return value
 
@@ -60,12 +69,14 @@ class BoulderPositionField(models.Field):
         # Value is assumed to be a string
         return BoulderPosition.parse(value)
 
-    def get_prep_value(self, position):
+    def get_prep_value(
+        self, position: Optional[BoulderPosition]
+    ) -> Optional[str]:
         if position is None:
             return None
         return position.serialize()
 
-    def value_to_string(self, obj):
+    def value_to_string(self, obj: object) -> Optional[str]:
         value = self.value_from_object(obj)
         return self.get_prep_value(value)
 

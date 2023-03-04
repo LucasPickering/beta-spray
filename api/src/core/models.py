@@ -1,4 +1,4 @@
-from enum import Enum
+from typing import Any, Literal, Optional
 
 from django.db import models
 from django.db.models import (
@@ -21,13 +21,10 @@ from . import util
 from .queryset import BetaMoveQuerySet
 
 
-class SlideDirection(Enum):
-    DOWN = "down"
-    UP = "up"
-
-
+# Typing on this seems to be wonky because gql.enum is made for stock enums,
+# not Django choice enums
 @gql.enum
-class BodyPart(models.TextChoices):
+class BodyPart(models.TextChoices):  # type: ignore
     """A body part that someone could put on a hold"""
 
     # we could easily expand this later to include knees, spleen, etc.
@@ -106,7 +103,7 @@ class Problem(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
 
@@ -138,11 +135,16 @@ class Beta(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
     @staticmethod
-    def slide_moves(beta_id, direction, from_order, to_order=None):
+    def slide_moves(
+        beta_id: str,
+        direction: Literal["up", "down"],
+        from_order: int,
+        to_order: Optional[int] = None,
+    ) -> None:
         """
         Slide the moves in a beta either up or down one slot, starting from a
         given order and optionally ending at another order. If `to_order` is
@@ -154,9 +156,9 @@ class Beta(models.Model):
         vertical list of increasing orders.
         """
 
-        if direction == SlideDirection.DOWN:
+        if direction == "up":
             order_expr = F("order") + 1
-        elif direction == SlideDirection.UP:
+        elif direction == "down":
             order_expr = F("order") - 1
         else:
             raise ValueError(f"Unexpected slide direction: {direction}")
@@ -239,7 +241,7 @@ class BetaMove(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     @classmethod
-    def get_is_start_expression(cls):
+    def get_is_start_expression(cls) -> ExpressionWrapper:
         """
         Get a query expression used to calculate is_start. This can be passed
         as the is_start keyword to an update query to re-calculate is_start for
@@ -281,7 +283,9 @@ class BetaMove(models.Model):
 
 
 @receiver(post_delete, sender=Boulder)
-def boulder_on_post_delete(sender, instance, **kwargs):
+def boulder_on_post_delete(
+    sender: Any, instance: Boulder, **kwargs: dict
+) -> None:
     """
     After deleting a boulder, delete the associated image from media storage
     """
@@ -291,7 +295,9 @@ def boulder_on_post_delete(sender, instance, **kwargs):
 
 
 @receiver(post_delete, sender=Problem)
-def problem_on_post_delete(sender, instance, **kwargs):
+def problem_on_post_delete(
+    sender: Any, instance: Problem, **kwargs: dict
+) -> None:
     """
     After deleting a problem, delete the associated boulder (if no other
     problems point to it). This seems weird considering the DB schema allows
@@ -311,7 +317,9 @@ def problem_on_post_delete(sender, instance, **kwargs):
 
 
 @receiver(pre_save, sender=BetaMove)
-def beta_move_on_pre_save(sender, instance, raw, **kwargs):
+def beta_move_on_pre_save(
+    sender: Any, instance: BetaMove, raw: bool, **kwargs: dict
+) -> None:
     """
     Before creating a move, slide all the moves below it down 1 to make
     room. If updating an existing move, we need to slide the moves between
@@ -341,7 +349,7 @@ def beta_move_on_pre_save(sender, instance, raw, **kwargs):
             # make room
             Beta.slide_moves(
                 beta_id=beta_id,
-                direction=SlideDirection.DOWN,
+                direction="down",
                 from_order=instance.order,
             )
     else:
@@ -353,7 +361,7 @@ def beta_move_on_pre_save(sender, instance, raw, **kwargs):
             # Moving *down* the list, so slide intermediate moves *up*
             Beta.slide_moves(
                 beta_id=beta_id,
-                direction=SlideDirection.UP,
+                direction="up",
                 # If we're moving e.g. 4->7, slide 5-7 to be 4-6
                 from_order=old_order + 1,
                 to_order=new_order,
@@ -362,7 +370,7 @@ def beta_move_on_pre_save(sender, instance, raw, **kwargs):
             # Moving *up* the list, so slide intermediate moves *down*
             Beta.slide_moves(
                 beta_id=beta_id,
-                direction=SlideDirection.DOWN,
+                direction="down",
                 # If we're moving e.g. 7->4, slide 4-6 to be 5-7
                 from_order=new_order,
                 to_order=old_order - 1,
@@ -373,7 +381,9 @@ def beta_move_on_pre_save(sender, instance, raw, **kwargs):
 
 
 @receiver(post_save, sender=BetaMove)
-def beta_move_on_post_save(sender, instance, raw, **kwargs):
+def beta_move_on_post_save(
+    sender: Any, instance: BetaMove, raw: bool, **kwargs: dict
+) -> None:
     """
     After creating/updating a move, re-calculate is_start for the whole beta.
     This kinda sucks because doubles the number of updates, but it should go
@@ -389,12 +399,14 @@ def beta_move_on_post_save(sender, instance, raw, **kwargs):
 
 
 @receiver(post_delete, sender=BetaMove)
-def beta_move_on_post_delete(sender, instance, **kwargs):
+def beta_move_on_post_delete(
+    sender: Any, instance: BetaMove, **kwargs: dict
+) -> None:
     """
     Upon deleting a move, slide all moves below it in the list up 1
     """
     Beta.slide_moves(
         beta_id=instance.beta_id,
-        direction=SlideDirection.UP,
+        direction="up",
         from_order=instance.order,
     )

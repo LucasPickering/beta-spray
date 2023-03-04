@@ -11,7 +11,7 @@ class CoreConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "core"
 
-    def ready(self):
+    def ready(self) -> None:
         # We have to defer this import so it doesn't happen before the app is
         # ready, otherwise django gets very upset
         from core.schema import schema

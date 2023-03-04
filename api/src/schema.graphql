@@ -311,7 +311,8 @@ type Mutation {
   ): BetaNode!
 
   """
-  Create a new hold and add it to a problem. There is no option to create a hold just on a boulder, because there's no use case for that yet.
+  Create a new hold and add it to a problem. There is no option to create
+  a hold just on a boulder, because there's no use case for that yet.
   """
   createHold(
     """Input data for `createHold` mutation"""

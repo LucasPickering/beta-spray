@@ -32,7 +32,7 @@ class SVGPositionInput:
     x: float = gql.field(description="X position, 0-100ish")
     y: float = gql.field(description="Y position, 0-100ish")
 
-    def to_normalized(self, image: Image):
+    def to_normalized(self, image: Image) -> BoulderPosition:
         """
         Normalize a position, such that the x/y values are both [0,1] rather
         than based on the SVG dimensions.
@@ -83,11 +83,7 @@ class Mutation:
         # User can grab the problem+boulder from the beta
         return resolvers.create(info, models.Beta, {"problem": problem})
 
-    @gql.relay.input_mutation(
-        description="Create a new hold and add it to a problem. There is no"
-        " option to create a hold just on a boulder, because there's no use"
-        " case for that yet."
-    )
+    @gql.relay.input_mutation
     def create_hold(
         self,
         info: Info,
@@ -111,15 +107,17 @@ class Mutation:
             ]
         ],
     ) -> HoldNode:
+        """
+        Create a new hold and add it to a problem. There is no option to create
+        a hold just on a boulder, because there's no use case for that yet.
+        """
         # Resolve input to a django object
-        problem: models.Problem = problem.resolve_node(
-            info, ensure_type=models.Problem
-        )
+        problem_dj = problem.resolve_node(info, ensure_type=models.Problem)
 
         normal_position: BoulderPosition
         if position:
             # Convert SVG position to normalized position
-            normal_position = position.to_normalized(problem.boulder.image)
+            normal_position = position.to_normalized(problem_dj.boulder.image)
             source = models.HoldAnnotationSource.USER
         else:
             # Pick a random position on the image. # Bias toward the middle,
@@ -134,7 +132,7 @@ class Mutation:
             info,
             models.Hold,
             {
-                "boulder": problem.boulder,
+                "boulder": problem_dj.boulder,
                 "position": normal_position,
                 "source": source,
             },
@@ -163,12 +161,14 @@ class Mutation:
     ) -> HoldNode:
         hold: models.Hold = id.resolve_node(info, ensure_type=models.Hold)
         # Convert position from SVG coords to normalized (DB) coords
-        position = position and position.to_normalized(hold.boulder.image)
+        normal_position = position and position.to_normalized(
+            hold.boulder.image
+        )
         return resolvers.update(
             info,
             hold,
             {
-                "position": position,
+                "position": normal_position,
                 "annotation": annotation,
             },
         )
@@ -241,11 +241,9 @@ class Mutation:
         """
 
         # Convert GQL IDs to PKs
-        beta: models.Beta = beta.resolve_node(info, ensure_type=models.Beta)
-        hold: models.Hold = hold and hold.resolve_node(
-            info, ensure_type=models.Hold
-        )
-        previous_beta_move: models.BetaMove = (
+        beta_dj = beta.resolve_node(info, ensure_type=models.Beta)
+        hold_dj = hold and hold.resolve_node(info, ensure_type=models.Hold)
+        previous_beta_move_dj = (
             previous_beta_move
             and previous_beta_move.resolve_node(
                 info, ensure_type=models.BetaMove
@@ -253,12 +251,15 @@ class Mutation:
         )
 
         # Convert position from SVG coords to normalized [0,1]
-        position = position and position.to_normalized(
-            beta.problem.boulder.image
+        normal_position = position and position.to_normalized(
+            beta_dj.problem.boulder.image
         )
 
         # Make sure the move belongs to the same beta
-        if previous_beta_move and previous_beta_move.beta_id != beta.id:
+        if (
+            previous_beta_move_dj
+            and previous_beta_move_dj.beta_id != beta_dj.id
+        ):
             return ValidationError(
                 "Previous move must belong to the given beta"
             )
@@ -269,11 +270,12 @@ class Mutation:
             info,
             models.BetaMove,
             {
-                "beta": beta,
-                "hold": hold,
+                "beta": beta_dj,
+                "hold": hold_dj,
                 "body_part": body_part,
-                "order": previous_beta_move and previous_beta_move.order + 1,
-                "position": position,
+                "order": previous_beta_move_dj
+                and previous_beta_move_dj.order + 1,
+                "position": normal_position,
             },
             # By default, Django will enforce beta+order uniqueness, but we want
             # to disable this to allow for mid-beta inserts. A pre-save trigger
@@ -291,33 +293,29 @@ class Mutation:
         position: Optional[SVGPositionInput],
         annotation: Optional[str],
     ) -> BetaMoveNode:
-        beta_move: models.BetaMove = id.resolve_node(
-            info, ensure_type=models.BetaMove
-        )
-        hold: models.Hold = hold and hold.resolve_node(
-            info, ensure_type=models.Hold
-        )
-        position: BoulderPosition = position and position.to_normalized(
-            beta_move.beta.problem.boulder.image
+        beta_move_dj = id.resolve_node(info, ensure_type=models.BetaMove)
+        hold_dj = hold and hold.resolve_node(info, ensure_type=models.Hold)
+        normal_position = position and position.to_normalized(
+            beta_move_dj.beta.problem.boulder.image
         )
 
         # Because these fields are mutually exclusive, if one of them is passed
         # in the mutation, we need to explicitly set the other to null, rather
         # than leaving it at its previous value
-        if hold and position:
+        if hold_dj and normal_position:
             raise ValidationError("Cannot assign both hold and position")
-        if hold:
-            position = None
-        elif position:
-            hold = None
+        if hold_dj:
+            normal_position = None
+        elif normal_position:
+            hold_dj = None
 
         return resolvers.update(
             info,
-            beta_move,
+            beta_move_dj,
             {
                 "order": order,
-                "hold": hold,
-                "position": position,
+                "hold": hold_dj,
+                "position": normal_position,
                 "annotation": annotation,
             },
             # By default, Django will enforce beta+order uniqueness, but we want

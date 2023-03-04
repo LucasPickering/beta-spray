@@ -4,7 +4,7 @@ import os
 import sys
 
 
-def main():
+def main() -> None:
     """Run administrative tasks."""
     # Settings *have* to be overrided for either dev or prd
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "")

@@ -2,12 +2,16 @@
 
 import django.db.models.deletion
 from django.db import migrations, models
+from django.db.backends.base.schema import BaseDatabaseSchemaEditor
+from django.db.migrations.state import StateApps
 
 import core.fields
 from core.models import BetaMove
 
 
-def set_is_start(apps, schema_editor):
+def set_is_start(
+    apps: StateApps, schema_editor: BaseDatabaseSchemaEditor
+) -> None:
     """
     Initialize the is_start field for all beta moves
     """

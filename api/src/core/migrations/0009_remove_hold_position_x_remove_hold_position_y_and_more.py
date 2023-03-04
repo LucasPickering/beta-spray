@@ -2,11 +2,15 @@
 
 import django.db.models.deletion
 from django.db import migrations, models
+from django.db.backends.base.schema import BaseDatabaseSchemaEditor
+from django.db.migrations.state import StateApps
 
 import core.fields
 
 
-def to_combined_position(apps, schema_editor):
+def to_combined_position(
+    apps: StateApps, schema_editor: BaseDatabaseSchemaEditor
+) -> None:
     """
     Map the two separate position columns into a single stringified one
     """

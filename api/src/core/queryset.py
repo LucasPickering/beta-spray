@@ -1,8 +1,9 @@
 from django.db.models import QuerySet, Value
+from typing_extensions import Self
 
 
 class BetaMoveQuerySet(QuerySet):
-    def remove_group_by_order_by(self):
+    def remove_group_by_order_by(self) -> Self:
         """
         Prevent Django from generating a GROUP BY or ORDER BY clause on this
         query. This is needed in some complex query situations, when Django is
