@@ -45,6 +45,7 @@ class SVGPositionInput:
 class UpdateProblemInput(gql.NodeInput):
     name: gql.auto
     external_link: gql.auto
+    visibility: Optional[models.Visibility]
 
 
 @gql.django.input(models.Beta)
@@ -79,9 +80,17 @@ class Mutation:
             models.Boulder,
             {"name": "boulder", "image": image},
         )
-        problem = resolvers.create(info, models.Problem, {"boulder": boulder})
+        problem = resolvers.create(
+            info,
+            models.Problem,
+            {"boulder": boulder, "owner": info.context.request.user},
+        )
         # User can grab the problem+boulder from the beta
-        return resolvers.create(info, models.Beta, {"problem": problem})
+        return resolvers.create(
+            info,
+            models.Beta,
+            {"problem": problem, "owner": info.context.request.user},
+        )
 
     @gql.relay.input_mutation
     def create_hold(
@@ -184,9 +193,15 @@ class Mutation:
         gql.NodeInput, handle_django_errors=False
     )
 
-    create_beta: BetaNode = gql.django.create_mutation(
-        CreateBetaInput, handle_django_errors=False
-    )
+    @gql.relay.input_mutation
+    def create_beta(self, info: Info, problem: gql.relay.GlobalID) -> BetaNode:
+        problem_dj = problem.resolve_node(info, ensure_type=models.Problem)
+        return resolvers.create(
+            info,
+            models.Beta,
+            {"problem": problem_dj, "owner": info.context.request.user},
+        )
+
     update_beta: BetaNode = gql.django.update_mutation(
         UpdateBetaInput, handle_django_errors=False
     )
@@ -204,6 +219,7 @@ class Mutation:
             {
                 "problem_id": original_beta.problem_id,
                 "name": f"{original_beta.name} 2.0",
+                "owner": info.context.request.user,
             },
         )
         # Copy each move

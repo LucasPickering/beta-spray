@@ -10,7 +10,15 @@ from typing_extensions import Self
 
 from core import util
 from core.fields import BoulderPosition
-from core.models import Beta, BetaMove, BodyPart, Boulder, Hold, Problem
+from core.models import (
+    Beta,
+    BetaMove,
+    BodyPart,
+    Boulder,
+    Hold,
+    Problem,
+    Visibility,
+)
 
 
 @gql.type
@@ -137,6 +145,8 @@ class ProblemNode(relay.Node):
         description="External link, e.g. to Mountain Project"
     )
     created_at: gql.auto = gql.field(description="Date+time of object creation")
+    owner: UserNode = gql.field()
+    visibility: Visibility = gql.field()
     boulder: BoulderNode = gql.field()
     holds: relay.Connection[HoldNode] = gql.django.connection()
     betas: relay.Connection["BetaNode"] = gql.django.connection()
@@ -152,6 +162,7 @@ class BetaNode(relay.Node):
 
     name: gql.auto = gql.field(description="User-friendly name of the beta")
     created_at: gql.auto = gql.field(description="Date+time of object creation")
+    owner: UserNode = gql.field()
     problem: ProblemNode = gql.field()
     moves: relay.Connection["BetaMoveNode"] = gql.django.connection()
 
