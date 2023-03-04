@@ -154,6 +154,11 @@ class UserNode(relay.Node):
         exposed to self.
         """
         # TODO only expose to current user
+        # Unfortunately this triggers a new query every time it's run, since
+        # we're not accessing a property on the model (it explicitly queries).
+        # I think the only way to fix this would be to define our own model,
+        # at which point we should just ditch django-guest-user and add a new
+        # user model with is_guest
         return is_guest_user(self)
 
 
@@ -186,8 +191,12 @@ class ProblemNode(relay.Node, PermissionsMixin):
     owner: UserNode = gql.field()
     visibility: Visibility = gql.field()
     boulder: BoulderNode = gql.field()
-    holds: relay.Connection["HoldNode"] = gql.django.connection()
-    betas: relay.Connection["BetaNode"] = gql.django.connection()
+    holds: relay.Connection["HoldNode"] = gql.django.connection(
+        prefetch_related="holds"
+    )
+    betas: relay.Connection["BetaNode"] = gql.django.connection(
+        prefetch_related="betas"
+    )
 
 
 @gql.django.type(Hold)
@@ -203,7 +212,9 @@ class HoldNode(relay.Node, PermissionsMixin):
         description="Informative text related to the hold, created by the user"
     )
 
-    @gql.field
+    @gql.django.field(
+        select_related=["problem__boulder"], only=["problem__boulder__image"]
+    )
     def position(self) -> SVGPosition:
         return SVGPosition.from_boulder_position(
             self.position, self.problem.boulder.image
@@ -222,7 +233,9 @@ class BetaNode(relay.Node, PermissionsMixin):
     created_at: gql.auto = gql.field(description="Date+time of object creation")
     owner: UserNode = gql.field()
     problem: ProblemNode = gql.field()
-    moves: relay.Connection["BetaMoveNode"] = gql.django.connection()
+    moves: relay.Connection["BetaMoveNode"] = gql.django.connection(
+        prefetch_related="moves"
+    )
 
 
 @gql.django.type(BetaMove)
@@ -251,12 +264,16 @@ class BetaMoveNode(relay.Node, PermissionsMixin):
         description="Informative text related to the move, created by the user"
     )
     # TODO is there a better way to represent mutually exclusive fields?
-    hold: Optional[HoldNode] = gql.field(
+    hold: Optional[HoldNode] = gql.django.field(
         description="The optional hold that this move is attached to. If null,"
         " the move is 'free', e.g. a flag or smear."
     )
 
-    @gql.field(description="Position of a free move. Null for attached moves.")
+    @gql.django.field(
+        description="Position of a free move. Null for attached moves.",
+        select_related=["beta__problem__boulder"],
+        only=["beta__problem__boulder__image"],
+    )
     def position(self) -> Optional[SVGPosition]:
         # Note: You may be tempted to have this return the hold position when
         # available so the frontend doesn't have to handle that logic. But wait!
@@ -273,11 +290,11 @@ class Query:
     boulders: relay.Connection[BoulderNode] = gql.django.connection(
         description="Access boulders by list"
     )
-    boulder: Optional[BoulderNode] = relay.node(
+    boulder: Optional[BoulderNode] = gql.django.node(
         description="Get a boulder by ID"
     )
 
-    @relay.connection
+    @gql.django.connection
     def problems(
         self,
         info: Info,
@@ -317,10 +334,10 @@ class Query:
 
         return Problem.objects.filter(q)
 
-    problem: Optional[ProblemNode] = relay.node(
+    problem: Optional[ProblemNode] = gql.django.node(
         description="Get a problem by ID"
     )
-    beta: Optional[BetaNode] = relay.node(description="Get a beta by ID")
+    beta: Optional[BetaNode] = gql.django.node(description="Get a beta by ID")
 
     # TODO rename return type to CurrentUser after
     # https://github.com/strawberry-graphql/strawberry/issues/2302
