@@ -156,9 +156,9 @@ class Beta(models.Model):
         vertical list of increasing orders.
         """
 
-        if direction == "up":
+        if direction == "down":
             order_expr = F("order") + 1
-        elif direction == "down":
+        elif direction == "up":
             order_expr = F("order") - 1
         else:
             raise ValueError(f"Unexpected slide direction: {direction}")
