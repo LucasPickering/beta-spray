@@ -74,21 +74,27 @@ export function moveArrayElement<T>(
 }
 
 /**
- * Map the values of an object, returning a new object
+ * Map the values of an object, returning a new object. The objects can
+ * optionally have disparate value types, as long as the mapper function is
+ * compliant with the input/output signatures.
+ * @template O1 The type of the input object
+ * @template O2 The type of the output object (must have the same key type as O1)
  * @param obj Object to map
  * @param mapper Function that maps a single value
  * @returns An object of equal length as the input, with each value mapped
  */
-export function mapValues<K extends string, V1, V2>(
-  obj: Record<K, V1>,
-  mapper: (value: V1, key: K) => V2
-): Record<K, V2> {
-  return Object.entries<V1>(obj).reduce((acc, [key, value]) => {
-    // Object.entries is shitty and wipes out key type, so we have to add it back
-    acc[key as K] = mapper(value, key as K);
+export function mapValues<
+  O1 extends Record<string, unknown>,
+  O2 extends Record<keyof O1, unknown>
+>(obj: O1, mapper: <K extends keyof O1>(value: O1[K], key: K) => O2[K]): O2 {
+  type K = keyof O1;
+  // We need some type coercion in here, to account for non-uniform value types.
+  return Object.entries(obj).reduce((acc, [key, value]) => {
+    // Cheeky little type coercion, since Object.entries sucks
+    acc[key as K] = mapper(value as O1[K], key as K);
     return acc;
     // Technically this assertion isn't true until the loop is done iterating
-  }, {} as Record<K, V2>);
+  }, {} as O2);
 }
 
 /**
