@@ -128,7 +128,7 @@ class Mutation:
             source = models.HoldAnnotationSource.AUTO
 
         # Create the hold, then link it to the problem
-        hold = resolvers.create(
+        hold_dj = resolvers.create(
             info,
             models.Hold,
             {
@@ -141,15 +141,15 @@ class Mutation:
             info,
             models.ProblemHold,
             {
-                "problem": problem,
-                "hold": hold,
+                "problem": problem_dj,
+                "hold": hold_dj,
                 # Regardless of how the *position* of the hold was selected,
                 # the user is the one that assigned it to this problem
                 "source": models.HoldAnnotationSource.USER,
             },
         )
 
-        return hold
+        return hold_dj
 
     @gql.relay.input_mutation
     def update_hold(
