@@ -1,15 +1,22 @@
-import { Box, Skeleton, Typography, TypographyProps } from "@mui/material";
+import {
+  Box,
+  ListItemIcon,
+  ListItemText,
+  MenuItem,
+  Skeleton,
+  Typography,
+  TypographyProps,
+} from "@mui/material";
 import { withQuery } from "relay-query-wrapper";
 import { problemQuery } from "../queries";
 import { queriesProblemQuery } from "../__generated__/queriesProblemQuery.graphql";
 import { graphql, useFragment } from "react-relay";
 import { ProblemMetadata_problemNode$key } from "./__generated__/ProblemMetadata_problemNode.graphql";
-import useMutation from "util/useMutation";
-import { ProblemMetadata_updateProblemMutation } from "./__generated__/ProblemMetadata_updateProblemMutation.graphql";
-import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
-import { validateExternalLink } from "util/validator";
 import ExternalProblemLink from "components/common/ExternalProblemLink";
-import Editable from "components/common/Editable";
+import { Settings as IconSettings } from "@mui/icons-material";
+import ProblemSettings from "./ProblemSettings";
+import { useState } from "react";
+import ActionsMenu from "components/common/ActionsMenu";
 
 interface Props {
   problemKey: ProblemMetadata_problemNode$key;
@@ -30,76 +37,50 @@ const ProblemMetadata: React.FC<Props> = ({ problemKey }) => {
   const problem = useFragment(
     graphql`
       fragment ProblemMetadata_problemNode on ProblemNode {
+        ...ProblemSettings_problemNode
         id
         name
         externalLink
+        owner {
+          username
+        }
       }
     `,
     problemKey
   );
 
-  const { commit: updateProblem, state: updateState } =
-    useMutation<ProblemMetadata_updateProblemMutation>(graphql`
-      mutation ProblemMetadata_updateProblemMutation(
-        $input: UpdateProblemInput!
-      ) {
-        updateProblem(input: $input) {
-          id
-          name
-          externalLink
-        }
-      }
-    `);
-
-  const onChange = ({
-    name,
-    externalLink,
-  }: {
-    name?: string;
-    externalLink?: string;
-  }): void => {
-    updateProblem({
-      variables: {
-        input: {
-          id: problem.id,
-          name,
-          externalLink,
-        },
-      },
-      optimisticResponse: {
-        updateProblem: {
-          id: problem.id,
-          name: name ?? problem.name,
-          externalLink: externalLink ?? problem.externalLink,
-        },
-      },
-    });
-  };
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   return (
     <>
       <Box>
-        <Typography {...nameTypographyProps}>
-          <Editable
-            value={problem.name}
-            placeholder="Problem Name"
-            onChange={(newValue) => onChange({ name: newValue })}
-          />
-        </Typography>
-
-        <Editable
-          value={problem.externalLink}
-          placeholder="External Link"
-          validator={validateExternalLink}
-          onChange={(newValue) => onChange({ externalLink: newValue })}
+        <Box
+          display="flex"
+          flexDirection="row"
+          justifyContent="space-between"
+          alignItems="start"
         >
-          <ExternalProblemLink />
-        </Editable>
+          <Typography {...nameTypographyProps}>{problem.name}</Typography>
+
+          <ActionsMenu title="Problem Actions">
+            <MenuItem onClick={() => setIsSettingsOpen(true)}>
+              <ListItemIcon>
+                <IconSettings />
+              </ListItemIcon>
+              <ListItemText>Settings</ListItemText>
+            </MenuItem>
+          </ActionsMenu>
+        </Box>
+
+        <ExternalProblemLink>{problem.externalLink}</ExternalProblemLink>
+
+        <Typography>Uploaded by {problem.owner.username}</Typography>
       </Box>
 
-      <MutationErrorSnackbar
-        message="Error updating problem"
-        state={updateState}
+      <ProblemSettings
+        problemKey={problem}
+        open={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
       />
     </>
   );
@@ -109,8 +90,15 @@ export default withQuery<queriesProblemQuery, Props>({
   query: problemQuery,
   dataToProps: (data) => data.problem && { problemKey: data.problem },
   fallbackElement: (
-    <Typography {...nameTypographyProps}>
-      <Skeleton />
-    </Typography>
+    <>
+      {/* Problem name */}
+      <Typography {...nameTypographyProps}>
+        <Skeleton />
+      </Typography>
+      {/* Uploader */}
+      <Typography>
+        <Skeleton />
+      </Typography>
+    </>
   ),
 })(ProblemMetadata);
