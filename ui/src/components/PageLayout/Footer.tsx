@@ -1,5 +1,5 @@
 import { Box, Divider, Link, Stack, Typography } from "@mui/material";
-import { IconGitHub, IconMountainProject } from "assets";
+import { IconGitHub, IconInstagram } from "assets";
 import useIsWide from "util/useIsWide";
 
 const Footer: React.FC = () => {
@@ -22,14 +22,14 @@ const Footer: React.FC = () => {
             <div>Created by Lucas Pickering</div>
           </div>
 
-          <Stack direction="row" alignItems="center" spacing={1}>
+          <Stack direction="row" alignItems="center" spacing={1.5}>
             <div>Feedback?</div>
 
             <Link href="https://github.com/LucasPickering/beta-spray">
               <IconGitHub />
             </Link>
-            <Link href="https://www.mountainproject.com/forum/topic/123244142">
-              <IconMountainProject />
+            <Link href="https://www.instagram.com/lucas_pickles/">
+              <IconInstagram />
             </Link>
           </Stack>
         </Stack>

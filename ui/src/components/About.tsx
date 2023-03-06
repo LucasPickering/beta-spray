@@ -1,5 +1,5 @@
 import { Link, Stack, Typography } from "@mui/material";
-import { IconGitHub, IconMountainProject } from "assets";
+import { IconGitHub, IconInstagram } from "assets";
 
 const About: React.FC = () => (
   <>
@@ -22,12 +22,12 @@ const About: React.FC = () => (
       type the words, etc.
     </Typography>
 
-    <Stack direction="row" alignItems="center" spacing={2}>
+    <Stack direction="row" alignItems="center" spacing={3}>
       <Link href="https://github.com/LucasPickering/beta-spray">
         <IconGitHub fontSize="large" />
       </Link>
-      <Link href="https://www.mountainproject.com/forum/topic/123244142">
-        <IconMountainProject fontSize="large" />
+      <Link href="https://www.instagram.com/lucas_pickles/">
+        <IconInstagram fontSize="large" />
       </Link>
     </Stack>
   </>
