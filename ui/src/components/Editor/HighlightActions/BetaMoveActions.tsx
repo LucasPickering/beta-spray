@@ -87,7 +87,7 @@ const BetaMoveActions: React.FC<Props> = ({ betaKey }) => {
   return (
     <>
       <ActionButtons
-        noun="Hold"
+        noun={`Move #${highlightedMove?.order ?? ""}`}
         editingAnnotation={isEditing}
         annotation={highlightedMove?.annotation}
         onEditAnnotation={onOpen}
