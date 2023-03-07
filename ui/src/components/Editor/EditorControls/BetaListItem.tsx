@@ -93,6 +93,7 @@ const BetaListItem: React.FC<Props> = ({
               onDelete(beta.id);
             }
           }}
+          sx={({ palette }) => ({ color: palette.error.main })}
         >
           <ListItemIcon>
             <IconDelete />
