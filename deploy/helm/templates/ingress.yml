@@ -5,6 +5,9 @@ metadata:
   namespace: "{{ .Release.Namespace }}"
   annotations:
     kubernetes.io/ingress.class: "nginx"
+    # This shouldn't be necessary since Cloudflare shouldn't let any HTTP
+    # through to us, but let's be extra safe
+    nginx.org/redirect-to-https: "true"
     nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
     nginx.ingress.kubernetes.io/upstream-vhost: "{{ .Values.staticAssetsHost }}"
@@ -39,6 +42,9 @@ metadata:
   namespace: "{{ .Release.Namespace }}"
   annotations:
     kubernetes.io/ingress.class: "nginx"
+    # This shouldn't be necessary since Cloudflare shouldn't let any HTTP
+    # through to us, but let's be extra safe
+    nginx.org/redirect-to-https: "true"
     nginx.ingress.kubernetes.io/from-to-www-redirect: "true"
     # API doesn't run HTTPS
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
