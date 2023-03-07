@@ -3,7 +3,6 @@ import { graphql, usePaginationFragment } from "react-relay";
 import ProblemCard from "./ProblemCard";
 import BoulderImageUpload from "./BoulderImageUpload";
 import { ProblemList_query$key } from "./__generated__/ProblemList_query.graphql";
-import { ProblemList_deleteProblemMutation } from "./__generated__/ProblemList_deleteProblemMutation.graphql";
 import { ProblemList_createBoulderWithFriendsMutation } from "./__generated__/ProblemList_createBoulderWithFriendsMutation.graphql";
 import useMutation from "util/useMutation";
 import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
@@ -65,17 +64,6 @@ const ProblemList: React.FC<Props> = ({ queryKey }) => {
         }
       }
     `);
-  const { commit: deleteProblem, state: deleteState } =
-    useMutation<ProblemList_deleteProblemMutation>(graphql`
-      mutation ProblemList_deleteProblemMutation(
-        $input: NodeInput!
-        $connections: [ID!]!
-      ) {
-        deleteProblem(input: $input) {
-          id @deleteEdge(connections: $connections) @deleteRecord
-        }
-      }
-    `);
 
   return (
     <>
@@ -128,20 +116,7 @@ const ProblemList: React.FC<Props> = ({ queryKey }) => {
 
       {problems.edges.map(({ node }) => (
         <ProblemListGridItem key={node.id}>
-          <ProblemCard
-            problemKey={node}
-            onDelete={(problemId) =>
-              deleteProblem({
-                variables: {
-                  input: { id: problemId },
-                  connections: [problems.__id],
-                },
-                optimisticResponse: {
-                  deleteProblem: { id: problemId },
-                },
-              })
-            }
-          />
+          <ProblemCard problemKey={node} />
         </ProblemListGridItem>
       ))}
 
@@ -156,10 +131,6 @@ const ProblemList: React.FC<Props> = ({ queryKey }) => {
       <MutationErrorSnackbar
         message="Error uploading problem"
         state={createState}
-      />
-      <MutationErrorSnackbar
-        message="Error deleting problem"
-        state={deleteState}
       />
     </>
   );

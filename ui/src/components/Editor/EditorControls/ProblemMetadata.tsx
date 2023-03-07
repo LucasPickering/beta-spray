@@ -10,13 +10,21 @@ import {
 import { withQuery } from "relay-query-wrapper";
 import { problemQuery } from "../queries";
 import { queriesProblemQuery } from "../__generated__/queriesProblemQuery.graphql";
-import { graphql, useFragment } from "react-relay";
+import { ConnectionHandler, graphql, useFragment } from "react-relay";
 import { ProblemMetadata_problemNode$key } from "./__generated__/ProblemMetadata_problemNode.graphql";
 import ExternalProblemLink from "components/common/ExternalProblemLink";
-import { Settings as IconSettings } from "@mui/icons-material";
+import {
+  Delete as IconDelete,
+  Settings as IconSettings,
+} from "@mui/icons-material";
 import ProblemSettings from "./ProblemSettings";
 import { useState } from "react";
 import ActionsMenu from "components/common/ActionsMenu";
+import { ProblemMetadata_deleteProblemMutation } from "./__generated__/ProblemMetadata_deleteProblemMutation.graphql";
+import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
+import useMutation from "util/useMutation";
+import { useNavigate } from "react-router-dom";
+import MutationLoadingBackdrop from "components/common/LoadingBackdrop";
 
 interface Props {
   problemKey: ProblemMetadata_problemNode$key;
@@ -49,7 +57,20 @@ const ProblemMetadata: React.FC<Props> = ({ problemKey }) => {
     problemKey
   );
 
+  const navigate = useNavigate();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  const { commit: deleteProblem, state: deleteState } =
+    useMutation<ProblemMetadata_deleteProblemMutation>(graphql`
+      mutation ProblemMetadata_deleteProblemMutation(
+        $input: NodeInput!
+        $connections: [ID!]!
+      ) {
+        deleteProblem(input: $input) {
+          id @deleteRecord @deleteEdge(connections: $connections)
+        }
+      }
+    `);
 
   return (
     <>
@@ -69,18 +90,65 @@ const ProblemMetadata: React.FC<Props> = ({ problemKey }) => {
               </ListItemIcon>
               <ListItemText>Settings</ListItemText>
             </MenuItem>
+            <MenuItem
+              onClick={() => {
+                if (
+                  window.confirm(
+                    `Are you sure you want to delete ${problem.name}?`
+                  )
+                ) {
+                  deleteProblem({
+                    variables: {
+                      input: { id: problem.id },
+                      connections: [
+                        ConnectionHandler.getConnectionID(
+                          "root",
+                          "ProblemList_query_problems"
+                        ),
+                      ],
+                    },
+                    // Intentionally exclude optimistic response - we don't want
+                    // to show the problem as deleted until it really is
+                    onCompleted(data) {
+                      if (data) {
+                        navigate("/");
+                      }
+                    },
+                    updater(store) {
+                      // TODO figure out why the @deleteEdge doesn't work and
+                      // remove this
+                      store.invalidateStore();
+                    },
+                  });
+                }
+              }}
+              sx={({ palette }) => ({ color: palette.error.main })}
+            >
+              <ListItemIcon>
+                <IconDelete />
+              </ListItemIcon>
+              <ListItemText>Delete</ListItemText>
+            </MenuItem>
           </ActionsMenu>
         </Box>
 
         <ExternalProblemLink>{problem.externalLink}</ExternalProblemLink>
 
-        <Typography>Uploaded by {problem.owner.username}</Typography>
+        <Typography>Shared by {problem.owner.username}</Typography>
       </Box>
 
       <ProblemSettings
         problemKey={problem}
         open={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
+      />
+      <MutationLoadingBackdrop
+        mutationState={deleteState}
+        message="Deleting problem…"
+      />
+      <MutationErrorSnackbar
+        message="Error deleting problem"
+        state={deleteState}
       />
     </>
   );

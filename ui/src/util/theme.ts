@@ -44,6 +44,13 @@ const theme = createTheme({
         variant: "filled",
       },
     },
+    MuiBackdrop: {
+      styleOverrides: {
+        root: {
+          zIndex: 1500, // Need to beat drawer and SVG drag layer
+        },
+      },
+    },
     MuiButtonBase: {
       defaultProps: {
         LinkComponent: LinkBehavior,
@@ -94,6 +101,14 @@ const theme = createTheme({
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore 2322
         component: LinkBehavior,
+      },
+    },
+    MuiListItemIcon: {
+      styleOverrides: {
+        root: {
+          // Allows icon to inherit color from the list item
+          color: "unset",
+        },
       },
     },
     MuiSnackbar: {

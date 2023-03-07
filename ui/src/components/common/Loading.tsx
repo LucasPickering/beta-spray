@@ -1,6 +1,6 @@
-import { Box, CircularProgress } from "@mui/material";
+import { Box, CircularProgress, Typography } from "@mui/material";
 
-type Props = Pick<
+type Props = { message?: string } & Pick<
   React.ComponentProps<typeof CircularProgress>,
   "color" | "size" | "variant"
 > &
@@ -14,16 +14,24 @@ type Props = Pick<
  * *Warning:* Do *not* use this from the app root, because it
  * pulls in Material UI, which we don't want in the entrypoint chunk.
  */
-const Loading: React.FC<Props> = ({ color, size, variant, ...rest }) => (
+const Loading: React.FC<Props> = ({
+  message,
+  color,
+  size,
+  variant,
+  ...rest
+}) => (
   <Box
     display="flex"
     justifyContent="center"
     alignItems="center"
+    flexDirection="column"
     width="100%"
     height="100%"
     {...rest}
   >
     <CircularProgress color={color} size={size} variant={variant} />
+    {message && <Typography variant="h6">{message}</Typography>}
   </Box>
 );
 

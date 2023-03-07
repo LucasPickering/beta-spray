@@ -1,31 +1,24 @@
 import {
   Card,
   CardActionArea,
-  CardActions,
   CardContent,
   CardMedia,
   Skeleton,
   Typography,
 } from "@mui/material";
 import { graphql, useFragment } from "react-relay";
-import { Delete as IconDelete } from "@mui/icons-material";
 import { ProblemCard_problemNode$key } from "./__generated__/ProblemCard_problemNode.graphql";
 import LinkBehavior from "components/common/LinkBehavior";
 import { isDefined } from "util/func";
-import TooltipIconButton from "components/common/TooltipIconButton";
 import ExternalProblemLink from "components/common/ExternalProblemLink";
 
 const dateFormat = new Intl.DateTimeFormat(undefined, { dateStyle: "long" });
 
 interface Props {
   problemKey: ProblemCard_problemNode$key;
-  /**
-   * Called to delete, *after* confirmation dialog
-   */
-  onDelete?: (problemId: string) => void;
 }
 
-const ProblemCard: React.FC<Props> = ({ problemKey, onDelete }) => {
+const ProblemCard: React.FC<Props> = ({ problemKey }) => {
   const problem = useFragment(
     graphql`
       fragment ProblemCard_problemNode on ProblemNode {
@@ -96,26 +89,6 @@ const ProblemCard: React.FC<Props> = ({ problemKey, onDelete }) => {
           {dateFormat.format(new Date(problem.createdAt))}
         </Typography>
       </CardContent>
-
-      {onDelete && (
-        <CardActions sx={{ justifyContent: "end" }}>
-          <TooltipIconButton
-            title="Delete Problem"
-            color="error"
-            onClick={() => {
-              if (
-                window.confirm(
-                  `Are you sure you want to delete ${problem.name}?`
-                )
-              ) {
-                onDelete(problem.id);
-              }
-            }}
-          >
-            <IconDelete />
-          </TooltipIconButton>
-        </CardActions>
-      )}
     </Card>
   );
 };
