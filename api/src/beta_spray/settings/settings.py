@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     "debug_toolbar",  # Disabled in prod via INTERNAL_IPS
     "strawberry.django",
     "strawberry_django_plus",
+    "social_django",
     "guest_user",
     "core",
 ]
@@ -51,6 +52,51 @@ MIDDLEWARE = [
     # Uncomment to test UI loading state
     # "core.middleware.TimeDelayMiddleware",
 ]
+
+# Auth
+AUTHENTICATION_BACKENDS = [
+    "social_core.backends.google.GoogleOAuth2",
+    # Needed for admin/testing account logins
+    "django.contrib.auth.backends.ModelBackend",
+    "guest_user.backends.GuestBackend",
+]
+GUEST_USER_NAME_GENERATOR = "guest_user.functions.generate_friendly_username"
+SOCIAL_AUTH_JSONFIELD_ENABLED = True
+SOCIAL_AUTH_PIPELINE = (
+    "social_core.pipeline.social_auth.social_details",
+    "social_core.pipeline.social_auth.social_uid",
+    "social_core.pipeline.social_auth.social_user",
+    "social_core.pipeline.social_auth.auth_allowed",
+    "social_core.pipeline.social_auth.associate_by_email",
+    "social_core.pipeline.user.create_user",
+    "social_core.pipeline.social_auth.associate_user",
+    "social_core.pipeline.social_auth.load_extra_data",
+    "social_core.pipeline.user.user_details",
+    "core.pipeline.convert_guest_user",
+)
+# Disable protection for the email field, because we want to populate it when
+# converting guest users. Keep it "immutable" though, meaning it won't be
+# updated if not empty.
+SOCIAL_AUTH_NO_DEFAULT_PROTECTED_USER_FIELDS = True
+SOCIAL_AUTH_PROTECTED_USER_FIELDS = [
+    "username",
+    "id",
+    "pk",
+    "password",
+    "is_active",
+    "is_staff",
+    "is_superuser",
+]
+SOCIAL_AUTH_IMMUTABLE_USER_FIELDS = ["email"]
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = "/"
+# Providers
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get("BETA_SPRAY_GOOGLE_CLIENT_ID")
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get(
+    "BETA_SPRAY_GOOGLE_CLIENT_SECRET"
+)
+# Disable `profile` scope, we don't want any real names
+SOCIAL_AUTH_GOOGLE_OAUTH2_IGNORE_DEFAULT_SCOPE = True
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ["openid", "email"]
 
 ROOT_URLCONF = "beta_spray.urls"
 
@@ -102,14 +148,6 @@ DBBACKUP_MEDIA_FILENAME_TEMPLATE = "backup-media-{datetime}.{extension}"
 # 3 days worth of history
 DBBACKUP_CLEANUP_KEEP = 12
 DBBACKUP_CLEANUP_KEEP_MEDIA = 12
-
-AUTHENTICATION_BACKENDS = [
-    "django.contrib.auth.backends.ModelBackend",
-    "guest_user.backends.GuestBackend",
-]
-
-GUEST_USER_NAME_GENERATOR = "guest_user.functions.generate_friendly_username"
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/

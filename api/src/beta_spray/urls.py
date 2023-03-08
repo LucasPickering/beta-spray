@@ -21,20 +21,20 @@ from strawberry.django.views import GraphQLView
 
 from core.schema import schema
 
-api_routes = [
-    path("admin/", admin.site.urls),
-    # This is a little concerning, because we allow file uploads:
-    # https://github.com/strawberry-graphql/strawberry/issues/1710
-    path("graphql", GraphQLView.as_view(schema=schema)),
-]
-
-if settings.DEBUG:
-    api_routes.append(path("__debug__/", include("debug_toolbar.urls")))
-
 urlpatterns = [
-    path("api/", include(api_routes)),
+    path(
+        "api/",
+        include(
+            [
+                path("admin/", admin.site.urls),
+                path("social/", include("social_django.urls")),
+                path("graphql", GraphQLView.as_view(schema=schema)),
+                # Disable in prod via INTERNAL_IPS
+                path("__debug__/", include("debug_toolbar.urls")),
+            ]
+        ),
+    ),
 ]
-
 
 # Only include media route in dev
 if settings.MEDIA_ROOT:
