@@ -299,6 +299,9 @@ type Mutation {
     input: NodeInput!
   ): BetaMoveNode!
 
+  """Log out the current user (if any)"""
+  logOut: Void
+
   """
   Create a new boulder from an image, and create a default problem and
   beta along with it.
@@ -579,3 +582,6 @@ enum Visibility {
   UNLISTED
   PUBLIC
 }
+
+"""Represents NULL values"""
+scalar Void

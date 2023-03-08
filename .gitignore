@@ -3,7 +3,7 @@ __pycache__/
 .DS_Store
 .venv/
 .mypy_cache
-
+.env
 build/
 node_modules/
 **/__generated__/

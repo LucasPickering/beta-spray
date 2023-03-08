@@ -26,6 +26,22 @@ pyenv install
 poetry install # Installs dependencies to api/.venv/
 ```
 
+#### Auth
+
+If you want to enable Google logins, you'll need to add Google OAuth client creds:
+
+- [Go here](https://console.cloud.google.com/apis/credentials)
+  - If you don't have access to the Google Project, sorry :/
+- Click Create Credentials > OAuth client ID
+  - Application type = Web application
+  - Name = Something descriptive
+  - Authorized JavaScript origins = `http://localhost:3000`
+  - Authorized redirect URIs = `http://localhost:3000/api/social/complete/google-oauth2/`
+  - Save
+- In the repo:
+  - `cp example.env .env`
+  - Copy in the client ID and secret
+
 ### UI
 
 Requires [nvm](https://github.com/nvm-sh/nvm).

@@ -2,6 +2,7 @@ import random
 from typing import Annotated, NewType, Optional
 
 from django.forms import ValidationError, model_to_dict
+from django.contrib.auth import logout
 from strawberry.types.info import Info
 from strawberry_django_plus import gql
 from strawberry_django_plus.mutations import resolvers
@@ -60,6 +61,13 @@ class UpdateBetaInput(gql.NodeInput):
 
 @gql.type
 class Mutation:
+    @gql.mutation
+    def log_out(self, info: Info) -> None:
+        """
+        Log out the current user (if any)
+        """
+        logout(info.context.request)
+
     @gql.relay.input_mutation
     def create_boulder_with_friends(
         self,
