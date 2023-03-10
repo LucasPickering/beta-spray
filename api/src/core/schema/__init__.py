@@ -3,6 +3,7 @@ from strawberry.custom_scalar import ScalarDefinition
 from strawberry.schema.types.scalar import DEFAULT_SCALAR_REGISTRY
 from strawberry_django_plus import gql, relay
 
+from .extensions import GuestUserExtension
 from .mutation import Mutation
 from .query import Query
 
@@ -21,4 +22,6 @@ DEFAULT_SCALAR_REGISTRY[relay.GlobalID] = ScalarDefinition(
     specified_by_url="https://relay.dev/graphql/objectidentification.html",
 )
 
-schema = gql.Schema(query=Query, mutation=Mutation)
+schema = gql.Schema(
+    query=Query, mutation=Mutation, extensions=[GuestUserExtension]
+)

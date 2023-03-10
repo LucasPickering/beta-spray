@@ -491,10 +491,11 @@ type Query {
   ): BetaNode
 
   """
-  Get data on the requesting user (you). Unautheticated users will have a
-  guest account created.
+  Get data on the requesting user (you). Null for unauthenticated users.
+  Unauthenticated users who have performed a mutation will be logged in
+  as a guest user.
   """
-  currentUser: UserNode!
+  currentUser: UserNode
 }
 
 """
