@@ -227,9 +227,11 @@ class Query:
     beta: Optional[BetaNode] = relay.node(description="Get a beta by ID")
 
     @gql.field()
-    def current_user(self, info: Info) -> UserNode:
+    def current_user(self, info: Info) -> Optional[UserNode]:
         """
-        Get data on the requesting user (you). Unautheticated users will have a
-        guest account created.
+        Get data on the requesting user (you). Null for unauthenticated users.
+        Unauthenticated users who have performed a mutation will be logged in
+        as a guest user.
         """
-        return info.context.request.user
+        user = info.context.request.user
+        return None if user.is_anonymous else user
