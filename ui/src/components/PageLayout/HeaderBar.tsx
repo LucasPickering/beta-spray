@@ -1,4 +1,5 @@
 import {
+  Box,
   Link,
   List,
   ListItem,
@@ -8,6 +9,7 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
+import AccountMenu from "components/Account/AccountMenu";
 import useIsWide from "util/useIsWide";
 import HeaderLink from "../common/HeaderLink";
 import Logo from "../common/Logo";
@@ -75,6 +77,10 @@ const HeaderBar: React.FC<Props> = ({ children }) => {
       )}
 
       {children}
+
+      <Box marginLeft="auto">
+        <AccountMenu />
+      </Box>
     </Toolbar>
   );
 };

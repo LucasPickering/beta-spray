@@ -27,6 +27,14 @@ export function validateString(value: string): string | undefined {
 }
 
 /**
+ * Validate usernames
+ */
+export function validateUsername(value: string): string | undefined {
+  // TODO
+  return value.length <= 20 ? undefined : "bad!";
+}
+
+/**
  * Get the text label for an external link, based on its hostname.
  * @param url A possibly-valid external URL
  * @returns A user-friendly label for the link, e.g. "Mountain Project" for a

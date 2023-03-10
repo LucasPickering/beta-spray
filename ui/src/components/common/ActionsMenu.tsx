@@ -1,7 +1,6 @@
 import { useId, useState } from "react";
-import { Menu } from "@mui/material";
+import { IconButton, Menu } from "@mui/material";
 import { MoreVert as IconMoreVert } from "@mui/icons-material";
-import TooltipIconButton from "./TooltipIconButton";
 
 interface Props {
   title: string;
@@ -26,8 +25,8 @@ const ActionsMenu: React.FC<Props> = ({
 
   return (
     <>
-      <TooltipIconButton
-        title={title}
+      <IconButton
+        aria-label={title}
         aria-controls={actionsOpen ? menuId : undefined}
         aria-haspopup
         aria-expanded={actionsOpen}
@@ -36,7 +35,7 @@ const ActionsMenu: React.FC<Props> = ({
         }
       >
         {icon}
-      </TooltipIconButton>
+      </IconButton>
 
       <Menu
         id={menuId}

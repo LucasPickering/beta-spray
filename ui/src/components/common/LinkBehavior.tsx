@@ -9,8 +9,9 @@ import { Link as RouterLink } from "react-router-dom";
  */
 const LinkBehavior = forwardRef<HTMLAnchorElement, { href: string }>(
   ({ href, ...rest }, ref) => {
-    // If the link is external, just use a raw anchor element
-    if (/^https?:\/\//.test(href)) {
+    // If the link is external, just use a raw anchor element. The auth process
+    // also redirects to API routes, so we need to consider those external
+    if (/^(https?:\/\/|\/api\/)/.test(href)) {
       // Children are being passed implicitly
       // eslint-disable-next-line jsx-a11y/anchor-has-content
       return <a ref={ref} href={href} {...rest} />;
