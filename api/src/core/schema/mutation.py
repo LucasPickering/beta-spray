@@ -1,8 +1,8 @@
 import random
 from typing import Annotated, NewType, Optional
 
-from django.forms import ValidationError, model_to_dict
 from django.contrib.auth import logout
+from django.forms import ValidationError, model_to_dict
 from strawberry.types.info import Info
 from strawberry_django_plus import gql
 from strawberry_django_plus.mutations import resolvers
