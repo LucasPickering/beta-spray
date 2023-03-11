@@ -4,12 +4,18 @@ import Loading from "../common/Loading";
 import AlphaBanner from "./AlphaBanner";
 import Footer from "./Footer";
 import HeaderBar from "./HeaderBar";
+import { queriesCurrentUserQuery } from "util/__generated__/queriesCurrentUserQuery.graphql";
+import { PreloadedQuery } from "react-relay";
 
 interface Props {
+  currentUserKeyQueryRef:
+    | PreloadedQuery<queriesCurrentUserQuery>
+    | null
+    | undefined;
   children?: React.ReactNode;
 }
 
-const PageLayout: React.FC<Props> = ({ children }) => {
+const PageLayout: React.FC<Props> = ({ currentUserKeyQueryRef, children }) => {
   const { breakpoints } = useTheme();
 
   return (
@@ -21,7 +27,7 @@ const PageLayout: React.FC<Props> = ({ children }) => {
       sx={({ palette }) => ({ backgroundColor: palette.background.default })}
     >
       <AppBar position="static">
-        <HeaderBar />
+        <HeaderBar currentUserKeyQueryRef={currentUserKeyQueryRef} />
         <AlphaBanner />
       </AppBar>
 

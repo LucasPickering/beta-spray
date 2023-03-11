@@ -9,8 +9,8 @@ import {
 import { useContext, useEffect, useMemo, useState } from "react";
 import { graphql, useFragment } from "react-relay";
 import { withQuery } from "relay-query-wrapper";
-import { betaQuery } from "../queries";
-import { queriesBetaQuery } from "../__generated__/queriesBetaQuery.graphql";
+import { betaQuery } from "../../../util/queries";
+import { queriesBetaQuery } from "util/__generated__/queriesBetaQuery.graphql";
 import { PlayPauseControls_betaNode$key } from "./__generated__/PlayPauseControls_betaNode.graphql";
 import { EditorVisibilityContext } from "components/Editor/util/context";
 import { useStanceControls } from "../util/stance";

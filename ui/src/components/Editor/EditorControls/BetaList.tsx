@@ -5,8 +5,8 @@ import { BetaList_createBetaMutation } from "./__generated__/BetaList_createBeta
 import { BetaList_deleteBetaMutation } from "./__generated__/BetaList_deleteBetaMutation.graphql";
 import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
 import useMutation from "util/useMutation";
-import { queriesProblemQuery } from "../__generated__/queriesProblemQuery.graphql";
-import { problemQuery } from "../queries";
+import { queriesProblemQuery } from "util/__generated__/queriesProblemQuery.graphql";
+import { problemQuery } from "../../../util/queries";
 import { withQuery } from "relay-query-wrapper";
 import {
   Button,

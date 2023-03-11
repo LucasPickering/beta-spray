@@ -1,5 +1,6 @@
 import {
   AccountCircle as IconAccountCircle,
+  Login as IconLogin,
   Logout as IconLogout,
   Settings as IconSettings,
 } from "@mui/icons-material";
@@ -13,16 +14,22 @@ import {
   MenuItem,
 } from "@mui/material";
 import ActionsMenu from "components/common/ActionsMenu";
+import Loading from "components/common/Loading";
 import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
 import { useState } from "react";
-import { graphql, useLazyLoadQuery } from "react-relay";
+import { graphql, useFragment } from "react-relay";
 import { useNavigate } from "react-router-dom";
+import { withQuery } from "relay-query-wrapper";
+import { currentUserQuery } from "util/queries";
 import useMutation from "util/useMutation";
+import { queriesCurrentUserQuery } from "util/__generated__/queriesCurrentUserQuery.graphql";
 import AccountSettings from "./AccountSettings";
-import { AccountMenuQuery } from "./__generated__/AccountMenuQuery.graphql";
 import { AccountMenu_logOutMutation } from "./__generated__/AccountMenu_logOutMutation.graphql";
+import { AccountMenu_userNode$key } from "./__generated__/AccountMenu_userNode.graphql";
 
-const googleLoginPath = "/api/social/login/google-oauth2/";
+interface Props {
+  userKey: AccountMenu_userNode$key;
+}
 
 /**
  * Component in the top-right indicating account status. There are three
@@ -31,28 +38,26 @@ const googleLoginPath = "/api/social/login/google-oauth2/";
  * - Guest account (new user who's performed a mutation)
  * - Authenticated user (they went through the sign in process)
  */
-const AccountMenu: React.FC = () => {
+const AccountMenu: React.FC<Props> = ({ userKey }) => {
   // Lazy loading is fine here, since this should be part of the first render
   // of every page
   // TODO get this to reload after performing any mutation (hard)
-  const { currentUser } = useLazyLoadQuery<AccountMenuQuery>(
+  const currentUser = useFragment(
     graphql`
-      query AccountMenuQuery {
+      fragment AccountMenu_userNode on UserNode {
         # There's a NoUser variant to indicate not logged in. Intuitively we
         # could just make this nullable, but then it's not possible to invalidate
         # this from an updater, which we want to do from any mutation, to trigger
         # reloading the guest user
-        currentUser {
-          __typename
-          ... on UserNode {
-            username
-            isGuest
-            ...AccountSettings_currentUserNode
-          }
+        __typename
+        ... on UserNode {
+          username
+          isGuest
+          ...AccountSettings_currentUserNode
         }
       }
     `,
-    {}
+    userKey
   );
 
   const { commit: logOut, state: logOutState } =
@@ -67,9 +72,8 @@ const AccountMenu: React.FC = () => {
 
   // Logged Out
   if (currentUser.__typename !== "UserNode") {
-    // TODO google logo and shit
     return (
-      <Button component={Link} href={googleLoginPath}>
+      <Button component={Link} href="/login">
         Log in
       </Button>
     );
@@ -81,10 +85,13 @@ const AccountMenu: React.FC = () => {
       <ActionsMenu title="Account Menu" icon={<IconAccountCircle />}>
         <ListItem>{currentUser.username}</ListItem>
         <Divider />
-        {/* TODO google logo */}
+
         {currentUser.isGuest && (
-          <MenuItem component={Link} href={googleLoginPath}>
-            Log in with Google
+          <MenuItem component={Link} href="/login">
+            <ListItemIcon>
+              <IconLogin />
+            </ListItemIcon>
+            <ListItemText>Log in</ListItemText>
           </MenuItem>
         )}
 
@@ -123,4 +130,8 @@ const AccountMenu: React.FC = () => {
   );
 };
 
-export default AccountMenu;
+export default withQuery<queriesCurrentUserQuery, Props>({
+  query: currentUserQuery,
+  dataToProps: (data) => ({ userKey: data.currentUser }),
+  fallbackElement: <Loading />,
+})(AccountMenu);

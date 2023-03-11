@@ -11,9 +11,9 @@ import { PreloadedQuery } from "react-relay";
 import TooltipIconButton from "components/common/TooltipIconButton";
 import { Link } from "react-router-dom";
 import AddHoldButton from "./AddHoldButton";
-import { queriesProblemQuery } from "../__generated__/queriesProblemQuery.graphql";
+import { queriesProblemQuery } from "util/__generated__/queriesProblemQuery.graphql";
 import HighlightActions from "../HighlightActions/HighlightActions";
-import { queriesBetaQuery } from "../__generated__/queriesBetaQuery.graphql";
+import { queriesBetaQuery } from "util/__generated__/queriesBetaQuery.graphql";
 
 interface Props {
   problemQueryRef: PreloadedQuery<queriesProblemQuery> | null | undefined;
