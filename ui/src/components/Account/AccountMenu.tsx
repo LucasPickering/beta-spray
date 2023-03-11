@@ -38,10 +38,17 @@ const AccountMenu: React.FC = () => {
   const { currentUser } = useLazyLoadQuery<AccountMenuQuery>(
     graphql`
       query AccountMenuQuery {
+        # There's a NoUser variant to indicate not logged in. Intuitively we
+        # could just make this nullable, but then it's not possible to invalidate
+        # this from an updater, which we want to do from any mutation, to trigger
+        # reloading the guest user
         currentUser {
-          username
-          isGuest
-          ...AccountSettings_currentUserNode
+          __typename
+          ... on UserNode {
+            username
+            isGuest
+            ...AccountSettings_currentUserNode
+          }
         }
       }
     `,
@@ -59,7 +66,7 @@ const AccountMenu: React.FC = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   // Logged Out
-  if (!currentUser) {
+  if (currentUser.__typename !== "UserNode") {
     // TODO google logo and shit
     return (
       <Button component={Link} href={googleLoginPath}>

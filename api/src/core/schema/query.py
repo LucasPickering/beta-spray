@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Union
 
 from django.contrib.auth.models import User
 from django.db.models.fields.files import ImageFieldFile
@@ -79,6 +79,19 @@ class SVGPosition:
         return cls(
             x=boulder_position.x * svg_width, y=boulder_position.y * svg_height
         )
+
+
+@gql.type
+class NoUser:
+    """
+    An empty object representing an unauthenticated user. This is essentially
+    a null, but Relay has limitations around store management for null values
+    (you can't invalidate a null value to force a refetch), so we need to
+    provide this instead. And you can't have empty types, so we need a
+    placeholder field.
+    """
+
+    ignore: str = ""
 
 
 @gql.django.type(User)
@@ -227,11 +240,11 @@ class Query:
     beta: Optional[BetaNode] = relay.node(description="Get a beta by ID")
 
     @gql.field()
-    def current_user(self, info: Info) -> Optional[UserNode]:
+    def current_user(self, info: Info) -> Union[UserNode, NoUser]:
         """
         Get data on the requesting user (you). Null for unauthenticated users.
         Unauthenticated users who have performed a mutation will be logged in
         as a guest user.
         """
         user = info.context.request.user
-        return None if user.is_anonymous else user
+        return NoUser() if user.is_anonymous else user

@@ -61,10 +61,21 @@ function useMutation<TMutation extends MutationParameters>(
   }, [isInFlight]);
 
   return {
-    commit: ({ onCompleted, onError, ...rest }) =>
+    commit: ({ updater, onCompleted, onError, ...rest }) =>
       commit({
+        updater(store, mutation) {
+          // If we aren't logged in yet, we expect the API to create a guest
+          // user during this mutation. So invalidate our local currentUser
+          // so it gets reloaded
+          const currentUser = store.getRoot().getLinkedRecord("currentUser");
+          if (currentUser?.getValue("__typename") === "NoUser") {
+            currentUser.invalidateRecord();
+          }
+
+          updater?.(store, mutation);
+        },
         // Track success and error status
-        onCompleted: (response, errors) => {
+        onCompleted(response, errors) {
           // GQL errors will show up here
           if (errors) {
             setState({
@@ -74,11 +85,9 @@ function useMutation<TMutation extends MutationParameters>(
           } else {
             setState({ status: "success" });
           }
-          if (onCompleted) {
-            onCompleted(response, errors);
-          }
+          onCompleted?.(response, errors);
         },
-        onError: (error) => {
+        onError(error) {
           // Error talking to the API
           setState({
             status: "error",

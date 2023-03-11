@@ -349,6 +349,17 @@ type Mutation {
   ): BetaMoveNode!
 }
 
+"""
+An empty object representing an unauthenticated user. This is essentially
+a null, but Relay has limitations around store management for null values
+(you can't invalidate a null value to force a refetch), so we need to
+provide this instead. And you can't have empty types, so we need a
+placeholder field.
+"""
+type NoUser {
+  ignore: String!
+}
+
 """An object with a Globally Unique ID"""
 interface Node {
   """The Globally Unique ID of this object"""
@@ -498,7 +509,7 @@ type Query {
   Unauthenticated users who have performed a mutation will be logged in
   as a guest user.
   """
-  currentUser: UserNode
+  currentUser: UserNodeNoUser!
 }
 
 """
@@ -575,6 +586,8 @@ type UserNode implements Node {
   """
   isGuest: Boolean!
 }
+
+union UserNodeNoUser = UserNode | NoUser
 
 """Visibility of an object within the platform, i.e. who else can see it?"""
 enum Visibility {
