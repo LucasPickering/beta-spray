@@ -5,7 +5,7 @@ import {
 } from "components/Editor/util/context";
 import { graphql, PreloadedQuery, useFragment } from "react-relay";
 import { useZoomPan } from "components/Editor/util/zoom";
-import { queriesProblemQuery } from "../__generated__/queriesProblemQuery.graphql";
+import { queriesProblemQuery } from "util/__generated__/queriesProblemQuery.graphql";
 import NotFound from "components/common/NotFound";
 import BetaEditor from "./BetaEditor/BetaEditor";
 import BoulderImage from "./BoulderImage";
@@ -14,10 +14,10 @@ import HoldEditor from "./HoldEditor/HoldEditor";
 import { EditorSvg_problemNode$key } from "./__generated__/EditorSvg_problemNode.graphql";
 import { usePinch } from "@use-gesture/react";
 import { isDefined } from "util/func";
-import { problemQuery } from "../queries";
+import { problemQuery } from "../../../util/queries";
 import { withQuery } from "relay-query-wrapper";
 import Loading from "components/common/Loading";
-import { queriesBetaQuery } from "../__generated__/queriesBetaQuery.graphql";
+import { queriesBetaQuery } from "util/__generated__/queriesBetaQuery.graphql";
 import ErrorBoundary from "components/common/ErrorBoundary";
 import PanZone from "./PanZone";
 

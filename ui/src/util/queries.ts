@@ -13,6 +13,15 @@
 
 import { graphql } from "react-relay";
 
+export const currentUserQuery = graphql`
+  query queriesCurrentUserQuery {
+    currentUser {
+      ...AccountMenu_userNode
+      ...LogInPage_userNode
+    }
+  }
+`;
+
 /**
  * Query for a single boulder problem
  */

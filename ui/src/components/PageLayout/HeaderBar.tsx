@@ -10,7 +10,9 @@ import {
   Typography,
 } from "@mui/material";
 import AccountMenu from "components/Account/AccountMenu";
+import { PreloadedQuery } from "react-relay";
 import useIsWide from "util/useIsWide";
+import { queriesCurrentUserQuery } from "util/__generated__/queriesCurrentUserQuery.graphql";
 import HeaderLink from "../common/HeaderLink";
 import Logo from "../common/Logo";
 import NavLink from "../common/NavLink";
@@ -22,10 +24,14 @@ const links = [
 ];
 
 interface Props {
+  currentUserKeyQueryRef:
+    | PreloadedQuery<queriesCurrentUserQuery>
+    | null
+    | undefined;
   children?: React.ReactNode;
 }
 
-const HeaderBar: React.FC<Props> = ({ children }) => {
+const HeaderBar: React.FC<Props> = ({ currentUserKeyQueryRef, children }) => {
   // We'll automatically put the links in a drawer on narrow screens
   const isWide = useIsWide();
 
@@ -79,7 +85,7 @@ const HeaderBar: React.FC<Props> = ({ children }) => {
       {children}
 
       <Box marginLeft="auto">
-        <AccountMenu />
+        <AccountMenu queryRef={currentUserKeyQueryRef} />
       </Box>
     </Toolbar>
   );

@@ -8,8 +8,8 @@ import {
   TypographyProps,
 } from "@mui/material";
 import { withQuery } from "relay-query-wrapper";
-import { problemQuery } from "../queries";
-import { queriesProblemQuery } from "../__generated__/queriesProblemQuery.graphql";
+import { problemQuery } from "../../../util/queries";
+import { queriesProblemQuery } from "util/__generated__/queriesProblemQuery.graphql";
 import { ConnectionHandler, graphql, useFragment } from "react-relay";
 import { ProblemMetadata_problemNode$key } from "./__generated__/ProblemMetadata_problemNode.graphql";
 import ExternalProblemLink from "components/common/ExternalProblemLink";

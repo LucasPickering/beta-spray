@@ -116,16 +116,6 @@ const theme = createTheme({
         autoHideDuration: 5000,
       },
     },
-    MuiSvgIcon: {
-      styleOverrides: {
-        root: {
-          // SvgIcon specifies this for fill, but not stroke.
-          // See https://github.com/mui/material-ui/issues/32877
-          // (Can be removed if fixed in MUI)
-          stroke: "currentColor",
-        },
-      },
-    },
     MuiTextField: {
       defaultProps: {
         variant: "standard",
