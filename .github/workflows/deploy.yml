@@ -64,6 +64,8 @@ jobs:
             --set-string hostname="${{ vars.HOSTNAME }}" \
             --set-string databaseBackupBucket="${{ secrets.DATABASE_BACKUP_BUCKET }}" \
             --set-string databaseBackupGcpKey="${{ secrets.DATABASE_BACKUP_GCP_KEY }}" \
+            --set-string googleOauthClientId="${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}" \
+            --set-string googleOauthClientSecret="${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}" \
             --set-string mediaBucket="${{ secrets.MEDIA_BUCKET }}" \
             --set-string staticAssetsHost=storage.googleapis.com \
             --set-string staticAssetsBucket="${{ secrets.STATIC_ASSETS_BUCKET }}" \

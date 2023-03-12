@@ -2,6 +2,15 @@ data "cloudflare_zone" "main" {
   name = var.cloudflare_zone
 }
 
+data "terraform_remote_state" "keskne" {
+  backend = "gcs"
+
+  config = {
+    bucket = "keskne-tfstate"
+    prefix = "keskne"
+  }
+}
+
 resource "cloudflare_record" "main" {
   zone_id = data.cloudflare_zone.main.id
   name    = var.dns_a_record

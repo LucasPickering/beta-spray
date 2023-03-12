@@ -51,6 +51,16 @@ spec:
                 secretKeyRef:
                   name: api-secret-key
                   key: secret-key
+            - name: BETA_SPRAY_GOOGLE_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: google-oauth-client
+                  key: id
+            - name: BETA_SPRAY_GOOGLE_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: google-oauth-client
+                  key: secret
             - name: BETA_SPRAY_MEDIA_BUCKET
               value: "{{ .Values.mediaBucket }}"
             # https://django-storages.readthedocs.io/en/latest/backends/gcloud.html#authentication

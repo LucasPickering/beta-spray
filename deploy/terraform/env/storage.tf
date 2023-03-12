@@ -50,6 +50,6 @@ resource "google_storage_bucket" "database_backup" {
 # Backup SA can upload objects to DB Backup bucket
 resource "google_storage_bucket_iam_binding" "database_backup_write" {
   bucket  = google_storage_bucket.database_backup.name
-  role    = data.terraform_remote_state.core.outputs.database_backup_role
+  role    = var.database_backup_role
   members = ["serviceAccount:${google_service_account.database_backup_service_account.email}"]
 }
