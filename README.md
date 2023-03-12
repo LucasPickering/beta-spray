@@ -30,17 +30,17 @@ poetry install # Installs dependencies to api/.venv/
 
 If you want to enable Google logins, you'll need to add Google OAuth client creds:
 
-- [Go here](https://console.cloud.google.com/apis/credentials)
-  - If you don't have access to the Google Project, sorry :/
-- Click Create Credentials > OAuth client ID
-  - Application type = Web application
-  - Name = Something descriptive
-  - Authorized JavaScript origins = `http://localhost:3000`
-  - Authorized redirect URIs = `http://localhost:3000/api/social/complete/google-oauth2/`
-  - Save
-- In the repo:
-  - `cp example.env .env`
-  - Copy in the client ID and secret
+1. [Go here](https://console.cloud.google.com/apis/credentials)
+   1. If you don't have access to the Google Project, sorry :/
+1. Click Create Credentials > OAuth client ID
+   1. Application type = Web application
+   1. Name = Something descriptive
+   1. Authorized JavaScript origins = `http://localhost:3000`
+   1. Authorized redirect URIs = `http://localhost:3000/api/social/complete/google-oauth2/`
+   1. Save
+1. In the repo:
+   1. `cp example.env .env`
+   1. Copy in the client ID and secret
 
 ### UI
 

@@ -22,6 +22,12 @@ variable "database_backup_bucket" {
   type        = string
 }
 
+variable "database_backup_role" {
+  description = "GCloud IAM role for database backup"
+  type        = string
+  default     = "projects/beta-spray/roles/storage.databaseBackup"
+}
+
 variable "deployment_branch_policy" {
   description = "Deployment branch policy for GitHub Actions Environment"
   type = object({
@@ -45,6 +51,20 @@ variable "dns_cname_records" {
   type        = set(string)
 }
 
+variable "gcp_project_id" {
+  description = "GCP project id"
+  default     = "beta-spray"
+  type        = string
+}
+
+variable "gcp_region" {
+  # Always Free for storage isn't available in east4
+  # https://cloud.google.com/storage/pricing#cloud-storage-always-free
+  description = "GCP region"
+  default     = "us-east1"
+  type        = string
+}
+
 variable "github_owner" {
   description = "GitHub repository owner"
   default     = "LucasPickering"
@@ -62,26 +82,30 @@ variable "github_token" {
   type        = string
 }
 
-variable "media_bucket" {
-  description = "GCS bucket for API media"
+variable "google_oauth_client_id" {
+  description = "Google OAuth 2.0 Client ID (from GCloud Console)"
   type        = string
+  sensitive   = true
 }
 
-variable "gcp_project_id" {
-  description = "GCP project id"
-  default     = "beta-spray"
+variable "google_oauth_client_secret" {
+  description = "Google OAuth 2.0 Client Secret (from GCloud Console)"
   type        = string
-}
-
-variable "gcp_region" {
-  # Always Free for storage isn't available in east4
-  # https://cloud.google.com/storage/pricing#cloud-storage-always-free
-  description = "GCP region"
-  default     = "us-east1"
-  type        = string
+  sensitive   = true
 }
 
 variable "kube_namespace" {
   description = "Kubernetes namespace to deploy into"
   type        = string
+}
+
+variable "media_bucket" {
+  description = "GCS bucket for API media"
+  type        = string
+}
+
+variable "static_assets_bucket" {
+  description = "GCS bucket containing UI static assets (from `core` Terraform)"
+  type        = string
+  default     = "beta-spray-static"
 }

@@ -79,25 +79,28 @@ This setup only needs to be run once, then these creds can be used for all envir
    1. Add `betaspray.net` as the only accessible zone
    1. Create the key
    1. Add `cloudflare_api_token = "<token>"` to the `tfvars` file
-1. Access your Cloudflare Origin CA keyt
+1. Access your Cloudflare Origin CA key
    1. [Go here](https://dash.cloudflare.com/profile/api-tokens)
    1. Click "View" for the Origin CA Key
    1. Add `cloudflare_origin_ca_key = "<key>"` to the `tfvars` file
 1. Follow the steps in the Core section above to create a GitHub token (you can also re-use that token)
    1. Add `github_token = "<token>"` to the `tfvars` file
+1. Create a Google OAuth client (This _should_ be automated but Google doesn't support it :/)
+   1. [Go here](https://console.cloud.google.com/apis/credentials)
+   1. Follow the steps in the main README from here if you get lost
 1. Auth to Google with `gcloud auth login`
 1. ` terraform init -backend-config encryption_key="<key>"`
    1. MAKE SURE TO INCLUDE THE SPACE AT THE BEGINNING, so your shell doesn't store the key in command history
 
 #### Per-Environment Setup
 
-Each environment needs its own Terraform workspace. You can use `terraform workspace list` to see all the current environments (excluding `default`). Each workspace also has a corresponding `tfvars` file, which defines environment-specific variables. Each environment needs to be deploye separately, like so:
+Each environment needs its own Terraform workspace. You can use `terraform workspace list` to see all the current environments (excluding `default`). Each workspace also has a corresponding `tfvars` file, which defines environment-specific variables. The one thing you need to manually configure per environment is to add its paths to the [Google OAuth client](https://console.cloud.google.com/apis/credentials).
 
-Then apply changes with:
+Each environment needs to be deployed separately, like so:
 
 ```sh
 terraform workspace select <environment>
-terraform apply -var-file <environemtn>.tfvars
+terraform apply -var-file <environment>.tfvars
 ```
 
 ## CI
