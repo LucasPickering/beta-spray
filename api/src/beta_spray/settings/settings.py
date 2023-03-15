@@ -65,8 +65,10 @@ SOCIAL_AUTH_JSONFIELD_ENABLED = True
 SOCIAL_AUTH_PIPELINE = (
     "social_core.pipeline.social_auth.social_details",
     "social_core.pipeline.social_auth.social_uid",
-    "social_core.pipeline.social_auth.social_user",
     "social_core.pipeline.social_auth.auth_allowed",
+    "core.pipeline.find_existing_user",
+    # This doesn't do anything currently since we only allow one provider, but
+    # eventually it may be helpful
     "social_core.pipeline.social_auth.associate_by_email",
     "social_core.pipeline.user.create_user",
     "social_core.pipeline.social_auth.associate_user",
