@@ -79,6 +79,8 @@ const AccountMenu: React.FC<Props> = ({ userKey }) => {
     );
   }
 
+  const { isGuest } = currentUser;
+
   // Logged In
   return (
     <>
@@ -86,7 +88,7 @@ const AccountMenu: React.FC<Props> = ({ userKey }) => {
         <ListItem>{currentUser.username}</ListItem>
         <Divider />
 
-        {currentUser.isGuest && (
+        {isGuest && (
           <MenuItem component={Link} href="/login">
             <ListItemIcon>
               <IconLogin />
@@ -95,28 +97,31 @@ const AccountMenu: React.FC<Props> = ({ userKey }) => {
           </MenuItem>
         )}
 
-        <MenuItem onClick={() => setIsSettingsOpen(true)}>
+        <MenuItem disabled={isGuest} onClick={() => setIsSettingsOpen(true)}>
           <ListItemIcon>
             <IconSettings />
           </ListItemIcon>
           <ListItemText>Settings</ListItemText>
         </MenuItem>
-        <MenuItem
-          onClick={() =>
-            logOut({
-              variables: {},
-              onCompleted() {
-                // Reload the page, since a lot of content can change
-                navigate(0);
-              },
-            })
-          }
-        >
-          <ListItemIcon>
-            <IconLogout />
-          </ListItemIcon>
-          <ListItemText>Log out</ListItemText>
-        </MenuItem>
+
+        {!isGuest && (
+          <MenuItem
+            onClick={() =>
+              logOut({
+                variables: {},
+                onCompleted() {
+                  // Reload the page, since a lot of content can change
+                  navigate(0);
+                },
+              })
+            }
+          >
+            <ListItemIcon>
+              <IconLogout />
+            </ListItemIcon>
+            <ListItemText>Log out</ListItemText>
+          </MenuItem>
+        )}
       </ActionsMenu>
 
       <AccountSettings
