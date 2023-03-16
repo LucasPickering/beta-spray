@@ -2,5 +2,6 @@
   "python.linting.mypyArgs": [
     // https://github.com/microsoft/vscode-python/issues/6678
     "--config-file=${workspaceFolder}/api/pyproject.toml"
-  ]
+  ],
+  "typescript.tsdk": "./ui/node_modules/typescript/lib"
 }
