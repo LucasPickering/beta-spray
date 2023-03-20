@@ -8,7 +8,24 @@ import Loading from "components/common/Loading";
 import theme from "util/theme";
 import ErrorBoundary from "components/common/ErrorBoundary";
 import { Helmet, HelmetProvider } from "react-helmet-async";
-import AllRoutes from "./AllRoutes";
+import { Outlet, Route, Routes } from "react-router-dom";
+import NotFound from "components/common/NotFound";
+import PageLayout from "components/PageLayout/PageLayout";
+import About from "./About";
+import TextLayout from "./PageLayout/TextLayout";
+import LogInPage from "./Account/LogInPage";
+import UserQueryProvider from "./UserQueryProvider";
+
+// Code splitting!
+const Home = React.lazy(
+  () => import(/* webpackChunkName: "Home" */ "components/Home/Home")
+);
+const Editor = React.lazy(
+  () =>
+    import(
+      /* webpackChunkName: "Editor", webpackPrefetch: true */ "components/Editor/Editor"
+    )
+);
 
 /**
  * The main visible page content. This should be loaded as a separate chunk from
@@ -31,7 +48,42 @@ const CoreContent: React.FC = () => (
 
           <Suspense fallback={<Loading />}>
             <ErrorBoundary>
-              <AllRoutes />
+              <UserQueryProvider>
+                <Routes>
+                  {/* Fullscreen routes */}
+                  <Route path={"problems/:problemId"} element={<Editor />}>
+                    {/* Just an alias to pre-select beta */}
+                    <Route path="beta/:betaId" element={null} />
+                  </Route>
+
+                  {/* Main route group */}
+                  <Route
+                    element={
+                      <PageLayout>
+                        {/* For some reason this doesn't work inside PageLayout
+                            so we have to stick it here */}
+                        <ErrorBoundary>
+                          <Outlet />
+                        </ErrorBoundary>
+                      </PageLayout>
+                    }
+                  >
+                    <Route index element={<Home />} />
+                    {/* Make text-only pages narrower */}
+                    <Route
+                      element={
+                        <TextLayout>
+                          <Outlet />
+                        </TextLayout>
+                      }
+                    >
+                      <Route path="/about" element={<About />} />
+                      <Route path="/login" element={<LogInPage />} />
+                      <Route path="*" element={<NotFound />} />
+                    </Route>
+                  </Route>
+                </Routes>
+              </UserQueryProvider>
             </ErrorBoundary>
           </Suspense>
         </ThemeProvider>

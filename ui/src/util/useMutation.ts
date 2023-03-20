@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { UserQueryContext } from "components/UserQueryProvider";
+import { useContext, useEffect, useState } from "react";
 import {
   // eslint-disable-next-line no-restricted-syntax
   useMutation as useMutationRelay,
@@ -53,6 +54,7 @@ function useMutation<TMutation extends MutationParameters>(
 } {
   const [commit, isInFlight] = useMutationRelay(mutation, commitMutationFn);
   const [state, setState] = useState<MutationState>({ status: "idle" });
+  const { reloadIfNoUser: reloadUserQuery } = useContext(UserQueryContext);
 
   useEffect(() => {
     if (isInFlight) {
@@ -65,13 +67,8 @@ function useMutation<TMutation extends MutationParameters>(
       commit({
         updater(store, mutation) {
           // If we aren't logged in yet, we expect the API to create a guest
-          // user during this mutation. So invalidate our local currentUser
-          // so it gets reloaded
-          const currentUser = store.getRoot().getLinkedRecord("currentUser");
-          if (currentUser?.getValue("__typename") === "NoUser") {
-            currentUser.invalidateRecord();
-          }
-
+          // user during this mutation. So reload the user
+          reloadUserQuery(store);
           updater?.(store, mutation);
         },
         // Track success and error status

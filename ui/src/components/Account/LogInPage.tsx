@@ -3,10 +3,11 @@ import { IconGoogle } from "assets";
 import Loading from "components/common/Loading";
 import { graphql, useFragment } from "react-relay";
 import { Navigate } from "react-router-dom";
-import { withQuery } from "relay-query-wrapper";
+import { withContextQuery } from "relay-query-wrapper";
 import { currentUserQuery } from "util/queries";
 import { queriesCurrentUserQuery } from "util/__generated__/queriesCurrentUserQuery.graphql";
 import { LogInPage_userNode$key } from "./__generated__/LogInPage_userNode.graphql";
+import { UserQueryContext } from "components/UserQueryProvider";
 
 interface Props {
   userKey: LogInPage_userNode$key;
@@ -60,7 +61,8 @@ const LogInPage: React.FC<Props> = ({ userKey }) => {
   );
 };
 
-export default withQuery<queriesCurrentUserQuery, Props>({
+export default withContextQuery<queriesCurrentUserQuery, Props>({
+  context: UserQueryContext,
   query: currentUserQuery,
   dataToProps: (data) => ({ userKey: data.currentUser }),
   fallbackElement: <Loading />,

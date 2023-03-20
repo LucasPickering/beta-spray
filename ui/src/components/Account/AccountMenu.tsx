@@ -19,13 +19,14 @@ import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
 import { useState } from "react";
 import { graphql, useFragment } from "react-relay";
 import { useNavigate } from "react-router-dom";
-import { withQuery } from "relay-query-wrapper";
+import { withContextQuery } from "relay-query-wrapper";
 import { currentUserQuery } from "util/queries";
 import useMutation from "util/useMutation";
 import { queriesCurrentUserQuery } from "util/__generated__/queriesCurrentUserQuery.graphql";
 import AccountSettings from "./AccountSettings";
 import { AccountMenu_logOutMutation } from "./__generated__/AccountMenu_logOutMutation.graphql";
 import { AccountMenu_userNode$key } from "./__generated__/AccountMenu_userNode.graphql";
+import { UserQueryContext } from "components/UserQueryProvider";
 
 interface Props {
   userKey: AccountMenu_userNode$key;
@@ -41,7 +42,6 @@ interface Props {
 const AccountMenu: React.FC<Props> = ({ userKey }) => {
   // Lazy loading is fine here, since this should be part of the first render
   // of every page
-  // TODO get this to reload after performing any mutation (hard)
   const currentUser = useFragment(
     graphql`
       fragment AccountMenu_userNode on UserNode {
@@ -135,7 +135,8 @@ const AccountMenu: React.FC<Props> = ({ userKey }) => {
   );
 };
 
-export default withQuery<queriesCurrentUserQuery, Props>({
+export default withContextQuery<queriesCurrentUserQuery, Props>({
+  context: UserQueryContext,
   query: currentUserQuery,
   dataToProps: (data) => ({ userKey: data.currentUser }),
   fallbackElement: <Loading />,
