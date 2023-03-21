@@ -27,6 +27,7 @@ import AccountSettings from "./AccountSettings";
 import { AccountMenu_logOutMutation } from "./__generated__/AccountMenu_logOutMutation.graphql";
 import { AccountMenu_userNode$key } from "./__generated__/AccountMenu_userNode.graphql";
 import { UserQueryContext } from "components/UserQueryProvider";
+import UsernameDisplay from "./UsernameDisplay";
 
 interface Props {
   userKey: AccountMenu_userNode$key;
@@ -44,7 +45,7 @@ const AccountMenu: React.FC<Props> = ({ userKey }) => {
   // of every page
   const currentUser = useFragment(
     graphql`
-      fragment AccountMenu_userNode on UserNode {
+      fragment AccountMenu_userNode on UserNodeNoUser {
         # There's a NoUser variant to indicate not logged in. Intuitively we
         # could just make this nullable, but then it's not possible to invalidate
         # this from an updater, which we want to do from any mutation, to trigger
@@ -53,7 +54,8 @@ const AccountMenu: React.FC<Props> = ({ userKey }) => {
         ... on UserNode {
           username
           isGuest
-          ...AccountSettings_currentUserNode
+          ...AccountSettings_userNode
+          ...UsernameDisplay_userNode
         }
       }
     `,
@@ -85,7 +87,9 @@ const AccountMenu: React.FC<Props> = ({ userKey }) => {
   return (
     <>
       <ActionsMenu title="Account Menu" icon={<IconAccountCircle />}>
-        <ListItem>{currentUser.username}</ListItem>
+        <ListItem>
+          <UsernameDisplay userKey={currentUser} />
+        </ListItem>
         <Divider />
 
         {isGuest && (
@@ -125,7 +129,7 @@ const AccountMenu: React.FC<Props> = ({ userKey }) => {
       </ActionsMenu>
 
       <AccountSettings
-        currentUserKey={currentUser}
+        userKey={currentUser}
         open={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
       />

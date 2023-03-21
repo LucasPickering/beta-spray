@@ -22,7 +22,9 @@ declare module "@emotion/react/types" {
   interface Theme extends MuiTheme {}
 }
 
-const theme = createTheme({
+// We have to create the theme in two steps, so we can access palette values in
+// the component style overrides
+const baseTheme = createTheme({
   palette: {
     // https://coolors.co/0f1c2e-1d3557-ffc848-ff9233-1abbdb
     mode: "dark",
@@ -38,110 +40,123 @@ const theme = createTheme({
       translucent: 0.6,
     },
   },
-  components: {
-    MuiAlert: {
-      defaultProps: {
-        variant: "filled",
-      },
-    },
-    MuiBackdrop: {
-      styleOverrides: {
-        root: {
-          zIndex: 1500, // Need to beat drawer and SVG drag layer
+});
+const theme = createTheme(
+  {
+    components: {
+      MuiAlert: {
+        defaultProps: {
+          variant: "filled",
         },
       },
-    },
-    MuiButtonBase: {
-      defaultProps: {
-        LinkComponent: LinkBehavior,
-      },
-    },
-    MuiButton: {
-      defaultProps: {
-        variant: "outlined",
-      },
-    },
-    MuiCard: {
-      styleOverrides: {
-        root: {
-          display: "flex",
-          flexDirection: "column",
-        },
-      },
-    },
-    MuiCardActions: {
-      styleOverrides: {
-        root: {
-          // Staple actions to the bottom of the card
-          marginTop: "auto",
-        },
-      },
-    },
-    MuiIconButton: {
-      styleOverrides: {
-        root: ({ theme }) => ({
-          borderRadius: theme.shape.borderRadius,
-          // The `disabled` override class doesn't work because of specificity,
-          // so we have to do this instead.
-          "&.Mui-disabled": {
-            // Fixes wonky looking SVG icons
-            strokeOpacity: theme.palette.action.disabledOpacity,
+      MuiBackdrop: {
+        styleOverrides: {
+          root: {
+            zIndex: 1500, // Need to beat drawer and SVG drag layer
           },
-        }),
-        sizeSmall: {
-          padding: 1,
         },
       },
-    },
-    MuiLink: {
-      defaultProps: {
-        // I really can't figure out the typing here, pretty sure it's an MUI
-        // bug that they closed as fixed but didn't really fix
-        // https://github.com/mui/material-ui/issues/16846
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore 2322
-        component: LinkBehavior,
-      },
-    },
-    MuiListItemIcon: {
-      styleOverrides: {
-        root: {
-          // Allows icon to inherit color from the list item
-          color: "unset",
+      MuiButtonBase: {
+        defaultProps: {
+          LinkComponent: LinkBehavior,
         },
       },
-    },
-    MuiSnackbar: {
-      defaultProps: {
-        autoHideDuration: 5000,
+      MuiButton: {
+        defaultProps: {
+          variant: "outlined",
+        },
       },
-    },
-    MuiTextField: {
-      defaultProps: {
-        variant: "standard",
+      MuiCard: {
+        styleOverrides: {
+          root: {
+            display: "flex",
+            flexDirection: "column",
+          },
+        },
       },
-    },
-    MuiTooltip: {
-      defaultProps: {
-        enterTouchDelay: 0,
-        leaveTouchDelay: 3000,
+      MuiCardActions: {
+        styleOverrides: {
+          root: {
+            // Staple actions to the bottom of the card
+            marginTop: "auto",
+          },
+        },
       },
-    },
-    MuiTypography: {
-      defaultProps: {
-        // <p> tags aren't actually what we want in most cases, so make them
-        // explicit.
-        // NOTE: do *NOT* override `component` here, or it will effectively
-        // disable the `paragraph` and `variantMapping` props in all places,
-        // since `component` always takes precedence
-        variantMapping: {
-          body1: "div",
-          body2: "div",
-          inherit: "div",
+      MuiIconButton: {
+        styleOverrides: {
+          root: ({ theme }) => ({
+            borderRadius: theme.shape.borderRadius,
+            // The `disabled` override class doesn't work because of specificity,
+            // so we have to do this instead.
+            "&.Mui-disabled": {
+              // Fixes wonky looking SVG icons
+              strokeOpacity: theme.palette.action.disabledOpacity,
+            },
+          }),
+          sizeSmall: {
+            padding: 1,
+          },
+        },
+      },
+      MuiLink: {
+        defaultProps: {
+          // I really can't figure out the typing here, pretty sure it's an MUI
+          // bug that they closed as fixed but didn't really fix
+          // https://github.com/mui/material-ui/issues/16846
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore 2322
+          component: LinkBehavior,
+        },
+      },
+      MuiListItemIcon: {
+        styleOverrides: {
+          root: {
+            // Allows icon to inherit color from the list item
+            color: "unset",
+          },
+        },
+      },
+      MuiSnackbar: {
+        defaultProps: {
+          autoHideDuration: 5000,
+        },
+      },
+      MuiTextField: {
+        defaultProps: {
+          variant: "standard",
+        },
+      },
+      MuiTooltip: {
+        defaultProps: {
+          enterTouchDelay: 0,
+          leaveTouchDelay: 3000,
+        },
+        styleOverrides: {
+          tooltip: {
+            backgroundColor: baseTheme.palette.background.paper,
+            // This seems to be the most prominent shadow in the theme
+            boxShadow: baseTheme.shadows[24],
+            fontSize: baseTheme.typography.subtitle2.fontSize,
+          },
+        },
+      },
+      MuiTypography: {
+        defaultProps: {
+          // <p> tags aren't actually what we want in most cases, so make them
+          // explicit.
+          // NOTE: do *NOT* override `component` here, or it will effectively
+          // disable the `paragraph` and `variantMapping` props in all places,
+          // since `component` always takes precedence
+          variantMapping: {
+            body1: "div",
+            body2: "div",
+            inherit: "div",
+          },
         },
       },
     },
   },
-});
+  baseTheme
+);
 
 export default theme;
