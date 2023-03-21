@@ -32,7 +32,7 @@ import PlayPauseControls from "./EditorPalette/PlayPauseControls";
  * and only block certain parts of the UI as needed. Much better than having
  * one fat loading icon.
  */
-const Editor: React.FC = () => {
+const EditorPage: React.FC = () => {
   const { problemId, betaId } = useParams();
   assertIsDefined(problemId); // Only undefined if routing isn't hooked up right
 
@@ -156,4 +156,4 @@ const Editor: React.FC = () => {
   );
 };
 
-export default Editor;
+export default EditorPage;

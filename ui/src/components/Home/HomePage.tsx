@@ -5,7 +5,7 @@ import ProblemList from "./ProblemList";
 import type { ProblemListQuery as ProblemListQueryType } from "./__generated__/ProblemListQuery.graphql";
 import ProblemListQuery from "./__generated__/ProblemListQuery.graphql";
 
-const Home: React.FC = () => {
+const HomePage: React.FC = () => {
   const [queryRef, loadQuery] =
     useQueryLoader<ProblemListQueryType>(ProblemListQuery);
 
@@ -26,4 +26,4 @@ const Home: React.FC = () => {
   );
 };
 
-export default Home;
+export default HomePage;

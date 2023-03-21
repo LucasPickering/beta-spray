@@ -11,19 +11,19 @@ import { Helmet, HelmetProvider } from "react-helmet-async";
 import { Outlet, Route, Routes } from "react-router-dom";
 import NotFound from "components/common/NotFound";
 import PageLayout from "components/PageLayout/PageLayout";
-import About from "./About";
+import AboutPage from "./AboutPage";
 import TextLayout from "./PageLayout/TextLayout";
 import LogInPage from "./Account/LogInPage";
 import UserQueryProvider from "./UserQueryProvider";
 
 // Code splitting!
-const Home = React.lazy(
-  () => import(/* webpackChunkName: "Home" */ "components/Home/Home")
+const HomePage = React.lazy(
+  () => import(/* webpackChunkName: "Home" */ "components/Home/HomePage")
 );
-const Editor = React.lazy(
+const EditorPage = React.lazy(
   () =>
     import(
-      /* webpackChunkName: "Editor", webpackPrefetch: true */ "components/Editor/Editor"
+      /* webpackChunkName: "Editor", webpackPrefetch: true */ "components/Editor/EditorPage"
     )
 );
 
@@ -51,7 +51,7 @@ const CoreContent: React.FC = () => (
               <UserQueryProvider>
                 <Routes>
                   {/* Fullscreen routes */}
-                  <Route path={"problems/:problemId"} element={<Editor />}>
+                  <Route path={"problems/:problemId"} element={<EditorPage />}>
                     {/* Just an alias to pre-select beta */}
                     <Route path="beta/:betaId" element={null} />
                   </Route>
@@ -68,7 +68,7 @@ const CoreContent: React.FC = () => (
                       </PageLayout>
                     }
                   >
-                    <Route index element={<Home />} />
+                    <Route index element={<HomePage />} />
                     {/* Make text-only pages narrower */}
                     <Route
                       element={
@@ -77,7 +77,7 @@ const CoreContent: React.FC = () => (
                         </TextLayout>
                       }
                     >
-                      <Route path="/about" element={<About />} />
+                      <Route path="/about" element={<AboutPage />} />
                       <Route path="/login" element={<LogInPage />} />
                       <Route path="*" element={<NotFound />} />
                     </Route>

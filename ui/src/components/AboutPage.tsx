@@ -1,7 +1,7 @@
 import { Link, Stack, Typography } from "@mui/material";
 import { IconGitHub, IconInstagram } from "assets";
 
-const About: React.FC = () => (
+const AboutPage: React.FC = () => (
   <>
     <Typography component="h2" variant="h4">
       Why?
@@ -33,4 +33,4 @@ const About: React.FC = () => (
   </>
 );
 
-export default About;
+export default AboutPage;
