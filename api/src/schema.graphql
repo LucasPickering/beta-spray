@@ -580,6 +580,9 @@ type UserNode implements Node {
   """Username"""
   username: String!
 
+  """Is this the authenticated user? False if unauthenticated."""
+  isCurrentUser: Boolean!
+
   """
   Is this user a guest? True if the user has not created an account. Only
   exposed to self.

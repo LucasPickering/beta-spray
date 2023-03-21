@@ -103,6 +103,13 @@ class UserNode(relay.Node):
     username: gql.auto = gql.field(description="Username")
 
     @gql.field
+    def is_current_user(self, info: Info) -> bool:
+        """
+        Is this the authenticated user? False if unauthenticated.
+        """
+        return self.id == info.context.request.user.id
+
+    @gql.field
     def is_guest(self) -> bool:
         """
         Is this user a guest? True if the user has not created an account. Only
@@ -239,6 +246,8 @@ class Query:
     )
     beta: Optional[BetaNode] = relay.node(description="Get a beta by ID")
 
+    # TODO rename return type to CurrentUser after
+    # https://github.com/strawberry-graphql/strawberry/issues/2302
     @gql.field()
     def current_user(self, info: Info) -> Union[UserNode, NoUser]:
         """
