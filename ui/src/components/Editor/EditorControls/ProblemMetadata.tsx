@@ -25,6 +25,7 @@ import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
 import useMutation from "util/useMutation";
 import { useNavigate } from "react-router-dom";
 import MutationLoadingBackdrop from "components/common/LoadingBackdrop";
+import UsernameDisplay from "components/Account/UsernameDisplay";
 
 interface Props {
   problemKey: ProblemMetadata_problemNode$key;
@@ -50,7 +51,7 @@ const ProblemMetadata: React.FC<Props> = ({ problemKey }) => {
         name
         externalLink
         owner {
-          username
+          ...UsernameDisplay_userNode
         }
       }
     `,
@@ -134,7 +135,9 @@ const ProblemMetadata: React.FC<Props> = ({ problemKey }) => {
 
         <ExternalProblemLink>{problem.externalLink}</ExternalProblemLink>
 
-        <Typography>Shared by {problem.owner.username}</Typography>
+        <Typography>
+          Shared by <UsernameDisplay userKey={problem.owner} />
+        </Typography>
       </Box>
 
       <ProblemSettings

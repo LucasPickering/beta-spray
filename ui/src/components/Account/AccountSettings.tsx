@@ -4,10 +4,10 @@ import TextFormField from "components/common/TextFormField";
 import { graphql, useFragment } from "react-relay";
 import useForm from "util/useForm";
 import { validateUsername } from "util/validator";
-import { AccountSettings_currentUserNode$key } from "./__generated__/AccountSettings_currentUserNode.graphql";
+import { AccountSettings_userNode$key } from "./__generated__/AccountSettings_userNode.graphql";
 
 interface Props {
-  currentUserKey: AccountSettings_currentUserNode$key;
+  userKey: AccountSettings_userNode$key;
   open: boolean;
   onClose?: () => void;
 }
@@ -15,18 +15,14 @@ interface Props {
 /**
  * Dialog for editing account settings (username, etc.)
  */
-const AccountSettings: React.FC<Props> = ({
-  currentUserKey,
-  open,
-  onClose,
-}) => {
-  const currentUser = useFragment(
+const AccountSettings: React.FC<Props> = ({ userKey, open, onClose }) => {
+  const user = useFragment(
     graphql`
-      fragment AccountSettings_currentUserNode on UserNode {
+      fragment AccountSettings_userNode on UserNode {
         username
       }
     `,
-    currentUserKey
+    userKey
   );
 
   const {
@@ -36,7 +32,7 @@ const AccountSettings: React.FC<Props> = ({
     onReset,
   } = useForm({
     username: {
-      initialValue: currentUser.username,
+      initialValue: user.username,
       validator: validateUsername,
     },
   });

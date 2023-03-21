@@ -31,7 +31,7 @@ const HelpTextContent: React.FC = () => {
         <strong>Drag a line</strong> to add an intermediate move
       </div>
       <div>
-        <strong>Hover/tap a move or hold</strong> to add notes or delete
+        <strong>Click a move or hold</strong> to add notes or delete
       </div>
       <div>
         <strong>Reorder moves</strong> in the sidebar

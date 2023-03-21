@@ -1,4 +1,4 @@
-import { Button, Grid, Link, Paper } from "@mui/material";
+import { Button, Grid, Link, Paper, Typography } from "@mui/material";
 import { IconGoogle } from "assets";
 import Loading from "components/common/Loading";
 import { graphql, useFragment } from "react-relay";
@@ -17,16 +17,14 @@ const LogInPage: React.FC<Props> = ({ userKey }) => {
   // TODO implement support for ?next= param on this page
   const currentUser = useFragment(
     graphql`
-      fragment LogInPage_userNode on UserNode {
+      fragment LogInPage_userNode on UserNodeNoUser {
         # There's a NoUser variant to indicate not logged in. Intuitively we
         # could just make this nullable, but then it's not possible to invalidate
         # this from an updater, which we want to do from any mutation, to trigger
         # reloading the guest user
         __typename
         ... on UserNode {
-          username
           isGuest
-          ...AccountSettings_currentUserNode
         }
       }
     `,
@@ -42,6 +40,13 @@ const LogInPage: React.FC<Props> = ({ userKey }) => {
     <Grid container justifyContent="center">
       <Grid item xs={10} sm={6}>
         <Paper sx={{ padding: 2 }}>
+          {currentUser.__typename === "UserNode" && currentUser.isGuest && (
+            <Typography component="p" marginBottom={1}>
+              You are currently logged in as a guest user. Sign in below to gain
+              permanent access to your content.
+            </Typography>
+          )}
+
           <Button
             // We're *roughly* following these guidelines
             // https://developers.google.com/identity/branding-guidelines
