@@ -128,7 +128,6 @@ const theme = createTheme(
       },
       MuiTooltip: {
         defaultProps: {
-          enterTouchDelay: 0,
           leaveTouchDelay: 3000,
         },
         styleOverrides: {
