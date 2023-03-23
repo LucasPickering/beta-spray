@@ -57,6 +57,8 @@ npm install
 
 The API container will automatically start `debugpy` and expose it on port 8001. There is already a VSCode debug config defined to attach to this (called `Attach to Django`). This should allow you to breakpoint and debug code from within VSCode. If you've installed dependencies locally (using steps above), VSCode should automatically load them and they should match the path layout used inside the container, meaning you can breakpoint dependency code as well.
 
+If you want to breakpoint something that runs during startup, you can attach the debugger, then trigger a reload by saving any file. The debugger should remain attached through the reload and hit any breakpoints in startup code.
+
 ### Migrations
 
 If you make model changes, you can generate/apply migrations with:

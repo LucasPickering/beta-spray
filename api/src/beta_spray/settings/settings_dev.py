@@ -1,5 +1,4 @@
 import ipaddress
-import os
 import socket
 
 from .settings import *  # noqa: F401,F403
@@ -25,9 +24,3 @@ STATIC_URL = "/api/static/"
 
 MEDIA_ROOT = BASE_DIR / "media"  # noqa F405
 MEDIA_URL = "/api/media/"
-
-# Enable remote debug attachment
-if os.environ.get("RUN_MAIN") or os.environ.get("WERKZEUG_RUN_MAIN"):
-    import debugpy
-
-    debugpy.listen(("0.0.0.0", 8001))
