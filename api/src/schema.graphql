@@ -594,7 +594,6 @@ union UserNodeNoUser = UserNode | NoUser
 
 """Visibility of an object within the platform, i.e. who else can see it?"""
 enum Visibility {
-  PRIVATE
   UNLISTED
   PUBLIC
 }

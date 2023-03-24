@@ -39,7 +39,6 @@ class BodyPart(models.TextChoices):  # type: ignore
 class Visibility(models.TextChoices):  # type: ignore
     """Visibility of an object within the platform, i.e. who else can see it?"""
 
-    PRIVATE = "private"
     UNLISTED = "unlisted"
     PUBLIC = "public"
 
