@@ -20,7 +20,6 @@ interface Props {
 }
 
 const visibilityHelperText: Record<Visibility, string> = {
-  PRIVATE: "Visible only to you",
   UNLISTED: "Visible to anyone with the link",
   PUBLIC: "Visible and searchable to all users",
 };
@@ -131,7 +130,6 @@ const ProblemSettings: React.FC<Props> = ({ problemKey, open, onClose }) => {
             visibilityState.setValue(e.target.value as Visibility)
           }
         >
-          <MenuItem value="PRIVATE">Private</MenuItem>
           <MenuItem value="UNLISTED">Unlisted</MenuItem>
           <MenuItem value="PUBLIC">Public</MenuItem>
         </TextFormField>
