@@ -218,7 +218,7 @@ used by a climber.
 """
 type HoldNode implements Node {
   id: ID!
-  boulder: BoulderNode!
+  problem: ProblemNode!
 
   """Date+time of object creation"""
   createdAt: DateTime!

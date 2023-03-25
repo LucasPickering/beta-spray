@@ -7,15 +7,19 @@ from strawberry.types.info import Info
 from strawberry_django_plus import gql
 from strawberry_django_plus.mutations import resolvers
 
-from core import models, util
-from core.fields import BoulderPosition
-from core.schema.query import (
-    BetaMoveNode,
-    BetaNode,
-    HoldNode,
-    Image,
-    ProblemNode,
+from .. import util
+from ..fields import BoulderPosition
+from ..models import (
+    Beta,
+    BetaMove,
+    BodyPart,
+    Boulder,
+    Hold,
+    HoldAnnotationSource,
+    Problem,
+    Visibility,
 )
+from .query import BetaMoveNode, BetaNode, HoldNode, Image, ProblemNode
 
 ImageUpload = gql.scalar(
     NewType("ImageUpload", bytes),
@@ -42,19 +46,19 @@ class SVGPositionInput:
         return BoulderPosition(self.x / svg_width, self.y / svg_height)
 
 
-@gql.django.partial(models.Problem)
+@gql.django.partial(Problem)
 class UpdateProblemInput(gql.NodeInput):
     name: gql.auto
     external_link: gql.auto
-    visibility: Optional[models.Visibility]
+    visibility: Optional[Visibility]
 
 
-@gql.django.input(models.Beta)
+@gql.django.input(Beta)
 class CreateBetaInput:
     problem: gql.relay.GlobalID
 
 
-@gql.django.partial(models.Beta)
+@gql.django.partial(Beta)
 class UpdateBetaInput(gql.NodeInput):
     name: gql.auto
 
@@ -85,18 +89,18 @@ class Mutation:
         boulder = resolvers.create(
             # The `name` field isn't used yet, but it needs a placeholder value
             info,
-            models.Boulder,
+            Boulder,
             {"name": "boulder", "image": image},
         )
         problem = resolvers.create(
             info,
-            models.Problem,
+            Problem,
             {"boulder": boulder, "owner": info.context.request.user},
         )
         # User can grab the problem+boulder from the beta
         return resolvers.create(
             info,
-            models.Beta,
+            Beta,
             {"problem": problem, "owner": info.context.request.user},
         )
 
@@ -129,40 +133,29 @@ class Mutation:
         a hold just on a boulder, because there's no use case for that yet.
         """
         # Resolve input to a django object
-        problem_dj = problem.resolve_node(info, ensure_type=models.Problem)
+        problem_dj = problem.resolve_node(info, ensure_type=Problem)
 
         normal_position: BoulderPosition
         if position:
             # Convert SVG position to normalized position
             normal_position = position.to_normalized(problem_dj.boulder.image)
-            source = models.HoldAnnotationSource.USER
+            source = HoldAnnotationSource.USER
         else:
             # Pick a random position on the image. # Bias toward the middle,
             # so the new hold is easy to see
             normal_position = BoulderPosition(
                 random.triangular(), random.triangular()
             )
-            source = models.HoldAnnotationSource.AUTO
+            source = HoldAnnotationSource.AUTO
 
         # Create the hold, then link it to the problem
         hold_dj = resolvers.create(
             info,
-            models.Hold,
-            {
-                "boulder": problem_dj.boulder,
-                "position": normal_position,
-                "source": source,
-            },
-        )
-        resolvers.create(
-            info,
-            models.ProblemHold,
+            Hold,
             {
                 "problem": problem_dj,
-                "hold": hold_dj,
-                # Regardless of how the *position* of the hold was selected,
-                # the user is the one that assigned it to this problem
-                "source": models.HoldAnnotationSource.USER,
+                "position": normal_position,
+                "source": source,
             },
         )
 
@@ -176,7 +169,7 @@ class Mutation:
         position: Optional[SVGPositionInput],
         annotation: Optional[str],
     ) -> HoldNode:
-        hold: models.Hold = id.resolve_node(info, ensure_type=models.Hold)
+        hold: Hold = id.resolve_node(info, ensure_type=Hold)
         # Convert position from SVG coords to normalized (DB) coords
         normal_position = position and position.to_normalized(
             hold.boulder.image
@@ -203,10 +196,10 @@ class Mutation:
 
     @gql.relay.input_mutation
     def create_beta(self, info: Info, problem: gql.relay.GlobalID) -> BetaNode:
-        problem_dj = problem.resolve_node(info, ensure_type=models.Problem)
+        problem_dj = problem.resolve_node(info, ensure_type=Problem)
         return resolvers.create(
             info,
-            models.Beta,
+            Beta,
             {"problem": problem_dj, "owner": info.context.request.user},
         )
 
@@ -219,11 +212,11 @@ class Mutation:
 
     @gql.relay.input_mutation
     def copy_beta(self, info: Info, id: gql.relay.GlobalID) -> BetaNode:
-        original_beta = id.resolve_node(info, ensure_type=models.Beta)
+        original_beta = id.resolve_node(info, ensure_type=Beta)
         # Copy the base beta
         new_beta = resolvers.create(
             info,
-            models.Beta,
+            Beta,
             {
                 "problem_id": original_beta.problem_id,
                 "name": f"{original_beta.name} 2.0",
@@ -231,8 +224,8 @@ class Mutation:
             },
         )
         # Copy each move
-        models.BetaMove.objects.bulk_create(
-            models.BetaMove(
+        BetaMove.objects.bulk_create(
+            BetaMove(
                 # model_to_dict returns primary keys in the `hold` and `beta`
                 # fields, so we need to manually remap those fields. This is a
                 # little jank but still better than manually copying each field.
@@ -249,7 +242,7 @@ class Mutation:
         self,
         info: Info,
         beta: gql.relay.GlobalID,
-        body_part: models.BodyPart,
+        body_part: BodyPart,
         hold: Optional[gql.relay.GlobalID],
         position: Optional[SVGPositionInput],
         previous_beta_move: Optional[
@@ -265,13 +258,11 @@ class Mutation:
         """
 
         # Convert GQL IDs to PKs
-        beta_dj = beta.resolve_node(info, ensure_type=models.Beta)
-        hold_dj = hold and hold.resolve_node(info, ensure_type=models.Hold)
+        beta_dj = beta.resolve_node(info, ensure_type=Beta)
+        hold_dj = hold and hold.resolve_node(info, ensure_type=Hold)
         previous_beta_move_dj = (
             previous_beta_move
-            and previous_beta_move.resolve_node(
-                info, ensure_type=models.BetaMove
-            )
+            and previous_beta_move.resolve_node(info, ensure_type=BetaMove)
         )
 
         # Convert position from SVG coords to normalized [0,1]
@@ -292,7 +283,7 @@ class Mutation:
         # TODO validate that exactly one of hold+position is given
         return resolvers.create(
             info,
-            models.BetaMove,
+            BetaMove,
             {
                 "beta": beta_dj,
                 "hold": hold_dj,
@@ -317,8 +308,8 @@ class Mutation:
         position: Optional[SVGPositionInput],
         annotation: Optional[str],
     ) -> BetaMoveNode:
-        beta_move_dj = id.resolve_node(info, ensure_type=models.BetaMove)
-        hold_dj = hold and hold.resolve_node(info, ensure_type=models.Hold)
+        beta_move_dj = id.resolve_node(info, ensure_type=BetaMove)
+        hold_dj = hold and hold.resolve_node(info, ensure_type=Hold)
         normal_position = position and position.to_normalized(
             beta_move_dj.beta.problem.boulder.image
         )

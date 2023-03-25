@@ -133,26 +133,6 @@ class BoulderNode(relay.Node):
     holds: relay.Connection["HoldNode"] = gql.django.connection()
 
 
-@gql.django.type(Hold)
-class HoldNode(relay.Node):
-    """
-    A hold is a particular point on a boulder that can be grabbed or otherwise
-    used by a climber.
-    """
-
-    boulder: BoulderNode = gql.field()
-    created_at: gql.auto = gql.field(description="Date+time of object creation")
-    annotation: gql.auto = gql.field(
-        description="Informative text related to the hold, created by the user"
-    )
-
-    @gql.field
-    def position(self) -> SVGPosition:
-        return SVGPosition.from_boulder_position(
-            self.position, self.boulder.image
-        )
-
-
 @gql.django.type(Problem)
 class ProblemNode(relay.Node):
     """
@@ -168,8 +148,28 @@ class ProblemNode(relay.Node):
     owner: UserNode = gql.field()
     visibility: Visibility = gql.field()
     boulder: BoulderNode = gql.field()
-    holds: relay.Connection[HoldNode] = gql.django.connection()
+    holds: relay.Connection["HoldNode"] = gql.django.connection()
     betas: relay.Connection["BetaNode"] = gql.django.connection()
+
+
+@gql.django.type(Hold)
+class HoldNode(relay.Node):
+    """
+    A hold is a particular point on a boulder that can be grabbed or otherwise
+    used by a climber.
+    """
+
+    problem: ProblemNode = gql.field()
+    created_at: gql.auto = gql.field(description="Date+time of object creation")
+    annotation: gql.auto = gql.field(
+        description="Informative text related to the hold, created by the user"
+    )
+
+    @gql.field
+    def position(self) -> SVGPosition:
+        return SVGPosition.from_boulder_position(
+            self.position, self.problem.boulder.image
+        )
 
 
 @gql.django.type(Beta)

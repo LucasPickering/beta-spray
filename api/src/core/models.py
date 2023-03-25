@@ -66,29 +66,6 @@ class Boulder(models.Model):
     # TODO override __str__ after name field is actually populated
 
 
-class Hold(models.Model):
-    """
-    A single hold on a rock wall, which can belong to any number of problems
-    """
-
-    boulder = models.ForeignKey(
-        Boulder, related_name="holds", on_delete=models.CASCADE
-    )
-    position = fields.BoulderPositionField(
-        help_text="Position of the hold within the boulder image"
-    )
-    source = models.CharField(
-        max_length=4,
-        choices=HoldAnnotationSource.choices,
-        help_text="Source of this boulder-hold attribution (auto or manual)",
-    )
-    annotation = models.TextField(
-        blank=True, help_text="Free-form annotations created by the user"
-    )
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-
 class Problem(models.Model):
     """
     A problem is made up of a collection of holds
@@ -110,9 +87,6 @@ class Problem(models.Model):
     boulder = models.ForeignKey(
         Boulder, related_name="problems", on_delete=models.CASCADE
     )
-    holds = models.ManyToManyField(
-        Hold, related_name="problems", through="ProblemHold", blank=True
-    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -120,17 +94,27 @@ class Problem(models.Model):
         return self.name
 
 
-class ProblemHold(models.Model):
+class Hold(models.Model):
     """
-    m2m through table for problem-hold
+    A single hold on a rock wall, which belongs to a single problem.
+    Hypothetically a hold can be used in more than one problem, but it
+    simplifies the model a lot if we link these directly to problems. This is
+    closer to the UX that we present in the frontend.
     """
 
-    problem = models.ForeignKey(Problem, on_delete=models.CASCADE)
-    hold = models.ForeignKey(Hold, on_delete=models.CASCADE)
+    problem = models.ForeignKey(
+        Problem, related_name="holds", on_delete=models.CASCADE
+    )
+    position = fields.BoulderPositionField(
+        help_text="Position of the hold within the boulder image"
+    )
     source = models.CharField(
         max_length=4,
         choices=HoldAnnotationSource.choices,
-        help_text="Source of this problem-hold attribution (auto or manual)",
+        help_text="Source of this boulder-hold attribution (auto or manual)",
+    )
+    annotation = models.TextField(
+        blank=True, help_text="Free-form annotations created by the user"
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
