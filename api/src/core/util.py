@@ -8,7 +8,7 @@ from django.core.files.uploadedfile import UploadedFile
 from django.db.models.fields.files import ImageFieldFile
 
 if TYPE_CHECKING:
-    from core.schema.query import Image
+    from .schema.query import Image
 
 problem_name_phrase_groups: list[list[Optional[str]]] = [
     ["Up Up", "Monster", "Slab", "Crack", "Lateral"],

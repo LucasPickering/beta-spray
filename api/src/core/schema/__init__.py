@@ -4,7 +4,6 @@ from strawberry.schema.types.scalar import DEFAULT_SCALAR_REGISTRY
 from strawberry_django_plus import gql, relay
 from strawberry_django_plus.directives import SchemaDirectiveExtension
 
-
 from .mutation import Mutation
 from .query import Query
 

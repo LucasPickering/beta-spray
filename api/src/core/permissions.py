@@ -13,22 +13,10 @@ from .models import Beta, BetaMove, Hold, Problem
 # if the object is None
 
 
-class Permission(Enum):
-    """
-    An enum to list all the permission strings that we use. This is just to
-    prevent typos in permission names, which could be very bad.
-    """
-
-    PROBLEM_EDIT = "core.edit_problem"
-    PROBLEM_DELETE = "core.delete_problem"
-    HOLD_CREATE = "core.create_hold"
-    HOLD_EDIT = "core.edit_hold"
-    HOLD_DELETE = "core.delete_hold"
-    BETA_EDIT = "core.edit_beta"
-    BETA_DELETE = "core.delete_beta"
-    BETA_MOVE_CREATE = "core.create_betamove"
-    BETA_MOVE_EDIT = "core.edit_betamove"
-    BETA_MOVE_DELETE = "core.delete_betamove"
+class PermissionType(Enum):
+    CREATE = "create"
+    EDIT = "edit"
+    DELETE = "delete"
 
 
 @rules.predicate
@@ -57,16 +45,16 @@ def is_beta_owner(user: User, obj: Optional[BetaMove]) -> bool:
 
 
 # Problem
-rules.add_perm(Permission.PROBLEM_EDIT.value, is_owner)
-rules.add_perm(Permission.PROBLEM_DELETE.value, is_owner)
+rules.add_perm(Problem.permission(PermissionType.EDIT), is_owner)
+rules.add_perm(Problem.permission(PermissionType.DELETE), is_owner)
 # Beta
-rules.add_perm(Permission.BETA_EDIT.value, is_owner)
-rules.add_perm(Permission.BETA_DELETE.value, is_owner)
+rules.add_perm(Beta.permission(PermissionType.EDIT), is_owner)
+rules.add_perm(Beta.permission(PermissionType.DELETE), is_owner)
 # Hold
-rules.add_perm(Permission.HOLD_CREATE.value, is_problem_owner)
-rules.add_perm(Permission.HOLD_EDIT.value, is_problem_owner)
-rules.add_perm(Permission.HOLD_DELETE.value, is_problem_owner)
+rules.add_perm(Hold.permission(PermissionType.CREATE), is_problem_owner)
+rules.add_perm(Hold.permission(PermissionType.EDIT), is_problem_owner)
+rules.add_perm(Hold.permission(PermissionType.DELETE), is_problem_owner)
 # Beta Move
-rules.add_perm(Permission.BETA_MOVE_CREATE.value, is_beta_owner)
-rules.add_perm(Permission.BETA_MOVE_EDIT.value, is_beta_owner)
-rules.add_perm(Permission.BETA_MOVE_DELETE.value, is_beta_owner)
+rules.add_perm(BetaMove.permission(PermissionType.CREATE), is_beta_owner)
+rules.add_perm(BetaMove.permission(PermissionType.EDIT), is_beta_owner)
+rules.add_perm(BetaMove.permission(PermissionType.DELETE), is_beta_owner)
