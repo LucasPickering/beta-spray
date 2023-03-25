@@ -16,6 +16,7 @@ import { BetaListItem_betaNode$key } from "./__generated__/BetaListItem_betaNode
 import Editable from "components/common/Editable";
 import { isDefined } from "util/func";
 import ActionsMenu from "components/common/ActionsMenu";
+import Username from "components/Account/Username";
 
 interface Props {
   betaKey: BetaListItem_betaNode$key;
@@ -39,6 +40,9 @@ const BetaListItem: React.FC<Props> = ({
         name
         moves {
           totalCount
+        }
+        owner {
+          ...UsernameDisplay_userNode
         }
       }
     `,
@@ -74,7 +78,7 @@ const BetaListItem: React.FC<Props> = ({
             <Skeleton />
           )
         }
-        secondary={`${beta.moves.totalCount} moves`}
+        secondary={<Username userKey={beta.owner} iconSize="small" />}
       />
 
       <ActionsMenu title="Beta Actions">

@@ -27,7 +27,7 @@ import AccountSettings from "./AccountSettings";
 import { AccountMenu_logOutMutation } from "./__generated__/AccountMenu_logOutMutation.graphql";
 import { AccountMenu_userNode$key } from "./__generated__/AccountMenu_userNode.graphql";
 import { UserQueryContext } from "components/UserQueryProvider";
-import UsernameDisplay from "./UsernameDisplay";
+import Username from "./Username";
 
 interface Props {
   userKey: AccountMenu_userNode$key;
@@ -88,7 +88,7 @@ const AccountMenu: React.FC<Props> = ({ userKey }) => {
     <>
       <ActionsMenu title="Account Menu" icon={<IconAccountCircle />}>
         <ListItem>
-          <UsernameDisplay userKey={currentUser} />
+          <Username userKey={currentUser} />
         </ListItem>
         <Divider />
 
