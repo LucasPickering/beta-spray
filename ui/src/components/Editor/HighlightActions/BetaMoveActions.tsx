@@ -35,6 +35,10 @@ const BetaMoveActions: React.FC<Props> = ({ betaKey }) => {
               order
               isStart
               annotation
+              permissions {
+                canEdit
+                canDelete
+              }
             }
           }
         }
@@ -87,9 +91,10 @@ const BetaMoveActions: React.FC<Props> = ({ betaKey }) => {
   return (
     <>
       <ActionButtons
-        noun={`Move #${highlightedMove?.order ?? ""}`}
-        editingAnnotation={isEditing}
+        noun="move"
         annotation={highlightedMove?.annotation}
+        permissions={highlightedMove?.permissions}
+        editingAnnotation={isEditing}
         onEditAnnotation={onOpen}
         onCloseAnnotation={onClose}
         onSaveAnnotation={(annotation) => {

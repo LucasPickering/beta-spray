@@ -48,7 +48,7 @@ const EditorPalette: React.FC<Props> = ({ problemQueryRef, betaQueryRef }) => {
 
         <TooltipIconButton
           title={visibility ? "Hide Overlay" : "Show Overlay"}
-          placement="right"
+          placement="bottom"
           color={visibility ? "default" : "primary"}
           onClick={() => setVisibility((prev) => !prev)}
         >

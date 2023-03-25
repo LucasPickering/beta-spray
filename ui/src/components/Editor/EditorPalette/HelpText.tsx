@@ -8,7 +8,7 @@ import { HoldIconWrapped } from "../EditorSvg/HoldEditor/HoldIcon";
  * An overlay to show contextual help on top of the editor.
  */
 const HelpText: React.FC = () => (
-  <Tooltip title={<HelpTextContent />} placement="right" describeChild>
+  <Tooltip title={<HelpTextContent />} placement="bottom" describeChild>
     <IconButton>
       <IconHelp />
     </IconButton>
