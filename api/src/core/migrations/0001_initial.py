@@ -88,6 +88,12 @@ class Migration(migrations.Migration):
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name="holds",
                         to="core.boulderimage",
+                        # WARNING!!!
+                        # This was added retroactively to allow migration 0016
+                        # to be reversible - this field shouldn't actually be
+                        # nullable but this makes migration testing possible
+                        # https://code.djangoproject.com/ticket/23048
+                        null=True,
                     ),
                 ),
             ],
