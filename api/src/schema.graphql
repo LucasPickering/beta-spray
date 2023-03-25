@@ -1,5 +1,5 @@
 """
-If unauthenticated, a guest user will be created for you when calling this mutation..
+If unauthenticated, a guest user will be created for you when calling this mutation.
 """
 directive @createGuestUser on FIELD_DEFINITION
 
@@ -48,6 +48,13 @@ type BetaMoveNode implements Node {
   The optional hold that this move is attached to. If null, the move is 'free', e.g. a flag or smear.
   """
   hold: HoldNode
+
+  """
+  Permissions for the requesting user (you) on the parent object.
+  Attempting any mutation that you don't have permission for will result
+  in an error.
+  """
+  permissions: Permissions!
 
   """Position of a free move. Null for attached moves."""
   position: SVGPosition
@@ -102,6 +109,13 @@ type BetaNode implements Node {
     """Returns the items in the list that come after the specified cursor."""
     last: Int = null
   ): BetaMoveNodeConnection!
+
+  """
+  Permissions for the requesting user (you) on the parent object.
+  Attempting any mutation that you don't have permission for will result
+  in an error.
+  """
+  permissions: Permissions!
 }
 
 """A connection to a list of items."""
@@ -170,6 +184,13 @@ type BoulderNode implements Node {
     """Returns the items in the list that come after the specified cursor."""
     last: Int = null
   ): HoldNodeConnection!
+
+  """
+  Permissions for the requesting user (you) on the parent object.
+  Attempting any mutation that you don't have permission for will result
+  in an error.
+  """
+  permissions: Permissions!
 }
 
 """A connection to a list of items."""
@@ -240,6 +261,13 @@ type HoldNode implements Node {
 
   """Informative text related to the hold, created by the user"""
   annotation: String!
+
+  """
+  Permissions for the requesting user (you) on the parent object.
+  Attempting any mutation that you don't have permission for will result
+  in an error.
+  """
+  permissions: Permissions!
 
   """Position of the hold within the boulder image"""
   position: SVGPosition!
@@ -401,6 +429,15 @@ type PageInfo {
   endCursor: String
 }
 
+"""Permission info for the requesting user on the parent object."""
+type Permissions {
+  """Can you edit this object?"""
+  canEdit: Boolean!
+
+  """Can you delete this object?"""
+  canDelete: Boolean!
+}
+
 """
 A "problem" is a boulder route. It consists of a series of holds on a
 boulder.
@@ -447,6 +484,13 @@ type ProblemNode implements Node {
     """Returns the items in the list that come after the specified cursor."""
     last: Int = null
   ): BetaNodeConnection!
+
+  """
+  Permissions for the requesting user (you) on the parent object.
+  Attempting any mutation that you don't have permission for will result
+  in an error.
+  """
+  permissions: Permissions!
 }
 
 """A connection to a list of items."""

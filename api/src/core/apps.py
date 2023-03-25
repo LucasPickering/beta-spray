@@ -14,7 +14,7 @@ class CoreConfig(AppConfig):
     def ready(self) -> None:
         # We have to defer this import so it doesn't happen before the app is
         # ready, otherwise django gets very upset
-        from core.schema import schema
+        from .schema import schema
 
         # Export GQL schema upon startup
         schema_string = print_schema(schema)

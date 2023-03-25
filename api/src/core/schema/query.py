@@ -8,9 +8,10 @@ from strawberry_django_plus import gql
 from strawberry_django_plus.gql import relay
 from typing_extensions import Self
 
-from core import util
-from core.fields import BoulderPosition
-from core.models import (
+from .. import util
+from ..fields import BoulderPosition
+from ..models import (
+    BaseModel,
     Beta,
     BetaMove,
     BodyPart,
@@ -19,6 +20,42 @@ from core.models import (
     Problem,
     Visibility,
 )
+from ..permissions import PermissionType
+
+
+@gql.type
+class Permissions:
+    """
+    Permission info for the requesting user on the parent object.
+    """
+
+    can_edit: bool = gql.field(description="Can you edit this object?")
+    can_delete: bool = gql.field(description="Can you delete this object?")
+
+
+class PermissionsMixin:
+    """
+    A slightly-janky class to easily provide a `permissions` field to any
+    child class. We have to do some type hackery to tell mypy that the instance
+    of this will definitely be a model instance.
+
+    This should definitely be improved at some point but it's a decent stopgap.
+    """
+
+    @gql.field
+    def permissions(self: BaseModel, info: Info) -> Permissions:  # type: ignore
+        """
+        Permissions for the requesting user (you) on the parent object.
+        Attempting any mutation that you don't have permission for will result
+        in an error.
+        """
+        user = info.context.request.user
+        return Permissions(
+            can_edit=user.has_perm(self.permission(PermissionType.EDIT), self),
+            can_delete=user.has_perm(
+                self.permission(PermissionType.DELETE), self
+            ),
+        )
 
 
 @gql.type
@@ -120,7 +157,7 @@ class UserNode(relay.Node):
 
 
 @gql.django.type(Boulder)
-class BoulderNode(relay.Node):
+class BoulderNode(relay.Node, PermissionsMixin):
     """
     A boulder is a wall or rock that has holds on it. In the context of this
     API, a boulder is defined by a 2D raster image of it. The holds are then
@@ -134,7 +171,7 @@ class BoulderNode(relay.Node):
 
 
 @gql.django.type(Problem)
-class ProblemNode(relay.Node):
+class ProblemNode(relay.Node, PermissionsMixin):
     """
     A "problem" is a boulder route. It consists of a series of holds on a
     boulder.
@@ -153,7 +190,7 @@ class ProblemNode(relay.Node):
 
 
 @gql.django.type(Hold)
-class HoldNode(relay.Node):
+class HoldNode(relay.Node, PermissionsMixin):
     """
     A hold is a particular point on a boulder that can be grabbed or otherwise
     used by a climber.
@@ -173,7 +210,7 @@ class HoldNode(relay.Node):
 
 
 @gql.django.type(Beta)
-class BetaNode(relay.Node):
+class BetaNode(relay.Node, PermissionsMixin):
     """
     A beta is a sequence of moves that solves a problem. The word is really used
     as a mass known so the phrase "a beta" is actually incorrect, but treating
@@ -188,7 +225,7 @@ class BetaNode(relay.Node):
 
 
 @gql.django.type(BetaMove)
-class BetaMoveNode(relay.Node):
+class BetaMoveNode(relay.Node, PermissionsMixin):
     """
     A singular move within a beta, which is a body part+location pairing. This
     may be confusing because a "move" can also refer to the motion of a body

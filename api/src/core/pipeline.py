@@ -5,7 +5,7 @@ from guest_user.functions import get_guest_model, is_guest_user
 from social_core.backends.base import BaseAuth
 from social_core.exceptions import AuthAlreadyAssociated
 
-from core.models import Beta, Problem
+from .models import Beta, Problem
 
 
 def find_existing_user(
