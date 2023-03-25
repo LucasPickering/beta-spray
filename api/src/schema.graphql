@@ -1,4 +1,9 @@
 """
+If unauthenticated, a guest user will be created for you when calling this mutation..
+"""
+directive @createGuestUser on FIELD_DEFINITION
+
+"""
 Will check if the user has any/all permissions for the resolved value of this field before returning it.
 
 When the condition fails, the following can happen (following this priority):
@@ -322,7 +327,7 @@ type Mutation {
   createBoulderWithFriends(
     """Input data for `createBoulderWithFriends` mutation"""
     input: CreateBoulderWithFriendsInput!
-  ): BetaNode!
+  ): BetaNode! @createGuestUser
 
   """
   Create a new hold and add it to a problem. There is no option to create
@@ -339,11 +344,11 @@ type Mutation {
   createBeta(
     """Input data for `createBeta` mutation"""
     input: CreateBetaInput!
-  ): BetaNode!
+  ): BetaNode! @createGuestUser
   copyBeta(
     """Input data for `copyBeta` mutation"""
     input: CopyBetaInput!
-  ): BetaNode!
+  ): BetaNode! @createGuestUser
 
   """
   Add a new move to a beta. The move can either be appended to the end,

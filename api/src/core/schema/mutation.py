@@ -9,6 +9,7 @@ from strawberry_django_plus.mutations import resolvers
 from strawberry_django_plus.permissions import HasObjPerm
 
 from .. import util
+from ..directives import CreateGuestUser
 from ..fields import BoulderPosition
 from ..models import (
     Beta,
@@ -74,8 +75,7 @@ class Mutation:
         """
         logout(info.context.request)
 
-    # No permissions needed here - anyone can create a problem
-    @gql.relay.input_mutation
+    @gql.relay.input_mutation(directives=[CreateGuestUser()])
     def create_boulder_with_friends(
         self,
         info: Info,
@@ -203,8 +203,7 @@ class Mutation:
         directives=[HasObjPerm(Permission.PROBLEM_DELETE.value)],
     )
 
-    # No permissions needed here - anyone can create new beta
-    @gql.relay.input_mutation
+    @gql.relay.input_mutation(directives=[CreateGuestUser()])
     def create_beta(self, info: Info, problem: gql.relay.GlobalID) -> BetaNode:
         problem_dj = problem.resolve_node(info, ensure_type=Problem)
         return resolvers.create(
@@ -224,8 +223,7 @@ class Mutation:
         directives=[HasObjPerm(Permission.BETA_DELETE.value)],
     )
 
-    # No permissions needed here - anyone can create new beta
-    @gql.relay.input_mutation
+    @gql.relay.input_mutation(directives=[CreateGuestUser()])
     def copy_beta(self, info: Info, id: gql.relay.GlobalID) -> BetaNode:
         original_beta = id.resolve_node(info, ensure_type=Beta)
         # Copy the base beta
