@@ -24,8 +24,9 @@ import { ProblemMetadata_deleteProblemMutation } from "./__generated__/ProblemMe
 import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
 import useMutation from "util/useMutation";
 import { useNavigate } from "react-router-dom";
-import MutationLoadingBackdrop from "components/common/LoadingBackdrop";
+import MutationLoadingBackdrop from "components/common/MutationLoadingBackdrop";
 import UsernameDisplay from "components/Account/UsernameDisplay";
+import DisabledTooltip from "components/common/DisabledTooltip";
 
 interface Props {
   problemKey: ProblemMetadata_problemNode$key;
@@ -50,6 +51,10 @@ const ProblemMetadata: React.FC<Props> = ({ problemKey }) => {
         id
         name
         externalLink
+        permissions {
+          canEdit
+          canDelete
+        }
         owner {
           ...UsernameDisplay_userNode
         }
@@ -73,6 +78,34 @@ const ProblemMetadata: React.FC<Props> = ({ problemKey }) => {
       }
     `);
 
+  const onDelete = (): void => {
+    if (window.confirm(`Are you sure you want to delete ${problem.name}?`)) {
+      deleteProblem({
+        variables: {
+          input: { id: problem.id },
+          connections: [
+            ConnectionHandler.getConnectionID(
+              "root",
+              "ProblemList_query_problems"
+            ),
+          ],
+        },
+        // Intentionally exclude optimistic response - we don't want
+        // to show the problem as deleted until it really is
+        onCompleted(data) {
+          if (data) {
+            navigate("/");
+          }
+        },
+        updater(store) {
+          // TODO figure out why the @deleteEdge doesn't work and
+          // remove this
+          store.invalidateStore();
+        },
+      });
+    }
+  };
+
   return (
     <>
       <Box>
@@ -85,51 +118,35 @@ const ProblemMetadata: React.FC<Props> = ({ problemKey }) => {
           <Typography {...nameTypographyProps}>{problem.name}</Typography>
 
           <ActionsMenu title="Problem Actions">
-            <MenuItem onClick={() => setIsSettingsOpen(true)}>
-              <ListItemIcon>
-                <IconSettings />
-              </ListItemIcon>
-              <ListItemText>Settings</ListItemText>
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
-                if (
-                  window.confirm(
-                    `Are you sure you want to delete ${problem.name}?`
-                  )
-                ) {
-                  deleteProblem({
-                    variables: {
-                      input: { id: problem.id },
-                      connections: [
-                        ConnectionHandler.getConnectionID(
-                          "root",
-                          "ProblemList_query_problems"
-                        ),
-                      ],
-                    },
-                    // Intentionally exclude optimistic response - we don't want
-                    // to show the problem as deleted until it really is
-                    onCompleted(data) {
-                      if (data) {
-                        navigate("/");
-                      }
-                    },
-                    updater(store) {
-                      // TODO figure out why the @deleteEdge doesn't work and
-                      // remove this
-                      store.invalidateStore();
-                    },
-                  });
-                }
-              }}
-              sx={({ palette }) => ({ color: palette.error.main })}
+            <DisabledTooltip
+              title="You don't have permission to edit this problem"
+              placement="left"
             >
-              <ListItemIcon>
-                <IconDelete />
-              </ListItemIcon>
-              <ListItemText>Delete</ListItemText>
-            </MenuItem>
+              <MenuItem
+                disabled={!problem.permissions.canEdit}
+                onClick={() => setIsSettingsOpen(true)}
+              >
+                <ListItemIcon>
+                  <IconSettings />
+                </ListItemIcon>
+                <ListItemText>Settings</ListItemText>
+              </MenuItem>
+            </DisabledTooltip>
+            <DisabledTooltip
+              title="You don't have permission to delete this problem"
+              placement="left"
+            >
+              <MenuItem
+                disabled={!problem.permissions.canDelete}
+                onClick={onDelete}
+                sx={({ palette }) => ({ color: palette.error.main })}
+              >
+                <ListItemIcon>
+                  <IconDelete />
+                </ListItemIcon>
+                <ListItemText>Delete</ListItemText>
+              </MenuItem>
+            </DisabledTooltip>
           </ActionsMenu>
         </Box>
 

@@ -33,6 +33,10 @@ const HoldActions: React.FC<Props> = ({ problemKey }) => {
             node {
               id
               annotation
+              permissions {
+                canEdit
+                canDelete
+              }
             }
           }
         }
@@ -76,8 +80,9 @@ const HoldActions: React.FC<Props> = ({ problemKey }) => {
   return (
     <>
       <ActionButtons
-        noun="Hold"
+        noun="hold"
         annotation={highlightedHold?.annotation}
+        permissions={highlightedHold?.permissions}
         editingAnnotation={isEditing}
         onEditAnnotation={onOpen}
         onCloseAnnotation={onClose}

@@ -5,17 +5,31 @@ import {
   TooltipProps,
 } from "@mui/material";
 
-type Props = IconButtonProps & Pick<TooltipProps, "title" | "placement">;
+type Props = IconButtonProps &
+  Pick<TooltipProps, "title" | "placement"> & {
+    disabledTitle?: React.ReactNode;
+  };
 
 /**
  * Convenience component for a icon button with a hover tooltip
  */
-const TooltipIconButton: React.FC<Props> = ({ title, placement, ...rest }) => (
+const TooltipIconButton: React.FC<Props> = ({
+  title,
+  disabledTitle,
+  placement,
+  disabled,
+  ...rest
+}) => (
   // <span> wrapper is needed so Tooltip can track cursor events while button
   // is disabled
-  <Tooltip title={title} placement={placement}>
+  <Tooltip
+    // If button is disabled, and we've been given different text to show while
+    // disabled, render that instead
+    title={disabledTitle && disabled ? disabledTitle : title}
+    placement={placement}
+  >
     <span>
-      <IconButton {...rest} />
+      <IconButton disabled={disabled} {...rest} />
     </span>
   </Tooltip>
 );

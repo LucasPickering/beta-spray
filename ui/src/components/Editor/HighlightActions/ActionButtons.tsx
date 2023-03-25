@@ -8,6 +8,10 @@ interface Props {
   noun?: string;
   annotation?: string;
   disabled?: boolean;
+  permissions?: {
+    canEdit: boolean;
+    canDelete: boolean;
+  };
   editingAnnotation?: boolean;
   onEditAnnotation?: () => void;
   onCloseAnnotation?: () => void;
@@ -28,6 +32,7 @@ const ActionButtons: React.FC<Props> = ({
   annotation,
   disabled = false,
   editingAnnotation = false,
+  permissions,
   onEditAnnotation,
   onSaveAnnotation,
   onCloseAnnotation,
@@ -57,18 +62,26 @@ const ActionButtons: React.FC<Props> = ({
   return (
     <>
       <TooltipIconButton
-        title={noun ? `Edit Notes for ${noun}` : "Select Item to Edit"}
+        title={noun ? `Edit notes for ${noun}` : "Select item to edit"}
+        disabledTitle={
+          permissions?.canEdit === false &&
+          `You don't have permission to edit this ${noun}`
+        }
         color="info"
-        disabled={disabled}
+        disabled={disabled || permissions?.canEdit === false}
         onClick={onEditAnnotation}
       >
         <IconEdit />
       </TooltipIconButton>
 
       <TooltipIconButton
-        title={noun ? `Delete ${noun}` : "Select Item to Delete"}
+        title={noun ? `Delete ${noun}` : "Select item to delete"}
+        disabledTitle={
+          permissions?.canDelete === false &&
+          `You don't have permission to delete this ${noun}`
+        }
         color="info"
-        disabled={disabled}
+        disabled={disabled || permissions?.canDelete === false}
         onClick={onDelete}
       >
         <IconDelete />
