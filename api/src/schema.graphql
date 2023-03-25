@@ -1,4 +1,16 @@
 """
+Will check if the user has any/all permissions for the resolved value of this field before returning it.
+
+When the condition fails, the following can happen (following this priority):
+1) If the return value can return an `OperationMessage`, it is returned as that type.
+2) If the field is mandatory (e.g. `String!`), this will result in an error.
+3) If the field is not mandatory and a list (e.g. `[String]`), an empty list will be returned.
+4) If the field is not mandatory and any scalar or object (e.g. `String`), `null` will be returned.
+5) If the field is a relay `Connection`, an empty connection will be returned.
+"""
+directive @hasObjPerm(permissions: [PermDefinition!]!, any: Boolean! = true) on FIELD_DEFINITION
+
+"""
 A singular move within a beta, which is a body part+location pairing. This
 may be confusing because a "move" can also refer to the motion of a body
 part from point A to point B, but in the context of this API, a move
@@ -202,9 +214,7 @@ input CreateBoulderWithFriendsInput {
 
 """Input data for `createHold` mutation"""
 input CreateHoldInput {
-  """
-  The ID of the problem to add the hold to. If the ID references a boulder, then the hold will be created on that boulder. If a problem is given, it will be added to the problem's parent boulder as well as the problem itself.
-  """
+  """The ID of the problem to add the hold to."""
   problem: ID!
   position: SVGPositionInput
 }
@@ -283,21 +293,21 @@ type Mutation {
   deleteHold(
     """Input of an object that implements the `Node` interface."""
     input: NodeInput!
-  ): HoldNode!
-  updateProblem(input: UpdateProblemInput!): ProblemNode!
+  ): HoldNode! @hasObjPerm(permissions: [{resource: "core", permission: "delete_hold"}], any: true)
+  updateProblem(input: UpdateProblemInput!): ProblemNode! @hasObjPerm(permissions: [{resource: "core", permission: "edit_problem"}], any: true)
   deleteProblem(
     """Input of an object that implements the `Node` interface."""
     input: NodeInput!
-  ): ProblemNode!
-  updateBeta(input: UpdateBetaInput!): BetaNode!
+  ): ProblemNode! @hasObjPerm(permissions: [{resource: "core", permission: "delete_problem"}], any: true)
+  updateBeta(input: UpdateBetaInput!): BetaNode! @hasObjPerm(permissions: [{resource: "core", permission: "edit_beta"}], any: true)
   deleteBeta(
     """Input of an object that implements the `Node` interface."""
     input: NodeInput!
-  ): BetaNode!
+  ): BetaNode! @hasObjPerm(permissions: [{resource: "core", permission: "delete_beta"}], any: true)
   deleteBetaMove(
     """Input of an object that implements the `Node` interface."""
     input: NodeInput!
-  ): BetaMoveNode!
+  ): BetaMoveNode! @hasObjPerm(permissions: [{resource: "core", permission: "delete_betamove"}], any: true)
 
   """Log out the current user (if any)"""
   logOut: Void
@@ -321,11 +331,11 @@ type Mutation {
   createHold(
     """Input data for `createHold` mutation"""
     input: CreateHoldInput!
-  ): HoldNode!
+  ): HoldNode! @hasObjPerm(permissions: [{resource: "core", permission: "create_hold"}], any: true)
   updateHold(
     """Input data for `updateHold` mutation"""
     input: UpdateHoldInput!
-  ): HoldNode!
+  ): HoldNode! @hasObjPerm(permissions: [{resource: "core", permission: "edit_hold"}], any: true)
   createBeta(
     """Input data for `createBeta` mutation"""
     input: CreateBetaInput!
@@ -342,11 +352,11 @@ type Mutation {
   createBetaMove(
     """Input data for `createBetaMove` mutation"""
     input: CreateBetaMoveInput!
-  ): BetaMoveNode!
+  ): BetaMoveNode! @hasObjPerm(permissions: [{resource: "core", permission: "create_betamove"}], any: true)
   updateBetaMove(
     """Input data for `updateBetaMove` mutation"""
     input: UpdateBetaMoveInput!
-  ): BetaMoveNode!
+  ): BetaMoveNode! @hasObjPerm(permissions: [{resource: "core", permission: "edit_betamove"}], any: true)
 }
 
 """
@@ -600,3 +610,9 @@ enum Visibility {
 
 """Represents NULL values"""
 scalar Void
+
+"""Permission definition for schema directives."""
+input PermDefinition {
+  resource: String
+  permission: String
+}

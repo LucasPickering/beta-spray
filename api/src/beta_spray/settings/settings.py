@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     "debug_toolbar",  # Disabled in prod via INTERNAL_IPS
     "strawberry.django",
     "strawberry_django_plus",
+    "rules",
     "social_django",
     "guest_user",
     "core",
@@ -56,8 +57,8 @@ MIDDLEWARE = [
 # Auth
 AUTHENTICATION_BACKENDS = [
     "social_core.backends.google.GoogleOAuth2",
-    # Needed for admin/testing account logins
-    "django.contrib.auth.backends.ModelBackend",
+    "django.contrib.auth.backends.ModelBackend",  # For admin/testing logins
+    "rules.permissions.ObjectPermissionBackend",
     "guest_user.backends.GuestBackend",
 ]
 GUEST_USER_NAME_GENERATOR = "guest_user.functions.generate_friendly_username"
