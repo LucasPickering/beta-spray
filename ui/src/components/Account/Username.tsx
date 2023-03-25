@@ -1,13 +1,20 @@
-import { Link } from "@mui/material";
+import { Box, IconProps, Link } from "@mui/material";
 import { graphql, useFragment } from "react-relay";
 import { UsernameDisplay_userNode$key } from "./__generated__/UsernameDisplay_userNode.graphql";
 import HelpAnnotated from "components/common/HelpAnnotated";
+import { Person as IconPerson } from "@mui/icons-material";
 
 interface Props {
   userKey: UsernameDisplay_userNode$key;
+  iconSize?: IconProps["fontSize"];
 }
 
-const UsernameDisplay: React.FC<Props> = ({ userKey }) => {
+/**
+ * Render a username in a friendly way. Includes an icon, and if the user is
+ * the current user, we'll show some extra context. This will inherit the
+ * typography of the parent.
+ */
+const Username: React.FC<Props> = ({ userKey, iconSize }) => {
   const user = useFragment(
     graphql`
       fragment UsernameDisplay_userNode on UserNode {
@@ -17,6 +24,14 @@ const UsernameDisplay: React.FC<Props> = ({ userKey }) => {
       }
     `,
     userKey
+  );
+
+  // Sorry Franco :(
+  const content = (
+    <Box display="flex" alignItems="center">
+      <IconPerson fontSize={iconSize} />
+      {user.username}
+    </Box>
   );
 
   // For guest users, show a tooltip explaining the situation.
@@ -35,12 +50,12 @@ const UsernameDisplay: React.FC<Props> = ({ userKey }) => {
           </>
         }
       >
-        {user.username}
+        {content}
       </HelpAnnotated>
     );
   }
 
-  return <span>{user.username}</span>;
+  return <span>{content}</span>;
 };
 
-export default UsernameDisplay;
+export default Username;

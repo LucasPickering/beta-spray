@@ -25,7 +25,7 @@ import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
 import useMutation from "util/useMutation";
 import { useNavigate } from "react-router-dom";
 import MutationLoadingBackdrop from "components/common/MutationLoadingBackdrop";
-import UsernameDisplay from "components/Account/UsernameDisplay";
+import Username from "components/Account/Username";
 import DisabledTooltip from "components/common/DisabledTooltip";
 
 interface Props {
@@ -153,7 +153,7 @@ const ProblemMetadata: React.FC<Props> = ({ problemKey }) => {
         <ExternalProblemLink>{problem.externalLink}</ExternalProblemLink>
 
         <Typography>
-          Shared by <UsernameDisplay userKey={problem.owner} />
+          <Username userKey={problem.owner} />
         </Typography>
       </Box>
 
