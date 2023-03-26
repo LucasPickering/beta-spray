@@ -14,6 +14,7 @@ import BetaMoveListItemSmart from "./BetaMoveListItemSmart";
 import { BetaMoveList_betaNode$key } from "./__generated__/BetaMoveList_betaNode.graphql";
 import { BetaMoveList_deleteBetaMoveMutation } from "./__generated__/BetaMoveList_deleteBetaMoveMutation.graphql";
 import { BetaMoveList_updateBetaMoveMutation } from "./__generated__/BetaMoveList_updateBetaMoveMutation.graphql";
+import { DragItem } from "../util/dnd";
 
 interface Props {
   betaKey: BetaMoveList_betaNode$key;
@@ -28,6 +29,9 @@ const BetaMoveList: React.FC<Props> = ({ betaKey }) => {
     graphql`
       fragment BetaMoveList_betaNode on BetaNode {
         id
+        permissions {
+          canEdit
+        }
         moves {
           ...BetaDetailsDragPreview_betaMoveNodeConnection
           ...stance_betaMoveNodeConnection
@@ -74,7 +78,6 @@ const BetaMoveList: React.FC<Props> = ({ betaKey }) => {
           beta {
             # Refetch all moves to get the new ordering
             moves {
-              totalCount
               edges {
                 node {
                   id
@@ -120,6 +123,65 @@ const BetaMoveList: React.FC<Props> = ({ betaKey }) => {
   // Calculate this here, otherwise each move would have to re-calculate the stance
   const stickFigureColor = useStanceColor(stance);
 
+  const onReorder = (
+    dragItem: DragItem<"listBetaMove">,
+    newIndex: number
+  ): void => {
+    // This is called on the *hovered* move, so the passed item is
+    // the one being dragged
+    setDraggingMove({ id: dragItem.betaMoveId, index: newIndex });
+  };
+  const onDrop = (item: DragItem<"listBetaMove">): void => {
+    if (item) {
+      // The index field was modified during dragging, but
+      // index is 0-based and order is 1-based, so we need to
+      // convert now. The API will take care of sliding the
+      // other moves up/down to fit this one in
+      const newOrder = item.index + 1;
+      updateBetaMove({
+        variables: {
+          input: {
+            id: item.betaMoveId,
+            order: newOrder,
+          },
+        },
+        optimisticResponse: {
+          updateBetaMove: {
+            id: item.betaMoveId,
+            beta: {
+              id: beta.id,
+              moves: reorderBetaMoveLocal(
+                beta.moves,
+                item.betaMoveId,
+                newOrder
+              ),
+            },
+          },
+        },
+      });
+    }
+    setDraggingMove(undefined);
+  };
+  const onDelete = (betaMoveId: string): void => {
+    deleteBetaMove({
+      variables: {
+        input: { id: betaMoveId },
+      },
+      optimisticResponse: {
+        deleteBetaMove: {
+          id: betaMoveId,
+          beta: {
+            id: beta.id,
+            moves: deleteBetaMoveLocal(beta.moves, betaMoveId),
+          },
+        },
+      },
+    });
+  };
+
+  const {
+    permissions: { canEdit },
+  } = beta;
   return (
     <List component="ol">
       {moves.length === 0 && (
@@ -136,58 +198,11 @@ const BetaMoveList: React.FC<Props> = ({ betaKey }) => {
           stanceColor={
             stance[node.bodyPart] === node.id ? stickFigureColor : undefined
           }
-          onReorder={(dragItem, newIndex) => {
-            // This is called on the *hovered* move, so the passed item is
-            // the one being dragged
-            setDraggingMove({ id: dragItem.betaMoveId, index: newIndex });
-          }}
-          onDrop={(item) => {
-            if (item) {
-              // The index field was modified during dragging, but
-              // index is 0-based and order is 1-based, so we need to
-              // convert now. The API will take care of sliding the
-              // other moves up/down to fit this one in
-              const newOrder = item.index + 1;
-              updateBetaMove({
-                variables: {
-                  input: {
-                    id: item.betaMoveId,
-                    order: newOrder,
-                  },
-                },
-                optimisticResponse: {
-                  updateBetaMove: {
-                    id: node.id,
-                    beta: {
-                      id: beta.id,
-                      moves: reorderBetaMoveLocal(
-                        beta.moves,
-                        item.betaMoveId,
-                        newOrder
-                      ),
-                    },
-                  },
-                },
-              });
-            }
-            setDraggingMove(undefined);
-          }}
-          onDelete={() =>
-            deleteBetaMove({
-              variables: {
-                input: { id: node.id },
-              },
-              optimisticResponse: {
-                deleteBetaMove: {
-                  id: node.id,
-                  beta: {
-                    id: beta.id,
-                    moves: deleteBetaMoveLocal(beta.moves, node.id),
-                  },
-                },
-              },
-            })
-          }
+          // We need to disable both onReorder and onDrop to get the child to
+          // hide its drag handle
+          onReorder={canEdit ? onReorder : undefined}
+          onDrop={canEdit ? onDrop : undefined}
+          onDelete={canEdit ? () => onDelete(node.id) : undefined}
         />
       ))}
 

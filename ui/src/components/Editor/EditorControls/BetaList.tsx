@@ -112,8 +112,17 @@ const BetaList: React.FC<Props> = ({
       optimisticResponse: {
         createBeta: {
           id: generateUniqueClientID(),
-          name: null,
-          moves: { totalCount: 0 },
+          name: "",
+          // TODO use current user if present
+          owner: {
+            id: generateUniqueClientID(),
+            username: "",
+            isCurrentUser: true,
+            // TODO guess this
+            isGuest: false,
+          },
+          // We'll be the owner, so full permissions
+          permissions: { canEdit: true, canDelete: true },
         },
       },
       // Select the new beta after creation
@@ -132,8 +141,20 @@ const BetaList: React.FC<Props> = ({
           id: generateUniqueClientID(),
           // We *could* use the source beta name here, but the placeholder
           // acts as a clear loading indicator
-          name: null,
-          moves: { edges: [] },
+          name: "",
+          // Don't bother populating the moves here. We don't have access to
+          // the full move data that's used in the SVG, so let's just wait until
+          // we get the actual thing from the API
+          // TODO use current user if present
+          owner: {
+            id: generateUniqueClientID(),
+            username: "",
+            isCurrentUser: true,
+            // TODO guess this
+            isGuest: false,
+          },
+          // We'll be the owner, so full permissions
+          permissions: { canEdit: true, canDelete: true },
         },
       },
       // Select the new beta after creation

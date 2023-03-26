@@ -14,10 +14,10 @@ import {
 } from "@mui/icons-material";
 import { graphql, useFragment } from "react-relay";
 import { BetaListItem_betaNode$key } from "./__generated__/BetaListItem_betaNode.graphql";
-import { isDefined } from "util/func";
 import ActionsMenu from "components/common/ActionsMenu";
 import Username from "components/Account/Username";
 import BetaSettings from "./BetaSettings";
+import DisabledTooltip from "components/common/DisabledTooltip";
 
 interface Props {
   betaKey: BetaListItem_betaNode$key;
@@ -37,11 +37,12 @@ const BetaListItem: React.FC<Props> = ({
       fragment BetaListItem_betaNode on BetaNode {
         id
         name
-        moves {
-          totalCount
-        }
         owner {
           ...UsernameDisplay_userNode
+        }
+        permissions {
+          canEdit
+          canDelete
         }
         ...BetaSettings_betaNode
       }
@@ -66,7 +67,7 @@ const BetaListItem: React.FC<Props> = ({
       </ListItemIcon>
       <ListItemText
         primary={
-          isDefined(beta.name) ? (
+          beta.name ? (
             <label htmlFor={controlId}>{beta.name}</label>
           ) : (
             // Missing name indicates it's still loading
@@ -84,28 +85,42 @@ const BetaListItem: React.FC<Props> = ({
           <ListItemText>Copy</ListItemText>
         </MenuItem>
 
-        <MenuItem onClick={() => setIsSettingsOpen(true)}>
-          <ListItemIcon>
-            <IconSettings />
-          </ListItemIcon>
-          <ListItemText>Settings</ListItemText>
-        </MenuItem>
-
-        <MenuItem
-          onClick={() => {
-            if (
-              window.confirm(`Are you sure you want to delete ${beta.name}?`)
-            ) {
-              onDelete(beta.id);
-            }
-          }}
-          sx={({ palette }) => ({ color: palette.error.main })}
+        <DisabledTooltip
+          title="You don't have permission to edit this beta"
+          placement="left"
         >
-          <ListItemIcon>
-            <IconDelete />
-          </ListItemIcon>
-          <ListItemText>Delete</ListItemText>
-        </MenuItem>
+          <MenuItem
+            disabled={!beta.permissions.canEdit}
+            onClick={() => setIsSettingsOpen(true)}
+          >
+            <ListItemIcon>
+              <IconSettings />
+            </ListItemIcon>
+            <ListItemText>Settings</ListItemText>
+          </MenuItem>
+        </DisabledTooltip>
+
+        <DisabledTooltip
+          title="You don't have permission to delete this beta"
+          placement="left"
+        >
+          <MenuItem
+            disabled={!beta.permissions.canDelete}
+            onClick={() => {
+              if (
+                window.confirm(`Are you sure you want to delete ${beta.name}?`)
+              ) {
+                onDelete(beta.id);
+              }
+            }}
+            sx={({ palette }) => ({ color: palette.error.main })}
+          >
+            <ListItemIcon>
+              <IconDelete />
+            </ListItemIcon>
+            <ListItemText>Delete</ListItemText>
+          </MenuItem>
+        </DisabledTooltip>
       </ActionsMenu>
 
       <BetaSettings

@@ -9,7 +9,6 @@ import {
 import { graphql, useFragment } from "react-relay";
 import { ProblemCard_problemNode$key } from "./__generated__/ProblemCard_problemNode.graphql";
 import LinkBehavior from "components/common/LinkBehavior";
-import { isDefined } from "util/func";
 import ExternalProblemLink from "components/common/ExternalProblemLink";
 
 const dateFormat = new Intl.DateTimeFormat(undefined, { dateStyle: "long" });
@@ -54,7 +53,7 @@ const ProblemCard: React.FC<Props> = ({ problemKey }) => {
     <Card sx={{ height: "100%" }}>
       <CardActionArea component={LinkBehavior} href={linkPath}>
         <CardMedia sx={{ height: 200 }}>
-          {isDefined(problem.boulder.image.url) ? (
+          {problem.boulder.image.url ? (
             <img
               src={problem.boulder.image.url}
               alt={`${problem.name} boulder`}
@@ -73,17 +72,15 @@ const ProblemCard: React.FC<Props> = ({ problemKey }) => {
       <CardContent>
         <Typography variant="h6" component="h3">
           {/* Nullish value indicates it's still loading */}
-          {problem.name ?? <Skeleton />}
+          {problem.name || <Skeleton />}
         </Typography>
 
-        {/* Nullish value indicates it's still loading */}
-        <Typography>
-          {isDefined(problem.externalLink) ? (
+        {/* Empty value could be loading *or* it's just empty */}
+        {problem.externalLink && (
+          <Typography>
             <ExternalProblemLink>{problem.externalLink}</ExternalProblemLink>
-          ) : (
-            <Skeleton />
-          )}
-        </Typography>
+          </Typography>
+        )}
 
         <Typography variant="subtitle1" component="span" color="text.secondary">
           {dateFormat.format(new Date(problem.createdAt))}

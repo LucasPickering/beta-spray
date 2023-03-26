@@ -88,15 +88,16 @@ const ProblemList: React.FC<Props> = ({ queryKey }) => {
                   id: generateUniqueClientID(),
                   problem: {
                     id: generateUniqueClientID(),
-                    name: null,
-                    externalLink: null,
+                    name: "",
+                    externalLink: "",
                     createdAt: new Date(),
                     boulder: {
                       id: generateUniqueClientID(),
                       // Card should detect empty URL and render a placeholder
-                      image: { url: null },
+                      image: { url: "" },
                     },
                     betas: { edges: [] },
+                    // TODO add owner and permissions
                   },
                 },
               },

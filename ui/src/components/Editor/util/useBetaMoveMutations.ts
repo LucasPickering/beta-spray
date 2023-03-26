@@ -62,7 +62,6 @@ function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
           beta {
             id
             moves {
-              totalCount
               edges {
                 node {
                   id

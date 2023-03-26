@@ -69,7 +69,6 @@ const BetaMoveActions: React.FC<Props> = ({ betaKey }) => {
           beta {
             id
             moves {
-              totalCount
               edges {
                 node {
                   id
