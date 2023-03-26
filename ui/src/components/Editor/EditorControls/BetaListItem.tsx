@@ -1,4 +1,4 @@
-import React, { useId } from "react";
+import React, { useId, useState } from "react";
 import {
   ListItem,
   ListItemIcon,
@@ -10,18 +10,18 @@ import {
 import {
   ContentCopy as IconContentCopy,
   Delete as IconDelete,
+  Settings as IconSettings,
 } from "@mui/icons-material";
 import { graphql, useFragment } from "react-relay";
 import { BetaListItem_betaNode$key } from "./__generated__/BetaListItem_betaNode.graphql";
-import Editable from "components/common/Editable";
 import { isDefined } from "util/func";
 import ActionsMenu from "components/common/ActionsMenu";
 import Username from "components/Account/Username";
+import BetaSettings from "./BetaSettings";
 
 interface Props {
   betaKey: BetaListItem_betaNode$key;
   disabled?: boolean;
-  onRename: (betaId: string, newName: string) => void;
   onCopy: (betaId: string) => void;
   onDelete: (betaId: string) => void;
 }
@@ -29,7 +29,6 @@ interface Props {
 const BetaListItem: React.FC<Props> = ({
   betaKey,
   disabled = false,
-  onRename,
   onCopy,
   onDelete,
 }) => {
@@ -44,11 +43,13 @@ const BetaListItem: React.FC<Props> = ({
         owner {
           ...UsernameDisplay_userNode
         }
+        ...BetaSettings_betaNode
       }
     `,
     betaKey
   );
 
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const controlId = useId();
 
   return (
@@ -66,13 +67,7 @@ const BetaListItem: React.FC<Props> = ({
       <ListItemText
         primary={
           isDefined(beta.name) ? (
-            <label htmlFor={controlId}>
-              <Editable
-                value={beta.name}
-                placeholder="Beta Name"
-                onChange={(newValue) => onRename(beta.id, newValue)}
-              />
-            </label>
+            <label htmlFor={controlId}>{beta.name}</label>
           ) : (
             // Missing name indicates it's still loading
             <Skeleton />
@@ -87,6 +82,13 @@ const BetaListItem: React.FC<Props> = ({
             <IconContentCopy />
           </ListItemIcon>
           <ListItemText>Copy</ListItemText>
+        </MenuItem>
+
+        <MenuItem onClick={() => setIsSettingsOpen(true)}>
+          <ListItemIcon>
+            <IconSettings />
+          </ListItemIcon>
+          <ListItemText>Settings</ListItemText>
         </MenuItem>
 
         <MenuItem
@@ -105,6 +107,12 @@ const BetaListItem: React.FC<Props> = ({
           <ListItemText>Delete</ListItemText>
         </MenuItem>
       </ActionsMenu>
+
+      <BetaSettings
+        betaKey={beta}
+        open={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+      />
     </ListItem>
   );
 };

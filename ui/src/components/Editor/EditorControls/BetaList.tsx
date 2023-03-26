@@ -19,7 +19,6 @@ import {
 import { Add as IconAdd } from "@mui/icons-material";
 import BetaListItem from "./BetaListItem";
 import { BetaList_copyBetaMutation } from "./__generated__/BetaList_copyBetaMutation.graphql";
-import { BetaList_updateBetaMutation } from "./__generated__/BetaList_updateBetaMutation.graphql";
 import { isDefined } from "util/func";
 import { generateUniqueClientID } from "relay-runtime";
 
@@ -78,16 +77,6 @@ const BetaList: React.FC<Props> = ({
         }
       }
     `);
-  const { commit: updateBeta, state: updateState } =
-    useMutation<BetaList_updateBetaMutation>(graphql`
-      mutation BetaList_updateBetaMutation($input: UpdateBetaInput!) {
-        updateBeta(input: $input) {
-          id
-          # Only refresh what we know could have changed
-          name
-        }
-      }
-    `);
   const { commit: copyBeta, state: copyState } =
     useMutation<BetaList_copyBetaMutation>(graphql`
       mutation BetaList_copyBetaMutation(
@@ -132,17 +121,6 @@ const BetaList: React.FC<Props> = ({
         if (data.createBeta) {
           onSelectBeta(data.createBeta.id);
         }
-      },
-    });
-  };
-  const onRename = (betaId: string, newName: string): void => {
-    updateBeta({
-      variables: { input: { id: betaId, name: newName } },
-      optimisticResponse: {
-        updateBeta: {
-          id: betaId,
-          name: newName,
-        },
       },
     });
   };
@@ -196,7 +174,6 @@ const BetaList: React.FC<Props> = ({
             <BetaListItem
               key={node.id}
               betaKey={node}
-              onRename={onRename}
               onCopy={onCopy}
               onDelete={onDelete}
             />
@@ -207,10 +184,6 @@ const BetaList: React.FC<Props> = ({
       <MutationErrorSnackbar
         message="Error creating beta"
         state={createState}
-      />
-      <MutationErrorSnackbar
-        message="Error renaming beta"
-        state={updateState}
       />
       <MutationErrorSnackbar message="Error copying beta" state={copyState} />
       <MutationErrorSnackbar
