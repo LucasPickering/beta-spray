@@ -1,4 +1,4 @@
-import { Box, IconProps, Link } from "@mui/material";
+import { Box, IconProps, Link, Skeleton } from "@mui/material";
 import { graphql, useFragment } from "react-relay";
 import { UsernameDisplay_userNode$key } from "./__generated__/UsernameDisplay_userNode.graphql";
 import HelpAnnotated from "components/common/HelpAnnotated";
@@ -30,7 +30,8 @@ const Username: React.FC<Props> = ({ userKey, iconSize }) => {
   const content = (
     <Box display="flex" alignItems="center">
       <IconPerson fontSize={iconSize} />
-      {user.username}
+      {/* Empty username indicates it's loading */}
+      {user.username || <Skeleton />}
     </Box>
   );
 

@@ -23,6 +23,7 @@ interface Props extends React.ComponentProps<typeof ListItem> {
   betaMoveKey: BetaMoveListItem_betaMoveNode$key;
   stanceColor?: string;
   isHighlighted?: boolean;
+  draggable?: boolean;
   isDragging?: boolean;
   dragRef?: React.Ref<SVGSVGElement>;
   onDelete?: () => void;
@@ -37,6 +38,7 @@ const BetaMoveListItem = React.forwardRef<HTMLLIElement, Props>(
       betaMoveKey,
       stanceColor,
       isHighlighted = false,
+      draggable = true,
       isDragging = false,
       dragRef,
       onDelete,
@@ -111,10 +113,12 @@ const BetaMoveListItem = React.forwardRef<HTMLLIElement, Props>(
           <ListItemIcon>
             {/* Only use the drag icon for dragging, to prevent interfering with
               scrolling on mobile */}
-            <IconDragHandle
-              ref={dragRef}
-              sx={{ paddingRight: 1, cursor: "grab" }}
-            />
+            {draggable && (
+              <IconDragHandle
+                ref={dragRef}
+                sx={{ paddingRight: 1, cursor: "grab" }}
+              />
+            )}
             <BetaMoveIconWrapped
               bodyPart={betaMove.bodyPart}
               order={betaMove.order}

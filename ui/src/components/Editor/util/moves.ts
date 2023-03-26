@@ -282,7 +282,7 @@ export function reorderBetaMoveLocal(
 export function deleteBetaMoveLocal(
   moves: BetaMoves,
   betaMoveId: string
-): BetaMoves & { readonly totalCount: number } {
+): BetaMoves {
   const edges = moves.edges
     .filter(({ node: { id } }) => id !== betaMoveId)
     .map(({ node: { id, isStart } }, i) => ({
@@ -291,5 +291,5 @@ export function deleteBetaMoveLocal(
       // the future?
       node: { id, isStart, order: i + 1 },
     }));
-  return { totalCount: edges.length, edges };
+  return { edges };
 }

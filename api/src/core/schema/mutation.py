@@ -231,7 +231,7 @@ class Mutation:
             info,
             Beta,
             {
-                "problem_id": original_beta.problem_id,
+                "problem": original_beta.problem,
                 "name": f"{original_beta.name} 2.0",
                 "owner": info.context.request.user,
             },

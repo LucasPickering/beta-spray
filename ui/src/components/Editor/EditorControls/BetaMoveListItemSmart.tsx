@@ -10,6 +10,7 @@ import {
 } from "components/Editor/util/dnd";
 import BetaMoveListItem from "./BetaMoveListItem";
 import { useHighlight } from "components/Editor/util/highlight";
+import { isDefined } from "util/func";
 
 interface Props {
   betaMoveKey: BetaMoveListItemSmart_betaMoveNode$key;
@@ -170,6 +171,9 @@ const BetaMoveListItemSmart: React.FC<Props> = ({
       dragRef={drag}
       betaMoveKey={betaMove}
       stanceColor={stanceColor}
+      // Generally if one of these is defined, both should be, but let's check
+      // both to be safe
+      draggable={isDefined(onReorder) || isDefined(onDrop)}
       isHighlighted={isHighlighted}
       isDragging={isDragging}
       onClick={highlightThis}
