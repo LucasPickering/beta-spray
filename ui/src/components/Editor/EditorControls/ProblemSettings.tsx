@@ -3,7 +3,6 @@ import ComingSoon from "components/common/ComingSoon";
 import FormDialog from "components/common/FormDialog";
 import TextFormField from "components/common/TextFormField";
 import { graphql, useFragment } from "react-relay";
-import { isDefined } from "util/func";
 import useForm from "util/useForm";
 import useMutation from "util/useMutation";
 import { validateExternalLink, validateString } from "util/validator";
@@ -98,12 +97,6 @@ const ProblemSettings: React.FC<Props> = ({ problemKey, open, onClose }) => {
               externalLink,
               visibility,
             },
-          },
-          onCompleted(data) {
-            // Close the modal on success
-            if (isDefined(data)) {
-              onClose?.();
-            }
           },
         });
       }}

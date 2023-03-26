@@ -14,6 +14,7 @@ import MutationErrorSnackbar from "./MutationErrorSnackbar";
 interface Props {
   title: string;
   open: boolean;
+  closeOnSuccess?: boolean;
   hasChanges?: boolean;
   hasError?: boolean;
   mutationState?: MutationState;
@@ -35,6 +36,7 @@ interface Props {
 const FormDialog: React.FC<Props> = ({
   title,
   open,
+  closeOnSuccess = true,
   hasChanges,
   hasError,
   mutationState,
@@ -42,52 +44,59 @@ const FormDialog: React.FC<Props> = ({
   onSave,
   onClose,
   children,
-}) => (
-  <>
-    <Dialog open={open} maxWidth="xs" fullWidth onClose={onClose}>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          onSave?.();
-        }}
-      >
-        <DialogTitle>{title}</DialogTitle>
+}) => {
+  // Automatically close the form when the mutation succeeds
+  if (closeOnSuccess && mutationState?.status === "success") {
+    onClose?.();
+  }
 
-        <DialogContent>
-          <Stack spacing={2}>{children}</Stack>
-        </DialogContent>
+  return (
+    <>
+      <Dialog open={open} maxWidth="xs" fullWidth onClose={onClose}>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            onSave?.();
+          }}
+        >
+          <DialogTitle>{title}</DialogTitle>
 
-        <DialogActions>
-          <Button
-            startIcon={<IconClear />}
-            onClick={() => {
-              if (
-                !hasChanges ||
-                window.confirm("Are you sure? You have unsaved changes.")
-              ) {
-                onClose?.();
-              }
-            }}
-          >
-            Cancel
-          </Button>
-          <LoadingButton
-            startIcon={<IconSave />}
-            variant="contained"
-            type="submit"
-            loading={mutationState?.status === "loading"}
-            disabled={!hasChanges || hasError}
-          >
-            Save
-          </LoadingButton>
-        </DialogActions>
-      </form>
-    </Dialog>
+          <DialogContent>
+            <Stack spacing={2}>{children}</Stack>
+          </DialogContent>
 
-    {mutationState && errorMessage && (
-      <MutationErrorSnackbar message={errorMessage} state={mutationState} />
-    )}
-  </>
-);
+          <DialogActions>
+            <Button
+              startIcon={<IconClear />}
+              onClick={() => {
+                if (
+                  !hasChanges ||
+                  window.confirm("Are you sure? You have unsaved changes.")
+                ) {
+                  onClose?.();
+                }
+              }}
+            >
+              Cancel
+            </Button>
+            <LoadingButton
+              startIcon={<IconSave />}
+              variant="contained"
+              type="submit"
+              loading={mutationState?.status === "loading"}
+              disabled={!hasChanges || hasError}
+            >
+              Save
+            </LoadingButton>
+          </DialogActions>
+        </form>
+      </Dialog>
+
+      {mutationState && errorMessage && (
+        <MutationErrorSnackbar message={errorMessage} state={mutationState} />
+      )}
+    </>
+  );
+};
 
 export default FormDialog;
