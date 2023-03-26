@@ -16,9 +16,10 @@ import { graphql } from "react-relay";
 export const currentUserQuery = graphql`
   query queriesCurrentUserQuery {
     currentUser {
-      ...AccountMenu_userNode
-      ...LogInPage_userNode
-      ...userUseOptimisiticUserFields_userNode
+      ...AccountMenu_currentUser
+      ...LogInPage_currentUser
+      ...GuestUserWarningDialog_currentUser
+      ...userUseOptimisiticUserFields_currentUser
     }
   }
 `;
