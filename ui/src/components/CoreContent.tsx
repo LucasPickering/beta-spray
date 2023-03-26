@@ -46,7 +46,7 @@ const CoreContent: React.FC = () => (
         <ThemeProvider theme={theme}>
           <CssBaseline />
 
-          <Suspense fallback={<Loading />}>
+          <Suspense fallback={<Loading size={100} height="100vh" />}>
             <ErrorBoundary>
               <UserQueryProvider>
                 <Routes>
