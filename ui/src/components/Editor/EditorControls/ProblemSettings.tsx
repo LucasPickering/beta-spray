@@ -1,5 +1,4 @@
 import { MenuItem } from "@mui/material";
-import ComingSoon from "components/common/ComingSoon";
 import FormDialog from "components/common/FormDialog";
 import TextFormField from "components/common/TextFormField";
 import { graphql, useFragment } from "react-relay";
@@ -112,21 +111,16 @@ const ProblemSettings: React.FC<Props> = ({ problemKey, open, onClose }) => {
         state={externalLinkState}
       />
 
-      <ComingSoon>
-        <TextFormField
-          select
-          label="Visibility"
-          state={visibilityState}
-          disabled
-          helperText={visibilityHelperText[visibilityState.value]}
-          onChange={(e) =>
-            visibilityState.setValue(e.target.value as Visibility)
-          }
-        >
-          <MenuItem value="UNLISTED">Unlisted</MenuItem>
-          <MenuItem value="PUBLIC">Public</MenuItem>
-        </TextFormField>
-      </ComingSoon>
+      <TextFormField
+        select
+        label="Visibility"
+        state={visibilityState}
+        helperText={visibilityHelperText[visibilityState.value]}
+        onChange={(e) => visibilityState.setValue(e.target.value as Visibility)}
+      >
+        <MenuItem value="UNLISTED">Unlisted</MenuItem>
+        <MenuItem value="PUBLIC">Public</MenuItem>
+      </TextFormField>
     </FormDialog>
   );
 };
