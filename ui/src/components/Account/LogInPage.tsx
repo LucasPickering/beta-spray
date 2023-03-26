@@ -2,7 +2,7 @@ import { Button, Grid, Link, Paper, Typography } from "@mui/material";
 import { IconGoogle } from "assets";
 import Loading from "components/common/Loading";
 import { graphql, useFragment } from "react-relay";
-import { Navigate } from "react-router-dom";
+import { Navigate, useSearchParams } from "react-router-dom";
 import { withContextQuery } from "relay-query-wrapper";
 import { currentUserQuery } from "util/queries";
 import { queriesCurrentUserQuery } from "util/__generated__/queriesCurrentUserQuery.graphql";
@@ -31,6 +31,12 @@ const LogInPage: React.FC<Props> = ({ userKey }) => {
     userKey
   );
 
+  // If we were given a ?next= param, forward that to the API. It will make sure
+  // we get back to that path after login.
+  const [searchParams] = useSearchParams();
+  const next = searchParams.get("next");
+  const query = next ? `?next=${next}` : "";
+
   // If user is already logged in, get the hell outta here
   if (currentUser.__typename === "UserNode" && !currentUser.isGuest) {
     return <Navigate to="/" replace />;
@@ -53,7 +59,7 @@ const LogInPage: React.FC<Props> = ({ userKey }) => {
             // Styling is kinda shit, hopefully the big bad google man doesn't
             // come after us
             component={Link}
-            href="/api/social/login/google-oauth2/"
+            href={`/api/social/login/google-oauth2/${query}`}
             startIcon={<IconGoogle />}
             fullWidth
             variant="outlined"

@@ -18,7 +18,6 @@ import Loading from "components/common/Loading";
 import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
 import { useState } from "react";
 import { graphql, useFragment } from "react-relay";
-import { useNavigate } from "react-router-dom";
 import { withContextQuery } from "relay-query-wrapper";
 import { currentUserQuery } from "util/queries";
 import useMutation from "util/useMutation";
@@ -26,7 +25,7 @@ import { queriesCurrentUserQuery } from "util/__generated__/queriesCurrentUserQu
 import AccountSettings from "./AccountSettings";
 import { AccountMenu_logOutMutation } from "./__generated__/AccountMenu_logOutMutation.graphql";
 import { AccountMenu_userNode$key } from "./__generated__/AccountMenu_userNode.graphql";
-import { UserQueryContext } from "util/user";
+import { UserQueryContext, useLoginPath } from "util/user";
 import Username from "./Username";
 
 interface Props {
@@ -69,13 +68,13 @@ const AccountMenu: React.FC<Props> = ({ userKey }) => {
       }
     `);
 
-  const navigate = useNavigate();
+  const loginPath = useLoginPath();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   // Logged Out
   if (currentUser.__typename !== "UserNode") {
     return (
-      <Button component={Link} href="/login">
+      <Button component={Link} href={loginPath}>
         Log in
       </Button>
     );
@@ -93,7 +92,7 @@ const AccountMenu: React.FC<Props> = ({ userKey }) => {
         <Divider />
 
         {isGuest && (
-          <MenuItem component={Link} href="/login">
+          <MenuItem component={Link} href={loginPath}>
             <ListItemIcon>
               <IconLogin />
             </ListItemIcon>
@@ -114,8 +113,11 @@ const AccountMenu: React.FC<Props> = ({ userKey }) => {
               logOut({
                 variables: {},
                 onCompleted() {
-                  // Reload the page, since a lot of content can change
-                  navigate(0);
+                  // Navigate to the home page because the current page may no
+                  // longer be accessible, and trigger a full refresh because
+                  // lots of things may have changed. This is pretty standard
+                  // practice for login/logout
+                  window.location.href = window.location.origin;
                 },
               })
             }

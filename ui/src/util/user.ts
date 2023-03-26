@@ -13,6 +13,7 @@ import {
 import type { queriesCurrentUserQuery as queriesCurrentUserQueryType } from "util/__generated__/queriesCurrentUserQuery.graphql";
 import { currentUserQuery } from "./queries";
 import { userUseOptimisiticUserFields_userNode$key } from "./__generated__/userUseOptimisiticUserFields_userNode.graphql";
+import { useLocation } from "react-router-dom";
 
 interface UserQuery {
   queryRef: PreloadedQuery<queriesCurrentUserQueryType>;
@@ -78,4 +79,20 @@ export function useOptimisiticUserFields(): {
     // We'll be the owner, so we have full permissions
     permissions: { canEdit: true, canDelete: true },
   };
+}
+
+/**
+ * Get a path for links to the login page. This will include a query param on
+ * the path to make sure we return to the current page after login
+ */
+export function useLoginPath(): string {
+  const location = useLocation();
+  // Maintain path+query+hash. We can't retain router state since that's in-memory only.
+  // This doesn't seem to work entirely in firefox because it preemptively
+  // decodes the URL in the link.
+  // TODO fix in firefox
+  const next = encodeURIComponent(
+    location.pathname + location.search + location.hash
+  );
+  return `/login?next=${next}`;
 }
