@@ -230,6 +230,8 @@ input CreateBetaMoveInput {
   bodyPart: BodyPart!
   hold: ID
   position: SVGPositionInput
+
+  """Move prior to this one in the beta"""
   previousBetaMove: ID
 }
 
@@ -242,6 +244,8 @@ input CreateBoulderWithFriendsInput {
 input CreateHoldInput {
   """The ID of the problem to add the hold to."""
   problem: ID!
+
+  """Position of the hold within the boulder image, or null for random"""
   position: SVGPositionInput
 }
 
@@ -537,6 +541,18 @@ type Query {
     id: ID!
   ): BoulderNode
 
+  """Get a problem by ID"""
+  problem(
+    """The ID of the object."""
+    id: ID!
+  ): ProblemNode
+
+  """Get a beta by ID"""
+  beta(
+    """The ID of the object."""
+    id: ID!
+  ): BetaNode
+
   """Access problems by list"""
   problems(
     """Returns the items in the list that come before the specified cursor."""
@@ -550,19 +566,15 @@ type Query {
 
     """Returns the items in the list that come after the specified cursor."""
     last: Int = null
+
+    """
+    Are you the creator of the problem? If set, show only your problems, or only someone else's.
+    """
+    isMine: Boolean
+
+    """Filter by problem visibility"""
+    visibility: Visibility
   ): ProblemNodeConnection!
-
-  """Get a problem by ID"""
-  problem(
-    """The ID of the object."""
-    id: ID!
-  ): ProblemNode
-
-  """Get a beta by ID"""
-  beta(
-    """The ID of the object."""
-    id: ID!
-  ): BetaNode
 
   """
   Get data on the requesting user (you). Null for unauthenticated users.

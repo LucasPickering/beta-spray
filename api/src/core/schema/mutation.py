@@ -139,14 +139,12 @@ class Mutation:
                 description="The ID of the problem to add the hold to."
             ),
         ],
-        position: Optional[
-            Annotated[
-                SVGPositionInput,
-                gql.argument(
-                    description="Position of the hold within the boulder image,"
-                    " or null for random"
-                ),
-            ]
+        position: Annotated[
+            Optional[SVGPositionInput],
+            gql.argument(
+                description="Position of the hold within the boulder image,"
+                " or null for random"
+            ),
         ],
     ) -> HoldNode:
         """
@@ -280,11 +278,9 @@ class Mutation:
         body_part: BodyPart,
         hold: Optional[gql.relay.GlobalID],
         position: Optional[SVGPositionInput],
-        previous_beta_move: Optional[
-            Annotated[
-                gql.relay.GlobalID,
-                gql.argument(description="Move prior to this one in the beta"),
-            ]
+        previous_beta_move: Annotated[
+            Optional[gql.relay.GlobalID],
+            gql.argument(description="Move prior to this one in the beta"),
         ],
     ) -> BetaMoveNode:
         """
