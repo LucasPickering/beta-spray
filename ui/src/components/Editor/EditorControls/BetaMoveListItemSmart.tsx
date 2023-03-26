@@ -49,12 +49,16 @@ const BetaMoveListItemSmart: React.FC<Props> = ({
 
   const childRef = useRef<HTMLLIElement | null>(null);
 
+  // Generally if one of these is defined, both should be, but let's check
+  // both to be safe
+  const canDrag = isDefined(onReorder) || isDefined(onDrop);
   const [{ isDragging }, drag] = useDrag<
     "listBetaMove",
     { isDragging: boolean }
   >({
     type: "listBetaMove",
     item: { betaMoveId: betaMove.id, index },
+    canDrag,
     collect(monitor) {
       return {
         isDragging: Boolean(monitor.isDragging()),
@@ -171,9 +175,7 @@ const BetaMoveListItemSmart: React.FC<Props> = ({
       dragRef={drag}
       betaMoveKey={betaMove}
       stanceColor={stanceColor}
-      // Generally if one of these is defined, both should be, but let's check
-      // both to be safe
-      draggable={isDefined(onReorder) || isDefined(onDrop)}
+      draggable={canDrag}
       isHighlighted={isHighlighted}
       isDragging={isDragging}
       onClick={highlightThis}

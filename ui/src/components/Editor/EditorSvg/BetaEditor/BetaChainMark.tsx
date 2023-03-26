@@ -47,6 +47,7 @@ const BetaChainMark: React.FC<Props> = ({
     betaMoveKey
   );
   const moveId = betaMove.id; // This gets captured by a lot of lambdas
+  const editable = isDefined(onDragFinish);
   const color = useBetaMoveColor()(moveId);
   const position = useBetaMoveVisualPosition()(moveId);
 
@@ -62,6 +63,7 @@ const BetaChainMark: React.FC<Props> = ({
       betaMoveId: moveId,
       bodyPart: betaMove.bodyPart,
     },
+    canDrag: editable,
     collect(monitor) {
       return {
         isDragging: Boolean(monitor.isDragging()),
@@ -100,7 +102,7 @@ const BetaChainMark: React.FC<Props> = ({
           isFree={!isDefined(betaMove.hold)}
           color={color}
           variant={isInCurrentStance || isHighlighted ? "large" : "small"}
-          draggable
+          draggable={editable}
           isDragging={isDragging}
           isHighlighted={isHighlighted}
           // Don't block drop events when another element is being dragged
@@ -109,7 +111,7 @@ const BetaChainMark: React.FC<Props> = ({
           onClick={highlightThis}
         />
 
-        {isInCurrentStance && (
+        {editable && isInCurrentStance && (
           <AddBetaMoveMark
             bodyPart={betaMove.bodyPart}
             variant="move"

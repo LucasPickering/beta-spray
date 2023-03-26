@@ -15,7 +15,6 @@ import { isDefined } from "util/func";
 
 interface Props {
   holdKey: HoldMark_holdNode$key;
-  draggable?: boolean;
   /**
    * Called when this hold is dropped onto something else
    */
@@ -45,13 +44,14 @@ const HoldMark: React.FC<Props> = ({ holdKey, onDragFinish, onDrop }) => {
     holdKey
   );
 
-  // Drag this hold around, while editing holds
+  const editable = isDefined(onDragFinish);
   const [{ isDragging }, drag] = useDrag<
     "overlayHold",
     { isDragging: boolean }
   >({
     type: "overlayHold",
     item: { action: "relocate", holdId: hold.id },
+    canDrag: editable,
     collect: (monitor) => ({
       isDragging: Boolean(monitor.isDragging()),
     }),
@@ -92,7 +92,7 @@ const HoldMark: React.FC<Props> = ({ holdKey, onDragFinish, onDrop }) => {
     <>
       <Positioned ref={ref} position={hold.position} onClick={highlightThis}>
         <HoldIcon
-          draggable
+          draggable={editable}
           isDragging={isDragging}
           isOver={isOver}
           isHighlighted={isHighlighted}

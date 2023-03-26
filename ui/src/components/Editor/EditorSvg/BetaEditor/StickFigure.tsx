@@ -17,6 +17,7 @@ import { DragFinishHandler } from "components/Editor/util/dnd";
 import { useBetaMoveVisualPosition } from "components/Editor/util/moves";
 import AddBetaMoveMark from "./AddBetaMoveMark";
 import Positioned from "../common/Positioned";
+import { isDefined } from "util/func";
 
 /**
  * The torso will always be this percentage of the distance between hands and
@@ -42,6 +43,7 @@ const StickFigure: React.FC<Props> = ({
   const stance = useStance(betaMoveConnectionKey);
   const { dimensions: svgDimensions } = useContext(SvgContext);
   const color = useStickFigureColor(stance);
+  const editable = isDefined(onDragFinish);
 
   // Grab the visual position of each move
   const getPosition = useBetaMoveVisualPosition();
@@ -88,7 +90,8 @@ const StickFigure: React.FC<Props> = ({
       {limbs.map(({ bodyPart, joint }) => (
         <React.Fragment key={bodyPart}>
           <Line p1={positions[bodyPart]} p2={joint} />
-          {!stance[bodyPart] && (
+          {editable && !stance[bodyPart] && (
+            // TODO better visual here for non-editable?
             <Positioned position={positions[bodyPart]}>
               <AddBetaMoveMark
                 bodyPart={bodyPart}
