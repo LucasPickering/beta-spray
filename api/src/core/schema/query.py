@@ -1,9 +1,10 @@
-from typing import Optional, Union
+from typing import Annotated, Iterable, Optional, Union
 
 from django.contrib.auth.models import User
-from django.db.models import Model
+from django.db.models import Model, Q
 from django.db.models.fields.files import ImageFieldFile
 from guest_user.functions import is_guest_user
+from strawberry import UNSET
 from strawberry.types import Info
 from strawberry_django_plus import gql
 from strawberry_django_plus.gql import relay
@@ -275,9 +276,41 @@ class Query:
     boulder: Optional[BoulderNode] = relay.node(
         description="Get a boulder by ID"
     )
-    problems: relay.Connection[ProblemNode] = gql.django.connection(
-        description="Access problems by list"
-    )
+
+    @relay.connection
+    def problems(
+        self,
+        info: Info,
+        is_mine: Annotated[
+            Optional[bool],
+            gql.argument(
+                description="Are you the creator of the problem?"
+                " If set, show only your problems, or only someone else's."
+            ),
+        ] = UNSET,
+        visibility: Annotated[
+            Optional[Visibility],
+            gql.argument(description="Filter by problem visibility"),
+        ] = UNSET,
+    ) -> Iterable[ProblemNode]:
+        """
+        Access problems by list
+        """
+        current_user = info.context.request.user
+
+        # By default, don't show anyone else's unlisted problems
+        q = Q(visibility=Visibility.PUBLIC) | Q(owner=current_user)
+
+        if is_mine is not UNSET:
+            if is_mine:
+                q &= Q(owner=current_user)
+            else:
+                q &= ~Q(owner=current_user)
+        if visibility is not UNSET:
+            q &= Q(visibility=visibility)
+
+        return Problem.objects.filter(q)
+
     problem: Optional[ProblemNode] = relay.node(
         description="Get a problem by ID"
     )
