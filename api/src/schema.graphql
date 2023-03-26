@@ -323,6 +323,7 @@ An uploaded image. To upload a file, see: https://strawberry.rocks/docs/guides/f
 scalar ImageUpload
 
 type Mutation {
+  updateUser(input: UpdateUserInput!): UserNode! @hasObjPerm(permissions: [{resource: "auth", permission: "edit_user"}], any: true)
   deleteHold(
     """Input of an object that implements the `Node` interface."""
     input: NodeInput!
@@ -630,6 +631,13 @@ input UpdateProblemInput {
 
   """Access level for other users to this problem"""
   visibility: Visibility
+}
+
+input UpdateUserInput {
+  id: ID!
+
+  """Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."""
+  username: String
 }
 
 """A user of Beta Spray"""
