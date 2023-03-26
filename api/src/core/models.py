@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Literal, Optional
+from typing import Any, Literal, Optional
 
 from django.contrib.auth.models import User
 from django.db import models
@@ -18,9 +18,6 @@ from strawberry_django_plus import gql
 
 from . import fields, util
 from .queryset import BetaMoveQuerySet
-
-if TYPE_CHECKING:
-    from .permissions import PermissionType
 
 
 # Typing on this seems to be wonky because gql.enum is made for stock enums,
@@ -44,26 +41,6 @@ class Visibility(models.TextChoices):  # type: ignore
     PUBLIC = "public"
 
 
-class BaseModel(models.Model):
-    """
-    Abstract base class for all Beta Spray models
-    """
-
-    class Meta:
-        abstract = True
-
-    @classmethod
-    def permission(cls, permission_type: "PermissionType") -> str:
-        """
-        Get a string representing a permission for this object. The name
-        consists of the app name, model name, and name of the action being
-        performed. This should be used any time permissions are referenced, to
-        ensure consistency.
-        """
-        meta = cls._meta
-        return f"{meta.app_label}.{permission_type.value}_{meta.model_name}"
-
-
 class HoldAnnotationSource(models.TextChoices):
     """
     The source of a hold annotation on an boulder, or of a hold within a problem
@@ -73,7 +50,7 @@ class HoldAnnotationSource(models.TextChoices):
     AUTO = "auto"  # ML model added attribution
 
 
-class Boulder(BaseModel):
+class Boulder(models.Model):
     """
     A user-uploaded image of a rock wall, which should contain holds that make
     up one or more problem
@@ -87,7 +64,7 @@ class Boulder(BaseModel):
     # TODO override __str__ after name field is actually populated
 
 
-class Problem(BaseModel):
+class Problem(models.Model):
     """
     A problem is made up of a collection of holds
     """
@@ -115,7 +92,7 @@ class Problem(BaseModel):
         return self.name
 
 
-class Hold(BaseModel):
+class Hold(models.Model):
     """
     A single hold on a rock wall, which belongs to a single problem.
     Hypothetically a hold can be used in more than one problem, but it
@@ -141,7 +118,7 @@ class Hold(BaseModel):
     updated_at = models.DateTimeField(auto_now=True)
 
 
-class Beta(BaseModel):
+class Beta(models.Model):
     """
     A prescribed series of moves to solve a problem.
     """
@@ -190,7 +167,7 @@ class Beta(BaseModel):
         BetaMove.objects.filter(filt).update(order=order_expr)
 
 
-class BetaMove(BaseModel):
+class BetaMove(models.Model):
     """
     Beta a single action in a beta. Most moves have a hold associated, but not
     necessarily (e.g. smear, flag, etc.).

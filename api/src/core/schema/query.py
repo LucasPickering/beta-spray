@@ -1,6 +1,7 @@
 from typing import Optional, Union
 
 from django.contrib.auth.models import User
+from django.db.models import Model
 from django.db.models.fields.files import ImageFieldFile
 from guest_user.functions import is_guest_user
 from strawberry.types import Info
@@ -11,7 +12,6 @@ from typing_extensions import Self
 from .. import util
 from ..fields import BoulderPosition
 from ..models import (
-    BaseModel,
     Beta,
     BetaMove,
     BodyPart,
@@ -20,7 +20,7 @@ from ..models import (
     Problem,
     Visibility,
 )
-from ..permissions import PermissionType
+from ..permissions import PermissionType, permission
 
 
 @gql.type
@@ -43,7 +43,7 @@ class PermissionsMixin:
     """
 
     @gql.field
-    def permissions(self: BaseModel, info: Info) -> Permissions:  # type: ignore
+    def permissions(self: Model, info: Info) -> Permissions:  # type: ignore
         """
         Permissions for the requesting user (you) on the parent object.
         Attempting any mutation that you don't have permission for will result
@@ -51,9 +51,9 @@ class PermissionsMixin:
         """
         user = info.context.request.user
         return Permissions(
-            can_edit=user.has_perm(self.permission(PermissionType.EDIT), self),
+            can_edit=user.has_perm(permission(self, PermissionType.EDIT), self),
             can_delete=user.has_perm(
-                self.permission(PermissionType.DELETE), self
+                permission(self, PermissionType.DELETE), self
             ),
         )
 

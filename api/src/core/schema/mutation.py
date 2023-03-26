@@ -2,6 +2,7 @@ import random
 from typing import Annotated, NewType, Optional
 
 from django.contrib.auth import logout
+from django.contrib.auth.models import User
 from django.forms import ValidationError, model_to_dict
 from strawberry.types.info import Info
 from strawberry_django_plus import gql
@@ -21,8 +22,15 @@ from ..models import (
     Problem,
     Visibility,
 )
-from ..permissions import PermissionType
-from .query import BetaMoveNode, BetaNode, HoldNode, Image, ProblemNode
+from ..permissions import PermissionType, permission
+from .query import (
+    BetaMoveNode,
+    BetaNode,
+    HoldNode,
+    Image,
+    ProblemNode,
+    UserNode,
+)
 
 ImageUpload = gql.scalar(
     NewType("ImageUpload", bytes),
@@ -47,6 +55,12 @@ class SVGPositionInput:
         """
         (svg_width, svg_height) = util.get_svg_dimensions(image)
         return BoulderPosition(self.x / svg_width, self.y / svg_height)
+
+
+@gql.django.partial(User)
+class UpdateUserInput(gql.NodeInput):
+    # TODO validate username
+    username: gql.auto
 
 
 @gql.django.partial(Problem)
@@ -74,6 +88,12 @@ class Mutation:
         Log out the current user (if any)
         """
         logout(info.context.request)
+
+    update_user: UserNode = gql.django.update_mutation(
+        UpdateUserInput,
+        handle_django_errors=False,
+        directives=[HasObjPerm(permission(User, PermissionType.EDIT))],
+    )
 
     @gql.relay.input_mutation(directives=[CreateGuestUser()])
     def create_boulder_with_friends(
@@ -108,7 +128,7 @@ class Mutation:
         )
 
     @gql.relay.input_mutation(
-        directives=[HasObjPerm(Hold.permission(PermissionType.CREATE))]
+        directives=[HasObjPerm(permission(Hold, PermissionType.CREATE))]
     )
     def create_hold(
         self,
@@ -163,7 +183,7 @@ class Mutation:
         return hold_dj
 
     @gql.relay.input_mutation(
-        directives=[HasObjPerm(Hold.permission(PermissionType.EDIT))]
+        directives=[HasObjPerm(permission(Hold, PermissionType.EDIT))]
     )
     def update_hold(
         self,
@@ -189,18 +209,18 @@ class Mutation:
     delete_hold: HoldNode = gql.django.delete_mutation(
         gql.NodeInput,
         handle_django_errors=False,
-        directives=[HasObjPerm(Hold.permission(PermissionType.DELETE))],
+        directives=[HasObjPerm(permission(Hold, PermissionType.DELETE))],
     )
 
     update_problem: ProblemNode = gql.django.update_mutation(
         UpdateProblemInput,
         handle_django_errors=False,
-        directives=[HasObjPerm(Problem.permission(PermissionType.EDIT))],
+        directives=[HasObjPerm(permission(Problem, PermissionType.EDIT))],
     )
     delete_problem: ProblemNode = gql.django.delete_mutation(
         gql.NodeInput,
         handle_django_errors=False,
-        directives=[HasObjPerm(Problem.permission(PermissionType.DELETE))],
+        directives=[HasObjPerm(permission(Problem, PermissionType.DELETE))],
     )
 
     @gql.relay.input_mutation(directives=[CreateGuestUser()])
@@ -215,12 +235,12 @@ class Mutation:
     update_beta: BetaNode = gql.django.update_mutation(
         UpdateBetaInput,
         handle_django_errors=False,
-        directives=[HasObjPerm(Beta.permission(PermissionType.EDIT))],
+        directives=[HasObjPerm(permission(Beta, PermissionType.EDIT))],
     )
     delete_beta: BetaNode = gql.django.delete_mutation(
         gql.NodeInput,
         handle_django_errors=False,
-        directives=[HasObjPerm(Beta.permission(PermissionType.DELETE))],
+        directives=[HasObjPerm(permission(Beta, PermissionType.DELETE))],
     )
 
     @gql.relay.input_mutation(directives=[CreateGuestUser()])
@@ -251,7 +271,7 @@ class Mutation:
         return new_beta
 
     @gql.relay.input_mutation(
-        directives=[HasObjPerm(BetaMove.permission(PermissionType.CREATE))],
+        directives=[HasObjPerm(permission(BetaMove, PermissionType.CREATE))],
     )
     def create_beta_move(
         self,
@@ -314,7 +334,7 @@ class Mutation:
         )
 
     @gql.relay.input_mutation(
-        directives=[HasObjPerm(BetaMove.permission(PermissionType.EDIT))],
+        directives=[HasObjPerm(permission(BetaMove, PermissionType.EDIT))],
     )
     def update_beta_move(
         self,
@@ -359,5 +379,5 @@ class Mutation:
     delete_beta_move: BetaMoveNode = gql.django.delete_mutation(
         gql.NodeInput,
         handle_django_errors=False,
-        directives=[HasObjPerm(BetaMove.permission(PermissionType.DELETE))],
+        directives=[HasObjPerm(permission(BetaMove, PermissionType.DELETE))],
     )

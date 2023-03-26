@@ -3,6 +3,7 @@ from typing import Optional
 
 import rules
 from django.contrib.auth.models import User
+from django.db.models import Model
 
 from .models import Beta, BetaMove, Hold, Problem
 
@@ -17,6 +18,22 @@ class PermissionType(Enum):
     CREATE = "create"
     EDIT = "edit"
     DELETE = "delete"
+
+
+def permission(model: Model, permission_type: PermissionType) -> str:
+    """
+    Get a string representing a permission for a model type. The name
+    consists of the app name, model name, and name of the action being
+    performed. This should be used any time permissions are referenced, to
+    ensure consistency.
+    """
+    meta = model._meta
+    return f"{meta.app_label}.{permission_type.value}_{meta.model_name}"
+
+
+@rules.predicate
+def is_current_user(user: User, obj: Optional[User]) -> bool:
+    return obj is not None and user == obj
 
 
 @rules.predicate
@@ -44,17 +61,20 @@ def is_beta_owner(user: User, obj: Optional[BetaMove]) -> bool:
     return obj is not None and is_owner(user, obj.beta)
 
 
+# User
+rules.add_perm(permission(User, PermissionType.EDIT), is_current_user)
+rules.add_perm(permission(User, PermissionType.DELETE), False)
 # Problem
-rules.add_perm(Problem.permission(PermissionType.EDIT), is_owner)
-rules.add_perm(Problem.permission(PermissionType.DELETE), is_owner)
+rules.add_perm(permission(Problem, PermissionType.EDIT), is_owner)
+rules.add_perm(permission(Problem, PermissionType.DELETE), is_owner)
 # Beta
-rules.add_perm(Beta.permission(PermissionType.EDIT), is_owner)
-rules.add_perm(Beta.permission(PermissionType.DELETE), is_owner)
+rules.add_perm(permission(Beta, PermissionType.EDIT), is_owner)
+rules.add_perm(permission(Beta, PermissionType.DELETE), is_owner)
 # Hold
-rules.add_perm(Hold.permission(PermissionType.CREATE), is_problem_owner)
-rules.add_perm(Hold.permission(PermissionType.EDIT), is_problem_owner)
-rules.add_perm(Hold.permission(PermissionType.DELETE), is_problem_owner)
+rules.add_perm(permission(Hold, PermissionType.CREATE), is_problem_owner)
+rules.add_perm(permission(Hold, PermissionType.EDIT), is_problem_owner)
+rules.add_perm(permission(Hold, PermissionType.DELETE), is_problem_owner)
 # Beta Move
-rules.add_perm(BetaMove.permission(PermissionType.CREATE), is_beta_owner)
-rules.add_perm(BetaMove.permission(PermissionType.EDIT), is_beta_owner)
-rules.add_perm(BetaMove.permission(PermissionType.DELETE), is_beta_owner)
+rules.add_perm(permission(BetaMove, PermissionType.CREATE), is_beta_owner)
+rules.add_perm(permission(BetaMove, PermissionType.EDIT), is_beta_owner)
+rules.add_perm(permission(BetaMove, PermissionType.DELETE), is_beta_owner)
