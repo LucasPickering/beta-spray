@@ -1,5 +1,5 @@
 import { UserQueryContext } from "util/user";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import {
   // eslint-disable-next-line no-restricted-syntax
   useMutation as useMutationRelay,
@@ -51,10 +51,13 @@ function useMutation<TMutation extends MutationParameters>(
 ): {
   commit: (config: UseMutationConfig<TMutation>) => Disposable;
   state: MutationState;
+  resetState: () => void;
 } {
   const [commit, isInFlight] = useMutationRelay(mutation, commitMutationFn);
   const [state, setState] = useState<MutationState>({ status: "idle" });
   const { reloadIfNoUser: reloadUserQuery } = useContext(UserQueryContext);
+
+  const resetState = useCallback(() => setState({ status: "idle" }), []);
 
   useEffect(() => {
     if (isInFlight) {
@@ -97,6 +100,7 @@ function useMutation<TMutation extends MutationParameters>(
         ...rest,
       }),
     state,
+    resetState,
   };
 }
 

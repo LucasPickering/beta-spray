@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import { MutationState } from "util/useMutation";
 import MutationErrorSnackbar from "./MutationErrorSnackbar";
+import { useEffect } from "react";
 
 interface Props {
   title: string;
@@ -46,9 +47,13 @@ const FormDialog: React.FC<Props> = ({
   children,
 }) => {
   // Automatically close the form when the mutation succeeds
-  if (closeOnSuccess && mutationState?.status === "success") {
-    onClose?.();
-  }
+  useEffect(() => {
+    if (open && closeOnSuccess && mutationState?.status === "success") {
+      // Warning: if this is getting triggered immediately on open, make sure
+      // your onClose handler is calling resetState for the mutation!
+      onClose?.();
+    }
+  }, [open, closeOnSuccess, mutationState?.status, onClose]);
 
   return (
     <>

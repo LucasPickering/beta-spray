@@ -37,15 +37,18 @@ const BetaSettings: React.FC<Props> = ({ betaKey, open, onClose }) => {
     !open
   );
 
-  const { commit: updateBeta, state: updateState } =
-    useMutation<BetaSettings_updateBetaMutation>(graphql`
-      mutation BetaSettings_updateBetaMutation($input: UpdateBetaInput!) {
-        updateBeta(input: $input) {
-          id
-          name
-        }
+  const {
+    commit: updateBeta,
+    state: updateState,
+    resetState: resetUpdateState,
+  } = useMutation<BetaSettings_updateBetaMutation>(graphql`
+    mutation BetaSettings_updateBetaMutation($input: UpdateBetaInput!) {
+      updateBeta(input: $input) {
+        id
+        name
       }
-    `);
+    }
+  `);
 
   return (
     <FormDialog
@@ -64,6 +67,7 @@ const BetaSettings: React.FC<Props> = ({ betaKey, open, onClose }) => {
       }}
       onClose={() => {
         onReset();
+        resetUpdateState();
         onClose?.();
       }}
     >

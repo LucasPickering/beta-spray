@@ -59,19 +59,22 @@ const ProblemSettings: React.FC<Props> = ({ problemKey, open, onClose }) => {
     !open
   );
 
-  const { commit: updateProblem, state: updateState } =
-    useMutation<ProblemSettings_updateProblemMutation>(graphql`
-      mutation ProblemSettings_updateProblemMutation(
-        $input: UpdateProblemInput!
-      ) {
-        updateProblem(input: $input) {
-          id
-          name
-          externalLink
-          visibility
-        }
+  const {
+    commit: updateProblem,
+    state: updateState,
+    resetState: resetUpdateState,
+  } = useMutation<ProblemSettings_updateProblemMutation>(graphql`
+    mutation ProblemSettings_updateProblemMutation(
+      $input: UpdateProblemInput!
+    ) {
+      updateProblem(input: $input) {
+        id
+        name
+        externalLink
+        visibility
       }
-    `);
+    }
+  `);
 
   return (
     <FormDialog
@@ -101,6 +104,7 @@ const ProblemSettings: React.FC<Props> = ({ problemKey, open, onClose }) => {
       }}
       onClose={() => {
         onReset();
+        resetUpdateState();
         onClose?.();
       }}
     >

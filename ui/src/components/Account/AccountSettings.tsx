@@ -39,15 +39,18 @@ const AccountSettings: React.FC<Props> = ({ userKey, open, onClose }) => {
     },
   });
 
-  const { commit: updateUser, state: updateState } =
-    useMutation<AccountSettings_updateUserMutation>(graphql`
-      mutation AccountSettings_updateUserMutation($input: UpdateUserInput!) {
-        updateUser(input: $input) {
-          id
-          username
-        }
+  const {
+    commit: updateUser,
+    state: updateState,
+    resetState: resetUpdateState,
+  } = useMutation<AccountSettings_updateUserMutation>(graphql`
+    mutation AccountSettings_updateUserMutation($input: UpdateUserInput!) {
+      updateUser(input: $input) {
+        id
+        username
       }
-    `);
+    }
+  `);
 
   return (
     <FormDialog
@@ -66,6 +69,7 @@ const AccountSettings: React.FC<Props> = ({ userKey, open, onClose }) => {
       }}
       onClose={() => {
         onReset();
+        resetUpdateState();
         onClose?.();
       }}
     >
