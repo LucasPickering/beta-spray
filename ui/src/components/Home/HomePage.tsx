@@ -1,4 +1,4 @@
-import { Grid, Typography } from "@mui/material";
+import { Grid } from "@mui/material";
 import { useEffect } from "react";
 import { useQueryLoader } from "react-relay";
 import PublicProblemList from "./PublicProblemList";
@@ -8,6 +8,7 @@ import type { PublicProblemListQuery as PublicProblemListQueryType } from "./__g
 import PublicProblemListQuery from "./__generated__/PublicProblemListQuery.graphql";
 import YourProblemList from "./YourProblemList";
 import BoulderImageUpload from "./BoulderImageUpload";
+import ErrorBoundary from "components/common/ErrorBoundary";
 
 const HomePage: React.FC = () => {
   const [yourProblemsQueryRef, loadYourProblemsQuery] =
@@ -30,19 +31,13 @@ const HomePage: React.FC = () => {
         <BoulderImageUpload />
       </Grid>
 
-      <Grid item xs={12}>
-        <Typography component="h2" variant="h4">
-          Your Problems
-        </Typography>
-      </Grid>
-      <YourProblemList queryRef={yourProblemsQueryRef} />
+      <ErrorBoundary>
+        <YourProblemList queryRef={yourProblemsQueryRef} />
+      </ErrorBoundary>
 
-      <Grid item xs={12}>
-        <Typography component="h2" variant="h4">
-          Around the World
-        </Typography>
-      </Grid>
-      <PublicProblemList queryRef={publicProblemsQueryRef} />
+      <ErrorBoundary>
+        <PublicProblemList queryRef={publicProblemsQueryRef} />
+      </ErrorBoundary>
     </Grid>
   );
 };

@@ -296,16 +296,22 @@ class Query:
         """
         Access problems by list
         """
-        current_user = info.context.request.user
+
+        # owner_id is non-nullable so the second param here is redundant, but
+        # it's a backup just in case. Otherwise, any problem lacking an owner
+        # would be returned if the current user is anonymous (id=None)
+        is_mine_query = Q(
+            owner_id=info.context.request.user.id, owner_id__isnull=False
+        )
 
         # By default, don't show anyone else's unlisted problems
-        q = Q(visibility=Visibility.PUBLIC) | Q(owner=current_user)
+        q = Q(visibility=Visibility.PUBLIC) | is_mine_query
 
         if is_mine is not UNSET:
             if is_mine:
-                q &= Q(owner=current_user)
+                q &= is_mine_query
             else:
-                q &= ~Q(owner=current_user)
+                q &= ~is_mine_query
         if visibility is not UNSET:
             q &= Q(visibility=visibility)
 

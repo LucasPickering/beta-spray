@@ -1,16 +1,18 @@
-import { Button, Grid, GridProps } from "@mui/material";
+import { Button, Grid, GridProps, Typography } from "@mui/material";
 import { graphql, useFragment } from "react-relay";
 import ProblemCard, { ProblemCardSkeleton } from "./ProblemCard";
 import { ProblemList_problemNodeConnection$key } from "./__generated__/ProblemList_problemNodeConnection.graphql";
 
 interface Props {
   problemConnectionKey: ProblemList_problemNodeConnection$key;
+  title?: string;
   hasNext?: boolean;
   loadNext?: (count: number) => void;
 }
 
 const ProblemList: React.FC<Props> = ({
   problemConnectionKey,
+  title,
   hasNext = false,
   loadNext,
 }) => {
@@ -30,6 +32,14 @@ const ProblemList: React.FC<Props> = ({
 
   return (
     <>
+      {title && (
+        <Grid item xs={12}>
+          <Typography component="h2" variant="h4">
+            {title}
+          </Typography>
+        </Grid>
+      )}
+
       {problems.edges.map(({ node }) => (
         <ProblemListGridItem key={node.id}>
           <ProblemCard problemKey={node} />

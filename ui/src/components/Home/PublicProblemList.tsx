@@ -43,6 +43,7 @@ const PublicProblemList: React.FC<Props> = ({ queryKey }) => {
   return (
     <ProblemList
       problemConnectionKey={problems}
+      title="Around the World"
       hasNext={hasNext}
       loadNext={loadNext}
     />

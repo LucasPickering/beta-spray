@@ -40,9 +40,15 @@ const YourProblemList: React.FC<Props> = ({ queryKey }) => {
     queryKey
   );
 
+  // Don't show anything if the user hasn't uploaded any problems yet
+  if (problems.edges.length === 0) {
+    return null;
+  }
+
   return (
     <ProblemList
       problemConnectionKey={problems}
+      title="Your Problems"
       hasNext={hasNext}
       loadNext={loadNext}
     />
