@@ -1,5 +1,41 @@
 import { isDefined } from "./func";
 
+type Validator = (value: string) => string | undefined;
+
+/**
+ * Is the string empty, or only whitespace?
+ */
+const empty: Validator = (value) => {
+  if (value.length === 0) {
+    return "Cannot be empty";
+  }
+  if (value.trim().length === 0) {
+    return "Cannot contain only whitespace";
+  }
+  return undefined;
+};
+
+function maxLength(length: number): Validator {
+  return (value) => (value.length > length ? "Too long" : undefined);
+}
+
+/**
+ * Is the string only alphanumeric characters or spaces? Also disallow
+ * consecutive spaces or leading/trailing spaces.
+ */
+const simple: Validator = (value) => {
+  if (!/^[a-zA-Z0-9 ]+$/.test(value)) {
+    return "Can only contain letters, numbers, and spaces";
+  }
+  if (value !== value.trim()) {
+    return "Cannot contain leading or trailing spaces";
+  }
+  if (/ {2}/.test(value)) {
+    return "Cannot contain consecutive spaces";
+  }
+  return undefined;
+};
+
 /**
  * These sites are approved targets for external links. Everything else is
  * blocked, for security reasons.
@@ -16,22 +52,14 @@ export const supportedExternalHosts = [
  * The default validator. Disallows empty and egregiously long strings.
  */
 export function validateString(value: string): string | undefined {
-  // Disallow empty strings OR whitespace-only strings
-  if (value.trim().length === 0) {
-    return "Cannot be empty";
-  }
-  if (value.length > 100) {
-    return "Too long";
-  }
-  return undefined;
+  return empty(value) ?? maxLength(100)(value);
 }
 
 /**
  * Validate usernames
  */
 export function validateUsername(value: string): string | undefined {
-  // TODO
-  return value.length <= 20 ? undefined : "bad!";
+  return empty(value) ?? maxLength(25)(value) ?? simple(value);
 }
 
 /**

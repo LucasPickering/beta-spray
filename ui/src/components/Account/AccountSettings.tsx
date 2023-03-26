@@ -1,10 +1,11 @@
-import ComingSoon from "components/common/ComingSoon";
 import FormDialog from "components/common/FormDialog";
 import TextFormField from "components/common/TextFormField";
 import { graphql, useFragment } from "react-relay";
 import useForm from "util/useForm";
 import { validateUsername } from "util/validator";
 import { AccountSettings_userNode$key } from "./__generated__/AccountSettings_userNode.graphql";
+import useMutation from "util/useMutation";
+import { AccountSettings_updateUserMutation } from "./__generated__/AccountSettings_updateUserMutation.graphql";
 
 interface Props {
   userKey: AccountSettings_userNode$key;
@@ -19,6 +20,7 @@ const AccountSettings: React.FC<Props> = ({ userKey, open, onClose }) => {
   const user = useFragment(
     graphql`
       fragment AccountSettings_userNode on UserNode {
+        id
         username
       }
     `,
@@ -36,7 +38,16 @@ const AccountSettings: React.FC<Props> = ({ userKey, open, onClose }) => {
       validator: validateUsername,
     },
   });
-  // TODO mutate user here
+
+  const { commit: updateUser, state: updateState } =
+    useMutation<AccountSettings_updateUserMutation>(graphql`
+      mutation AccountSettings_updateUserMutation($input: UpdateUserInput!) {
+        updateUser(input: $input) {
+          id
+          username
+        }
+      }
+    `);
 
   return (
     <FormDialog
@@ -44,14 +55,21 @@ const AccountSettings: React.FC<Props> = ({ userKey, open, onClose }) => {
       open={open}
       hasChanges={hasChanges}
       hasError={hasError}
+      mutationState={updateState}
+      onSave={() => {
+        const id = user.id;
+        const username = usernameState.value;
+        updateUser({
+          variables: { input: { id, username } },
+          optimisticResponse: { updateUser: { id, username } },
+        });
+      }}
       onClose={() => {
         onReset();
         onClose?.();
       }}
     >
-      <ComingSoon>
-        <TextFormField label="Username" state={usernameState} disabled />
-      </ComingSoon>
+      <TextFormField label="Username" state={usernameState} />
     </FormDialog>
   );
 };

@@ -1,7 +1,6 @@
 import FormDialog from "components/common/FormDialog";
 import TextFormField from "components/common/TextFormField";
 import { graphql, useFragment } from "react-relay";
-import { isDefined } from "util/func";
 import useForm from "util/useForm";
 import useMutation from "util/useMutation";
 import { validateString } from "util/validator";
@@ -61,12 +60,6 @@ const BetaSettings: React.FC<Props> = ({ betaKey, open, onClose }) => {
         updateBeta({
           variables: { input: { id: beta.id, name } },
           optimisticResponse: { updateBeta: { id: beta.id, name } },
-          onCompleted(data) {
-            // Close the modal on success
-            if (isDefined(data)) {
-              onClose?.();
-            }
-          },
         });
       }}
       onClose={() => {
