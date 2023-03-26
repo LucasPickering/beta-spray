@@ -1,119 +1,35 @@
-import { Button, Grid, GridProps, Skeleton } from "@mui/material";
-import { graphql, usePaginationFragment } from "react-relay";
-import ProblemCard from "./ProblemCard";
-import BoulderImageUpload from "./BoulderImageUpload";
-import { ProblemList_query$key } from "./__generated__/ProblemList_query.graphql";
-import { ProblemList_createBoulderWithFriendsMutation } from "./__generated__/ProblemList_createBoulderWithFriendsMutation.graphql";
-import useMutation from "util/useMutation";
-import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
-import ProblemListQuery, {
-  ProblemListQuery as ProblemListQueryType,
-} from "./__generated__/ProblemListQuery.graphql";
-import { withQuery } from "relay-query-wrapper";
-import { useNavigate } from "react-router-dom";
-import { generateUniqueClientID } from "relay-runtime";
+import { Button, Grid, GridProps } from "@mui/material";
+import { graphql, useFragment } from "react-relay";
+import ProblemCard, { ProblemCardSkeleton } from "./ProblemCard";
+import { ProblemList_problemNodeConnection$key } from "./__generated__/ProblemList_problemNodeConnection.graphql";
 
 interface Props {
-  queryKey: ProblemList_query$key;
+  problemConnectionKey: ProblemList_problemNodeConnection$key;
+  hasNext?: boolean;
+  loadNext?: (count: number) => void;
 }
 
-const ProblemList: React.FC<Props> = ({ queryKey }) => {
-  const {
-    data: { problems },
-    loadNext,
-    hasNext,
-  } = usePaginationFragment<ProblemListQueryType, ProblemList_query$key>(
+const ProblemList: React.FC<Props> = ({
+  problemConnectionKey,
+  hasNext = false,
+  loadNext,
+}) => {
+  const problems = useFragment(
     graphql`
-      fragment ProblemList_query on Query
-      @refetchable(queryName: "ProblemListQuery") {
-        problems(first: $count, after: $cursor)
-          @required(action: THROW)
-          @connection(key: "ProblemList_query_problems") {
-          __id
-          edges {
-            node {
-              id
-              ...ProblemCard_problemNode
-            }
-          }
-        }
-      }
-    `,
-    queryKey
-  );
-
-  const navigate = useNavigate();
-
-  // For now, we enforce one problem per image, so auto-create the problem now
-  const { commit: createBoulderWithFriends, state: createState } =
-    useMutation<ProblemList_createBoulderWithFriendsMutation>(graphql`
-      mutation ProblemList_createBoulderWithFriendsMutation(
-        $input: CreateBoulderWithFriendsInput!
-        $connections: [ID!]!
-      ) {
-        createBoulderWithFriends(input: $input) {
-          id # Created beta is returned
-          problem
-            @prependNode(
-              connections: $connections
-              edgeTypeName: "ProblemNodeEdge"
-            ) {
+      fragment ProblemList_problemNodeConnection on ProblemNodeConnection {
+        edges {
+          node {
             id
             ...ProblemCard_problemNode
           }
         }
       }
-    `);
+    `,
+    problemConnectionKey
+  );
 
   return (
     <>
-      <ProblemListGridItem>
-        <BoulderImageUpload
-          onUpload={(file) => {
-            createBoulderWithFriends({
-              variables: {
-                // null is a placeholder for the file data, which will be
-                // pulled from the request body and injected by the API
-                input: { image: null },
-                connections: [problems.__id],
-              },
-              uploadables: {
-                // This has to match the variable path above
-                ["input.image"]: file,
-              },
-              // Optimistically create the new problem
-              // Unfortunately no static typing here, but Relay checks at runtime
-              optimisticResponse: {
-                createBoulderWithFriends: {
-                  id: generateUniqueClientID(),
-                  problem: {
-                    id: generateUniqueClientID(),
-                    name: "",
-                    externalLink: "",
-                    createdAt: new Date(),
-                    boulder: {
-                      id: generateUniqueClientID(),
-                      // Card should detect empty URL and render a placeholder
-                      image: { url: "" },
-                    },
-                    betas: { edges: [] },
-                  },
-                },
-              },
-              // Redirect to the newly uploaded problem
-              onCompleted(data) {
-                // This shouldn't ever be null if the mutation succeeded
-                if (data.createBoulderWithFriends) {
-                  const { id: betaId, problem } = data.createBoulderWithFriends;
-                  // Pre-select the created beta, to avoid waterfalled requests
-                  navigate(`/problems/${problem.id}/beta/${betaId}`);
-                }
-              },
-            });
-          }}
-        />
-      </ProblemListGridItem>
-
       {problems.edges.map(({ node }) => (
         <ProblemListGridItem key={node.id}>
           <ProblemCard problemKey={node} />
@@ -122,16 +38,11 @@ const ProblemList: React.FC<Props> = ({ queryKey }) => {
 
       {hasNext ? (
         <Grid item xs={12}>
-          <Button fullWidth onClick={() => loadNext(10)}>
+          <Button fullWidth onClick={loadNext && (() => loadNext(10))}>
             Load More
           </Button>
         </Grid>
       ) : null}
-
-      <MutationErrorSnackbar
-        message="Error uploading problem"
-        state={createState}
-      />
     </>
   );
 };
@@ -144,21 +55,21 @@ const ProblemListGridItem: React.FC<GridProps> = (props) => (
   <Grid item xs={12} sm={6} md={4} {...props} />
 );
 
-const ProblemListPlaceholder: React.FC = () => (
-  <ProblemListGridItem>
-    <Skeleton variant="rectangular" height={348} />
-  </ProblemListGridItem>
+/**
+ * Loading placeholder for ProblemList
+ */
+export const ProblemListSkeleton: React.FC = () => (
+  <>
+    <ProblemListGridItem>
+      <ProblemCardSkeleton />
+    </ProblemListGridItem>
+    <ProblemListGridItem>
+      <ProblemCardSkeleton />
+    </ProblemListGridItem>
+    <ProblemListGridItem>
+      <ProblemCardSkeleton />
+    </ProblemListGridItem>
+  </>
 );
 
-export default withQuery<ProblemListQueryType, Props>({
-  // This query is auto-generated by the @refetchable directive above
-  query: ProblemListQuery,
-  dataToProps: (data) => ({ queryKey: data }),
-  fallbackElement: (
-    <>
-      <ProblemListPlaceholder />
-      <ProblemListPlaceholder />
-      <ProblemListPlaceholder />
-    </>
-  ),
-})(ProblemList);
+export default ProblemList;

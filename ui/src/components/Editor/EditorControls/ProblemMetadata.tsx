@@ -10,7 +10,7 @@ import {
 import { withQuery } from "relay-query-wrapper";
 import { problemQuery } from "../../../util/queries";
 import { queriesProblemQuery } from "util/__generated__/queriesProblemQuery.graphql";
-import { ConnectionHandler, graphql, useFragment } from "react-relay";
+import { graphql, useFragment } from "react-relay";
 import { ProblemMetadata_problemNode$key } from "./__generated__/ProblemMetadata_problemNode.graphql";
 import ExternalProblemLink from "components/common/ExternalProblemLink";
 import {
@@ -27,6 +27,7 @@ import { useNavigate } from "react-router-dom";
 import MutationLoadingBackdrop from "components/common/MutationLoadingBackdrop";
 import Username from "components/Account/Username";
 import DisabledTooltip from "components/common/DisabledTooltip";
+import { formatDate } from "util/date";
 
 interface Props {
   problemKey: ProblemMetadata_problemNode$key;
@@ -51,6 +52,7 @@ const ProblemMetadata: React.FC<Props> = ({ problemKey }) => {
         id
         name
         externalLink
+        createdAt
         permissions {
           canEdit
           canDelete
@@ -68,12 +70,9 @@ const ProblemMetadata: React.FC<Props> = ({ problemKey }) => {
 
   const { commit: deleteProblem, state: deleteState } =
     useMutation<ProblemMetadata_deleteProblemMutation>(graphql`
-      mutation ProblemMetadata_deleteProblemMutation(
-        $input: NodeInput!
-        $connections: [ID!]!
-      ) {
+      mutation ProblemMetadata_deleteProblemMutation($input: NodeInput!) {
         deleteProblem(input: $input) {
-          id @deleteRecord @deleteEdge(connections: $connections)
+          id @deleteRecord
         }
       }
     `);
@@ -81,15 +80,7 @@ const ProblemMetadata: React.FC<Props> = ({ problemKey }) => {
   const onDelete = (): void => {
     if (window.confirm(`Are you sure you want to delete ${problem.name}?`)) {
       deleteProblem({
-        variables: {
-          input: { id: problem.id },
-          connections: [
-            ConnectionHandler.getConnectionID(
-              "root",
-              "ProblemList_query_problems"
-            ),
-          ],
-        },
+        variables: { input: { id: problem.id } },
         // Intentionally exclude optimistic response - we don't want
         // to show the problem as deleted until it really is
         onCompleted(data) {
@@ -98,8 +89,9 @@ const ProblemMetadata: React.FC<Props> = ({ problemKey }) => {
           }
         },
         updater(store) {
-          // TODO figure out why the @deleteEdge doesn't work and
-          // remove this
+          // TODO figure out if we can get rid of this (right now it crashes)
+          // @deleteEdge *might* work but we'd need to collect all collection
+          // keys which is a PITA
           store.invalidateStore();
         },
       });
@@ -155,6 +147,8 @@ const ProblemMetadata: React.FC<Props> = ({ problemKey }) => {
         <Typography>
           <Username userKey={problem.owner} />
         </Typography>
+
+        <Typography>{formatDate(problem.createdAt)}</Typography>
       </Box>
 
       <ProblemSettings
