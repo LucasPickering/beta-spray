@@ -32,11 +32,11 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
   const beta = useFragment(
     graphql`
       fragment BetaEditor_betaNode on BetaNode {
+        permissions {
+          canEdit
+        }
         ...useBetaMoveMutations_betaNode
         moves {
-          ...moves_colors_betaMoveNodeConnection
-          ...moves_visualPositions_betaMoveNodeConnection
-          ...stance_betaMoveNodeConnection
           edges {
             node {
               id
@@ -47,6 +47,9 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
               ...BetaChainLine_endBetaMoveNode
             }
           }
+          ...moves_colors_betaMoveNodeConnection
+          ...moves_visualPositions_betaMoveNodeConnection
+          ...stance_betaMoveNodeConnection
         }
       }
     `,
@@ -102,27 +105,29 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
     relocate: { callback: relocateBetaMove, state: relocateBetaMoveState },
   } = useBetaMoveMutations(beta);
 
-  const onDragFinish: DragFinishHandler<"overlayBetaMove"> = (
-    item,
-    dropResult
-  ) => {
-    switch (item.action) {
-      case "create":
-        // Insert the new move immediately after the current stance. If there
-        // is no stance, that means this is the first move, so we'll just
-        // insert anywhere
-        createBetaMove({
-          previousBetaMoveId: lastStanceMoveId,
-          bodyPart: item.bodyPart,
-          dropResult,
-        });
-        break;
-      // Dragged an existing move
-      case "relocate":
-        relocateBetaMove({ betaMoveId: item.betaMoveId, dropResult });
-        break;
-    }
-  };
+  // If we don't have permission to edit the moves, then we'll pass undefined
+  // as the drag handler to make the moves statis
+  const onDragFinish: DragFinishHandler<"overlayBetaMove"> | undefined = beta
+    .permissions.canEdit
+    ? (item, dropResult) => {
+        switch (item.action) {
+          case "create":
+            // Insert the new move immediately after the current stance. If there
+            // is no stance, that means this is the first move, so we'll just
+            // insert anywhere
+            createBetaMove({
+              previousBetaMoveId: lastStanceMoveId,
+              bodyPart: item.bodyPart,
+              dropResult,
+            });
+            break;
+          // Dragged an existing move
+          case "relocate":
+            relocateBetaMove({ betaMoveId: item.betaMoveId, dropResult });
+            break;
+        }
+      }
+    : undefined;
 
   return (
     <BetaContext.Provider value={{ betaMoveColors, betaMoveVisualPositions }}>

@@ -19,6 +19,9 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
     graphql`
       fragment HoldEditor_problemNode on ProblemNode {
         id
+        permissions {
+          canEdit
+        }
         boulder {
           id
         }
@@ -49,17 +52,22 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
       }
     `);
 
-  const onHoldDragFinish: DragFinishHandler<"overlayHold"> = (item, result) => {
-    const position = result.position;
-    updateHold({
-      variables: {
-        input: { id: item.holdId, position },
-      },
-      optimisticResponse: {
-        updateHold: { id: item.holdId, position },
-      },
-    });
-  };
+  // If we don't have permission to edit the holds, then we'll pass undefined
+  // as the drag handler to make the holds statis
+  const onHoldDragFinish: DragFinishHandler<"overlayHold"> | undefined = problem
+    .permissions.canEdit
+    ? (item, result) => {
+        const position = result.position;
+        updateHold({
+          variables: {
+            input: { id: item.holdId, position },
+          },
+          optimisticResponse: {
+            updateHold: { id: item.holdId, position },
+          },
+        });
+      }
+    : undefined;
 
   return (
     <>
