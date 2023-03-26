@@ -56,7 +56,7 @@ const ProblemMetadata: React.FC<Props> = ({ problemKey }) => {
           canDelete
         }
         owner {
-          ...UsernameDisplay_userNode
+          ...Username_userNode
         }
       }
     `,

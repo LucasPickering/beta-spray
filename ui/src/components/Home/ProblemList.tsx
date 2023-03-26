@@ -97,7 +97,6 @@ const ProblemList: React.FC<Props> = ({ queryKey }) => {
                       image: { url: "" },
                     },
                     betas: { edges: [] },
-                    // TODO add owner and permissions
                   },
                 },
               },

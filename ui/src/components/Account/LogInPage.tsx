@@ -7,7 +7,7 @@ import { withContextQuery } from "relay-query-wrapper";
 import { currentUserQuery } from "util/queries";
 import { queriesCurrentUserQuery } from "util/__generated__/queriesCurrentUserQuery.graphql";
 import { LogInPage_userNode$key } from "./__generated__/LogInPage_userNode.graphql";
-import { UserQueryContext } from "components/UserQueryProvider";
+import { UserQueryContext } from "util/user";
 
 interface Props {
   userKey: LogInPage_userNode$key;

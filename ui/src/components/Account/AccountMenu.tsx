@@ -26,7 +26,7 @@ import { queriesCurrentUserQuery } from "util/__generated__/queriesCurrentUserQu
 import AccountSettings from "./AccountSettings";
 import { AccountMenu_logOutMutation } from "./__generated__/AccountMenu_logOutMutation.graphql";
 import { AccountMenu_userNode$key } from "./__generated__/AccountMenu_userNode.graphql";
-import { UserQueryContext } from "components/UserQueryProvider";
+import { UserQueryContext } from "util/user";
 import Username from "./Username";
 
 interface Props {
@@ -55,7 +55,7 @@ const AccountMenu: React.FC<Props> = ({ userKey }) => {
           username
           isGuest
           ...AccountSettings_userNode
-          ...UsernameDisplay_userNode
+          ...Username_userNode
         }
       }
     `,

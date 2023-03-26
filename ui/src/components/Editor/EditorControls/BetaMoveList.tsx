@@ -184,7 +184,13 @@ const BetaMoveList: React.FC<Props> = ({ betaKey }) => {
   } = beta;
   return (
     <List component="ol">
-      {moves.length === 0 && (
+      {!canEdit && (
+        <Typography variant="body2" paddingBottom={1}>
+          You cannot edit this beta. To share your own, make a copy.
+        </Typography>
+      )}
+
+      {canEdit && moves.length === 0 && (
         <Typography variant="body2">
           Drag a hand or foot to add a move
         </Typography>

@@ -1,26 +1,13 @@
-import { PreloadedQuery, useQueryLoader } from "react-relay";
+import { useQueryLoader } from "react-relay";
 import queriesCurrentUserQuery from "util/__generated__/queriesCurrentUserQuery.graphql";
 import type { queriesCurrentUserQuery as queriesCurrentUserQueryType } from "util/__generated__/queriesCurrentUserQuery.graphql";
 import React, { useEffect } from "react";
-import { RecordSourceProxy } from "relay-runtime";
+import { isDefined } from "util/func";
+import { UserQueryContext } from "util/user";
 
 interface Props {
   children?: React.ReactNode;
 }
-
-interface UserQuery {
-  queryRef: PreloadedQuery<queriesCurrentUserQueryType> | null | undefined;
-  /**
-   * Reload the current user, iff the store shows the user as unauthenticated.
-   * This should be called after any mutation, because the server will create
-   * a guest user for any mutation.
-   * @param store Relay store
-   * @returns void
-   */
-  reloadIfNoUser: (store: RecordSourceProxy) => void;
-}
-
-export const UserQueryContext = React.createContext<UserQuery>({} as UserQuery);
 
 /**
  * Context provider for global user-related data. The context holds the
@@ -34,6 +21,14 @@ const UserQueryProvider: React.FC<Props> = ({ children }) => {
   useEffect(() => {
     loadCurrentUserQuery({});
   }, [loadCurrentUserQuery]);
+
+  // The query ref is only null until the query is launched, which should be
+  // immediate. So we'll end up blocking the entire UI for one render, which is
+  // kinda shit but I don't see any other solution. There are lots of places in
+  // the component tree that will break if we don't have the query ref.
+  if (!isDefined(currentUserQueryRef)) {
+    return null;
+  }
 
   return (
     <UserQueryContext.Provider

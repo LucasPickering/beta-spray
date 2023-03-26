@@ -38,7 +38,7 @@ const BetaListItem: React.FC<Props> = ({
         id
         name
         owner {
-          ...UsernameDisplay_userNode
+          ...Username_userNode
         }
         permissions {
           canEdit
