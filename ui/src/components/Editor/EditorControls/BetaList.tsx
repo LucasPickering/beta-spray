@@ -21,6 +21,7 @@ import BetaListItem from "./BetaListItem";
 import { BetaList_copyBetaMutation } from "./__generated__/BetaList_copyBetaMutation.graphql";
 import { isDefined } from "util/func";
 import { generateUniqueClientID } from "relay-runtime";
+import { useOptimisiticUserFields } from "util/user";
 
 interface Props {
   problemKey: BetaList_problemNode$key;
@@ -103,6 +104,7 @@ const BetaList: React.FC<Props> = ({
     `);
 
   // Callbacks
+  const optimisticUserFields = useOptimisiticUserFields();
   const onCreateNew = (): void => {
     createBeta({
       variables: {
@@ -113,16 +115,7 @@ const BetaList: React.FC<Props> = ({
         createBeta: {
           id: generateUniqueClientID(),
           name: "",
-          // TODO use current user if present
-          owner: {
-            id: generateUniqueClientID(),
-            username: "",
-            isCurrentUser: true,
-            // TODO guess this
-            isGuest: false,
-          },
-          // We'll be the owner, so full permissions
-          permissions: { canEdit: true, canDelete: true },
+          ...optimisticUserFields,
         },
       },
       // Select the new beta after creation
@@ -133,6 +126,7 @@ const BetaList: React.FC<Props> = ({
       },
     });
   };
+
   const onCopy = (betaId: string): void => {
     copyBeta({
       variables: { input: { id: betaId }, connections },
@@ -142,19 +136,10 @@ const BetaList: React.FC<Props> = ({
           // We *could* use the source beta name here, but the placeholder
           // acts as a clear loading indicator
           name: "",
+          ...optimisticUserFields,
           // Don't bother populating the moves here. We don't have access to
           // the full move data that's used in the SVG, so let's just wait until
           // we get the actual thing from the API
-          // TODO use current user if present
-          owner: {
-            id: generateUniqueClientID(),
-            username: "",
-            isCurrentUser: true,
-            // TODO guess this
-            isGuest: false,
-          },
-          // We'll be the owner, so full permissions
-          permissions: { canEdit: true, canDelete: true },
         },
       },
       // Select the new beta after creation

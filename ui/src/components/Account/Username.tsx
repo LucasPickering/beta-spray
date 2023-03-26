@@ -1,11 +1,11 @@
 import { Box, IconProps, Link, Skeleton } from "@mui/material";
 import { graphql, useFragment } from "react-relay";
-import { UsernameDisplay_userNode$key } from "./__generated__/UsernameDisplay_userNode.graphql";
+import { Username_userNode$key } from "./__generated__/Username_userNode.graphql";
 import HelpAnnotated from "components/common/HelpAnnotated";
 import { Person as IconPerson } from "@mui/icons-material";
 
 interface Props {
-  userKey: UsernameDisplay_userNode$key;
+  userKey: Username_userNode$key;
   iconSize?: IconProps["fontSize"];
 }
 
@@ -17,7 +17,7 @@ interface Props {
 const Username: React.FC<Props> = ({ userKey, iconSize }) => {
   const user = useFragment(
     graphql`
-      fragment UsernameDisplay_userNode on UserNode {
+      fragment Username_userNode on UserNode {
         username
         isCurrentUser
         isGuest

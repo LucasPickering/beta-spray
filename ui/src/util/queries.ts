@@ -18,6 +18,7 @@ export const currentUserQuery = graphql`
     currentUser {
       ...AccountMenu_userNode
       ...LogInPage_userNode
+      ...userUseOptimisiticUserFields_userNode
     }
   }
 `;

@@ -1,4 +1,4 @@
-import { UserQueryContext } from "components/UserQueryProvider";
+import { UserQueryContext } from "util/user";
 import { useContext, useEffect, useState } from "react";
 import {
   // eslint-disable-next-line no-restricted-syntax
