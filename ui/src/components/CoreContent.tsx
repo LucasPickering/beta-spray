@@ -15,6 +15,7 @@ import AboutPage from "./AboutPage";
 import TextLayout from "./PageLayout/TextLayout";
 import LogInPage from "./Account/LogInPage";
 import UserQueryProvider from "./UserQueryProvider";
+import GuestUserWarningDialog from "./Account/GuestUserWarningDialog";
 
 // Code splitting!
 const HomePage = React.lazy(
@@ -49,6 +50,9 @@ const CoreContent: React.FC = () => (
           <Suspense fallback={<Loading size={100} height="100vh" />}>
             <ErrorBoundary>
               <UserQueryProvider>
+                {/* This dialog can appear on any page */}
+                <GuestUserWarningDialog />
+
                 <Routes>
                   {/* Fullscreen routes */}
                   <Route path={"problems/:problemId"} element={<EditorPage />}>

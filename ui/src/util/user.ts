@@ -12,7 +12,7 @@ import {
 } from "relay-runtime";
 import type { queriesCurrentUserQuery as queriesCurrentUserQueryType } from "util/__generated__/queriesCurrentUserQuery.graphql";
 import { currentUserQuery } from "./queries";
-import { userUseOptimisiticUserFields_userNode$key } from "./__generated__/userUseOptimisiticUserFields_userNode.graphql";
+import { userUseOptimisiticUserFields_currentUser$key } from "./__generated__/userUseOptimisiticUserFields_currentUser.graphql";
 import { useLocation } from "react-router-dom";
 
 interface UserQuery {
@@ -50,9 +50,9 @@ export function useOptimisiticUserFields(): {
   const { queryRef } = useContext(UserQueryContext);
   // Unpack the data from the query ref, then into a fragment
   const data = usePreloadedQuery(currentUserQuery, queryRef);
-  const currentUser = useFragment<userUseOptimisiticUserFields_userNode$key>(
+  const currentUser = useFragment<userUseOptimisiticUserFields_currentUser$key>(
     graphql`
-      fragment userUseOptimisiticUserFields_userNode on UserNodeNoUser {
+      fragment userUseOptimisiticUserFields_currentUser on UserNodeNoUser {
         __typename
         ... on UserNode {
           id
@@ -85,7 +85,7 @@ export function useOptimisiticUserFields(): {
  * Get a path for links to the login page. This will include a query param on
  * the path to make sure we return to the current page after login
  */
-export function useLoginPath(): string {
+export function useLogInPath(): string {
   const location = useLocation();
   // Maintain path+query+hash. We can't retain router state since that's in-memory only.
   // This doesn't seem to work entirely in firefox because it preemptively

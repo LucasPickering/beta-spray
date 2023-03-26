@@ -24,12 +24,12 @@ import useMutation from "util/useMutation";
 import { queriesCurrentUserQuery } from "util/__generated__/queriesCurrentUserQuery.graphql";
 import AccountSettings from "./AccountSettings";
 import { AccountMenu_logOutMutation } from "./__generated__/AccountMenu_logOutMutation.graphql";
-import { AccountMenu_userNode$key } from "./__generated__/AccountMenu_userNode.graphql";
-import { UserQueryContext, useLoginPath } from "util/user";
+import { AccountMenu_currentUser$key } from "./__generated__/AccountMenu_currentUser.graphql";
+import { UserQueryContext, useLogInPath } from "util/user";
 import Username from "./Username";
 
 interface Props {
-  userKey: AccountMenu_userNode$key;
+  currentUserKey: AccountMenu_currentUser$key;
 }
 
 /**
@@ -39,12 +39,12 @@ interface Props {
  * - Guest account (new user who's performed a mutation)
  * - Authenticated user (they went through the sign in process)
  */
-const AccountMenu: React.FC<Props> = ({ userKey }) => {
+const AccountMenu: React.FC<Props> = ({ currentUserKey }) => {
   // Lazy loading is fine here, since this should be part of the first render
   // of every page
   const currentUser = useFragment(
     graphql`
-      fragment AccountMenu_userNode on UserNodeNoUser {
+      fragment AccountMenu_currentUser on UserNodeNoUser {
         # There's a NoUser variant to indicate not logged in. Intuitively we
         # could just make this nullable, but then it's not possible to invalidate
         # this from an updater, which we want to do from any mutation, to trigger
@@ -58,7 +58,7 @@ const AccountMenu: React.FC<Props> = ({ userKey }) => {
         }
       }
     `,
-    userKey
+    currentUserKey
   );
 
   const { commit: logOut, state: logOutState } =
@@ -68,13 +68,13 @@ const AccountMenu: React.FC<Props> = ({ userKey }) => {
       }
     `);
 
-  const loginPath = useLoginPath();
+  const logInPath = useLogInPath();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   // Logged Out
   if (currentUser.__typename !== "UserNode") {
     return (
-      <Button component={Link} href={loginPath}>
+      <Button component={Link} href={logInPath}>
         Log in
       </Button>
     );
@@ -92,7 +92,7 @@ const AccountMenu: React.FC<Props> = ({ userKey }) => {
         <Divider />
 
         {isGuest && (
-          <MenuItem component={Link} href={loginPath}>
+          <MenuItem component={Link} href={logInPath}>
             <ListItemIcon>
               <IconLogin />
             </ListItemIcon>
@@ -144,6 +144,6 @@ const AccountMenu: React.FC<Props> = ({ userKey }) => {
 export default withContextQuery<queriesCurrentUserQuery, Props>({
   context: UserQueryContext,
   query: currentUserQuery,
-  dataToProps: (data) => ({ userKey: data.currentUser }),
+  dataToProps: (data) => ({ currentUserKey: data.currentUser }),
   fallbackElement: <Loading />,
 })(AccountMenu);

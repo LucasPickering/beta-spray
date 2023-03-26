@@ -1,8 +1,9 @@
-import { Box, IconProps, Link, Skeleton } from "@mui/material";
+import { Box, IconProps, Skeleton } from "@mui/material";
 import { graphql, useFragment } from "react-relay";
 import { Username_userNode$key } from "./__generated__/Username_userNode.graphql";
 import HelpAnnotated from "components/common/HelpAnnotated";
 import { Person as IconPerson } from "@mui/icons-material";
+import GuestUserWarningText from "./GuestUserWarningText";
 
 interface Props {
   userKey: Username_userNode$key;
@@ -38,19 +39,7 @@ const Username: React.FC<Props> = ({ userKey, iconSize }) => {
   // For guest users, show a tooltip explaining the situation.
   if (user.isCurrentUser && user.isGuest) {
     return (
-      <HelpAnnotated
-        helpText={
-          <>
-            You are logged in as a guest. Any content (problems, beta, etc.) you
-            share will be saved, but you won't be able to edit it from any other
-            device, and sharing options are limited. If you ever lose access to
-            this guest account, <b>you will not be able to edit your content</b>
-            . To secure permanent access to your content,{" "}
-            <Link href="/login">log in</Link>. All your content will be
-            transferred to your new account.
-          </>
-        }
-      >
+      <HelpAnnotated helpText={<GuestUserWarningText />}>
         {content}
       </HelpAnnotated>
     );

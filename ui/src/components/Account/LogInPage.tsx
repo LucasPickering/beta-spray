@@ -6,18 +6,18 @@ import { Navigate, useSearchParams } from "react-router-dom";
 import { withContextQuery } from "relay-query-wrapper";
 import { currentUserQuery } from "util/queries";
 import { queriesCurrentUserQuery } from "util/__generated__/queriesCurrentUserQuery.graphql";
-import { LogInPage_userNode$key } from "./__generated__/LogInPage_userNode.graphql";
+import { LogInPage_currentUser$key } from "./__generated__/LogInPage_currentUser.graphql";
 import { UserQueryContext } from "util/user";
 
 interface Props {
-  userKey: LogInPage_userNode$key;
+  currentUserKey: LogInPage_currentUser$key;
 }
 
-const LogInPage: React.FC<Props> = ({ userKey }) => {
+const LogInPage: React.FC<Props> = ({ currentUserKey }) => {
   // TODO implement support for ?next= param on this page
   const currentUser = useFragment(
     graphql`
-      fragment LogInPage_userNode on UserNodeNoUser {
+      fragment LogInPage_currentUser on UserNodeNoUser {
         # There's a NoUser variant to indicate not logged in. Intuitively we
         # could just make this nullable, but then it's not possible to invalidate
         # this from an updater, which we want to do from any mutation, to trigger
@@ -28,7 +28,7 @@ const LogInPage: React.FC<Props> = ({ userKey }) => {
         }
       }
     `,
-    userKey
+    currentUserKey
   );
 
   // If we were given a ?next= param, forward that to the API. It will make sure
@@ -75,6 +75,6 @@ const LogInPage: React.FC<Props> = ({ userKey }) => {
 export default withContextQuery<queriesCurrentUserQuery, Props>({
   context: UserQueryContext,
   query: currentUserQuery,
-  dataToProps: (data) => ({ userKey: data.currentUser }),
+  dataToProps: (data) => ({ currentUserKey: data.currentUser }),
   fallbackElement: <Loading />,
 })(LogInPage);
