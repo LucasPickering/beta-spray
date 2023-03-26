@@ -10,8 +10,7 @@ import { graphql, useFragment } from "react-relay";
 import { ProblemCard_problemNode$key } from "./__generated__/ProblemCard_problemNode.graphql";
 import LinkBehavior from "components/common/LinkBehavior";
 import ExternalProblemLink from "components/common/ExternalProblemLink";
-
-const dateFormat = new Intl.DateTimeFormat(undefined, { dateStyle: "long" });
+import Username from "components/Account/Username";
 
 interface Props {
   problemKey: ProblemCard_problemNode$key;
@@ -23,8 +22,10 @@ const ProblemCard: React.FC<Props> = ({ problemKey }) => {
       fragment ProblemCard_problemNode on ProblemNode {
         id
         name
+        owner {
+          ...Username_userNode
+        }
         externalLink
-        createdAt
         boulder {
           image {
             url
@@ -83,11 +84,18 @@ const ProblemCard: React.FC<Props> = ({ problemKey }) => {
         )}
 
         <Typography variant="subtitle1" component="span" color="text.secondary">
-          {dateFormat.format(new Date(problem.createdAt))}
+          <Username userKey={problem.owner} />
         </Typography>
       </CardContent>
     </Card>
   );
 };
+
+/**
+ * Loading placeholder for ProblemCard
+ */
+export const ProblemCardSkeleton: React.FC = () => (
+  <Skeleton variant="rectangular" height={348} />
+);
 
 export default ProblemCard;
