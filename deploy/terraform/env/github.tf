@@ -29,8 +29,9 @@ resource "random_password" "api_secret_key" {
 locals {
   # Use a mapping for secrets so we don't have to repeat a ton of boilerplate
   variables = {
-    HOSTNAME  = cloudflare_record.main.hostname
-    NAMESPACE = var.kube_namespace
+    HOSTNAME                = cloudflare_record.main.hostname
+    NAMESPACE               = var.kube_namespace
+    DATABASE_BACKUP_ENABLED = var.database_backup_enabled
   }
   secrets = {
     API_GCP_KEY                = google_service_account_key.api_sa_key.private_key

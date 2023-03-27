@@ -16,6 +16,12 @@ variable "cloudflare_zone" {
   type        = string
 }
 
+variable "database_backup_enabled" {
+  description = "Should we regularly perform backups? If disabled, backups will still be configured, the backup job will just not run regularly."
+  default     = false
+  type        = bool
+}
+
 variable "database_backup_bucket" {
   description = "Name of storage bucket for database backups"
   default     = "beta-spray-backup"
