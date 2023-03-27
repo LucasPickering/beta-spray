@@ -52,9 +52,8 @@ const BetaMoveList: React.FC<Props> = ({ betaKey }) => {
 
   const { commit: updateBetaMove, state: updateState } =
     useMutation<BetaMoveList_updateBetaMoveMutation>(graphql`
-      mutation BetaMoveList_updateBetaMoveMutation(
-        $input: UpdateBetaMoveInput!
-      ) {
+      mutation BetaMoveList_updateBetaMoveMutation($input: UpdateBetaMoveInput!)
+      @raw_response_type {
         updateBetaMove(input: $input) {
           beta {
             # Refetch all moves to get the new ordering
@@ -73,7 +72,8 @@ const BetaMoveList: React.FC<Props> = ({ betaKey }) => {
     `);
   const { commit: deleteBetaMove, state: deleteState } =
     useMutation<BetaMoveList_deleteBetaMoveMutation>(graphql`
-      mutation BetaMoveList_deleteBetaMoveMutation($input: NodeInput!) {
+      mutation BetaMoveList_deleteBetaMoveMutation($input: NodeInput!)
+      @raw_response_type {
         deleteBetaMove(input: $input) {
           beta {
             # Refetch all moves to get the new ordering

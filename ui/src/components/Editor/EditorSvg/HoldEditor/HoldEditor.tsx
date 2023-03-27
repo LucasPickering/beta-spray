@@ -41,7 +41,8 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
 
   const { commit: updateHold, state: updateHoldState } =
     useMutation<HoldEditor_updateHoldMutation>(graphql`
-      mutation HoldEditor_updateHoldMutation($input: UpdateHoldInput!) {
+      mutation HoldEditor_updateHoldMutation($input: UpdateHoldInput!)
+      @raw_response_type {
         updateHold(input: $input) {
           id # So relay knows how to update this node locally
           position {

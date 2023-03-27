@@ -80,7 +80,7 @@ function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
     useMutation<useBetaMoveMutations_updateBetaMoveMutation>(graphql`
       mutation useBetaMoveMutations_updateBetaMoveMutation(
         $input: UpdateBetaMoveInput!
-      ) {
+      ) @raw_response_type {
         updateBetaMove(input: $input) {
           id
           # These are the only fields we modify

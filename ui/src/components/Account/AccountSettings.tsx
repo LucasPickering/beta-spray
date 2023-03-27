@@ -44,7 +44,8 @@ const AccountSettings: React.FC<Props> = ({ userKey, open, onClose }) => {
     state: updateState,
     resetState: resetUpdateState,
   } = useMutation<AccountSettings_updateUserMutation>(graphql`
-    mutation AccountSettings_updateUserMutation($input: UpdateUserInput!) {
+    mutation AccountSettings_updateUserMutation($input: UpdateUserInput!)
+    @raw_response_type {
       updateUser(input: $input) {
         id
         username

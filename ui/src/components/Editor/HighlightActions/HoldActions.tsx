@@ -54,7 +54,8 @@ const HoldActions: React.FC<Props> = ({ problemKey }) => {
 
   const { commit: updateHold, state: updateState } =
     useMutation<HoldActions_updateHoldMutation>(graphql`
-      mutation HoldActions_updateHoldMutation($input: UpdateHoldInput!) {
+      mutation HoldActions_updateHoldMutation($input: UpdateHoldInput!)
+      @raw_response_type {
         updateHold(input: $input) {
           id
           annotation
@@ -66,7 +67,7 @@ const HoldActions: React.FC<Props> = ({ problemKey }) => {
       mutation HoldActions_deleteHoldMutation(
         $input: NodeInput!
         $connections: [ID!]!
-      ) {
+      ) @raw_response_type {
         deleteHold(input: $input) {
           id @deleteEdge(connections: $connections) @deleteRecord
         }

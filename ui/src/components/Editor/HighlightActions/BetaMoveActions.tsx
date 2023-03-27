@@ -54,7 +54,7 @@ const BetaMoveActions: React.FC<Props> = ({ betaKey }) => {
     useMutation<BetaMoveActions_updateBetaMoveMutation>(graphql`
       mutation BetaMoveActions_updateBetaMoveMutation(
         $input: UpdateBetaMoveInput!
-      ) {
+      ) @raw_response_type {
         updateBetaMove(input: $input) {
           id
           annotation # The only field we modify
@@ -63,7 +63,8 @@ const BetaMoveActions: React.FC<Props> = ({ betaKey }) => {
     `);
   const { commit: deleteBetaMove, state: deleteState } =
     useMutation<BetaMoveActions_deleteBetaMoveMutation>(graphql`
-      mutation BetaMoveActions_deleteBetaMoveMutation($input: NodeInput!) {
+      mutation BetaMoveActions_deleteBetaMoveMutation($input: NodeInput!)
+      @raw_response_type {
         deleteBetaMove(input: $input) {
           # This can reorder moves, so we have to refetch the whole move list
           beta {

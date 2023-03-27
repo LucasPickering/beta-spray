@@ -42,7 +42,8 @@ const BetaSettings: React.FC<Props> = ({ betaKey, open, onClose }) => {
     state: updateState,
     resetState: resetUpdateState,
   } = useMutation<BetaSettings_updateBetaMutation>(graphql`
-    mutation BetaSettings_updateBetaMutation($input: UpdateBetaInput!) {
+    mutation BetaSettings_updateBetaMutation($input: UpdateBetaInput!)
+    @raw_response_type {
       updateBeta(input: $input) {
         id
         name

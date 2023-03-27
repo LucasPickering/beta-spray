@@ -70,7 +70,7 @@ const BetaList: React.FC<Props> = ({
       mutation BetaList_createBetaMutation(
         $input: CreateBetaInput!
         $connections: [ID!]!
-      ) {
+      ) @raw_response_type {
         createBeta(input: $input)
           @appendNode(connections: $connections, edgeTypeName: "BetaNodeEdge") {
           id
@@ -83,7 +83,7 @@ const BetaList: React.FC<Props> = ({
       mutation BetaList_copyBetaMutation(
         $input: CopyBetaInput!
         $connections: [ID!]!
-      ) {
+      ) @raw_response_type {
         copyBeta(input: $input)
           @appendNode(connections: $connections, edgeTypeName: "BetaNodeEdge") {
           id
@@ -96,7 +96,7 @@ const BetaList: React.FC<Props> = ({
       mutation BetaList_deleteBetaMutation(
         $input: NodeInput!
         $connections: [ID!]!
-      ) {
+      ) @raw_response_type {
         deleteBeta(input: $input) {
           id @deleteEdge(connections: $connections) @deleteRecord
         }

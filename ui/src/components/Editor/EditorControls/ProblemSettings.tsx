@@ -64,9 +64,8 @@ const ProblemSettings: React.FC<Props> = ({ problemKey, open, onClose }) => {
     state: updateState,
     resetState: resetUpdateState,
   } = useMutation<ProblemSettings_updateProblemMutation>(graphql`
-    mutation ProblemSettings_updateProblemMutation(
-      $input: UpdateProblemInput!
-    ) {
+    mutation ProblemSettings_updateProblemMutation($input: UpdateProblemInput!)
+    @raw_response_type {
       updateProblem(input: $input) {
         id
         name
