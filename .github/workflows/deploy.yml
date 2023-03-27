@@ -58,7 +58,7 @@ jobs:
           echo "${{ secrets.TLS_KEY }}" > /tmp/tls_key
           helm upgrade beta-spray ./deploy/helm/ \
             --install \
-            --namespace ${{ secrets.NAMESPACE }} \
+            --namespace ${{ vars.NAMESPACE }} \
             --create-namespace \
             --set-string versionSha="${{ github.sha }}" \
             --set-string hostname="${{ vars.HOSTNAME }}" \

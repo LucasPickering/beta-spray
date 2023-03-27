@@ -23,14 +23,15 @@ resource "random_password" "api_secret_key" {
   special = false
 }
 
-# Add secrets to the GitHub environment, so it can be access by CI during deployment.
-# Not all of these are strictly sensitive, but the GH provider doesn't allow us
-# to create plaintext environment variables from here, so we just stick everything
-# in secrets.
-# TODO convert some of these to configuration variables after https://github.com/integrations/terraform-provider-github/issues/1479
+# Add variables and secrets to the GitHub environment, so they can be access by
+# CI during deployment.
 
 locals {
   # Use a mapping for secrets so we don't have to repeat a ton of boilerplate
+  variables = {
+    HOSTNAME  = cloudflare_record.main.hostname
+    NAMESPACE = var.kube_namespace
+  }
   secrets = {
     API_GCP_KEY                = google_service_account_key.api_sa_key.private_key
     API_SECRET_KEY             = random_password.api_secret_key.result
@@ -40,13 +41,18 @@ locals {
     GOOGLE_OAUTH_CLIENT_ID     = var.google_oauth_client_id
     GOOGLE_OAUTH_CLIENT_SECRET = var.google_oauth_client_secret
     MEDIA_BUCKET               = google_storage_bucket.media.name
-    NAMESPACE                  = var.kube_namespace
     STATIC_ASSETS_BUCKET       = var.static_assets_bucket
     TLS_CERT                   = cloudflare_origin_ca_certificate.main.certificate
     TLS_KEY                    = tls_private_key.main.private_key_pem
-    # TODO re-enable as a plain variable when possible
-    # HOSTNAME             = cloudflare_record.main.hostname
   }
+}
+
+resource "github_actions_environment_variable" "variables" {
+  for_each      = local.variables
+  repository    = var.github_repository
+  environment   = github_repository_environment.main.environment
+  variable_name = each.key
+  value         = each.value
 }
 
 resource "github_actions_environment_secret" "secrets" {

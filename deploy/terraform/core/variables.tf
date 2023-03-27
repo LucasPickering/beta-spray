@@ -36,6 +36,12 @@ variable "gcp_region" {
   type        = string
 }
 
+variable "kubernetes_cluster_name" {
+  description = "Name of the Kubernetes cluster (within DigitalOcean) that we'll deploy to"
+  type        = string
+  default     = "keskne"
+}
+
 variable "static_assets_bucket" {
   description = "Name of storage bucket to store static assets"
   default     = "beta-spray-static"
