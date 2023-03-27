@@ -32,7 +32,7 @@ const Username: React.FC<Props> = ({ userKey, iconSize }) => {
     <Box display="flex" alignItems="center">
       <IconPerson fontSize={iconSize} />
       {/* Empty username indicates it's loading */}
-      {user.username || <Skeleton />}
+      {user.username || <Skeleton width={80} />}
     </Box>
   );
 
