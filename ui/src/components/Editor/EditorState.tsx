@@ -5,6 +5,7 @@ import {
   EditorHighlightedItemContext,
 } from "./util/highlight";
 import { StanceContextProvider } from "./util/stance";
+import { EditorMode, EditorModeContext } from "./util/mode";
 
 interface Props {
   children?: React.ReactNode;
@@ -20,6 +21,11 @@ const EditorState: React.FC<Props> = ({ children }) => {
 
   // Flag to show/hide the overlay, toggled by a user button
   const visibilityState = useState<boolean>(true);
+  // TODO
+  const editorModeState = useState<EditorMode>({
+    itemType: "hold",
+    action: "add",
+  });
   // Which hold/move is being emphasized
   const highlightedItemState = useState<HighlightedItem | undefined>();
   // Which move denotes the current stick figure stance? This will be the *last*
@@ -28,11 +34,13 @@ const EditorState: React.FC<Props> = ({ children }) => {
 
   return (
     <EditorVisibilityContext.Provider value={visibilityState}>
-      <EditorHighlightedItemContext.Provider value={highlightedItemState}>
-        <StanceContextProvider value={stanceState}>
-          {children}
-        </StanceContextProvider>
-      </EditorHighlightedItemContext.Provider>
+      <EditorModeContext.Provider value={editorModeState}>
+        <EditorHighlightedItemContext.Provider value={highlightedItemState}>
+          <StanceContextProvider value={stanceState}>
+            {children}
+          </StanceContextProvider>
+        </EditorHighlightedItemContext.Provider>
+      </EditorModeContext.Provider>
     </EditorVisibilityContext.Provider>
   );
 };

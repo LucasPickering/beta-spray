@@ -1,11 +1,11 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
 import { BetaEditor_betaNode$key } from "./__generated__/BetaEditor_betaNode.graphql";
-import { groupBy } from "util/func";
+import { assertIsDefined, findNode, groupBy, isDefined } from "util/func";
 import StickFigure from "./StickFigure";
 import BetaChainLine from "./BetaChainLine";
-import BetaChainMark from "./BetaChainMark";
+import BetaMoveMark from "./BetaMoveMark";
 import { withQuery } from "relay-query-wrapper";
 import { queriesBetaQuery } from "util/__generated__/queriesBetaQuery.graphql";
 import { betaQuery } from "util/queries";
@@ -20,6 +20,8 @@ import {
   useBetaMoveVisualPositions,
 } from "components/Editor/util/moves";
 import useBetaMoveMutations from "components/Editor/util/useBetaMoveMutations";
+import { useEditorMode } from "components/Editor/util/mode";
+import EditAnnotationDialog from "../EditAnnotationDialog";
 
 interface Props {
   betaKey: BetaEditor_betaNode$key;
@@ -41,8 +43,9 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
             node {
               id
               bodyPart
+              annotation
               order
-              ...BetaChainMark_betaMoveNode
+              ...BetaMoveMark_betaMoveNode
               ...BetaChainLine_startBetaMoveNode
               ...BetaChainLine_endBetaMoveNode
             }
@@ -100,34 +103,61 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
   );
   const stance = useStance(beta.moves);
   const lastStanceMoveId = useLastMoveInStance();
+  // The ID of the move whose annotation is being edited
+  const [editingBetaMoveId, setEditingBetaMoveId] = useState<string>();
+  const editingBetaMove = isDefined(editingBetaMoveId)
+    ? findNode(beta.moves, editingBetaMoveId)
+    : undefined;
+  const { itemType, action } = useEditorMode();
   const {
-    create: { callback: createBetaMove, state: createBetaMoveState },
-    relocate: { callback: relocateBetaMove, state: relocateBetaMoveState },
+    create: { callback: createBetaMove, state: createState },
+    updateAnnotation: {
+      callback: updateBetaMoveAnnotation,
+      state: updateAnnotationState,
+    },
+    relocate: { callback: relocateBetaMove, state: relocateState },
+    delete: { callback: deleteBetaMove, state: deleteState },
   } = useBetaMoveMutations(beta);
 
-  // If we don't have permission to edit the moves, then we'll pass undefined
-  // as the drag handler to make the moves statis
-  const onDragFinish: DragFinishHandler<"overlayBetaMove"> | undefined = beta
-    .permissions.canEdit
-    ? (item, dropResult) => {
-        switch (item.action) {
-          case "create":
+  const onClickBetaMove = (() => {
+    if (beta.permissions.canEdit && itemType === "betaMove") {
+      switch (action) {
+        case "edit":
+          // Open edit dialog
+          return (betaMoveId: string) => setEditingBetaMoveId(betaMoveId);
+        case "delete":
+          // Delete the move
+          return (betaMoveId: string) => deleteBetaMove({ betaMoveId });
+      }
+    }
+    return undefined;
+  })();
+  const onDragFinish: DragFinishHandler<"overlayBetaMove"> | undefined =
+    (() => {
+      if (beta.permissions.canEdit && itemType === "betaMove") {
+        switch (action) {
+          case "add":
             // Insert the new move immediately after the current stance. If there
             // is no stance, that means this is the first move, so we'll just
             // insert anywhere
-            createBetaMove({
-              previousBetaMoveId: lastStanceMoveId,
-              bodyPart: item.bodyPart,
-              dropResult,
-            });
+            return (item, dropResult) => {
+              createBetaMove({
+                previousBetaMoveId: lastStanceMoveId,
+                bodyPart: item.bodyPart,
+                dropResult,
+              });
+            };
             break;
-          // Dragged an existing move
           case "relocate":
-            relocateBetaMove({ betaMoveId: item.betaMoveId, dropResult });
+            // Relocate the dragged move
+            return (item, dropResult) => {
+              relocateBetaMove({ betaMoveId: item.betaMoveId, dropResult });
+            };
             break;
         }
       }
-    : undefined;
+      return undefined;
+    })();
 
   return (
     <BetaContext.Provider value={{ betaMoveColors, betaMoveVisualPositions }}>
@@ -150,6 +180,7 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
           move marks so it's not intrusive. */}
       <StickFigure
         betaMoveConnectionKey={beta.moves}
+        editable={beta.permissions.canEdit}
         onDragFinish={onDragFinish}
       />
 
@@ -157,21 +188,42 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
           on top, which we can only do in SVG via ordering, so we need to make
           sure that's rendered last */}
       {movesRenderOrder.map((move) => (
-        <BetaChainMark
+        <BetaMoveMark
           key={move.id}
           betaMoveKey={move}
           isInCurrentStance={stance[move.bodyPart] === move.id}
+          onClick={onClickBetaMove}
           onDragFinish={onDragFinish}
         />
       ))}
 
+      <EditAnnotationDialog
+        title={`Edit Notes for Move #${editingBetaMove?.order ?? ""}`}
+        open={Boolean(editingBetaMoveId)}
+        annotation={editingBetaMove?.annotation}
+        onSave={(annotation) => {
+          // This shouldn't be callable while no beta move is being edited
+          assertIsDefined(editingBetaMoveId);
+          updateBetaMoveAnnotation({
+            betaMoveId: editingBetaMoveId,
+            annotation,
+          });
+        }}
+        onClose={() => setEditingBetaMoveId(undefined)}
+      />
+
+      <MutationErrorSnackbar message="Error adding move" state={createState} />
       <MutationErrorSnackbar
-        message="Error adding move"
-        state={createBetaMoveState}
+        message="Error updating move"
+        state={updateAnnotationState}
       />
       <MutationErrorSnackbar
         message="Error updating move"
-        state={relocateBetaMoveState}
+        state={relocateState}
+      />
+      <MutationErrorSnackbar
+        message="Error deleting move"
+        state={deleteState}
       />
     </BetaContext.Provider>
   );

@@ -15,6 +15,7 @@ import { isDefined } from "util/func";
 
 interface Props {
   holdKey: HoldMark_holdNode$key;
+  onClick?: (holdId: string) => void;
   /**
    * Called when this hold is dropped onto something else
    */
@@ -28,7 +29,12 @@ interface Props {
 /**
  * An editable hold, in the context of the full interface editor.
  */
-const HoldMark: React.FC<Props> = ({ holdKey, onDragFinish, onDrop }) => {
+const HoldMark: React.FC<Props> = ({
+  holdKey,
+  onClick,
+  onDragFinish,
+  onDrop,
+}) => {
   const ref = useRef<SVGCircleElement | null>(null);
   const hold = useFragment(
     graphql`
@@ -44,14 +50,15 @@ const HoldMark: React.FC<Props> = ({ holdKey, onDragFinish, onDrop }) => {
     holdKey
   );
 
-  const editable = isDefined(onDragFinish);
+  const clickable = isDefined(onClick); // TODO animations based on this
+  const draggable = isDefined(onDragFinish);
   const [{ isDragging }, drag] = useDrag<
     "overlayHold",
     { isDragging: boolean }
   >({
     type: "overlayHold",
     item: { action: "relocate", holdId: hold.id },
-    canDrag: editable,
+    canDrag: draggable,
     collect: (monitor) => ({
       isDragging: Boolean(monitor.isDragging()),
     }),
@@ -83,16 +90,19 @@ const HoldMark: React.FC<Props> = ({ holdKey, onDragFinish, onDrop }) => {
     },
   });
 
-  const [highlightedHoldId, highlightHold] = useHighlight("hold");
+  const [highlightedHoldId] = useHighlight("hold");
   const isHighlighted = highlightedHoldId === hold.id;
-  const highlightThis = (): void => highlightHold(hold.id);
 
   drag(drop(ref));
   return (
     <>
-      <Positioned ref={ref} position={hold.position} onClick={highlightThis}>
+      <Positioned
+        ref={ref}
+        position={hold.position}
+        onClick={onClick && (() => onClick(hold.id))}
+      >
         <HoldIcon
-          draggable={editable}
+          draggable={draggable}
           isDragging={isDragging}
           isOver={isOver}
           isHighlighted={isHighlighted}

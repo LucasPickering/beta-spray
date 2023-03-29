@@ -4,6 +4,8 @@ import TooltipIconButton from "components/common/TooltipIconButton";
 import { useEffect, useState } from "react";
 import { isDefined } from "util/func";
 
+// TODO delete this file
+
 interface Props {
   noun?: string;
   annotation?: string;

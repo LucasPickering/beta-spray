@@ -6,6 +6,8 @@ import { isDefined } from "util/func";
 import Positioned from "../common/Positioned";
 import BetaMoveIcon from "./BetaMoveIcon";
 
+// TODO delete this file
+
 interface Props {
   bodyPart: BodyPart;
   variant: "move" | "stickFigure";

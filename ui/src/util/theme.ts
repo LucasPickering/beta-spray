@@ -1,18 +1,42 @@
-import { createTheme, Theme as MuiTheme } from "@mui/material/styles";
+import {
+  createTheme,
+  Theme as MuiTheme,
+  PaletteColor,
+  PaletteColorOptions,
+} from "@mui/material/styles";
 import LinkBehavior from "components/common/LinkBehavior";
 
+// TODO rename
+type EditorActionAss<T> = Record<
+  | "editorAction--add"
+  | "editorAction--relocate"
+  | "editorAction--edit"
+  | "editorAction--delete",
+  T
+>;
+
 declare module "@mui/material/styles" {
-  interface Palette {
+  interface Palette extends EditorActionAss<PaletteColor> {
     opacity: {
-      translucent: 0.6;
+      translucent: number;
     };
   }
 
-  interface PaletteOptions {
+  interface PaletteOptions extends EditorActionAss<PaletteColorOptions> {
     opacity: {
-      translucent: 0.6;
+      translucent: number;
     };
   }
+}
+
+declare module "@mui/material" {
+  //
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface ButtonPropsColorOverrides extends EditorActionAss<true> {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface IconButtonPropsColorOverrides extends EditorActionAss<true> {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface ToggleButtonPropsColorOverrides extends EditorActionAss<true> {}
 }
 
 declare module "@emotion/react/types" {
@@ -36,6 +60,13 @@ const baseTheme = createTheme({
     secondary: { main: "#48CFEA" },
     info: { main: "#FFC848" },
     warning: { main: "#FFBE26" },
+
+    // TODO better colors
+    "editorAction--add": { main: "#00ff00" },
+    "editorAction--relocate": { main: "#0000ff" },
+    "editorAction--edit": { main: "#ffff00" },
+    "editorAction--delete": { main: "#ff0000" },
+
     opacity: {
       translucent: 0.6,
     },
@@ -124,6 +155,15 @@ const theme = createTheme(
       MuiTextField: {
         defaultProps: {
           variant: "standard",
+        },
+      },
+      MuiToggleButton: {
+        styleOverrides: {
+          root: {
+            // Match styling of IconButton
+            padding: 8,
+            border: "none",
+          },
         },
       },
       MuiTooltip: {

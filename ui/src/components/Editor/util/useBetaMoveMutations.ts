@@ -6,7 +6,9 @@ import { useStanceControls } from "./stance";
 import { BodyPart, OverlayPosition } from "./svg";
 import { useBetaMoveMutations_createBetaMoveMutation } from "./__generated__/useBetaMoveMutations_createBetaMoveMutation.graphql";
 import { useBetaMoveMutations_betaNode$key } from "./__generated__/useBetaMoveMutations_betaNode.graphql";
-import { useBetaMoveMutations_updateBetaMoveMutation } from "./__generated__/useBetaMoveMutations_updateBetaMoveMutation.graphql";
+import { useBetaMoveMutations_deleteBetaMoveMutation } from "./__generated__/useBetaMoveMutations_deleteBetaMoveMutation.graphql";
+import { useBetaMoveMutations_updateBetaMoveAnnotationMutation } from "./__generated__/useBetaMoveMutations_updateBetaMoveAnnotationMutation.graphql";
+import { useBetaMoveMutations_relocateBetaMoveMutation } from "./__generated__/useBetaMoveMutations_relocateBetaMoveMutation.graphql";
 
 interface Mutation<T> {
   callback: (data: T) => void;
@@ -24,10 +26,15 @@ function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
     previousBetaMoveId?: string;
     dropResult: DropResult<"overlayBetaMove">;
   }>;
+  updateAnnotation: Mutation<{
+    betaMoveId: string;
+    annotation: string;
+  }>;
   relocate: Mutation<{
     betaMoveId: string;
     dropResult: DropResult<"overlayBetaMove">;
   }>;
+  delete: Mutation<{ betaMoveId: string }>;
 } {
   const beta = useFragment(
     graphql`
@@ -75,10 +82,24 @@ function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
         }
       }
     `);
+  // Edit annotation on a move
+  const {
+    commit: updateBetaMoveAnnotation,
+    state: updateBetaMoveAnnotationState,
+  } = useMutation<useBetaMoveMutations_updateBetaMoveAnnotationMutation>(graphql`
+    mutation useBetaMoveMutations_updateBetaMoveAnnotationMutation(
+      $input: UpdateBetaMoveInput!
+    ) @raw_response_type {
+      updateBetaMove(input: $input) {
+        id
+        annotation
+      }
+    }
+  `);
   // Relocate an existing move
-  const { commit: updateBetaMove, state: updateBetaMoveState } =
-    useMutation<useBetaMoveMutations_updateBetaMoveMutation>(graphql`
-      mutation useBetaMoveMutations_updateBetaMoveMutation(
+  const { commit: relocateBetaMove, state: relocateBetaMoveState } =
+    useMutation<useBetaMoveMutations_relocateBetaMoveMutation>(graphql`
+      mutation useBetaMoveMutations_relocateBetaMoveMutation(
         $input: UpdateBetaMoveInput!
       ) @raw_response_type {
         updateBetaMove(input: $input) {
@@ -96,6 +117,29 @@ function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
           position {
             x
             y
+          }
+        }
+      }
+    `);
+  // Delete a move
+  const { commit: deleteBetaMove, state: deleteBetaMoveState } =
+    useMutation<useBetaMoveMutations_deleteBetaMoveMutation>(graphql`
+      mutation useBetaMoveMutations_deleteBetaMoveMutation($input: NodeInput!)
+      @raw_response_type {
+        deleteBetaMove(input: $input) {
+          # This can reorder moves, so we have to refetch the whole move list
+          beta {
+            id
+            moves {
+              edges {
+                node {
+                  id
+                  # These are the fields that can change after a delete
+                  order
+                  isStart
+                }
+              }
+            }
           }
         }
       }
@@ -123,9 +167,20 @@ function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
       },
       state: createBetaMoveState,
     },
+    updateAnnotation: {
+      callback: ({ betaMoveId, annotation }) => {
+        updateBetaMoveAnnotation({
+          variables: { input: { id: betaMoveId, annotation } },
+          optimisticResponse: {
+            updateBetaMove: { id: betaMoveId, annotation },
+          },
+        });
+      },
+      state: updateBetaMoveAnnotationState,
+    },
     relocate: {
       callback: ({ betaMoveId, dropResult }) => {
-        updateBetaMove({
+        relocateBetaMove({
           variables: {
             input: { id: betaMoveId, ...getDropParams(dropResult) },
           },
@@ -137,7 +192,27 @@ function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
           },
         });
       },
-      state: updateBetaMoveState,
+      state: relocateBetaMoveState,
+    },
+    delete: {
+      callback: ({ betaMoveId }) => {
+        deleteBetaMove({
+          variables: {
+            input: { id: betaMoveId },
+          },
+          // TODO optimistic response
+          // optimisticResponse: {
+          //   deleteBetaMove: {
+          //     id: betaMoveId,
+          //     beta: {
+          //       id: beta.id,
+          //       moves: deleteBetaMoveLocal(beta.moves, betaMoveId),
+          //     },
+          //   },
+          // },
+        });
+      },
+      state: deleteBetaMoveState,
     },
   };
 }
