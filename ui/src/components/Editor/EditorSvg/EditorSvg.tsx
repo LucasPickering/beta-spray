@@ -19,7 +19,7 @@ import { withQuery } from "relay-query-wrapper";
 import Loading from "components/common/Loading";
 import { queriesBetaQuery } from "util/__generated__/queriesBetaQuery.graphql";
 import ErrorBoundary from "components/common/ErrorBoundary";
-import PanZone from "./PanZone";
+import { useEditorMode } from "../util/mode";
 
 interface Props {
   problemKey: EditorSvg_problemNode$key;
@@ -50,6 +50,7 @@ const EditorSvg: React.FC<Props> = ({ problemKey, betaQueryRef }) => {
 
   const ref = useRef<SVGSVGElement | null>(null);
   const [visibility] = useContext(EditorVisibilityContext);
+  const { itemType } = useEditorMode();
 
   const dimensions = {
     width: problem.boulder.image.svgWidth,
@@ -65,14 +66,14 @@ const EditorSvg: React.FC<Props> = ({ problemKey, betaQueryRef }) => {
           {/* This has to go before other interactive stuff so it doesn't eat
             events from other components */}
           <SvgDragLayer />
-          {/* Invisible layer to capture SVG panning, as well as holds/moves
-              being dropped */}
-          <PanZone />
 
           {visibility && (
             <>
               <HoldEditor problemKey={problem} />
-              <BetaEditor queryRef={betaQueryRef} />
+              {/* Don't render beta when editing holds */}
+              {itemType === "betaMove" && (
+                <BetaEditor queryRef={betaQueryRef} />
+              )}
             </>
           )}
         </EditorSvgInner>

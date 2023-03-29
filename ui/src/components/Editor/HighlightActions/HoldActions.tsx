@@ -12,6 +12,8 @@ import { useState } from "react";
 import { HoldActions_updateHoldMutation } from "./__generated__/HoldActions_updateHoldMutation.graphql";
 import ActionButtons from "./ActionButtons";
 
+// TODO delete this file
+
 interface Props {
   problemKey: HoldActions_problemNode$key;
 }

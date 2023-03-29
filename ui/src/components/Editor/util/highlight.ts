@@ -11,6 +11,8 @@ import { StateContext } from "./context";
 import { findNode, isDefined, noop } from "util/func";
 import { Connection, Node } from "util/typing";
 
+// TODO delete this file
+
 /**
  * A UI item that can be highlighted on hover/tap. This will allow the user to
  * view details on the highlighted item, or execute certain actions.

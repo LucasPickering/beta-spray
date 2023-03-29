@@ -1,24 +1,29 @@
 import { useContext } from "react";
-import { alpha, Box, IconButton, Paper } from "@mui/material";
+import {
+  alpha,
+  Box,
+  Divider,
+  IconButton,
+  Paper,
+  Stack,
+  ToggleButton,
+  ToggleButtonGroup,
+} from "@mui/material";
 import HelpText from "./HelpText";
 import {
+  Add as IconAdd,
   ArrowBack as IconArrowBack,
   Visibility as IconVisibility,
   VisibilityOff as IconVisibilityOff,
+  OpenWith as IconOpenWith,
+  ChangeCircle as IconChangeCircle,
+  Edit as IconEdit,
+  Delete as IconDelete,
 } from "@mui/icons-material";
 import { EditorVisibilityContext } from "components/Editor/util/context";
-import { PreloadedQuery } from "react-relay";
 import TooltipIconButton from "components/common/TooltipIconButton";
 import { Link } from "react-router-dom";
-import AddHoldButton from "./AddHoldButton";
-import { queriesProblemQuery } from "util/__generated__/queriesProblemQuery.graphql";
-import HighlightActions from "../HighlightActions/HighlightActions";
-import { queriesBetaQuery } from "util/__generated__/queriesBetaQuery.graphql";
-
-interface Props {
-  problemQueryRef: PreloadedQuery<queriesProblemQuery> | null | undefined;
-  betaQueryRef: PreloadedQuery<queriesBetaQuery> | null | undefined;
-}
+import { EditorMode, useEditorMode } from "../util/mode";
 
 /**
  * A collection of items that can be dragged onto the editor to create new
@@ -26,41 +31,69 @@ interface Props {
  *
  * Appears in the top-left corner.
  */
-const EditorPalette: React.FC<Props> = ({ problemQueryRef, betaQueryRef }) => {
+const EditorPalette: React.FC = () => {
   const [visibility, setVisibility] = useContext(EditorVisibilityContext);
+  const { action, toggleItemType, setAction } = useEditorMode();
+
+  // TODO integrate permissions to disable buttons
 
   return (
     <Box sx={{ position: "absolute", top: 0, left: 0, margin: 1 }}>
       <Paper
         sx={({ palette }) => ({
-          display: "flex",
           backgroundColor: alpha(
             palette.background.paper,
             palette.opacity.translucent
           ),
         })}
       >
-        <IconButton component={Link} to="/">
-          <IconArrowBack />
-        </IconButton>
+        <Stack direction="row">
+          <IconButton component={Link} to="/">
+            <IconArrowBack />
+          </IconButton>
 
-        <HelpText />
+          <HelpText />
 
-        <TooltipIconButton
-          title={visibility ? "Hide Overlay" : "Show Overlay"}
-          placement="bottom"
-          color={visibility ? "default" : "primary"}
-          onClick={() => setVisibility((prev) => !prev)}
+          <TooltipIconButton
+            title={visibility ? "Hide Overlay" : "Show Overlay"}
+            placement="bottom"
+            color={visibility ? "default" : "primary"}
+            onClick={() => setVisibility((prev) => !prev)}
+          >
+            {visibility ? <IconVisibilityOff /> : <IconVisibility />}
+          </TooltipIconButton>
+
+          <IconButton onClick={() => toggleItemType()}>
+            {/* TODO better icon */}
+            <IconChangeCircle />
+          </IconButton>
+        </Stack>
+
+        <Divider />
+
+        <ToggleButtonGroup
+          aria-label="editor action"
+          value={action}
+          exclusive
+          size="small"
+          onChange={(e, newAction: EditorMode["action"]) =>
+            setAction(newAction)
+          }
         >
-          {visibility ? <IconVisibilityOff /> : <IconVisibility />}
-        </TooltipIconButton>
-
-        <AddHoldButton queryRef={problemQueryRef} disabled={!visibility} />
-
-        <HighlightActions
-          problemQueryRef={problemQueryRef}
-          betaQueryRef={betaQueryRef}
-        />
+          {/* TODO accessible labels */}
+          <ToggleButton value="add" color="editorAction--add">
+            <IconAdd />
+          </ToggleButton>
+          <ToggleButton value="relocate" color="editorAction--relocate">
+            <IconOpenWith />
+          </ToggleButton>
+          <ToggleButton value="edit" color="editorAction--edit">
+            <IconEdit />
+          </ToggleButton>
+          <ToggleButton value="delete" color="editorAction--delete">
+            <IconDelete />
+          </ToggleButton>
+        </ToggleButtonGroup>
       </Paper>
     </Box>
   );
