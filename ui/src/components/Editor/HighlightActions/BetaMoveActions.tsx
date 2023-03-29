@@ -13,6 +13,8 @@ import { BetaMoveActions_updateBetaMoveMutation } from "./__generated__/BetaMove
 import { deleteBetaMoveLocal } from "../util/moves";
 import ActionButtons from "./ActionButtons";
 
+// TODO delete this file
+
 interface Props {
   betaKey: BetaMoveActions_betaNode$key;
 }

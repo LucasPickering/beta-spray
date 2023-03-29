@@ -4,6 +4,8 @@ import BetaMoveActions from "./BetaMoveActions";
 import HoldActions from "./HoldActions";
 import ActionButtons from "./ActionButtons";
 
+// TODO delete this file
+
 interface Props {
   problemQueryRef: React.ComponentProps<typeof HoldActions>["queryRef"];
   betaQueryRef: React.ComponentProps<typeof BetaMoveActions>["queryRef"];

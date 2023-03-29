@@ -14,6 +14,8 @@ import { useTheme } from "@mui/material";
 import { EditorVisibilityContext } from "../util/context";
 import { useContext } from "react";
 
+// TODO delete this file
+
 interface Props {
   problemKey: AddHoldButton_problemNode$key;
 }

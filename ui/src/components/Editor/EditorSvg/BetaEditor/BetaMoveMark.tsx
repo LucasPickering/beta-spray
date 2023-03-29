@@ -4,36 +4,35 @@ import {
   useDrag,
   useDragLayer,
 } from "components/Editor/util/dnd";
-import { Portal, Tooltip } from "@mui/material";
+import { Portal, Tooltip, useTheme } from "@mui/material";
 import Positioned from "../common/Positioned";
 import BetaMoveIcon from "./BetaMoveIcon";
 import { graphql, useFragment } from "react-relay";
-import { BetaChainMark_betaMoveNode$key } from "./__generated__/BetaChainMark_betaMoveNode.graphql";
-import {
-  useBetaMoveColor,
-  useBetaMoveVisualPosition,
-} from "components/Editor/util/moves";
+import { BetaMoveMark_betaMoveNode$key } from "./__generated__/BetaMoveMark_betaMoveNode.graphql";
+import { useBetaMoveVisualPosition } from "components/Editor/util/moves";
 import { isDefined } from "util/func";
 import { useHighlight } from "components/Editor/util/highlight";
-import AddBetaMoveMark from "./AddBetaMoveMark";
+import { useEditorMode } from "components/Editor/util/mode";
 
 interface Props {
-  betaMoveKey: BetaChainMark_betaMoveNode$key;
+  betaMoveKey: BetaMoveMark_betaMoveNode$key;
   isInCurrentStance: boolean;
+  onClick?: (betaMoveId: string) => void;
   onDragFinish?: DragFinishHandler<"overlayBetaMove">;
 }
 
 /**
  * An icon representing a single beta move in a chain
  */
-const BetaChainMark: React.FC<Props> = ({
+const BetaMoveMark: React.FC<Props> = ({
   betaMoveKey,
   isInCurrentStance,
+  onClick,
   onDragFinish,
 }) => {
   const betaMove = useFragment(
     graphql`
-      fragment BetaChainMark_betaMoveNode on BetaMoveNode {
+      fragment BetaMoveMark_betaMoveNode on BetaMoveNode {
         id
         bodyPart
         order
@@ -47,23 +46,22 @@ const BetaChainMark: React.FC<Props> = ({
     betaMoveKey
   );
   const moveId = betaMove.id; // This gets captured by a lot of lambdas
-  const editable = isDefined(onDragFinish);
-  const color = useBetaMoveColor()(moveId);
+  const { palette } = useTheme();
+  // const color = useBetaMoveColor()(moveId);
   const position = useBetaMoveVisualPosition()(moveId);
+  const { action } = useEditorMode();
+  const color = palette[`editorAction--${action}`].main;
 
   const ref = useRef<SVGCircleElement>(null);
 
+  const draggable = isDefined(onDragFinish);
   const [{ isDragging }, drag] = useDrag<
     "overlayBetaMove",
     { isDragging: boolean }
   >({
     type: "overlayBetaMove",
-    item: {
-      action: "relocate",
-      betaMoveId: moveId,
-      bodyPart: betaMove.bodyPart,
-    },
-    canDrag: editable,
+    item: { betaMoveId: moveId, bodyPart: betaMove.bodyPart },
+    canDrag: draggable,
     collect(monitor) {
       return {
         isDragging: Boolean(monitor.isDragging()),
@@ -86,9 +84,8 @@ const BetaChainMark: React.FC<Props> = ({
   }));
   const isDraggingOther = isDraggingAny && !isDragging;
 
-  const [highlightedMoveId, highlightMove] = useHighlight("move");
+  const [highlightedMoveId] = useHighlight("move");
   const isHighlighted = highlightedMoveId === moveId;
-  const highlightThis = (): void => highlightMove(moveId);
 
   drag(ref);
   return (
@@ -102,22 +99,14 @@ const BetaChainMark: React.FC<Props> = ({
           isFree={!isDefined(betaMove.hold)}
           color={color}
           variant={isInCurrentStance || isHighlighted ? "large" : "small"}
-          draggable={editable}
+          draggable={draggable}
           isDragging={isDragging}
           isHighlighted={isHighlighted}
           // Don't block drop events when another element is being dragged
           css={isDraggingOther && { pointerEvents: "none" }}
           // Click => highlight the move
-          onClick={highlightThis}
+          onClick={onClick && (() => onClick(betaMove.id))}
         />
-
-        {editable && isInCurrentStance && (
-          <AddBetaMoveMark
-            bodyPart={betaMove.bodyPart}
-            variant="move"
-            onDragFinish={onDragFinish}
-          />
-        )}
       </Positioned>
 
       {betaMove.annotation && (
@@ -139,4 +128,4 @@ const BetaChainMark: React.FC<Props> = ({
   );
 };
 
-export default BetaChainMark;
+export default BetaMoveMark;

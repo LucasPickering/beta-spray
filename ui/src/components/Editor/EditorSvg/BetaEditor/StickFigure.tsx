@@ -17,7 +17,6 @@ import { DragFinishHandler } from "components/Editor/util/dnd";
 import { useBetaMoveVisualPosition } from "components/Editor/util/moves";
 import AddBetaMoveMark from "./AddBetaMoveMark";
 import Positioned from "../common/Positioned";
-import { isDefined } from "util/func";
 
 /**
  * The torso will always be this percentage of the distance between hands and
@@ -29,6 +28,7 @@ const headRadius = 3;
 
 interface Props {
   betaMoveConnectionKey: stance_betaMoveNodeConnection$key;
+  editable?: boolean;
   onDragFinish?: DragFinishHandler<"overlayBetaMove">;
 }
 
@@ -37,13 +37,13 @@ interface Props {
  */
 const StickFigure: React.FC<Props> = ({
   betaMoveConnectionKey,
+  editable = false,
   onDragFinish,
 }) => {
   // Find which moves are in the current body position
   const stance = useStance(betaMoveConnectionKey);
   const { dimensions: svgDimensions } = useContext(SvgContext);
   const color = useStickFigureColor(stance);
-  const editable = isDefined(onDragFinish);
 
   // Grab the visual position of each move
   const getPosition = useBetaMoveVisualPosition();
