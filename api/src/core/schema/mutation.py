@@ -193,7 +193,7 @@ class Mutation:
         hold: Hold = id.resolve_node(info, ensure_type=Hold)
         # Convert position from SVG coords to normalized (DB) coords
         normal_position = position and position.to_normalized(
-            hold.boulder.image
+            hold.problem.boulder.image
         )
         return resolvers.update(
             info,
