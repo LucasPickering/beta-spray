@@ -119,19 +119,6 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
     delete: { callback: deleteBetaMove, state: deleteState },
   } = useBetaMoveMutations(beta);
 
-  const onClickBetaMove = (() => {
-    if (beta.permissions.canEdit && itemType === "betaMove") {
-      switch (action) {
-        case "edit":
-          // Open edit dialog
-          return (betaMoveId: string) => setEditingBetaMoveId(betaMoveId);
-        case "delete":
-          // Delete the move
-          return (betaMoveId: string) => deleteBetaMove({ betaMoveId });
-      }
-    }
-    return undefined;
-  })();
   const onDragFinish: DragFinishHandler<"overlayBetaMove"> | undefined =
     (() => {
       if (beta.permissions.canEdit && itemType === "betaMove") {
@@ -192,7 +179,8 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
           key={move.id}
           betaMoveKey={move}
           isInCurrentStance={stance[move.bodyPart] === move.id}
-          onClick={onClickBetaMove}
+          onEditAnnotation={(betaMoveId) => setEditingBetaMoveId(betaMoveId)}
+          onDelete={(betaMoveId) => deleteBetaMove({ betaMoveId })}
           onDragFinish={onDragFinish}
         />
       ))}
