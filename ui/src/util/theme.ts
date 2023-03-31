@@ -6,23 +6,25 @@ import {
 } from "@mui/material/styles";
 import LinkBehavior from "components/common/LinkBehavior";
 
-// TODO rename
-type EditorActionAss<T> = Record<
-  | "editorAction--add"
-  | "editorAction--relocate"
-  | "editorAction--edit"
-  | "editorAction--delete",
+/**
+ * Helper for the custom colors we add
+ */
+type CustomColors<T> = Record<
+  | "editorActionCreate"
+  | "editorActionRelocate"
+  | "editorActionEdit"
+  | "editorActionDelete",
   T
 >;
 
 declare module "@mui/material/styles" {
-  interface Palette extends EditorActionAss<PaletteColor> {
+  interface Palette extends CustomColors<PaletteColor> {
     opacity: {
       translucent: number;
     };
   }
 
-  interface PaletteOptions extends EditorActionAss<PaletteColorOptions> {
+  interface PaletteOptions extends CustomColors<PaletteColorOptions> {
     opacity: {
       translucent: number;
     };
@@ -32,11 +34,11 @@ declare module "@mui/material/styles" {
 declare module "@mui/material" {
   //
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface ButtonPropsColorOverrides extends EditorActionAss<true> {}
+  interface ButtonPropsColorOverrides extends CustomColors<true> {}
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface IconButtonPropsColorOverrides extends EditorActionAss<true> {}
+  interface IconButtonPropsColorOverrides extends CustomColors<true> {}
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface ToggleButtonPropsColorOverrides extends EditorActionAss<true> {}
+  interface ToggleButtonPropsColorOverrides extends CustomColors<true> {}
 }
 
 declare module "@emotion/react/types" {
@@ -62,10 +64,10 @@ const baseTheme = createTheme({
     warning: { main: "#FFBE26" },
 
     // TODO better colors
-    "editorAction--add": { main: "#00ff00" },
-    "editorAction--relocate": { main: "#0000ff" },
-    "editorAction--edit": { main: "#ffff00" },
-    "editorAction--delete": { main: "#ff0000" },
+    editorActionCreate: { main: "#66BB6A" },
+    editorActionRelocate: { main: "#48CFEA" },
+    editorActionEdit: { main: "#FFBE26" },
+    editorActionDelete: { main: "#f44336" },
 
     opacity: {
       translucent: 0.6,

@@ -4,7 +4,7 @@ import {
   useDrag,
   useDragLayer,
 } from "components/Editor/util/dnd";
-import { ClickAwayListener, Portal, Tooltip } from "@mui/material";
+import { ClickAwayListener, Portal, Tooltip, useTheme } from "@mui/material";
 import Positioned from "../common/Positioned";
 import BetaMoveIcon from "./BetaMoveIcon";
 import { graphql, useFragment } from "react-relay";
@@ -15,6 +15,11 @@ import {
 } from "components/Editor/util/moves";
 import { isDefined } from "util/func";
 import ActionOrbs from "../ActionOrbs";
+import {
+  Edit as IconEdit,
+  Delete as IconDelete,
+  ChangeCircle as IconChangeCircle,
+} from "@mui/icons-material";
 
 interface Props {
   betaMoveKey: BetaMoveMark_betaMoveNode$key;
@@ -52,6 +57,7 @@ const BetaMoveMark: React.FC<Props> = ({
   const moveId = betaMove.id; // This gets captured by a lot of lambdas
   const color = useBetaMoveColor()(moveId);
   const position = useBetaMoveVisualPosition()(moveId);
+  const [dragMode, setDragMode] = useState<"create" | "relocate">("create");
 
   const ref = useRef<SVGCircleElement>(null);
 
@@ -61,7 +67,7 @@ const BetaMoveMark: React.FC<Props> = ({
     { isDragging: boolean }
   >({
     type: "overlayBetaMove",
-    item: { betaMoveId: moveId, bodyPart: betaMove.bodyPart },
+    item: { betaMoveId: moveId, bodyPart: betaMove.bodyPart, mode: dragMode },
     canDrag: draggable,
     collect(monitor) {
       return {
@@ -86,6 +92,7 @@ const BetaMoveMark: React.FC<Props> = ({
   const isDraggingOther = isDraggingAny && !isDragging;
 
   const [isHighlighted, setIsHighlighted] = useState<boolean>(false);
+  const { palette } = useTheme();
 
   drag(ref);
   return (
@@ -112,15 +119,31 @@ const BetaMoveMark: React.FC<Props> = ({
           <ActionOrbs
             open={isHighlighted}
             actions={[
+              // Show color/icon indicating which mode we *would swap to*
+              dragMode === "create"
+                ? {
+                    id: "modeRelocate",
+                    color: palette.editorActionRelocate.main,
+                    icon: <IconChangeCircle />,
+                    onClick: () => setDragMode("relocate"),
+                  }
+                : {
+                    id: "modeCreate",
+                    color: palette.editorActionCreate.main,
+                    icon: <IconChangeCircle />,
+                    onClick: () => setDragMode("create"),
+                  },
               {
                 id: "edit",
-                color: "yellow",
+                color: palette.editorActionEdit.main,
+                icon: <IconEdit />,
                 onClick:
                   onEditAnnotation && (() => onEditAnnotation(betaMove.id)),
               },
               {
                 id: "delete",
-                color: "red",
+                color: palette.editorActionDelete.main,
+                icon: <IconDelete />,
                 onClick: onDelete && (() => onDelete(betaMove.id)),
               },
             ]}
