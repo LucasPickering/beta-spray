@@ -4,6 +4,12 @@ on:
   push:
     branches:
       - master
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Build & Deploy Environment
+        type: environment
+        required: true
 
 jobs:
   build:
@@ -20,5 +26,6 @@ jobs:
     needs:
       - build
     with:
-      environment: production
+      # Default to production for master push
+      environment: ${{ inputs.environment || 'production' }}
     secrets: inherit
