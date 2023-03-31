@@ -100,18 +100,14 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
 
   // The ID of the hold whose annotation is being edited
   const [editingHoldId, setEditingHoldId] = useState<string>();
-  const { itemType, action } = useEditorMode();
+  const { editorMode } = useEditorMode();
   const domToSVGPosition = useDOMToSVGPosition();
 
   // Each of these callbacks will only be defined if it's actually applicable.
   // This allows the consumer to show proper visual feedback based on the
   // available actions.
   const onClickZone = (() => {
-    if (
-      problem.permissions.canEdit &&
-      itemType === "hold" &&
-      action === "add"
-    ) {
+    if (problem.permissions.canEdit && editorMode === "hold") {
       return (e: React.MouseEvent) => {
         // Create a new hold at the clicked location
         const position = domToSVGPosition({ x: e.clientX, y: e.clientY });
@@ -133,11 +129,7 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
     return undefined;
   })();
   const onDragFinish = ((): DragFinishHandler<"overlayHold"> | undefined => {
-    if (
-      problem.permissions.canEdit &&
-      itemType === "hold" &&
-      action === "relocate"
-    ) {
+    if (problem.permissions.canEdit && editorMode === "hold") {
       return (item, result) => {
         const position = result.position;
         updateHoldPosition({

@@ -22,10 +22,7 @@ const EditorState: React.FC<Props> = ({ children }) => {
   // Flag to show/hide the overlay, toggled by a user button
   const visibilityState = useState<boolean>(true);
   // TODO
-  const editorModeState = useState<EditorMode>({
-    itemType: "hold",
-    action: "add",
-  });
+  const editorModeState = useState<EditorMode>("hold");
   // Which hold/move is being emphasized
   const highlightedItemState = useState<HighlightedItem | undefined>();
   // Which move denotes the current stick figure stance? This will be the *last*

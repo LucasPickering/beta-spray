@@ -4,14 +4,16 @@ import {
   useDrag,
   useDragLayer,
 } from "components/Editor/util/dnd";
-import { ClickAwayListener, Portal, Tooltip, useTheme } from "@mui/material";
+import { ClickAwayListener, Portal, Tooltip } from "@mui/material";
 import Positioned from "../common/Positioned";
 import BetaMoveIcon from "./BetaMoveIcon";
 import { graphql, useFragment } from "react-relay";
 import { BetaMoveMark_betaMoveNode$key } from "./__generated__/BetaMoveMark_betaMoveNode.graphql";
-import { useBetaMoveVisualPosition } from "components/Editor/util/moves";
+import {
+  useBetaMoveColor,
+  useBetaMoveVisualPosition,
+} from "components/Editor/util/moves";
 import { isDefined } from "util/func";
-import { useEditorMode } from "components/Editor/util/mode";
 import ActionOrbs from "../ActionOrbs";
 
 interface Props {
@@ -48,11 +50,8 @@ const BetaMoveMark: React.FC<Props> = ({
     betaMoveKey
   );
   const moveId = betaMove.id; // This gets captured by a lot of lambdas
-  const { palette } = useTheme();
-  // const color = useBetaMoveColor()(moveId);
+  const color = useBetaMoveColor()(moveId);
   const position = useBetaMoveVisualPosition()(moveId);
-  const { action } = useEditorMode();
-  const color = palette[`editorAction--${action}`].main;
 
   const ref = useRef<SVGCircleElement>(null);
 

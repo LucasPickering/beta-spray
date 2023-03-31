@@ -7,31 +7,22 @@ import { StateContext } from "./context";
 import { noop } from "util/func";
 
 // TODO better name for this
-export type EditorMode = {
-  itemType: "hold" | "betaMove"; // TODO rename
-  action: "add" | "relocate" | "edit" | "delete";
-};
+export type EditorMode = "hold" | "betaMove";
 
 export const EditorModeContext = React.createContext<StateContext<EditorMode>>([
-  { itemType: "hold", action: "add" },
+  "betaMove",
   noop,
 ]);
 
 export function useEditorMode(): {
-  itemType: EditorMode["itemType"];
-  action: EditorMode["action"];
-  toggleItemType: () => void;
-  setAction: (action: EditorMode["action"]) => void;
+  editorMode: EditorMode;
+  toggleEditorMode: () => void;
 } {
-  const [{ itemType, action }, setEditorMode] = useContext(EditorModeContext);
-  const toggleItemType = (): void => {
-    setEditorMode(({ itemType, action }) => ({
-      itemType: itemType === "hold" ? "betaMove" : "hold",
-      action,
-    }));
+  const [editorMode, setEditorMode] = useContext(EditorModeContext);
+  const toggleEditorMode = (): void => {
+    setEditorMode((editorMode) =>
+      editorMode === "hold" ? "betaMove" : "hold"
+    );
   };
-  const setAction = (action: EditorMode["action"]): void => {
-    setEditorMode(({ itemType }) => ({ itemType, action }));
-  };
-  return { itemType, action, toggleItemType, setAction };
+  return { editorMode, toggleEditorMode };
 }
