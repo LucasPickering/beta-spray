@@ -108,7 +108,7 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
   const editingBetaMove = isDefined(editingBetaMoveId)
     ? findNode(beta.moves, editingBetaMoveId)
     : undefined;
-  const { itemType, action } = useEditorMode();
+  const { editorMode } = useEditorMode();
   const {
     create: { callback: createBetaMove, state: createState },
     updateAnnotation: {
@@ -121,8 +121,9 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
 
   const onDragFinish: DragFinishHandler<"overlayBetaMove"> | undefined =
     (() => {
-      if (beta.permissions.canEdit && itemType === "betaMove") {
-        switch (action) {
+      if (beta.permissions.canEdit && editorMode === "betaMove") {
+        // TODO figure out how to switch this
+        switch ("add") {
           case "add":
             // Insert the new move immediately after the current stance. If there
             // is no stance, that means this is the first move, so we'll just
