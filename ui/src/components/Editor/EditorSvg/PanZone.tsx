@@ -23,7 +23,7 @@ interface Props extends React.SVGProps<SVGRectElement> {
  *
  * There should always be exactly one PanZone in the component tree!
  */
-const PanZone: React.FC<Props> = ({ css: parentCss, ...rest }) => {
+const PanZone: React.FC<Props> = ({ onClick, css: parentCss, ...rest }) => {
   const { updatePan } = useZoomPan();
   const domToSVGPosition = useDOMToSVGPosition();
   const { dimensions } = useContext(SvgContext);
@@ -83,9 +83,12 @@ const PanZone: React.FC<Props> = ({ css: parentCss, ...rest }) => {
       // triggers more re-renders)
       width={dimensions.width}
       height={dimensions.height}
+      // TODO dragging should cancel click
+      onClick={onClick}
       css={[
         parentCss,
         { opacity: 0, touchAction: "none" },
+        onClick && { cursor: "pointer" },
         isDragging && { cursor: "move" },
       ]}
       {...bind()}

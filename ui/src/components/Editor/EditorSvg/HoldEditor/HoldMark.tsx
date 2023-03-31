@@ -9,12 +9,14 @@ import { graphql, useFragment } from "react-relay";
 import { HoldMark_holdNode$key } from "./__generated__/HoldMark_holdNode.graphql";
 import Positioned from "../common/Positioned";
 import HoldIcon from "./HoldIcon";
-import { ClickAwayListener, Portal, Tooltip } from "@mui/material";
+import { ClickAwayListener, Portal, Tooltip, useTheme } from "@mui/material";
 import { isDefined } from "util/func";
 import ActionOrbs from "../ActionOrbs";
+import { Delete as IconDelete, Edit as IconEdit } from "@mui/icons-material";
 
 interface Props {
   holdKey: HoldMark_holdNode$key;
+  editable?: boolean;
   onEditAnnotation?: (holdId: string) => void;
   onDelete?: (holdId: string) => void;
   /**
@@ -32,6 +34,7 @@ interface Props {
  */
 const HoldMark: React.FC<Props> = ({
   holdKey,
+  editable = false,
   onEditAnnotation,
   onDelete,
   onDragFinish,
@@ -52,21 +55,20 @@ const HoldMark: React.FC<Props> = ({
     holdKey
   );
 
-  const draggable = isDefined(onDragFinish);
   const [{ isDragging }, drag] = useDrag<
     "overlayHold",
     { isDragging: boolean }
   >({
     type: "overlayHold",
     item: { action: "relocate", holdId: hold.id },
-    canDrag: draggable,
+    canDrag: editable,
     collect: (monitor) => ({
       isDragging: Boolean(monitor.isDragging()),
     }),
     end(draggedItem, monitor) {
       const dropResult = monitor.getDropResult();
-      if (onDragFinish && isDefined(dropResult)) {
-        onDragFinish(draggedItem, dropResult, monitor);
+      if (isDefined(dropResult)) {
+        onDragFinish?.(draggedItem, dropResult, monitor);
       }
     },
   });
@@ -92,6 +94,7 @@ const HoldMark: React.FC<Props> = ({
   });
 
   const [isHighlighted, setIsHighlighted] = useState<boolean>(false);
+  const { palette } = useTheme();
 
   drag(drop(ref));
   return (
@@ -99,12 +102,14 @@ const HoldMark: React.FC<Props> = ({
       <ClickAwayListener onClickAway={() => setIsHighlighted(false)}>
         <Positioned ref={ref} position={hold.position}>
           <HoldIcon
-            draggable={draggable}
+            draggable={editable}
             isDragging={isDragging}
             isOver={isOver}
             isHighlighted={isHighlighted}
             // Click => toggle highlight
-            onClick={() => setIsHighlighted((prev) => !prev)}
+            onClick={
+              editable ? () => setIsHighlighted((prev) => !prev) : undefined
+            }
           />
 
           <ActionOrbs
@@ -112,12 +117,14 @@ const HoldMark: React.FC<Props> = ({
             actions={[
               {
                 id: "edit",
-                color: "yellow",
+                color: palette.editorActionEdit.main,
+                icon: <IconEdit />,
                 onClick: onEditAnnotation && (() => onEditAnnotation(hold.id)),
               },
               {
                 id: "delete",
-                color: "red",
+                color: palette.editorActionDelete.main,
+                icon: <IconDelete />,
                 onClick: onDelete && (() => onDelete(hold.id)),
               },
             ]}

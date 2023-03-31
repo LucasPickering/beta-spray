@@ -153,6 +153,7 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
         <HoldMark
           key={node.id}
           holdKey={node}
+          editable={editorMode === "hold"}
           onEditAnnotation={(holdId) => setEditingHoldId(holdId)}
           onDelete={(holdId) =>
             deleteHold({
