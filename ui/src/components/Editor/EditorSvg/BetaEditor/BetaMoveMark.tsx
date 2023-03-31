@@ -1,23 +1,24 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import {
   DragFinishHandler,
   useDrag,
   useDragLayer,
 } from "components/Editor/util/dnd";
-import { Portal, Tooltip, useTheme } from "@mui/material";
+import { ClickAwayListener, Portal, Tooltip, useTheme } from "@mui/material";
 import Positioned from "../common/Positioned";
 import BetaMoveIcon from "./BetaMoveIcon";
 import { graphql, useFragment } from "react-relay";
 import { BetaMoveMark_betaMoveNode$key } from "./__generated__/BetaMoveMark_betaMoveNode.graphql";
 import { useBetaMoveVisualPosition } from "components/Editor/util/moves";
 import { isDefined } from "util/func";
-import { useHighlight } from "components/Editor/util/highlight";
 import { useEditorMode } from "components/Editor/util/mode";
+import ActionOrbs from "../ActionOrbs";
 
 interface Props {
   betaMoveKey: BetaMoveMark_betaMoveNode$key;
   isInCurrentStance: boolean;
-  onClick?: (betaMoveId: string) => void;
+  onEditAnnotation?: (betaMoveId: string) => void;
+  onDelete?: (betaMoveId: string) => void;
   onDragFinish?: DragFinishHandler<"overlayBetaMove">;
 }
 
@@ -27,7 +28,8 @@ interface Props {
 const BetaMoveMark: React.FC<Props> = ({
   betaMoveKey,
   isInCurrentStance,
-  onClick,
+  onEditAnnotation,
+  onDelete,
   onDragFinish,
 }) => {
   const betaMove = useFragment(
@@ -84,30 +86,48 @@ const BetaMoveMark: React.FC<Props> = ({
   }));
   const isDraggingOther = isDraggingAny && !isDragging;
 
-  const [highlightedMoveId] = useHighlight("move");
-  const isHighlighted = highlightedMoveId === moveId;
+  const [isHighlighted, setIsHighlighted] = useState<boolean>(false);
 
   drag(ref);
   return (
     <>
-      <Positioned position={position}>
-        <BetaMoveIcon
-          ref={ref}
-          bodyPart={betaMove.bodyPart}
-          order={betaMove.order}
-          isStart={betaMove.isStart}
-          isFree={!isDefined(betaMove.hold)}
-          color={color}
-          variant={isInCurrentStance || isHighlighted ? "large" : "small"}
-          draggable={draggable}
-          isDragging={isDragging}
-          isHighlighted={isHighlighted}
-          // Don't block drop events when another element is being dragged
-          css={isDraggingOther && { pointerEvents: "none" }}
-          // Click => highlight the move
-          onClick={onClick && (() => onClick(betaMove.id))}
-        />
-      </Positioned>
+      <ClickAwayListener onClickAway={() => setIsHighlighted(false)}>
+        <Positioned position={position}>
+          <BetaMoveIcon
+            ref={ref}
+            bodyPart={betaMove.bodyPart}
+            order={betaMove.order}
+            isStart={betaMove.isStart}
+            isFree={!isDefined(betaMove.hold)}
+            color={color}
+            variant={isInCurrentStance || isHighlighted ? "large" : "small"}
+            draggable={draggable}
+            isDragging={isDragging}
+            isHighlighted={isHighlighted}
+            // Don't block drop events when another element is being dragged
+            css={isDraggingOther && { pointerEvents: "none" }}
+            // Click => toggle highlight
+            onClick={() => setIsHighlighted((prev) => !prev)}
+          />
+
+          <ActionOrbs
+            open={isHighlighted}
+            actions={[
+              {
+                id: "edit",
+                color: "yellow",
+                onClick:
+                  onEditAnnotation && (() => onEditAnnotation(betaMove.id)),
+              },
+              {
+                id: "delete",
+                color: "red",
+                onClick: onDelete && (() => onDelete(betaMove.id)),
+              },
+            ]}
+          />
+        </Positioned>
+      </ClickAwayListener>
 
       {betaMove.annotation && (
         <Portal>

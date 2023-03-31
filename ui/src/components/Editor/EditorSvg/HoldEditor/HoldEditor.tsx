@@ -132,28 +132,6 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
     }
     return undefined;
   })();
-  const onClickHold = (() => {
-    if (problem.permissions.canEdit && itemType === "hold") {
-      switch (action) {
-        case "edit":
-          // Open the edit dialog
-          return (holdId: string) => setEditingHoldId(holdId);
-        case "delete":
-          // Delete the hold
-          return (holdId: string) =>
-            deleteHold({
-              variables: {
-                input: { id: holdId },
-                connections: [problem.holds.__id],
-              },
-              optimisticResponse: {
-                deleteHold: { id: holdId },
-              },
-            });
-      }
-    }
-    return undefined;
-  })();
   const onDragFinish = ((): DragFinishHandler<"overlayHold"> | undefined => {
     if (
       problem.permissions.canEdit &&
@@ -183,7 +161,18 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
         <HoldMark
           key={node.id}
           holdKey={node}
-          onClick={onClickHold}
+          onEditAnnotation={(holdId) => setEditingHoldId(holdId)}
+          onDelete={(holdId) =>
+            deleteHold({
+              variables: {
+                input: { id: holdId },
+                connections: [problem.holds.__id],
+              },
+              optimisticResponse: {
+                deleteHold: { id: holdId },
+              },
+            })
+          }
           onDragFinish={onDragFinish}
         />
       ))}

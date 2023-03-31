@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import {
   DragFinishHandler,
   DropHandler,
@@ -9,13 +9,14 @@ import { graphql, useFragment } from "react-relay";
 import { HoldMark_holdNode$key } from "./__generated__/HoldMark_holdNode.graphql";
 import Positioned from "../common/Positioned";
 import HoldIcon from "./HoldIcon";
-import { useHighlight } from "components/Editor/util/highlight";
-import { Portal, Tooltip } from "@mui/material";
+import { ClickAwayListener, Portal, Tooltip } from "@mui/material";
 import { isDefined } from "util/func";
+import ActionOrbs from "../ActionOrbs";
 
 interface Props {
   holdKey: HoldMark_holdNode$key;
-  onClick?: (holdId: string) => void;
+  onEditAnnotation?: (holdId: string) => void;
+  onDelete?: (holdId: string) => void;
   /**
    * Called when this hold is dropped onto something else
    */
@@ -31,7 +32,8 @@ interface Props {
  */
 const HoldMark: React.FC<Props> = ({
   holdKey,
-  onClick,
+  onEditAnnotation,
+  onDelete,
   onDragFinish,
   onDrop,
 }) => {
@@ -50,7 +52,6 @@ const HoldMark: React.FC<Props> = ({
     holdKey
   );
 
-  const clickable = isDefined(onClick); // TODO animations based on this
   const draggable = isDefined(onDragFinish);
   const [{ isDragging }, drag] = useDrag<
     "overlayHold",
@@ -90,24 +91,39 @@ const HoldMark: React.FC<Props> = ({
     },
   });
 
-  const [highlightedHoldId] = useHighlight("hold");
-  const isHighlighted = highlightedHoldId === hold.id;
+  const [isHighlighted, setIsHighlighted] = useState<boolean>(false);
 
   drag(drop(ref));
   return (
     <>
-      <Positioned
-        ref={ref}
-        position={hold.position}
-        onClick={onClick && (() => onClick(hold.id))}
-      >
-        <HoldIcon
-          draggable={draggable}
-          isDragging={isDragging}
-          isOver={isOver}
-          isHighlighted={isHighlighted}
-        />
-      </Positioned>
+      <ClickAwayListener onClickAway={() => setIsHighlighted(false)}>
+        <Positioned ref={ref} position={hold.position}>
+          <HoldIcon
+            draggable={draggable}
+            isDragging={isDragging}
+            isOver={isOver}
+            isHighlighted={isHighlighted}
+            // Click => toggle highlight
+            onClick={() => setIsHighlighted((prev) => !prev)}
+          />
+
+          <ActionOrbs
+            open={isHighlighted}
+            actions={[
+              {
+                id: "edit",
+                color: "yellow",
+                onClick: onEditAnnotation && (() => onEditAnnotation(hold.id)),
+              },
+              {
+                id: "delete",
+                color: "red",
+                onClick: onDelete && (() => onDelete(hold.id)),
+              },
+            ]}
+          />
+        </Positioned>
+      </ClickAwayListener>
 
       {hold.annotation && (
         <Portal>
