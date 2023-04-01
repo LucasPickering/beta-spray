@@ -27,6 +27,13 @@ export const EditorVisibilityContext = React.createContext<
   StateContext<boolean>
 >([true, noop]);
 
+export type EditorMode = "hold" | "betaMove";
+
+export const EditorModeContext = React.createContext<StateContext<EditorMode>>([
+  "betaMove",
+  noop,
+]);
+
 export interface BetaContextType {
   betaMoveColors: Map<string, string>;
   betaMoveVisualPositions: Map<string, OverlayPosition>;

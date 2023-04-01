@@ -127,7 +127,7 @@ const EditorPage: React.FC = () => {
               {/* These buttons live with the SVG, so that they don't get
                   covered by the drawer on desktop */}
               {/* Top-left overlay buttons */}
-              <EditorPalette />
+              <EditorPalette problemQueryRef={problemQueryRef} />
 
               {/* Buttons at the bottom of the screen */}
               <PlayPauseControls queryRef={betaQueryRef} />

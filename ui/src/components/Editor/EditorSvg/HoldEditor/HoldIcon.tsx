@@ -36,11 +36,14 @@ const HoldIcon: React.FC<Props> = ({
         {
           r: 3,
           strokeWidth: 0.5,
-          stroke: palette.primary.main,
+          stroke: palette.grey[300],
           // We want the fill to be present so it captures events, but invisible
           fillOpacity: 0,
         },
-        draggable && styleDraggable,
+        draggable && {
+          stroke: palette.primary.main,
+          ...styleDraggable,
+        },
         isDragging && styleDragging(theme),
         isHighlighted && styleHighlight(theme),
         isOver && styleDropHover(theme),
