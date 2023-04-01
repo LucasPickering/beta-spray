@@ -1,6 +1,7 @@
 import React from "react";
 import Positioned from "./common/Positioned";
 import { polarToSvg } from "../util/svg";
+import EmbeddedIcon from "components/common/EmbeddedIcon";
 
 interface Props {
   open: boolean;
@@ -14,9 +15,6 @@ interface Props {
 
 const orbRadius = 3;
 const spreadRadius = 6;
-
-const iconSizeForeign = 24; // Size of the foreign icon object (usually SVGIcon)
-const iconSizeLocal = 4; // Size we want the icon to render as
 
 /**
  * One or more orbs hovering around an SVG item that behave like buttons.
@@ -41,20 +39,7 @@ const ActionOrbs: React.FC<Props> = ({ open, actions }) => {
             }}
           >
             <circle r={orbRadius} fill={color} />
-            {icon && (
-              // We assume the icon is a SvgIcon from material UI, which has a
-              // known size. We'll scale the object down from that known size
-              // to a size that want, to fit into the circle
-              <foreignObject
-                width={iconSizeForeign}
-                height={iconSizeForeign}
-                x={-iconSizeForeign / 2}
-                y={-iconSizeForeign / 2}
-                transform={`scale(${iconSizeLocal / iconSizeForeign})`}
-              >
-                {icon}
-              </foreignObject>
-            )}
+            {icon && <EmbeddedIcon>{icon}</EmbeddedIcon>}
           </g>
         </Positioned>
       ))}

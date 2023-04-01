@@ -15,53 +15,49 @@ const HelpText: React.FC = () => (
   </Tooltip>
 );
 
-const HelpTextContent: React.FC = () => {
-  return (
-    <>
-      <div>
-        <strong>Click the hold button</strong> to add a new hold
-      </div>
-      <div>
-        <strong>Drag a move or hold</strong> to relocate
-      </div>
-      <div>
-        <strong>Drag the + icon</strong> to add a new move
-      </div>
-      <div>
-        <strong>Drag a line</strong> to add an intermediate move
-      </div>
-      <div>
-        <strong>Click a move or hold</strong> to add notes or delete
-      </div>
-      <div>
-        <strong>Reorder moves</strong> in the sidebar
-      </div>
+// TODO update content
+const HelpTextContent: React.FC = () => (
+  <>
+    <div>
+      <strong>Click the hold button</strong> to add a new hold
+    </div>
+    <div>
+      <strong>Drag a move or hold</strong> to relocate
+    </div>
+    <div>
+      <strong>Drag the + icon</strong> to add a new move
+    </div>
+    <div>
+      <strong>Drag a line</strong> to add an intermediate move
+    </div>
+    <div>
+      <strong>Click a move or hold</strong> to add notes or delete
+    </div>
+    <div>
+      <strong>Reorder moves</strong> in the sidebar
+    </div>
 
-      <Divider
-        orientation="horizontal"
-        sx={{ marginTop: 1, marginBottom: 1 }}
-      />
+    <Divider orientation="horizontal" sx={{ marginTop: 1, marginBottom: 1 }} />
 
-      <LegendIcon icon={<HoldIconWrapped />} label="Hold" />
-      {allBodyParts.map((bodyPart) => (
-        <LegendIcon
-          key={bodyPart}
-          icon={<BetaMoveIconWrapped bodyPart={bodyPart} />}
-          label={formatBodyPart(bodyPart)}
-        />
-      ))}
-
+    <LegendIcon icon={<HoldIconWrapped />} label="Hold" />
+    {allBodyParts.map((bodyPart) => (
       <LegendIcon
-        icon={<BetaMoveIconWrapped bodyPart="LEFT_HAND" isStart />}
-        label="Start Move"
+        key={bodyPart}
+        icon={<BetaMoveIconWrapped bodyPart={bodyPart} />}
+        label={formatBodyPart(bodyPart)}
       />
-      <LegendIcon
-        icon={<BetaMoveIconWrapped bodyPart="LEFT_HAND" isFree />}
-        label="Free Move (smear, flag, etc.)"
-      />
-    </>
-  );
-};
+    ))}
+
+    <LegendIcon
+      icon={<BetaMoveIconWrapped bodyPart="LEFT_HAND" isStart />}
+      label="Start Move"
+    />
+    <LegendIcon
+      icon={<BetaMoveIconWrapped bodyPart="LEFT_HAND" isFree />}
+      label="Free Move (smear, flag, etc.)"
+    />
+  </>
+);
 
 const LegendIcon: React.FC<{ icon: React.ReactElement; label: string }> = ({
   icon,

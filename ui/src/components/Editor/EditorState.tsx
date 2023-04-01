@@ -1,11 +1,14 @@
 import { useState } from "react";
-import { EditorVisibilityContext } from "./util/context";
+import {
+  EditorMode,
+  EditorModeContext,
+  EditorVisibilityContext,
+} from "./util/context";
 import {
   HighlightedItem,
   EditorHighlightedItemContext,
 } from "./util/highlight";
 import { StanceContextProvider } from "./util/stance";
-import { EditorMode, EditorModeContext } from "./util/mode";
 
 interface Props {
   children?: React.ReactNode;
@@ -21,7 +24,7 @@ const EditorState: React.FC<Props> = ({ children }) => {
 
   // Flag to show/hide the overlay, toggled by a user button
   const visibilityState = useState<boolean>(true);
-  // TODO
+  // Toggle between editing holds and beta
   const editorModeState = useState<EditorMode>("hold");
   // Which hold/move is being emphasized
   const highlightedItemState = useState<HighlightedItem | undefined>();

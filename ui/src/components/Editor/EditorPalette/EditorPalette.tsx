@@ -5,12 +5,17 @@ import {
   ArrowBack as IconArrowBack,
   Visibility as IconVisibility,
   VisibilityOff as IconVisibilityOff,
-  ChangeCircle as IconChangeCircle,
 } from "@mui/icons-material";
 import { EditorVisibilityContext } from "components/Editor/util/context";
 import TooltipIconButton from "components/common/TooltipIconButton";
 import { Link } from "react-router-dom";
-import { useEditorMode } from "../util/mode";
+import ToggleEditorModeButton from "./ToggleEditorModeButton";
+import { PreloadedQuery } from "react-relay";
+import { queriesProblemQuery } from "util/__generated__/queriesProblemQuery.graphql";
+
+interface Props {
+  problemQueryRef: PreloadedQuery<queriesProblemQuery> | null | undefined;
+}
 
 /**
  * A collection of items that can be dragged onto the editor to create new
@@ -18,11 +23,8 @@ import { useEditorMode } from "../util/mode";
  *
  * Appears in the top-left corner.
  */
-const EditorPalette: React.FC = () => {
+const EditorPalette: React.FC<Props> = ({ problemQueryRef }) => {
   const [visibility, setVisibility] = useContext(EditorVisibilityContext);
-  const { toggleEditorMode } = useEditorMode();
-
-  // TODO integrate permissions to disable buttons
 
   return (
     <Box sx={{ position: "absolute", top: 0, left: 0, margin: 1 }}>
@@ -49,10 +51,7 @@ const EditorPalette: React.FC = () => {
           {visibility ? <IconVisibilityOff /> : <IconVisibility />}
         </TooltipIconButton>
 
-        <IconButton onClick={() => toggleEditorMode()}>
-          {/* TODO better icon */}
-          <IconChangeCircle />
-        </IconButton>
+        <ToggleEditorModeButton queryRef={problemQueryRef} />
       </Paper>
     </Box>
   );

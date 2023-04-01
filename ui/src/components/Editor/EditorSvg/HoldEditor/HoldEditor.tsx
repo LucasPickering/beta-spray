@@ -4,17 +4,17 @@ import { generateUniqueClientID, graphql } from "relay-runtime";
 import useMutation from "util/useMutation";
 import { HoldEditor_problemNode$key } from "./__generated__/HoldEditor_problemNode.graphql";
 import HoldMark from "./HoldMark";
-import { useEditorMode } from "components/Editor/util/mode";
 import PanZone from "../PanZone";
 import { HoldEditor_createHoldMutation } from "./__generated__/HoldEditor_createHoldMutation.graphql";
 import { HoldEditor_deleteHoldMutation } from "./__generated__/HoldEditor_deleteHoldMutation.graphql";
 import { DragFinishHandler } from "components/Editor/util/dnd";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import EditAnnotationDialog from "../EditAnnotationDialog";
 import { assertIsDefined, findNode } from "util/func";
 import { HoldEditor_updateHoldPositionMutation } from "./__generated__/HoldEditor_updateHoldPositionMutation.graphql";
 import { HoldEditor_updateHoldAnnotationMutation } from "./__generated__/HoldEditor_updateHoldAnnotationMutation.graphql";
 import { useDOMToSVGPosition } from "components/Editor/util/svg";
+import { EditorModeContext } from "components/Editor/util/context";
 
 interface Props {
   problemKey: HoldEditor_problemNode$key;
@@ -100,7 +100,7 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
 
   // The ID of the hold whose annotation is being edited
   const [editingHoldId, setEditingHoldId] = useState<string>();
-  const { editorMode } = useEditorMode();
+  const [editorMode] = useContext(EditorModeContext);
   const domToSVGPosition = useDOMToSVGPosition();
 
   // Each of these callbacks will only be defined if it's actually applicable.

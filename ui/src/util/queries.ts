@@ -30,12 +30,11 @@ export const currentUserQuery = graphql`
 export const problemQuery = graphql`
   query queriesProblemQuery($problemId: ID!) {
     problem(id: $problemId) {
+      ...BetaList_problemNode
       ...EditorHelmet_problemNode
       ...EditorSvg_problemNode
       ...ProblemMetadata_problemNode
-      ...BetaList_problemNode
-      ...HoldActions_problemNode
-      ...AddHoldButton_problemNode
+      ...ToggleEditorModeButton_problemNode
     }
   }
 `;
@@ -49,7 +48,6 @@ export const betaQuery = graphql`
     beta(id: $betaId) {
       ...BetaDetails_betaNode
       ...BetaEditor_betaNode
-      ...BetaMoveActions_betaNode
       ...PlayPauseControls_betaNode
     }
   }

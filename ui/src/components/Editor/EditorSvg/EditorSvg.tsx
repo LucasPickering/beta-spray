@@ -1,5 +1,6 @@
 import React, { useContext, useRef } from "react";
 import {
+  EditorModeContext,
   EditorVisibilityContext,
   SvgContext,
 } from "components/Editor/util/context";
@@ -19,7 +20,6 @@ import { withQuery } from "relay-query-wrapper";
 import Loading from "components/common/Loading";
 import { queriesBetaQuery } from "util/__generated__/queriesBetaQuery.graphql";
 import ErrorBoundary from "components/common/ErrorBoundary";
-import { useEditorMode } from "../util/mode";
 
 interface Props {
   problemKey: EditorSvg_problemNode$key;
@@ -50,7 +50,7 @@ const EditorSvg: React.FC<Props> = ({ problemKey, betaQueryRef }) => {
 
   const ref = useRef<SVGSVGElement | null>(null);
   const [visibility] = useContext(EditorVisibilityContext);
-  const { editorMode } = useEditorMode();
+  const [editorMode] = useContext(EditorModeContext);
 
   const dimensions = {
     width: problem.boulder.image.svgWidth,
