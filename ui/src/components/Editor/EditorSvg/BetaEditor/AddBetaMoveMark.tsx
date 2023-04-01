@@ -1,10 +1,10 @@
 import { useTheme } from "@mui/material";
 import { DragFinishHandler, useDrag } from "components/Editor/util/dnd";
-import { BodyPart, OverlayPosition } from "components/Editor/util/svg";
+import { BodyPart } from "components/Editor/util/svg";
 import { styleDraggable, styleDragging } from "styles/svg";
 import { isDefined } from "util/func";
-import Positioned from "../common/Positioned";
 import BetaMoveIcon from "./BetaMoveIcon";
+import { orbRadius } from "../ActionOrb";
 
 // TODO delete this file
 
@@ -13,18 +13,6 @@ interface Props {
   variant: "move" | "stickFigure";
   onDragFinish?: DragFinishHandler<"overlayBetaMove">;
 }
-
-const offsetDistance = 4.5;
-/**
- * We'll offset this component to separate it from the associated beta move.
- * The offset direction will be based on the body part.
- */
-const offsets: Record<BodyPart, OverlayPosition> = {
-  LEFT_HAND: { x: -offsetDistance, y: -offsetDistance },
-  RIGHT_HAND: { x: offsetDistance, y: -offsetDistance },
-  LEFT_FOOT: { x: -offsetDistance, y: offsetDistance },
-  RIGHT_FOOT: { x: offsetDistance, y: offsetDistance },
-};
 
 /**
  * A drag handle to add a new beta move. There are two variants of this:
@@ -63,15 +51,15 @@ const AddBetaMoveMark: React.FC<Props> = ({
   const { palette } = useTheme();
   const color = palette.success.main;
 
+  // TODO add onClick tooltip give drag hint
+
   switch (variant) {
     case "move":
       return (
-        <Positioned ref={drag} position={offsets[bodyPart]}>
-          <g css={[styleDraggable, isDragging && styleDragging]}>
-            <circle r={1.5} fill={color} />
-            <IconPlusRaw />
-          </g>
-        </Positioned>
+        <g ref={drag} css={[styleDraggable, isDragging && styleDragging]}>
+          <circle r={orbRadius} fill={color} />
+          <IconPlusRaw />
+        </g>
       );
     case "stickFigure":
       return (
@@ -89,8 +77,8 @@ const AddBetaMoveMark: React.FC<Props> = ({
 };
 
 const IconPlusRaw: React.FC<React.SVGProps<SVGGElement>> = (props) => {
-  const lineProps = { stroke: "black", strokeWidth: 0.25 };
-  const lineLength = 0.75;
+  const lineProps = { stroke: "black", strokeWidth: 0.5 };
+  const lineLength = 1.5;
   return (
     <g {...props}>
       <line x1={0} y1={-lineLength} x2={0} y2={lineLength} {...lineProps} />
