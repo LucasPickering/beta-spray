@@ -30,11 +30,15 @@ export type DragType =
     }
   | {
       kind: "overlayBetaMove";
-      item: {
-        bodyPart: BodyPart;
-        betaMoveId: string;
-        mode: "create" | "relocate";
-      };
+      item:
+        | {
+            action: "create";
+            bodyPart: BodyPart;
+          }
+        | {
+            action: "relocate";
+            betaMoveId: string;
+          };
       // hold => attached move
       // drop zone => free move
       drop:
