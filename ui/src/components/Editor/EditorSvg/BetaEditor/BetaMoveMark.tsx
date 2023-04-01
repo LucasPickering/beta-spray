@@ -67,7 +67,10 @@ const BetaMoveMark: React.FC<Props> = ({
     { isDragging: boolean }
   >({
     type: "overlayBetaMove",
-    item: { betaMoveId: moveId, bodyPart: betaMove.bodyPart, mode: dragMode },
+    item:
+      dragMode === "create"
+        ? { action: "create", bodyPart: betaMove.bodyPart }
+        : { action: "relocate", betaMoveId: moveId },
     canDrag: draggable,
     collect(monitor) {
       return {

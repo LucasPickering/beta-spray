@@ -123,7 +123,7 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
   ) => {
     // TODO check permissions proactively
     if (beta.permissions.canEdit) {
-      switch (item.mode) {
+      switch (item.action) {
         // Insert the new move immediately after the current stance. If there
         // is no stance, that means this is the first move, so we'll just
         // insert anywhere
