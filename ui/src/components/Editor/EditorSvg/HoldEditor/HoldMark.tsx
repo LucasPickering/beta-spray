@@ -13,6 +13,7 @@ import { ClickAwayListener, Portal, Tooltip, useTheme } from "@mui/material";
 import { isDefined } from "util/func";
 import ActionOrbs from "../ActionOrbs";
 import { Delete as IconDelete, Edit as IconEdit } from "@mui/icons-material";
+import ActionOrb from "../ActionOrb";
 
 interface Props {
   holdKey: HoldMark_holdNode$key;
@@ -112,23 +113,20 @@ const HoldMark: React.FC<Props> = ({
             }
           />
 
-          <ActionOrbs
-            open={isHighlighted}
-            actions={[
-              {
-                id: "edit",
-                color: palette.editorActionEdit.main,
-                icon: <IconEdit />,
-                onClick: onEditAnnotation && (() => onEditAnnotation(hold.id)),
-              },
-              {
-                id: "delete",
-                color: palette.editorActionDelete.main,
-                icon: <IconDelete />,
-                onClick: onDelete && (() => onDelete(hold.id)),
-              },
-            ]}
-          />
+          <ActionOrbs open={isHighlighted}>
+            <ActionOrb
+              color={palette.editorActionEdit.main}
+              onClick={onEditAnnotation && (() => onEditAnnotation(hold.id))}
+            >
+              <IconEdit />
+            </ActionOrb>
+            <ActionOrb
+              color={palette.editorActionDelete.main}
+              onClick={onDelete && (() => onDelete(hold.id))}
+            >
+              <IconDelete />
+            </ActionOrb>
+          </ActionOrbs>
         </Positioned>
       </ClickAwayListener>
 

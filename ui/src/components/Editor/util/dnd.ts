@@ -37,6 +37,7 @@ export type DragType =
           }
         | {
             action: "relocate";
+            bodyPart: BodyPart; // Needed for the drag preview
             betaMoveId: string;
           };
       // hold => attached move

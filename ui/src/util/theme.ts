@@ -10,10 +10,7 @@ import LinkBehavior from "components/common/LinkBehavior";
  * Helper for the custom colors we add
  */
 type CustomColors<T> = Record<
-  | "editorActionCreate"
-  | "editorActionRelocate"
-  | "editorActionEdit"
-  | "editorActionDelete",
+  "editorActionCreate" | "editorActionEdit" | "editorActionDelete",
   T
 >;
 
