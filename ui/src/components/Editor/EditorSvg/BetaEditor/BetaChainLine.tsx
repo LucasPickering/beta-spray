@@ -63,8 +63,9 @@ const BetaChainLine: React.FC<Props> = ({ startMoveKey, endMoveKey }) => {
         </linearGradient>
       </defs>
       <line
-        css={{ strokeWidth: 1 }}
+        css={{ strokeWidth: 0.5 }}
         stroke={`url(#${gradientId})`}
+        strokeDasharray="1.5 1"
         {...coords}
       />
     </>
