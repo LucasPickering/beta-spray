@@ -102,6 +102,7 @@ const HoldMark: React.FC<Props> = ({
     <>
       <ClickAwayListener onClickAway={() => setIsHighlighted(false)}>
         <Positioned ref={ref} position={hold.position}>
+          {/* TODO fix cursor on here when draggable */}
           <HoldIcon
             draggable={editable}
             isDragging={isDragging}

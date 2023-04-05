@@ -33,8 +33,8 @@ export const problemQuery = graphql`
       ...BetaList_problemNode
       ...EditorHelmet_problemNode
       ...EditorSvg_problemNode
+      ...HoldEditorModeButton_problemNode
       ...ProblemMetadata_problemNode
-      ...ToggleEditorModeButton_problemNode
     }
   }
 `;
@@ -48,6 +48,7 @@ export const betaQuery = graphql`
     beta(id: $betaId) {
       ...BetaDetails_betaNode
       ...BetaEditor_betaNode
+      ...BetaMoveEditorModeButton_betaNode
       ...PlayPauseControls_betaNode
     }
   }
