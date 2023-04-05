@@ -62,7 +62,6 @@ const baseTheme = createTheme({
 
     // TODO better colors
     editorActionCreate: { main: "#66BB6A" },
-    editorActionRelocate: { main: "#48CFEA" },
     editorActionEdit: { main: "#FFBE26" },
     editorActionDelete: { main: "#f44336" },
 
