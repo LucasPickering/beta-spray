@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { alpha, Box, IconButton, Paper } from "@mui/material";
+import { alpha, Box, Divider, IconButton, Paper } from "@mui/material";
 import HelpText from "./HelpText";
 import {
   ArrowBack as IconArrowBack,
@@ -9,12 +9,15 @@ import {
 import { EditorVisibilityContext } from "components/Editor/util/context";
 import TooltipIconButton from "components/common/TooltipIconButton";
 import { Link } from "react-router-dom";
-import ToggleEditorModeButton from "./ToggleEditorModeButton";
 import { PreloadedQuery } from "react-relay";
 import { queriesProblemQuery } from "util/__generated__/queriesProblemQuery.graphql";
+import { queriesBetaQuery } from "util/__generated__/queriesBetaQuery.graphql";
+import HoldEditorModeButton from "./HoldEditorModeButton";
+import BetaMoveEditorModeButton from "./BetaMoveEditorModeButton";
 
 interface Props {
   problemQueryRef: PreloadedQuery<queriesProblemQuery> | null | undefined;
+  betaQueryRef: PreloadedQuery<queriesBetaQuery> | null | undefined;
 }
 
 /**
@@ -23,7 +26,7 @@ interface Props {
  *
  * Appears in the top-left corner.
  */
-const EditorPalette: React.FC<Props> = ({ problemQueryRef }) => {
+const EditorPalette: React.FC<Props> = ({ problemQueryRef, betaQueryRef }) => {
   const [visibility, setVisibility] = useContext(EditorVisibilityContext);
 
   return (
@@ -36,22 +39,27 @@ const EditorPalette: React.FC<Props> = ({ problemQueryRef }) => {
           ),
         })}
       >
-        <IconButton component={Link} to="/">
-          <IconArrowBack />
-        </IconButton>
+        <Box>
+          <IconButton component={Link} to="/">
+            <IconArrowBack />
+          </IconButton>
 
-        <HelpText />
+          <HelpText />
 
-        <TooltipIconButton
-          title={visibility ? "Hide Overlay" : "Show Overlay"}
-          placement="bottom"
-          color={visibility ? "default" : "primary"}
-          onClick={() => setVisibility((prev) => !prev)}
-        >
-          {visibility ? <IconVisibilityOff /> : <IconVisibility />}
-        </TooltipIconButton>
+          <TooltipIconButton
+            title={visibility ? "Hide Overlay" : "Show Overlay"}
+            placement="bottom"
+            color={visibility ? "default" : "primary"}
+            onClick={() => setVisibility((prev) => !prev)}
+          >
+            {visibility ? <IconVisibilityOff /> : <IconVisibility />}
+          </TooltipIconButton>
+        </Box>
 
-        <ToggleEditorModeButton queryRef={problemQueryRef} />
+        <Divider />
+
+        <HoldEditorModeButton queryRef={problemQueryRef} />
+        <BetaMoveEditorModeButton queryRef={betaQueryRef} />
       </Paper>
     </Box>
   );

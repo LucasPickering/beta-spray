@@ -107,7 +107,7 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
   // This allows the consumer to show proper visual feedback based on the
   // available actions.
   const onClickZone = (() => {
-    if (problem.permissions.canEdit && editorMode === "hold") {
+    if (problem.permissions.canEdit && editorMode === "editHolds") {
       return (e: React.MouseEvent) => {
         // Create a new hold at the clicked location
         const position = domToSVGPosition({ x: e.clientX, y: e.clientY });
@@ -128,18 +128,13 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
     }
     return undefined;
   })();
-  const onDragFinish = ((): DragFinishHandler<"overlayHold"> | undefined => {
-    if (problem.permissions.canEdit && editorMode === "hold") {
-      return (item, result) => {
-        const position = result.position;
-        updateHoldPosition({
-          variables: { input: { id: item.holdId, position } },
-          optimisticResponse: { updateHold: { id: item.holdId, position } },
-        });
-      };
-    }
-    return undefined;
-  })();
+  const onDragFinish: DragFinishHandler<"overlayHold"> = (item, result) => {
+    const position = result.position;
+    updateHoldPosition({
+      variables: { input: { id: item.holdId, position } },
+      optimisticResponse: { updateHold: { id: item.holdId, position } },
+    });
+  };
 
   return (
     <>
@@ -153,7 +148,7 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
         <HoldMark
           key={node.id}
           holdKey={node}
-          editable={editorMode === "hold"}
+          editable={editorMode === "editHolds"}
           onEditAnnotation={(holdId) => setEditingHoldId(holdId)}
           onDelete={(holdId) =>
             deleteHold({

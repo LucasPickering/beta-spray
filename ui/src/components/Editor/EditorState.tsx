@@ -25,7 +25,7 @@ const EditorState: React.FC<Props> = ({ children }) => {
   // Flag to show/hide the overlay, toggled by a user button
   const visibilityState = useState<boolean>(true);
   // Toggle between editing holds and beta
-  const editorModeState = useState<EditorMode>("hold");
+  const editorModeState = useState<EditorMode>("view");
   // Which hold/move is being emphasized
   const highlightedItemState = useState<HighlightedItem | undefined>();
   // Which move denotes the current stick figure stance? This will be the *last*

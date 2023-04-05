@@ -63,7 +63,7 @@ export const HoldIconWrapped: React.FC<
   // Center and viewbox need to account for the radius *and* stroke width
   <SvgIcon viewBox="-1.25 -1.25 2.5 2.5">
     {/* Normalize scale for generic contexts*/}
-    <HoldIcon css={{ fillOpacity: 1, transform: "scale(0.333)" }} {...rest} />
+    <HoldIcon css={{ transform: "scale(0.333)" }} {...rest} />
     {children}
   </SvgIcon>
 );

@@ -71,7 +71,7 @@ const EditorSvg: React.FC<Props> = ({ problemKey, betaQueryRef }) => {
             <>
               <HoldEditor problemKey={problem} />
               {/* Don't render beta when editing holds */}
-              {editorMode === "betaMove" && (
+              {editorMode !== "editHolds" && (
                 <BetaEditor queryRef={betaQueryRef} />
               )}
             </>

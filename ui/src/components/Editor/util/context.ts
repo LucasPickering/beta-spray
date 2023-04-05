@@ -27,10 +27,10 @@ export const EditorVisibilityContext = React.createContext<
   StateContext<boolean>
 >([true, noop]);
 
-export type EditorMode = "hold" | "betaMove";
+export type EditorMode = "editHolds" | "editBetaMoves" | "view";
 
 export const EditorModeContext = React.createContext<StateContext<EditorMode>>([
-  "betaMove",
+  "view",
   noop,
 ]);
 
