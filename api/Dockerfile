@@ -10,7 +10,9 @@ RUN apk add --no-cache \
     libffi-dev \
     libpq-dev \
     musl-dev \
-    openssl
+    openssl \
+    # Needed for pg_dump/pg_restore for backup management
+    postgresql14-client
 
 # Install poetry
 ENV PATH=$PATH:/root/.local/bin/ \
