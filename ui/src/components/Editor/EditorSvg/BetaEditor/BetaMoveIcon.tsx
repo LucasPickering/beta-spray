@@ -30,7 +30,7 @@ const BetaMoveIcon = React.forwardRef<
     {
       bodyPart,
       order,
-      color = "white",
+      color,
       variant = "large",
       isFree = false,
       isStart = false,
@@ -62,7 +62,7 @@ const BetaMoveIcon = React.forwardRef<
           <IconBodyPartRaw
             bodyPart={bodyPart}
             css={[
-              { fill: color },
+              color && { fill: color },
               // Free moves get a dotted outline. This has to go *before* the
               // isStart rule, because that one should always take priority
               // for stroke color

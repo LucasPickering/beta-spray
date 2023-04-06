@@ -32,7 +32,6 @@ const BetaMoveEditorModeButton: React.FC<Props> = ({ betaKey }) => {
   return editorMode === "editBetaMoves" ? (
     <SaveEditorModeButton />
   ) : (
-    // TODO fix disabled styles on icon
     <TooltipIconButton
       title="Edit Beta"
       disabled={editorMode !== "view" || !beta.permissions.canEdit}
