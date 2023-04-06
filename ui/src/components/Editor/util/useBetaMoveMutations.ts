@@ -9,6 +9,7 @@ import { useBetaMoveMutations_betaNode$key } from "./__generated__/useBetaMoveMu
 import { useBetaMoveMutations_deleteBetaMoveMutation } from "./__generated__/useBetaMoveMutations_deleteBetaMoveMutation.graphql";
 import { useBetaMoveMutations_updateBetaMoveAnnotationMutation } from "./__generated__/useBetaMoveMutations_updateBetaMoveAnnotationMutation.graphql";
 import { useBetaMoveMutations_relocateBetaMoveMutation } from "./__generated__/useBetaMoveMutations_relocateBetaMoveMutation.graphql";
+import { deleteBetaMoveLocal } from "./moves";
 
 interface Mutation<T> {
   callback: (data: T) => void;
@@ -42,6 +43,13 @@ function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
         id
         moves {
           ...stance_betaMoveNodeConnection
+          edges {
+            node {
+              id
+              order
+              isStart
+            }
+          }
         }
       }
     `,
@@ -200,16 +208,15 @@ function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
           variables: {
             input: { id: betaMoveId },
           },
-          // TODO optimistic response
-          // optimisticResponse: {
-          //   deleteBetaMove: {
-          //     id: betaMoveId,
-          //     beta: {
-          //       id: beta.id,
-          //       moves: deleteBetaMoveLocal(beta.moves, betaMoveId),
-          //     },
-          //   },
-          // },
+          optimisticResponse: {
+            deleteBetaMove: {
+              id: betaMoveId,
+              beta: {
+                id: beta.id,
+                moves: deleteBetaMoveLocal(beta.moves, betaMoveId),
+              },
+            },
+          },
         });
       },
       state: deleteBetaMoveState,

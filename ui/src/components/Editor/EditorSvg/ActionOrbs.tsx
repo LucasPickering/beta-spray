@@ -17,7 +17,6 @@ const ActionOrbs: React.FC<Props> = ({ open, children }) => {
     return null;
   }
 
-  // TODO improve styling
   const childrenArray = React.Children.toArray(children);
   const sliceSize = (2 * Math.PI) / childrenArray.length;
   return (

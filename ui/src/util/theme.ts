@@ -60,7 +60,6 @@ const baseTheme = createTheme({
     info: { main: "#FFC848" },
     warning: { main: "#FFBE26" },
 
-    // TODO better colors
     editorActionCreate: { main: "#66BB6A" },
     editorActionEdit: { main: "#FFBE26" },
     editorActionDelete: { main: "#f44336" },

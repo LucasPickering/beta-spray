@@ -121,6 +121,8 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
     return undefined;
   };
 
+  // TODO disable interactivity if not in editBetaMoves mode
+
   return (
     <BetaContext.Provider value={{ betaMoveColors, betaMoveVisualPositions }}>
       {/* Draw lines to connect the moves. Do this *first* so they go on bottom */}

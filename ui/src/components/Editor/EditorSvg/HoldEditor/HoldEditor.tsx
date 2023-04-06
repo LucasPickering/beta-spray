@@ -139,8 +139,8 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
   return (
     <>
       {/* Invisible layer to capture SVG panning, as well as holds/moves
-          being dropped and clicks for adding holds */}
-      {/* TODO explain why this is here */}
+          being dropped and clicks for adding holds. This has to be a child
+          here so we can pass the onClick. */}
       <PanZone onClick={onClickZone} />
 
       {/* Holds goes on top of the drop zones so they're clickable */}

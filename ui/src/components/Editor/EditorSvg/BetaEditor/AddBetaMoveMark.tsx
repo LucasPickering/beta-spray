@@ -6,8 +6,6 @@ import { isDefined } from "util/func";
 import BetaMoveIcon from "./BetaMoveIcon";
 import { orbRadius } from "../ActionOrb";
 
-// TODO delete this file
-
 interface Props {
   bodyPart: BodyPart;
   variant: "move" | "stickFigure";
@@ -70,7 +68,7 @@ const AddBetaMoveMark: React.FC<Props> = ({
           draggable
           isDragging={isDragging}
         >
-          <IconPlusRaw transform="scale(1.8)" />
+          <IconPlusRaw />
         </BetaMoveIcon>
       );
   }
