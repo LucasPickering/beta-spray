@@ -15,27 +15,46 @@ const HelpText: React.FC = () => (
   </Tooltip>
 );
 
-// TODO update content
 const HelpTextContent: React.FC = () => (
   <>
     <div>
-      <strong>Click the hold button</strong> to add a new hold
+      <strong>Change the editor mode</strong> using the buttons below to modify
+      holds and beta
     </div>
+
+    <Typography variant="subtitle1">Edit Holds</Typography>
+    <div>Only the uploader of the problem can edit holds.</div>
+    <ul>
+      <li>
+        <strong>Click anywhere</strong> to add a hold
+      </li>
+      <li>
+        <strong>Drag a hold</strong> to relocate
+      </li>
+      <li>
+        <strong>Click a hold</strong> to edit notes or delete
+      </li>
+    </ul>
+
+    <Typography variant="subtitle1">Edit Beta</Typography>
     <div>
-      <strong>Drag a move or hold</strong> to relocate
+      You can't edit other people's beta. To create your own, add a new entry
+      (or copy and existing one) in the sidebar.
     </div>
-    <div>
-      <strong>Drag the + icon</strong> to add a new move
-    </div>
-    <div>
-      <strong>Drag a line</strong> to add an intermediate move
-    </div>
-    <div>
-      <strong>Click a move or hold</strong> to add notes or delete
-    </div>
-    <div>
-      <strong>Reorder moves</strong> in the sidebar
-    </div>
+    <ul>
+      <li>
+        <strong>Drag the + icon</strong> to add a move
+      </li>
+      <li>
+        <strong>Drag a move</strong> to relocate
+      </li>
+      <li>
+        <strong>Click a move</strong> to edit notes or delete
+      </li>
+      <li>
+        <strong>Reorder moves</strong> in the sidebar
+      </li>
+    </ul>
 
     <Divider orientation="horizontal" sx={{ marginTop: 1, marginBottom: 1 }} />
 
