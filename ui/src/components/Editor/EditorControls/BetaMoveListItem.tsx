@@ -4,7 +4,6 @@ import {
   Close as IconClose,
 } from "@mui/icons-material";
 import {
-  alpha,
   Box,
   IconButton,
   ListItem,
@@ -22,7 +21,6 @@ import { useBetaMoveColor } from "../util/moves";
 interface Props extends React.ComponentProps<typeof ListItem> {
   betaMoveKey: BetaMoveListItem_betaMoveNode$key;
   stanceColor?: string;
-  isHighlighted?: boolean;
   draggable?: boolean;
   isDragging?: boolean;
   dragRef?: React.Ref<SVGSVGElement>;
@@ -37,7 +35,6 @@ const BetaMoveListItem = React.forwardRef<HTMLLIElement, Props>(
     {
       betaMoveKey,
       stanceColor,
-      isHighlighted = false,
       draggable = true,
       isDragging = false,
       dragRef,
@@ -87,14 +84,6 @@ const BetaMoveListItem = React.forwardRef<HTMLLIElement, Props>(
             // for the preview version, so let's be a homie and fix it here
             listStyle: "none",
           },
-          isHighlighted &&
-            (({ palette }) => ({
-              // Match the color used in the SVG
-              backgroundColor: alpha(
-                palette.info.main,
-                palette.action.activatedOpacity
-              ),
-            })),
           // Use opacity to hide the original move while dragging, because we
           // want the element to remain in the doc flow and keep producing events
           isDragging && { opacity: 0 },

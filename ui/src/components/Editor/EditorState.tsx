@@ -4,10 +4,6 @@ import {
   EditorModeContext,
   EditorVisibilityContext,
 } from "./util/context";
-import {
-  HighlightedItem,
-  EditorHighlightedItemContext,
-} from "./util/highlight";
 import { StanceContextProvider } from "./util/stance";
 
 interface Props {
@@ -26,8 +22,6 @@ const EditorState: React.FC<Props> = ({ children }) => {
   const visibilityState = useState<boolean>(true);
   // Toggle between editing holds and beta
   const editorModeState = useState<EditorMode>("view");
-  // Which hold/move is being emphasized
-  const highlightedItemState = useState<HighlightedItem | undefined>();
   // Which move denotes the current stick figure stance? This will be the *last*
   // move in the stance
   const stanceState = useState<string | undefined>();
@@ -35,11 +29,9 @@ const EditorState: React.FC<Props> = ({ children }) => {
   return (
     <EditorVisibilityContext.Provider value={visibilityState}>
       <EditorModeContext.Provider value={editorModeState}>
-        <EditorHighlightedItemContext.Provider value={highlightedItemState}>
-          <StanceContextProvider value={stanceState}>
-            {children}
-          </StanceContextProvider>
-        </EditorHighlightedItemContext.Provider>
+        <StanceContextProvider value={stanceState}>
+          {children}
+        </StanceContextProvider>
       </EditorModeContext.Provider>
     </EditorVisibilityContext.Provider>
   );

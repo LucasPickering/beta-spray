@@ -10,8 +10,6 @@ import { withQuery } from "relay-query-wrapper";
 import { queriesBetaQuery } from "util/__generated__/queriesBetaQuery.graphql";
 import { betaQuery } from "util/queries";
 import { BetaContext } from "components/Editor/util/context";
-import { comparator } from "util/func";
-import { useHighlight } from "components/Editor/util/highlight";
 import { useLastMoveInStance, useStance } from "components/Editor/util/stance";
 import { DragFinishHandler } from "components/Editor/util/dnd";
 import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
@@ -79,27 +77,6 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
   const betaMoveColors = useBetaMoveColors(beta.moves);
   const betaMoveVisualPositions = useBetaMoveVisualPositions(beta.moves);
 
-  // We need to reorder moves slightly, to put the highlighted move at the end.
-  // This forces it to render on top (SVG doesn't have any z-index equivalent).
-  // We need to do this to the underlying array rather than just rendering a
-  // separate element for the highlighted move at the end. With the latter, the
-  // element gets deleted and re-added by react when highlighting/unhighlighting,
-  // which makes it impossible to drag.
-  const [highlightedMoveId] = useHighlight("move");
-  const movesRenderOrder = useMemo(
-    () =>
-      highlightedMoveId
-        ? [...moves].sort(
-            // Sort the highlighted move at the end
-            comparator((move) =>
-              move.id === highlightedMoveId
-                ? Number.MAX_SAFE_INTEGER
-                : move.order
-            )
-          )
-        : moves,
-    [moves, highlightedMoveId]
-  );
   const stance = useStance(beta.moves);
   const lastStanceMoveId = useLastMoveInStance();
   // The ID of the move whose annotation is being edited
@@ -172,7 +149,7 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
       {/* Draw the actual move marks. We want to render the highlighted move
           on top, which we can only do in SVG via ordering, so we need to make
           sure that's rendered last */}
-      {movesRenderOrder.map((move) => (
+      {moves.map((move) => (
         <BetaMoveMark
           key={move.id}
           betaMoveKey={move}
