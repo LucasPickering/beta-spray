@@ -1,4 +1,4 @@
-import { comparator, moveArrayElement } from "../func";
+import { moveArrayElement } from "../func";
 
 describe("moveArrayElement", () => {
   let array: string[];
@@ -31,27 +31,5 @@ describe("moveArrayElement", () => {
   test("move down to last slot", () => {
     moveArrayElement(array, 4, 2);
     expect(array).toEqual(["a", "b", "e", "c", "d"]);
-  });
-});
-
-describe("comparator", () => {
-  let array: number[];
-  // Sorting will mutate, so we need to re-create this before each test
-  beforeEach(() => {
-    array = [1, 2, 3, 4, 5];
-  });
-
-  test("identity", () => {
-    expect(array.sort(comparator((v) => v))).toEqual([1, 2, 3, 4, 5]);
-  });
-
-  test("reverse", () => {
-    expect(array.sort(comparator((v) => -v))).toEqual([5, 4, 3, 2, 1]);
-  });
-
-  test("middle out", () => {
-    expect(array.sort(comparator((v) => Math.abs(3 - v)))).toEqual([
-      3, 2, 4, 1, 5,
-    ]);
   });
 });

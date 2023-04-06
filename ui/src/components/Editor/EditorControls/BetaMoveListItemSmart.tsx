@@ -9,7 +9,6 @@ import {
   useDrop,
 } from "components/Editor/util/dnd";
 import BetaMoveListItem from "./BetaMoveListItem";
-import { useHighlight } from "components/Editor/util/highlight";
 import { isDefined } from "util/func";
 
 interface Props {
@@ -44,8 +43,6 @@ const BetaMoveListItemSmart: React.FC<Props> = ({
     `,
     betaMoveKey
   );
-
-  const [highlightedMoveId, highlightMove] = useHighlight("move");
 
   const childRef = useRef<HTMLLIElement | null>(null);
 
@@ -152,18 +149,13 @@ const BetaMoveListItemSmart: React.FC<Props> = ({
     },
   });
 
-  const isHighlighted = highlightedMoveId === betaMove.id;
-  const highlightThis = (): void => highlightMove(betaMove.id);
-
-  // Scroll the highlighted move into view
+  // Scroll into view if the move is in the stance
+  const isInStance = isDefined(stanceColor);
   useEffect(() => {
-    if (childRef.current && isHighlighted) {
-      childRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest",
-      });
+    if (childRef.current && isInStance) {
+      childRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" });
     }
-  }, [isHighlighted]);
+  }, [isInStance]);
 
   // We want the *entire child* to be the drop target. But only the drag handle
   // element should be a drag target. Otherwise we'd interfere with scrolling
@@ -176,9 +168,7 @@ const BetaMoveListItemSmart: React.FC<Props> = ({
       betaMoveKey={betaMove}
       stanceColor={stanceColor}
       draggable={canDrag}
-      isHighlighted={isHighlighted}
       isDragging={isDragging}
-      onClick={highlightThis}
       onDelete={onDelete}
     />
   );
