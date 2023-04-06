@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
 import { BetaEditor_betaNode$key } from "./__generated__/BetaEditor_betaNode.graphql";
@@ -9,7 +9,7 @@ import BetaMoveMark from "./BetaMoveMark";
 import { withQuery } from "relay-query-wrapper";
 import { queriesBetaQuery } from "util/__generated__/queriesBetaQuery.graphql";
 import { betaQuery } from "util/queries";
-import { BetaContext } from "components/Editor/util/context";
+import { BetaContext, EditorModeContext } from "components/Editor/util/context";
 import { useLastMoveInStance, useStance } from "components/Editor/util/stance";
 import { DragFinishHandler } from "components/Editor/util/dnd";
 import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
@@ -31,9 +31,6 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
   const beta = useFragment(
     graphql`
       fragment BetaEditor_betaNode on BetaNode {
-        permissions {
-          canEdit
-        }
         ...useBetaMoveMutations_betaNode
         moves {
           edges {
@@ -84,6 +81,12 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
   const editingBetaMove = isDefined(editingBetaMoveId)
     ? findNode(beta.moves, editingBetaMoveId)
     : undefined;
+
+  // This implicitly works as a permission check, since we can't enter editor
+  // mode without permission
+  const [editorMode] = useContext(EditorModeContext);
+  const isEditing = editorMode === "editBetaMoves";
+
   const {
     create: { callback: createBetaMove, state: createState },
     updateAnnotation: {
@@ -94,34 +97,28 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
     delete: { callback: deleteBetaMove, state: deleteState },
   } = useBetaMoveMutations(beta);
 
-  const onDragFinish: DragFinishHandler<"overlayBetaMove"> | undefined = (
+  const onDragFinish: DragFinishHandler<"overlayBetaMove"> = (
     item,
     dropResult
   ) => {
-    // TODO check permissions proactively
-    if (beta.permissions.canEdit) {
-      switch (item.action) {
-        // Insert the new move immediately after the current stance. If there
-        // is no stance, that means this is the first move, so we'll just
-        // insert anywhere
-        case "create":
-          return createBetaMove({
-            previousBetaMoveId: lastStanceMoveId,
-            bodyPart: item.bodyPart,
-            dropResult,
-          });
-        case "relocate":
-          // Relocate the dragged move
-          return relocateBetaMove({
-            betaMoveId: item.betaMoveId,
-            dropResult,
-          });
-      }
+    switch (item.action) {
+      // Insert the new move immediately after the current stance. If there
+      // is no stance, that means this is the first move, so we'll just
+      // insert anywhere
+      case "create":
+        return createBetaMove({
+          previousBetaMoveId: lastStanceMoveId,
+          bodyPart: item.bodyPart,
+          dropResult,
+        });
+      case "relocate":
+        // Relocate the dragged move
+        return relocateBetaMove({
+          betaMoveId: item.betaMoveId,
+          dropResult,
+        });
     }
-    return undefined;
   };
-
-  // TODO disable interactivity if not in editBetaMoves mode
 
   return (
     <BetaContext.Provider value={{ betaMoveColors, betaMoveVisualPositions }}>
@@ -144,7 +141,7 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
           move marks so it's not intrusive. */}
       <StickFigure
         betaMoveConnectionKey={beta.moves}
-        editable={beta.permissions.canEdit}
+        editable={isEditing}
         onDragFinish={onDragFinish}
       />
 
@@ -156,6 +153,7 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
           key={move.id}
           betaMoveKey={move}
           isInCurrentStance={stance[move.bodyPart] === move.id}
+          editable={isEditing}
           onEditAnnotation={(betaMoveId) => setEditingBetaMoveId(betaMoveId)}
           onDelete={(betaMoveId) => deleteBetaMove({ betaMoveId })}
           onDragFinish={onDragFinish}
