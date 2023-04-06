@@ -1,5 +1,12 @@
 import { useContext } from "react";
-import { alpha, Box, Divider, IconButton, Paper } from "@mui/material";
+import {
+  alpha,
+  Box,
+  Divider,
+  IconButton,
+  Paper,
+  Typography,
+} from "@mui/material";
 import HelpText from "./HelpText";
 import {
   ArrowBack as IconArrowBack,
@@ -58,6 +65,15 @@ const EditorPalette: React.FC<Props> = ({ problemQueryRef, betaQueryRef }) => {
 
         <Divider />
 
+        <Typography
+          component="div"
+          variant="caption"
+          margin={1}
+          marginBottom={0}
+          lineHeight={1}
+        >
+          Editor Mode
+        </Typography>
         <HoldEditorModeButton queryRef={problemQueryRef} />
         <BetaMoveEditorModeButton queryRef={betaQueryRef} />
       </Paper>
