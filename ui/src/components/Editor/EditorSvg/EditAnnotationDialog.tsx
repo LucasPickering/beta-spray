@@ -11,7 +11,7 @@ interface Props {
 }
 
 /**
- * TODO
+ * Dialog to edit the annotation on a hold or beta move.
  */
 const EditAnnotationDialog: React.FC<Props> = ({
   annotation,
