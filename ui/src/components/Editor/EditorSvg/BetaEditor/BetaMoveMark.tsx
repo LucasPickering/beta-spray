@@ -118,6 +118,12 @@ const BetaMoveMark: React.FC<Props> = ({
           />
 
           <ActionOrbs open={isHighlighted}>
+            <ActionOrb
+              color={palette.editorActionDelete.main}
+              onClick={onDelete && (() => onDelete(betaMove.id))}
+            >
+              <IconDelete />
+            </ActionOrb>
             <AddBetaMoveMark
               bodyPart={betaMove.bodyPart}
               variant="move"
@@ -130,12 +136,6 @@ const BetaMoveMark: React.FC<Props> = ({
               }
             >
               <IconEdit />
-            </ActionOrb>
-            <ActionOrb
-              color={palette.editorActionDelete.main}
-              onClick={onDelete && (() => onDelete(betaMove.id))}
-            >
-              <IconDelete />
             </ActionOrb>
           </ActionOrbs>
         </Positioned>
