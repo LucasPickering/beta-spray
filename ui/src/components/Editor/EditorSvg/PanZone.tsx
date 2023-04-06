@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { useDOMToSVGPosition } from "components/Editor/util/svg";
 import { useZoomPan } from "components/Editor/util/zoom";
 import { subtract } from "components/Editor/util/svg";
@@ -27,7 +27,9 @@ const PanZone: React.FC<Props> = ({ onClick, css: parentCss, ...rest }) => {
   const { updatePan } = useZoomPan();
   const domToSVGPosition = useDOMToSVGPosition();
   const { dimensions } = useContext(SvgContext);
-  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const [isDragging, setIsDragging] = useState(false);
+  // We have to manually cancel clicks while dragging
+  const shouldCancelClick = useRef<boolean>(false);
 
   // Listen for holds being dropped
   const [, drop] = useDrop({
@@ -37,7 +39,7 @@ const PanZone: React.FC<Props> = ({ onClick, css: parentCss, ...rest }) => {
       const mousePos = monitor.getClientOffset();
       assertIsDefined(mousePos);
       return {
-        kind: "dropZone" as const,
+        kind: "dropZone",
         position: domToSVGPosition(mousePos),
       };
     },
@@ -50,6 +52,12 @@ const PanZone: React.FC<Props> = ({ onClick, css: parentCss, ...rest }) => {
     // to SVG delta is really annoying. It's easier to map the points
     // independently, *then* calculate the delta
     setIsDragging(dragging ?? false);
+
+    // As soon as we pan at all, cancel the onClick handler
+    const [x, y] = movement;
+    if (x !== 0 || y !== 0) {
+      shouldCancelClick.current = true;
+    }
 
     // This is memoized from the previous call, unless this is the first call
     // of the drag (in which case we won't pan yet)
@@ -83,8 +91,15 @@ const PanZone: React.FC<Props> = ({ onClick, css: parentCss, ...rest }) => {
       // triggers more re-renders)
       width={dimensions.width}
       height={dimensions.height}
-      // TODO dragging should cancel click
-      onClick={onClick}
+      onClick={(e) => {
+        // If we dragged at all during this click, then don't trigger onClick
+        if (shouldCancelClick.current) {
+          e.stopPropagation();
+          shouldCancelClick.current = false;
+        } else {
+          onClick?.(e);
+        }
+      }}
       css={[
         parentCss,
         { opacity: 0, touchAction: "none" },
