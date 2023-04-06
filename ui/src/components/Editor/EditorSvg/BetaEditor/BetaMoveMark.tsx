@@ -22,6 +22,7 @@ import ActionOrb from "../ActionOrb";
 interface Props {
   betaMoveKey: BetaMoveMark_betaMoveNode$key;
   isInCurrentStance: boolean;
+  editable?: boolean;
   onEditAnnotation?: (betaMoveId: string) => void;
   onDelete?: (betaMoveId: string) => void;
   onDragFinish?: DragFinishHandler<"overlayBetaMove">;
@@ -33,6 +34,7 @@ interface Props {
 const BetaMoveMark: React.FC<Props> = ({
   betaMoveKey,
   isInCurrentStance,
+  editable,
   onEditAnnotation,
   onDelete,
   onDragFinish,
@@ -58,7 +60,6 @@ const BetaMoveMark: React.FC<Props> = ({
 
   const ref = useRef<SVGCircleElement>(null);
 
-  const draggable = isDefined(onDragFinish);
   const [{ isDragging }, drag] = useDrag<
     "overlayBetaMove",
     { isDragging: boolean }
@@ -69,7 +70,7 @@ const BetaMoveMark: React.FC<Props> = ({
       betaMoveId: moveId,
       bodyPart: betaMove.bodyPart,
     },
-    canDrag: draggable,
+    canDrag: editable,
     collect(monitor) {
       return {
         isDragging: Boolean(monitor.isDragging()),
@@ -108,13 +109,15 @@ const BetaMoveMark: React.FC<Props> = ({
             isFree={!isDefined(betaMove.hold)}
             color={color}
             variant={isInCurrentStance || isHighlighted ? "large" : "small"}
-            draggable={draggable}
+            draggable={editable}
             isDragging={isDragging}
             isHighlighted={isHighlighted}
             // Don't block drop events when another element is being dragged
             css={isDraggingOther && { pointerEvents: "none" }}
             // Click => toggle highlight
-            onClick={() => setIsHighlighted((prev) => !prev)}
+            onClick={
+              editable ? () => setIsHighlighted((prev) => !prev) : undefined
+            }
           />
 
           <ActionOrbs open={isHighlighted}>

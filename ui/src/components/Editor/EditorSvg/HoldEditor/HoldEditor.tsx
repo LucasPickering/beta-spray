@@ -28,9 +28,6 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
     graphql`
       fragment HoldEditor_problemNode on ProblemNode {
         id
-        permissions {
-          canEdit
-        }
         boulder {
           id
         }
@@ -100,15 +97,19 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
 
   // The ID of the hold whose annotation is being edited
   const [editingHoldId, setEditingHoldId] = useState<string>();
+
+  // This implicitly works as a permission check, since we can't enter editor
+  // mode without permission
   const [editorMode] = useContext(EditorModeContext);
+  const isEditing = editorMode === "editHolds";
+
   const domToSVGPosition = useDOMToSVGPosition();
 
   // Each of these callbacks will only be defined if it's actually applicable.
   // This allows the consumer to show proper visual feedback based on the
   // available actions.
-  const onClickZone = (() => {
-    if (problem.permissions.canEdit && editorMode === "editHolds") {
-      return (e: React.MouseEvent) => {
+  const onClickZone = isEditing
+    ? (e: React.MouseEvent) => {
         // Create a new hold at the clicked location
         const position = domToSVGPosition({ x: e.clientX, y: e.clientY });
         createHold({
@@ -124,10 +125,8 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
             },
           },
         });
-      };
-    }
-    return undefined;
-  })();
+      }
+    : undefined;
   const onDragFinish: DragFinishHandler<"overlayHold"> = (item, result) => {
     const position = result.position;
     updateHoldPosition({
@@ -148,7 +147,7 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
         <HoldMark
           key={node.id}
           holdKey={node}
-          editable={editorMode === "editHolds"}
+          editable={isEditing}
           onEditAnnotation={(holdId) => setEditingHoldId(holdId)}
           onDelete={(holdId) =>
             deleteHold({
