@@ -3,7 +3,7 @@ from typing import Annotated, NewType, Optional
 
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
-from django.forms import ValidationError, model_to_dict
+from django.forms import ValidationError
 from strawberry.types.info import Info
 from strawberry_django_plus import gql
 from strawberry_django_plus.mutations import resolvers
@@ -254,18 +254,14 @@ class Mutation:
                 "owner": info.context.request.user,
             },
         )
-        # Copy each move
-        BetaMove.objects.bulk_create(
-            BetaMove(
-                # model_to_dict returns primary keys in the `hold` and `beta`
-                # fields, so we need to manually remap those fields. This is a
-                # little jank but still better than manually copying each field.
-                **model_to_dict(move, exclude=["id", "beta", "hold"]),
-                beta_id=new_beta.id,
-                hold_id=move.hold_id,
-            )
-            for move in original_beta.moves.all()
-        )
+
+        # Copy each move in one big INSERT
+        new_moves = list(original_beta.moves.all())
+        for move in new_moves:
+            move.id = None  # This forces django to create a new move
+            move.beta_id = new_beta.id
+        BetaMove.objects.bulk_create(new_moves)
+
         return new_beta
 
     @gql.relay.input_mutation(
