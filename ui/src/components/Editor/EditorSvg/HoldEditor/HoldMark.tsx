@@ -11,9 +11,9 @@ import Positioned from "../common/Positioned";
 import HoldIcon from "./HoldIcon";
 import { ClickAwayListener, Portal, Tooltip, useTheme } from "@mui/material";
 import { isDefined } from "util/func";
-import ActionOrbs from "../ActionOrbs";
+import ActionOrbs from "../common/ActionOrbs";
 import { Delete as IconDelete, Edit as IconEdit } from "@mui/icons-material";
-import ActionOrb from "../ActionOrb";
+import ActionOrb from "../common/ActionOrb";
 
 interface Props {
   holdKey: HoldMark_holdNode$key;
