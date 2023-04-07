@@ -1,12 +1,5 @@
 import { useContext } from "react";
-import {
-  alpha,
-  Box,
-  Divider,
-  IconButton,
-  Paper,
-  Typography,
-} from "@mui/material";
+import { alpha, Box, Divider, IconButton, Paper } from "@mui/material";
 import HelpText from "./HelpText";
 import {
   ArrowBack as IconArrowBack,
@@ -21,6 +14,7 @@ import { queriesProblemQuery } from "util/__generated__/queriesProblemQuery.grap
 import { queriesBetaQuery } from "util/__generated__/queriesBetaQuery.graphql";
 import HoldEditorModeButton from "./HoldEditorModeButton";
 import BetaMoveEditorModeButton from "./BetaMoveEditorModeButton";
+import EditorModeLabel from "./EditorModeLabel";
 
 interface Props {
   problemQueryRef: PreloadedQuery<queriesProblemQuery> | null | undefined;
@@ -65,15 +59,7 @@ const EditorPalette: React.FC<Props> = ({ problemQueryRef, betaQueryRef }) => {
 
         <Divider />
 
-        <Typography
-          component="div"
-          variant="caption"
-          margin={1}
-          marginBottom={0}
-          lineHeight={1}
-        >
-          Editor Mode
-        </Typography>
+        <EditorModeLabel />
         <HoldEditorModeButton queryRef={problemQueryRef} />
         <BetaMoveEditorModeButton queryRef={betaQueryRef} />
       </Paper>
