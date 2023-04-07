@@ -1,6 +1,6 @@
 import React from "react";
-import Positioned from "./common/Positioned";
-import { polarToSvg } from "../util/svg";
+import Positioned from "./Positioned";
+import { polarToSvg } from "components/Editor/util/svg";
 
 interface Props {
   open: boolean;

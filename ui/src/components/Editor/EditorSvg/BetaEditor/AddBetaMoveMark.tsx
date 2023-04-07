@@ -4,7 +4,7 @@ import { BodyPart } from "components/Editor/util/svg";
 import { styleDraggable, styleDragging } from "styles/svg";
 import { isDefined } from "util/func";
 import BetaMoveIcon from "./BetaMoveIcon";
-import { orbRadius } from "../ActionOrb";
+import { orbRadius } from "../common/ActionOrb";
 
 interface Props {
   bodyPart: BodyPart;

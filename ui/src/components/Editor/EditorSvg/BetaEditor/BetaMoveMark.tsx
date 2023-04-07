@@ -14,10 +14,10 @@ import {
   useBetaMoveVisualPosition,
 } from "components/Editor/util/moves";
 import { isDefined } from "util/func";
-import ActionOrbs from "../ActionOrbs";
+import ActionOrbs from "../common/ActionOrbs";
 import { Edit as IconEdit, Delete as IconDelete } from "@mui/icons-material";
 import AddBetaMoveMark from "./AddBetaMoveMark";
-import ActionOrb from "../ActionOrb";
+import ActionOrb from "../common/ActionOrb";
 
 interface Props {
   betaMoveKey: BetaMoveMark_betaMoveNode$key;
