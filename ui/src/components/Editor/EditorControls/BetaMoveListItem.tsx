@@ -7,9 +7,9 @@ import {
   Box,
   IconButton,
   ListItem,
-  ListItemButton,
   ListItemIcon,
   ListItemText,
+  alpha,
 } from "@mui/material";
 import { formatBodyPart } from "components/Editor/util/svg";
 import { graphql, useFragment } from "react-relay";
@@ -76,7 +76,6 @@ const BetaMoveListItem = React.forwardRef<HTMLLIElement, Props>(
             </IconButton>
           )
         }
-        disablePadding
         sx={[
           {
             userSelect: "none",
@@ -87,62 +86,60 @@ const BetaMoveListItem = React.forwardRef<HTMLLIElement, Props>(
           // Use opacity to hide the original move while dragging, because we
           // want the element to remain in the doc flow and keep producing events
           isDragging && { opacity: 0 },
+          // If we're in the current stance, add a little indicator line
+          isDefined(stanceColor) &&
+            (({ palette }) => ({
+              backgroundColor: alpha(
+                stanceColor,
+                palette.action.activatedOpacity
+              ),
+            })),
         ]}
         {...rest}
       >
-        <ListItemButton
-          sx={[
-            // If we're in the current stance, add a little indicator line
-            isDefined(stanceColor) && {
-              borderLeft: `3px solid ${stanceColor}`,
-              marginLeft: "-3px",
-            },
-          ]}
-        >
-          <ListItemIcon>
-            {/* Only use the drag icon for dragging, to prevent interfering with
+        <ListItemIcon>
+          {/* Only use the drag icon for dragging, to prevent interfering with
               scrolling on mobile */}
-            {draggable && (
-              <IconDragHandle
-                ref={dragRef}
-                sx={{ paddingRight: 1, cursor: "grab" }}
-              />
-            )}
-            <BetaMoveIconWrapped
-              bodyPart={betaMove.bodyPart}
-              order={betaMove.order}
-              color={color}
-              isStart={betaMove.isStart}
-              isFree={isFree}
+          {draggable && (
+            <IconDragHandle
+              ref={dragRef}
+              sx={{ paddingRight: 1, cursor: "grab" }}
             />
-          </ListItemIcon>
-
-          <ListItemText
-            primary={
-              <Box
-                sx={[
-                  { color },
-                  // Apply text decoration to mimic the outline features on the
-                  // move icon. Order here is important to get the proper
-                  // precedence
-                  isFree && {
-                    textDecorationLine: "underline",
-                    textDecorationStyle: "dashed",
-                    textDecorationColor: "white",
-                  },
-                  betaMove.isStart &&
-                    (({ palette }) => ({
-                      textDecorationLine: "underline",
-                      textDecorationColor: palette.secondary.main,
-                    })),
-                ]}
-              >
-                {formatBodyPart(betaMove.bodyPart)}
-              </Box>
-            }
-            secondary={betaMove.annotation}
+          )}
+          <BetaMoveIconWrapped
+            bodyPart={betaMove.bodyPart}
+            order={betaMove.order}
+            color={color}
+            isStart={betaMove.isStart}
+            isFree={isFree}
           />
-        </ListItemButton>
+        </ListItemIcon>
+
+        <ListItemText
+          primary={
+            <Box
+              sx={[
+                { color },
+                // Apply text decoration to mimic the outline features on the
+                // move icon. Order here is important to get the proper
+                // precedence
+                isFree && {
+                  textDecorationLine: "underline",
+                  textDecorationStyle: "dashed",
+                  textDecorationColor: "white",
+                },
+                betaMove.isStart &&
+                  (({ palette }) => ({
+                    textDecorationLine: "underline",
+                    textDecorationColor: palette.secondary.main,
+                  })),
+              ]}
+            >
+              {formatBodyPart(betaMove.bodyPart)}
+            </Box>
+          }
+          secondary={betaMove.annotation}
+        />
       </ListItem>
     );
   }
