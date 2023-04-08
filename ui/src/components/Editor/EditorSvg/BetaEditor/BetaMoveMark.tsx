@@ -4,7 +4,7 @@ import {
   useDrag,
   useDragLayer,
 } from "components/Editor/util/dnd";
-import { ClickAwayListener, Portal, Tooltip, useTheme } from "@mui/material";
+import { ClickAwayListener, useTheme } from "@mui/material";
 import Positioned from "../common/Positioned";
 import BetaMoveIcon from "./BetaMoveIcon";
 import { graphql, useFragment } from "react-relay";
@@ -18,6 +18,7 @@ import ActionOrbs from "../common/ActionOrbs";
 import { Edit as IconEdit, Delete as IconDelete } from "@mui/icons-material";
 import AddBetaMoveMark from "./AddBetaMoveMark";
 import ActionOrb from "../common/ActionOrb";
+import SvgTooltip from "../common/SvgTooltip";
 
 interface Props {
   betaMoveKey: BetaMoveMark_betaMoveNode$key;
@@ -145,19 +146,12 @@ const BetaMoveMark: React.FC<Props> = ({
       </ClickAwayListener>
 
       {betaMove.annotation && (
-        <Portal>
-          <Tooltip
-            // On first render, ref.current will still be null. If we try to
-            // show the popover then, it'll spit out an error about anchorEl
-            // being null. So we need to stall it until the second render.
-            open={isDefined(ref.current) && isInCurrentStance}
-            title={betaMove.annotation}
-            placement="bottom"
-            PopperProps={{ anchorEl: ref.current }}
-          >
-            <span />
-          </Tooltip>
-        </Portal>
+        <SvgTooltip
+          open={isInCurrentStance || isHighlighted}
+          anchorEl={ref.current}
+          title={betaMove.annotation}
+          placement="top-right"
+        />
       )}
     </>
   );

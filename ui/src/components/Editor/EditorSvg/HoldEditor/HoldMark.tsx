@@ -9,11 +9,12 @@ import { graphql, useFragment } from "react-relay";
 import { HoldMark_holdNode$key } from "./__generated__/HoldMark_holdNode.graphql";
 import Positioned from "../common/Positioned";
 import HoldIcon from "./HoldIcon";
-import { ClickAwayListener, Portal, Tooltip, useTheme } from "@mui/material";
+import { ClickAwayListener, useTheme } from "@mui/material";
 import { isDefined } from "util/func";
 import ActionOrbs from "../common/ActionOrbs";
 import { Delete as IconDelete, Edit as IconEdit } from "@mui/icons-material";
 import ActionOrb from "../common/ActionOrb";
+import SvgTooltip from "../common/SvgTooltip";
 
 interface Props {
   holdKey: HoldMark_holdNode$key;
@@ -131,19 +132,11 @@ const HoldMark: React.FC<Props> = ({
       </ClickAwayListener>
 
       {hold.annotation && (
-        <Portal>
-          <Tooltip
-            // On first render, ref.current will still be null. If we try to
-            // show the popover then, it'll spit out an error about anchorEl
-            // being null. So we need to stall it until the second render.
-            open={isDefined(ref.current) && isHighlighted}
-            title={hold.annotation}
-            placement="bottom"
-            PopperProps={{ anchorEl: ref.current }}
-          >
-            <span />
-          </Tooltip>
-        </Portal>
+        <SvgTooltip
+          open={isHighlighted}
+          anchorEl={ref.current}
+          title={hold.annotation}
+        />
       )}
     </>
   );
