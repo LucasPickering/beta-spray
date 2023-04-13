@@ -1,4 +1,5 @@
 import {
+  styleClickable,
   styleDraggable,
   styleDragging,
   styleDropHover,
@@ -21,6 +22,7 @@ interface Props extends React.SVGProps<SVGCircleElement> {
  * just the inline SVG element, *without* the wrapping SVG.
  */
 const HoldIcon: React.FC<Props> = ({
+  clickable = false,
   draggable = false,
   isDragging = false,
   isHighlighted = false,
@@ -31,7 +33,7 @@ const HoldIcon: React.FC<Props> = ({
   const { palette } = useTheme();
   return (
     <circle
-      css={(theme) => [
+      css={[
         parentCss,
         {
           r: 3,
@@ -40,11 +42,12 @@ const HoldIcon: React.FC<Props> = ({
           // We want the fill to be present so it captures events, but invisible
           fillOpacity: 0,
         },
+        clickable && styleClickable,
         draggable && { stroke: palette.primary.main },
-        draggable && styleDraggable(theme),
-        isDragging && styleDragging(theme),
-        isHighlighted && styleHighlight(theme),
-        isOver && styleDropHover(theme),
+        draggable && styleDraggable,
+        isDragging && styleDragging,
+        isHighlighted && styleHighlight,
+        isOver && styleDropHover,
       ]}
       {...rest}
     />

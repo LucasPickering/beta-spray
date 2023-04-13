@@ -104,17 +104,16 @@ const HoldMark: React.FC<Props> = ({
       <ClickAwayListener onClickAway={() => setIsHighlighted(false)}>
         <Positioned ref={ref} position={hold.position}>
           <HoldIcon
+            clickable // Move can be highlighted, even when not editing
             draggable={editable}
             isDragging={isDragging}
             isOver={isOver}
             isHighlighted={isHighlighted}
             // Click => toggle highlight
-            onClick={
-              editable ? () => setIsHighlighted((prev) => !prev) : undefined
-            }
+            onClick={() => setIsHighlighted((prev) => !prev)}
           />
 
-          <ActionOrbs open={isHighlighted}>
+          <ActionOrbs open={editable && isHighlighted}>
             <ActionOrb
               color={palette.editorActionDelete.main}
               onClick={onDelete && (() => onDelete(hold.id))}
