@@ -131,7 +131,11 @@ const BetaMoveMark: React.FC<Props> = ({
             <AddBetaMoveMark
               bodyPart={betaMove.bodyPart}
               variant="move"
-              onDragFinish={onDragFinish}
+              onDragFinish={(...args) => {
+                // Unhighlight current move when adding a new one
+                setIsHighlighted(false);
+                onDragFinish?.(...args);
+              }}
             />
             <ActionOrb
               color={palette.editorActionEdit.main}
