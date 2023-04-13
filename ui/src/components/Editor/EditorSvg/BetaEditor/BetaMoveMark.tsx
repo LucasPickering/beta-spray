@@ -35,7 +35,7 @@ interface Props {
 const BetaMoveMark: React.FC<Props> = ({
   betaMoveKey,
   isInCurrentStance,
-  editable,
+  editable = false,
   onEditAnnotation,
   onDelete,
   onDragFinish,
@@ -110,18 +110,17 @@ const BetaMoveMark: React.FC<Props> = ({
             isFree={!isDefined(betaMove.hold)}
             color={color}
             variant={isInCurrentStance || isHighlighted ? "large" : "small"}
+            clickable // Move can be highlighted, even when not editing
             draggable={editable}
             isDragging={isDragging}
             isHighlighted={isHighlighted}
             // Don't block drop events when another element is being dragged
             css={isDraggingOther && { pointerEvents: "none" }}
             // Click => toggle highlight
-            onClick={
-              editable ? () => setIsHighlighted((prev) => !prev) : undefined
-            }
+            onClick={() => setIsHighlighted((prev) => !prev)}
           />
 
-          <ActionOrbs open={isHighlighted}>
+          <ActionOrbs open={editable && isHighlighted}>
             <ActionOrb
               color={palette.editorActionDelete.main}
               onClick={onDelete && (() => onDelete(betaMove.id))}

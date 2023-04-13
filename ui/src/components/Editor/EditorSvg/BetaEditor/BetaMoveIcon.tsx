@@ -1,6 +1,11 @@
 import React from "react";
 import { BodyPart } from "components/Editor/util/svg";
-import { styleDraggable, styleHighlight, styleDragging } from "styles/svg";
+import {
+  styleDraggable,
+  styleHighlight,
+  styleDragging,
+  styleClickable,
+} from "styles/svg";
 import { Interpolation, Theme } from "@emotion/react";
 import { isDefined } from "util/func";
 import { SvgIcon, SvgIconProps, useTheme } from "@mui/material";
@@ -12,6 +17,7 @@ interface Props {
   variant?: "small" | "large";
   isFree?: boolean;
   isStart?: boolean;
+  clickable?: boolean;
   draggable?: boolean;
   isDragging?: boolean;
   isHighlighted?: boolean;
@@ -34,6 +40,7 @@ const BetaMoveIcon = React.forwardRef<
       variant = "large",
       isFree = false,
       isStart = false,
+      clickable = false,
       draggable = false,
       isDragging = false,
       isHighlighted = false,
@@ -47,11 +54,13 @@ const BetaMoveIcon = React.forwardRef<
     return (
       <g
         ref={ref}
-        css={(theme) => [
+        css={[
           { stroke: "#00000000" },
+          // Draggable should override clickable
+          clickable && styleClickable,
           draggable && styleDraggable,
-          isDragging && styleDragging(theme),
-          isHighlighted && styleHighlight(theme),
+          isDragging && styleDragging,
+          isHighlighted && styleHighlight,
           parentCss,
         ]}
         {...rest}

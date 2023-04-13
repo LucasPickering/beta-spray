@@ -15,6 +15,11 @@ export type StyleFunction = (theme: Theme) => SerializedStyles;
 export const disambiguationDistance = 4;
 
 /**
+ * Apply to elements that can be clicked
+ */
+export const styleClickable: StyleFunction = () => css({ cursor: "pointer" });
+
+/**
  * Apply to elements that are draggable and currently being hovered or dragged
  */
 export const styleDraggableHover: StyleFunction = () =>
