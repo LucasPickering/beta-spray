@@ -15,6 +15,7 @@ import { HoldEditor_updateHoldPositionMutation } from "./__generated__/HoldEdito
 import { HoldEditor_updateHoldAnnotationMutation } from "./__generated__/HoldEditor_updateHoldAnnotationMutation.graphql";
 import { useDOMToSVGPosition } from "components/Editor/util/svg";
 import { EditorModeContext } from "components/Editor/util/context";
+import EditableFilter from "../EditableFilter";
 
 interface Props {
   problemKey: HoldEditor_problemNode$key;
@@ -137,6 +138,7 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
 
   return (
     <>
+      <EditableFilter kind="hold" isEditing={isEditing} />
       {/* Invisible layer to capture SVG panning, as well as holds/moves
           being dropped and clicks for adding holds. This has to be a child
           here so we can pass the onClick. */}

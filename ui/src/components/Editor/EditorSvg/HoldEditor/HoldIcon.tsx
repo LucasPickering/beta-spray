@@ -7,6 +7,7 @@ import {
 } from "styles/svg";
 import { Interpolation, Theme } from "@emotion/react";
 import { SvgIcon, SvgIconProps, useTheme } from "@mui/material";
+import { getEditableFilterUrl } from "../EditableFilter";
 
 interface Props extends React.SVGProps<SVGCircleElement> {
   clickable?: boolean;
@@ -33,17 +34,17 @@ const HoldIcon: React.FC<Props> = ({
   const { palette } = useTheme();
   return (
     <circle
+      filter={getEditableFilterUrl("hold")} // Color based on editability
       css={[
         parentCss,
         {
           r: 3,
           strokeWidth: 0.5,
-          stroke: palette.grey[300],
+          stroke: palette.primary.main,
           // We want the fill to be present so it captures events, but invisible
           fillOpacity: 0,
         },
         clickable && styleClickable,
-        draggable && { stroke: palette.primary.main },
         draggable && styleDraggable,
         isDragging && styleDragging,
         isHighlighted && styleHighlight,

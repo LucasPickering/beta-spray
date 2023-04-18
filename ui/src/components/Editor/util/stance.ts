@@ -131,14 +131,13 @@ export function useLastMoveInStance(): string | undefined {
 export function useStickFigureColor(stance: Partial<Stance>): string {
   const getBetaMoveColor = useBetaMoveColor();
   const moves = Object.values(stance);
-  if (moves.length === 0) {
-    return "#ffffff";
-  }
-  return hexToHtml(
-    averageColors(
-      moves.map((betaMoveId) => htmlToHex(getBetaMoveColor(betaMoveId)))
-    )
-  );
+  return moves.length === 0
+    ? "#ffffff"
+    : hexToHtml(
+        averageColors(
+          moves.map((betaMoveId) => htmlToHex(getBetaMoveColor(betaMoveId)))
+        )
+      );
 }
 
 /**

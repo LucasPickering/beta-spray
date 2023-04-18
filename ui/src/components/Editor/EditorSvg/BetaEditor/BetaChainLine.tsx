@@ -6,6 +6,7 @@ import {
   useBetaMoveColor,
   useBetaMoveVisualPosition,
 } from "components/Editor/util/moves";
+import { getEditableFilterUrl } from "../EditableFilter";
 
 interface Props {
   startMoveKey: BetaChainLine_startBetaMoveNode$key;
@@ -64,6 +65,7 @@ const BetaChainLine: React.FC<Props> = ({ startMoveKey, endMoveKey }) => {
       </defs>
       <line
         css={{ strokeWidth: 0.5 }}
+        filter={getEditableFilterUrl("beta")} // Color based on editability
         stroke={`url(#${gradientId})`}
         strokeDasharray="1.5 1"
         {...coords}
