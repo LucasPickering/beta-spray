@@ -19,6 +19,7 @@ import {
 } from "components/Editor/util/moves";
 import useBetaMoveMutations from "components/Editor/util/useBetaMoveMutations";
 import EditAnnotationDialog from "../EditAnnotationDialog";
+import EditableFilter from "../EditableFilter";
 
 interface Props {
   betaKey: BetaEditor_betaNode$key;
@@ -135,6 +136,10 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
           ) : null;
         })
       )}
+
+      {/* This filter lets us easily modify the visuals of all beta editor
+          components, based on current edit mode */}
+      <EditableFilter kind="beta" isEditing={isEditing} />
 
       {/* Render body position. This will only show something if the user is
           hovering a move. We want this above the move lines, but below the

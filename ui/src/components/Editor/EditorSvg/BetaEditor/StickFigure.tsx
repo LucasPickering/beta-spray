@@ -17,6 +17,7 @@ import { DragFinishHandler } from "components/Editor/util/dnd";
 import { useBetaMoveVisualPosition } from "components/Editor/util/moves";
 import AddBetaMoveMark from "./AddBetaMoveMark";
 import Positioned from "../common/Positioned";
+import { getEditableFilterUrl } from "../EditableFilter";
 
 /**
  * The torso will always be this percentage of the distance between hands and
@@ -81,7 +82,12 @@ const StickFigure: React.FC<Props> = ({
     { bodyPart: "RIGHT_FOOT", joint: hips },
   ];
   return (
-    <g strokeWidth={1} stroke={color} fill="none">
+    <g
+      strokeWidth={1}
+      stroke={color}
+      fill="none"
+      filter={getEditableFilterUrl("beta")} // Color based on editability
+    >
       {/* Head */}
       <circle r={headRadius} cx={head.x} cy={head.y} />
       {/* Torso */}

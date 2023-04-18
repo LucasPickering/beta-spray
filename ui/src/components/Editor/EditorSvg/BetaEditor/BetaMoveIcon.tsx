@@ -8,7 +8,8 @@ import {
 } from "styles/svg";
 import { Interpolation, Theme } from "@emotion/react";
 import { isDefined } from "util/func";
-import { SvgIcon, SvgIconProps, useTheme } from "@mui/material";
+import { SvgIcon, SvgIconProps } from "@mui/material";
+import { getEditableFilterUrl } from "../EditableFilter";
 
 interface Props {
   bodyPart: BodyPart;
@@ -49,58 +50,62 @@ const BetaMoveIcon = React.forwardRef<
       ...rest
     },
     ref
-  ) => {
-    const { palette } = useTheme();
-    return (
-      <g
-        ref={ref}
-        css={[
-          { stroke: "#00000000" },
-          // Draggable should override clickable
-          clickable && styleClickable,
-          draggable && styleDraggable,
-          isDragging && styleDragging,
-          isHighlighted && styleHighlight,
-          parentCss,
-        ]}
-        {...rest}
-      >
-        {/* We need this wrapper so we don't fuck up the transform that the
+  ) => (
+    <g
+      ref={ref}
+      css={[
+        { stroke: "#00000000" },
+        // Draggable should override clickable
+        clickable && styleClickable,
+        draggable && styleDraggable,
+        isDragging && styleDragging,
+        isHighlighted && styleHighlight,
+        parentCss,
+      ]}
+      {...rest}
+    >
+      {/* We need this wrapper so we don't fuck up the transform that the
             icon does on itself.*/}
-        <g css={{ transform: `scale(${variant === "large" ? 1.5 : 0.75})` }}>
-          <IconBodyPartRaw
-            bodyPart={bodyPart}
-            css={[
-              color && { fill: color },
-              // Free moves get a dotted outline. This has to go *before* the
-              // isStart rule, because that one should always take priority
-              // for stroke color
-              isFree && { stroke: "white", strokeDasharray: "1,0.5" },
-              isStart && { stroke: palette.secondary.main },
-            ]}
-          />
-        </g>
-
-        {isDefined(order) && variant === "large" && (
-          <text
-            css={{
-              fontSize: 4,
-              userSelect: "none",
-              pointerEvents: "none",
-              // This should contrast all possible fill colors
-              color: "black",
-            }}
-            textAnchor="middle"
-            dominantBaseline="middle"
-          >
-            {order}
-          </text>
-        )}
-
-        {children}
+      <g
+        filter={getEditableFilterUrl("beta")} // Color based on editability
+        css={{ transform: `scale(${variant === "large" ? 1.5 : 0.75})` }}
+      >
+        <IconBodyPartRaw
+          bodyPart={bodyPart}
+          css={({ palette }) => [
+            color && { fill: color },
+            // Free moves get a dotted outline. This has to go *before* the
+            // isStart rule, because that one should always take priority
+            // for stroke color
+            isFree && { stroke: "white", strokeDasharray: "1,0.5" },
+            isStart && {
+              stroke: draggable
+                ? palette.secondary.main
+                : palette.secondary.light,
+            },
+          ]}
+        />
       </g>
-    );
-  }
+
+      {isDefined(order) && variant === "large" && (
+        <text
+          css={{
+            fontSize: 4,
+            userSelect: "none",
+            pointerEvents: "none",
+            // This should contrast all possible fill colors
+            color: "black",
+          }}
+          textAnchor="middle"
+          dominantBaseline="middle"
+        >
+          {order}
+        </text>
+      )}
+
+      {children}
+    </g>
+  )
 );
 
 BetaMoveIcon.displayName = "BetaMoveIcon";
