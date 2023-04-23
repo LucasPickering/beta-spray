@@ -38,55 +38,40 @@ const ProblemSettings: React.FC<Props> = ({ problemKey, open, onClose }) => {
     problemKey
   );
 
-  const {
-    fieldStates: {
-      name: nameState,
-      externalLink: externalLinkState,
-      visibility: visibilityState,
+  const formState = useForm({
+    name: { initialValue: problem.name, validator: validateString },
+    externalLink: {
+      initialValue: problem.externalLink,
+      validator: validateExternalLink,
     },
-    hasChanges,
-    hasError,
-    onReset,
-  } = useForm(
-    {
-      name: { initialValue: problem.name, validator: validateString },
-      externalLink: {
-        initialValue: problem.externalLink,
-        validator: validateExternalLink,
-      },
-      visibility: { initialValue: problem.visibility },
-    },
-    !open
-  );
+    visibility: { initialValue: problem.visibility },
+  });
 
-  const {
-    commit: updateProblem,
-    state: updateState,
-    resetState: resetUpdateState,
-  } = useMutation<ProblemSettings_updateProblemMutation>(graphql`
-    mutation ProblemSettings_updateProblemMutation($input: UpdateProblemInput!)
-    @raw_response_type {
-      updateProblem(input: $input) {
-        id
-        name
-        externalLink
-        visibility
+  const { commit: updateProblem, state: updateState } =
+    useMutation<ProblemSettings_updateProblemMutation>(graphql`
+      mutation ProblemSettings_updateProblemMutation(
+        $input: UpdateProblemInput!
+      ) @raw_response_type {
+        updateProblem(input: $input) {
+          id
+          name
+          externalLink
+          visibility
+        }
       }
-    }
-  `);
+    `);
 
   return (
     <FormDialog
       open={open}
       title="Edit Problem"
-      hasChanges={hasChanges}
-      hasError={hasError}
+      formState={formState}
       mutationState={updateState}
       errorMessage="Error updating problem"
       onSave={() => {
-        const name = nameState.value;
-        const externalLink = externalLinkState.value;
-        const visibility = visibilityState.value;
+        const name = formState.fieldStates.name.value;
+        const externalLink = formState.fieldStates.externalLink.value;
+        const visibility = formState.fieldStates.visibility.value;
         updateProblem({
           variables: {
             input: { id: problem.id, name, externalLink, visibility },
@@ -101,25 +86,27 @@ const ProblemSettings: React.FC<Props> = ({ problemKey, open, onClose }) => {
           },
         });
       }}
-      onClose={() => {
-        onReset();
-        resetUpdateState();
-        onClose?.();
-      }}
+      onClose={onClose}
     >
-      <TextFormField label="Name" state={nameState} />
+      <TextFormField label="Name" state={formState.fieldStates.name} />
       <TextFormField
         label="External Link"
         placeholder="https://mountainproject.com/..."
-        state={externalLinkState}
+        state={formState.fieldStates.externalLink}
       />
 
       <TextFormField
         select
         label="Visibility"
-        state={visibilityState}
-        helperText={visibilityHelperText[visibilityState.value]}
-        onChange={(e) => visibilityState.setValue(e.target.value as Visibility)}
+        state={formState.fieldStates.visibility}
+        helperText={
+          visibilityHelperText[formState.fieldStates.visibility.value]
+        }
+        onChange={(e) =>
+          formState.fieldStates.visibility.setValue(
+            e.target.value as Visibility
+          )
+        }
       >
         <MenuItem value="UNLISTED">Unlisted</MenuItem>
         <MenuItem value="PUBLIC">Public</MenuItem>

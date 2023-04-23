@@ -169,6 +169,7 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
         title={`Edit Notes for Move #${editingBetaMove?.order ?? ""}`}
         open={Boolean(editingBetaMoveId)}
         annotation={editingBetaMove?.annotation}
+        mutationState={updateAnnotationState}
         onSave={(annotation) => {
           // This shouldn't be callable while no beta move is being edited
           assertIsDefined(editingBetaMoveId);

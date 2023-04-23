@@ -14,13 +14,7 @@ import {
   PayloadError,
 } from "relay-runtime";
 
-/**
- * The possible states of a mutation. Tracking error data is important for
- * debugging, which is why it's so detailed. We group all this into one object
- * so consumers can easily pass it from this hook to components to be displayed
- * (e.g. a common component for rendering errors).
- */
-export type MutationState =
+type MutationStateData =
   | { status: "idle" }
   | { status: "loading" }
   | { status: "success" }
@@ -38,6 +32,15 @@ export type MutationState =
     };
 
 /**
+ * The possible states of a mutation. Tracking error data is important for
+ * debugging, which is why it's so detailed. We group all this into one object
+ * so consumers can easily pass it from this hook to components to be displayed
+ * (e.g. a common component for rendering errors). Also includes a callback
+ * to reset the state.
+ */
+export type MutationState = MutationStateData & { reset: () => void };
+
+/**
  * A wrapper around Relay's useMutation. Takes the same inputs, but has
  * expanded output to get more granular tracking of the mutation's state.
  * The status will reflect the most recent call to the mutation.
@@ -51,13 +54,14 @@ function useMutation<TMutation extends MutationParameters>(
 ): {
   commit: (config: UseMutationConfig<TMutation>) => Disposable;
   state: MutationState;
-  resetState: () => void;
 } {
   const [commit, isInFlight] = useMutationRelay(mutation, commitMutationFn);
-  const [state, setState] = useState<MutationState>({ status: "idle" });
+  const [state, setState] = useState<MutationStateData>({
+    status: "idle",
+  });
   const { reloadIfNoUser: reloadUserQuery } = useContext(UserQueryContext);
 
-  const resetState = useCallback(() => setState({ status: "idle" }), []);
+  const reset = useCallback(() => setState({ status: "idle" }), []);
 
   useEffect(() => {
     if (isInFlight) {
@@ -99,8 +103,7 @@ function useMutation<TMutation extends MutationParameters>(
         },
         ...rest,
       }),
-    state,
-    resetState,
+    state: { reset, ...state },
   };
 }
 

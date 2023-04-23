@@ -27,52 +27,38 @@ const BetaSettings: React.FC<Props> = ({ betaKey, open, onClose }) => {
     betaKey
   );
 
-  const {
-    fieldStates: { name: nameState },
-    hasChanges,
-    hasError,
-    onReset,
-  } = useForm(
-    { name: { initialValue: beta.name, validator: validateString } },
-    !open
-  );
+  const formState = useForm({
+    name: { initialValue: beta.name, validator: validateString },
+  });
 
-  const {
-    commit: updateBeta,
-    state: updateState,
-    resetState: resetUpdateState,
-  } = useMutation<BetaSettings_updateBetaMutation>(graphql`
-    mutation BetaSettings_updateBetaMutation($input: UpdateBetaInput!)
-    @raw_response_type {
-      updateBeta(input: $input) {
-        id
-        name
+  const { commit: updateBeta, state: updateState } =
+    useMutation<BetaSettings_updateBetaMutation>(graphql`
+      mutation BetaSettings_updateBetaMutation($input: UpdateBetaInput!)
+      @raw_response_type {
+        updateBeta(input: $input) {
+          id
+          name
+        }
       }
-    }
-  `);
+    `);
 
   return (
     <FormDialog
       open={open}
       title="Edit Beta"
-      hasChanges={hasChanges}
-      hasError={hasError}
+      formState={formState}
       mutationState={updateState}
       errorMessage="Error updating beta"
       onSave={() => {
-        const name = nameState.value;
+        const name = formState.fieldStates.name.value;
         updateBeta({
           variables: { input: { id: beta.id, name } },
           optimisticResponse: { updateBeta: { id: beta.id, name } },
         });
       }}
-      onClose={() => {
-        onReset();
-        resetUpdateState();
-        onClose?.();
-      }}
+      onClose={onClose}
     >
-      <TextFormField label="Name" state={nameState} />
+      <TextFormField label="Name" state={formState.fieldStates.name} />
     </FormDialog>
   );
 };

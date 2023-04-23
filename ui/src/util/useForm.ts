@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { isDefined, mapValues } from "./func";
 
 interface Field<T = string> {
@@ -28,7 +28,10 @@ type FieldStates<O extends Record<string, unknown>> = {
   [K in keyof O]: FieldState<O[K]>;
 };
 
-interface ReturnValue<F> {
+/**
+ * Current state (and controls) of a form. Return value of useForm.
+ */
+export interface FormState<F> {
   hasChanges: boolean;
   hasError: boolean;
   fieldStates: F;
@@ -45,16 +48,17 @@ interface ReturnValue<F> {
  * responsible for all rendering, such as edit/save/cancel buttons. The types
  * are set up such that each form field can have its own type, and the return
  * types will match the input types.
+ *
+ * The caller is responsible for resetting the form when appropriate, e.g. when
+ * the form is not visible. FormDialog will handle this automatically for you.
+ *
  * @template O Type mapping to define the value type for each form field
  * @param fields Definition of each field in the form
- * @param reset Optional flag to trigger a state reset. Useful to enable
- *  whenever the form is rendered but hidden (e.g. dialog is closed)
  * @returns State and callbacks for managing the form
  */
 export default function useForm<O extends Record<string, unknown>>(
-  fields: Fields<O>,
-  reset: boolean = true
-): ReturnValue<FieldStates<O>> {
+  fields: Fields<O>
+): FormState<FieldStates<O>> {
   const [hasChanges, setHasChanges] = useState(false);
   const [fieldValues, setFieldValues] = useState<O>(() =>
     mapValues(fields, ({ initialValue }) => initialValue)
@@ -64,16 +68,6 @@ export default function useForm<O extends Record<string, unknown>>(
     setHasChanges(false);
     setFieldValues(mapValues(fields, ({ initialValue }) => initialValue));
   };
-
-  // Reset state whenever requested. We intentionally *don't* listen to
-  // initialValues to trigger an automatic reset, because we don't want to
-  // reset the form when there's an error.
-  useEffect(() => {
-    if (reset) {
-      onReset();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reset]);
 
   const fieldStates: FieldStates<O> = mapValues(
     fields,

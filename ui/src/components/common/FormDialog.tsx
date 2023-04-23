@@ -10,15 +10,17 @@ import {
 } from "@mui/material";
 import { MutationState } from "util/useMutation";
 import MutationErrorSnackbar from "./MutationErrorSnackbar";
-import { useEffect } from "react";
+import { useCallback, useEffect } from "react";
+import { FormState } from "util/useForm";
+import { isDefined } from "util/func";
+import usePreviousValue from "util/usePreviousValue";
 
 interface Props {
   title: string;
   open: boolean;
+  formState: FormState<unknown>;
   closeOnSuccess?: boolean;
-  hasChanges?: boolean;
-  hasError?: boolean;
-  mutationState?: MutationState;
+  mutationState: MutationState;
   errorMessage?: string;
   onSave?: () => void;
   onClose?: () => void;
@@ -38,22 +40,42 @@ const FormDialog: React.FC<Props> = ({
   title,
   open,
   closeOnSuccess = true,
-  hasChanges,
-  hasError,
+  formState,
   mutationState,
   errorMessage,
   onSave,
-  onClose,
+  onClose: onCloseProp,
   children,
 }) => {
+  const onClose = useCallback(() => {
+    onCloseProp?.();
+    // Reset mutation state. Otherwise, we'll immediately close
+    // the modal next time because of a lingering success state
+    // (with closeOnSuccess enabled)
+    mutationState?.reset?.();
+    // Note - you might want to add formState.onReset() here, but
+    // it's unnecessary since we automatically reset it on open
+    // with a useEffect above
+  }, [mutationState, onCloseProp]);
+
   // Automatically close the form when the mutation succeeds
+  const mutationStatus = mutationState?.status;
   useEffect(() => {
-    if (open && closeOnSuccess && mutationState?.status === "success") {
+    if (open && closeOnSuccess && mutationStatus === "success") {
       // Warning: if this is getting triggered immediately on open, make sure
       // your onClose handler is calling resetState for the mutation!
-      onClose?.();
+      onClose();
     }
-  }, [open, closeOnSuccess, mutationState?.status, onClose]);
+  }, [open, closeOnSuccess, mutationStatus, onClose]);
+
+  // Reset form state when the dialog is first opened, to make sure it's up to date
+  const previousOpen = usePreviousValue(open);
+  useEffect(() => {
+    if (!previousOpen && open) {
+      formState.onReset();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [previousOpen, open]);
 
   return (
     <>
@@ -75,10 +97,10 @@ const FormDialog: React.FC<Props> = ({
               startIcon={<IconClear />}
               onClick={() => {
                 if (
-                  !hasChanges ||
+                  !formState.hasChanges ||
                   window.confirm("Are you sure? You have unsaved changes.")
                 ) {
-                  onClose?.();
+                  onClose();
                 }
               }}
             >
@@ -88,8 +110,8 @@ const FormDialog: React.FC<Props> = ({
               startIcon={<IconSave />}
               variant="contained"
               type="submit"
-              loading={mutationState?.status === "loading"}
-              disabled={!hasChanges || hasError}
+              loading={mutationStatus === "loading"}
+              disabled={!formState.hasChanges || formState.hasError}
             >
               Save
             </LoadingButton>
@@ -97,7 +119,7 @@ const FormDialog: React.FC<Props> = ({
         </form>
       </Dialog>
 
-      {mutationState && errorMessage && (
+      {isDefined(mutationState) && errorMessage && (
         <MutationErrorSnackbar message={errorMessage} state={mutationState} />
       )}
     </>
