@@ -12,7 +12,10 @@ import { withQuery } from "relay-query-wrapper";
 import { betaQuery } from "../../../util/queries";
 import { queriesBetaQuery } from "util/__generated__/queriesBetaQuery.graphql";
 import { PlayPauseControls_betaNode$key } from "./__generated__/PlayPauseControls_betaNode.graphql";
-import { EditorVisibilityContext } from "components/Editor/util/context";
+import {
+  EditorModeContext,
+  EditorVisibilityContext,
+} from "components/Editor/util/context";
 import { useStanceControls } from "../util/stance";
 import { alpha, Box, IconButton, Paper } from "@mui/material";
 
@@ -50,6 +53,9 @@ const PlayPauseControls: React.FC<Props> = ({ betaKey }) => {
     betaKey
   );
   const [visibility] = useContext(EditorVisibilityContext);
+  const [editorMode] = useContext(EditorModeContext);
+  // Hide overlay when editing holds, since the beta is hidden anyway
+  const isVisible = visibility && editorMode !== "editHolds";
   // Play/pause handler needs the list of move IDs so it knows how to walk
   // through them
   const moveIds = useMemo(
@@ -82,13 +88,13 @@ const PlayPauseControls: React.FC<Props> = ({ betaKey }) => {
 
   // When we reach the last move, stop playing. Also, pause if the overlay is hidden
   useEffect(() => {
-    if (!hasNext || !visibility) {
+    if (!hasNext || !isVisible) {
       pause();
     }
-  }, [hasNext, visibility]);
+  }, [hasNext, isVisible]);
 
   // This check has to go after all the hooks
-  if (!visibility) {
+  if (!isVisible) {
     return null;
   }
 
