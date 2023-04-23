@@ -34,12 +34,8 @@ const BetaMoveEditorModeButton: React.FC<Props> = ({ betaKey }) => {
   ) : (
     <TooltipIconButton
       title="Edit Beta"
-      disabled={editorMode !== "view" || !beta.permissions.canEdit}
-      disabledTitle={
-        beta.permissions.canEdit
-          ? "Finish editing holds"
-          : "You don't have permission to edit this beta"
-      }
+      disabled={!beta.permissions.canEdit}
+      disabledTitle="You don't have permission to edit this beta"
       onClick={() => setEditorMode("editBetaMoves")}
     >
       <BetaMoveIconWrapped bodyPart="LEFT_HAND" />
