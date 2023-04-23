@@ -3,6 +3,7 @@ import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
 import { SvgContext } from "components/Editor/util/context";
 import { BoulderImage_boulderNode$key } from "./__generated__/BoulderImage_boulderNode.graphql";
+import { editorTourTags } from "../EditorTour";
 
 interface Props {
   boulderKey: BoulderImage_boulderNode$key;
@@ -30,6 +31,7 @@ const BoulderImage: React.FC<Props> = ({ boulderKey }) => {
       // Fill the whole SVG
       width={dimensions.width}
       height={dimensions.height}
+      data-tour={editorTourTags.boulderImage}
     />
   );
 };

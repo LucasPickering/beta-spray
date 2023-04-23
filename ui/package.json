@@ -10,6 +10,7 @@
     "@mui/icons-material": "^5.10.6",
     "@mui/lab": "^5.0.0-alpha.122",
     "@mui/material": "^5.10.7",
+    "@reactour/tour": "^3.3.0",
     "@use-gesture/react": "^10.2.20",
     "browser-image-compression": "^2.0.0",
     "graphql": "^16.6.0",

@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { alpha, Box, Divider, IconButton, Paper } from "@mui/material";
-import HelpText from "./HelpText";
 import {
+  Help as IconHelp,
   ArrowBack as IconArrowBack,
   Visibility as IconVisibility,
   VisibilityOff as IconVisibilityOff,
@@ -12,9 +12,8 @@ import { Link } from "react-router-dom";
 import { PreloadedQuery } from "react-relay";
 import { queriesProblemQuery } from "util/__generated__/queriesProblemQuery.graphql";
 import { queriesBetaQuery } from "util/__generated__/queriesBetaQuery.graphql";
-import HoldEditorModeButton from "./HoldEditorModeButton";
-import BetaMoveEditorModeButton from "./BetaMoveEditorModeButton";
-import EditorModeLabel from "./EditorModeLabel";
+import EditorModeSelect from "./EditorModeSelect";
+import { useTour } from "@reactour/tour";
 
 interface Props {
   problemQueryRef: PreloadedQuery<queriesProblemQuery> | null | undefined;
@@ -29,6 +28,7 @@ interface Props {
  */
 const EditorPalette: React.FC<Props> = ({ problemQueryRef, betaQueryRef }) => {
   const [visibility, setVisibility] = useContext(EditorVisibilityContext);
+  const { setIsOpen } = useTour();
 
   return (
     <Box sx={{ position: "absolute", top: 0, left: 0, margin: 1 }}>
@@ -45,7 +45,12 @@ const EditorPalette: React.FC<Props> = ({ problemQueryRef, betaQueryRef }) => {
             <IconArrowBack />
           </IconButton>
 
-          <HelpText />
+          <IconButton
+            aria-label="open guided help"
+            onClick={() => setIsOpen(true)}
+          >
+            <IconHelp />
+          </IconButton>
 
           <TooltipIconButton
             title={visibility ? "Hide Overlay" : "Show Overlay"}
@@ -59,9 +64,10 @@ const EditorPalette: React.FC<Props> = ({ problemQueryRef, betaQueryRef }) => {
 
         <Divider />
 
-        <EditorModeLabel />
-        <HoldEditorModeButton queryRef={problemQueryRef} />
-        <BetaMoveEditorModeButton queryRef={betaQueryRef} />
+        <EditorModeSelect
+          problemQueryRef={problemQueryRef}
+          betaQueryRef={betaQueryRef}
+        />
       </Paper>
     </Box>
   );
