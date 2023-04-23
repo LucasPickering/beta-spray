@@ -8,6 +8,7 @@ import { BoulderImageUpload_createBoulderWithFriendsMutation } from "./__generat
 import { graphql } from "relay-runtime";
 import { useNavigate } from "react-router-dom";
 import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
+import MutationLoadingBackdrop from "components/common/MutationLoadingBackdrop";
 
 const maxUploadSizeMB = 0.2; // 200 KB
 
@@ -22,7 +23,7 @@ const BoulderImageUpload: React.FC = () => {
         $input: CreateBoulderWithFriendsInput!
       ) {
         createBoulderWithFriends(input: $input) {
-          id # Created beta is returned
+          id # This is the created *beta* id
           # Don't bother adding this to any connections, those will get refetched anyway
           problem {
             id
@@ -106,6 +107,11 @@ const BoulderImageUpload: React.FC = () => {
       </label>
 
       <ErrorSnackbar summary="Error compressing image" error={error} />
+
+      <MutationLoadingBackdrop
+        mutationState={createState}
+        message="Uploading problem…"
+      />
       <MutationErrorSnackbar
         message="Error uploading problem"
         state={createState}

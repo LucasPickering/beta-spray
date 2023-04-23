@@ -103,8 +103,9 @@ const BetaList: React.FC<Props> = ({
       }
     `);
 
-  // Callbacks
   const optimisticUserFields = useOptimisiticUserFields();
+
+  // Callbacks
   const onCreateNew = (): void => {
     createBeta({
       variables: {
