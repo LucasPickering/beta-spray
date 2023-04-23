@@ -51,6 +51,7 @@ const AccountSettings: React.FC<Props> = ({ userKey, open, onClose }) => {
       open={open}
       formState={formState}
       mutationState={updateState}
+      errorMessage="Error updating settings"
       onSave={() => {
         const id = user.id;
         const username = formState.fieldStates.username.value;

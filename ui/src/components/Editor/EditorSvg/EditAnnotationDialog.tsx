@@ -33,6 +33,7 @@ const EditAnnotationDialog: React.FC<Props> = ({
       open={open}
       formState={formState}
       mutationState={mutationState}
+      errorMessage="Error updating notes"
       onClose={onClose}
       onSave={() => onSave?.(formState.fieldStates.annotation.value)}
     >
