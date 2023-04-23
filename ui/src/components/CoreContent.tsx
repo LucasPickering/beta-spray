@@ -2,10 +2,10 @@ import React, { Suspense } from "react";
 import { BrowserRouter } from "react-router-dom";
 import { RelayEnvironmentProvider } from "react-relay";
 import { ThemeProvider } from "@mui/material/styles";
-import { CssBaseline } from "@mui/material";
+import { CssBaseline, GlobalStyles } from "@mui/material";
 import environment from "util/environment";
 import Loading from "components/common/Loading";
-import theme from "util/theme";
+import theme, { globalStyles } from "util/theme";
 import ErrorBoundary from "components/common/ErrorBoundary";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import { Outlet, Route, Routes } from "react-router-dom";
@@ -46,6 +46,7 @@ const CoreContent: React.FC = () => (
       <BrowserRouter>
         <ThemeProvider theme={theme}>
           <CssBaseline />
+          <GlobalStyles styles={globalStyles} />
 
           <Suspense fallback={<Loading size={100} height="100vh" />}>
             <ErrorBoundary>

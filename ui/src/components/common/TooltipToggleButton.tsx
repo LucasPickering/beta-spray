@@ -1,19 +1,19 @@
 import {
-  IconButton,
-  IconButtonProps,
+  ToggleButton,
+  ToggleButtonProps,
   Tooltip,
   TooltipProps,
 } from "@mui/material";
 
-type Props = IconButtonProps &
+type Props = ToggleButtonProps &
   Partial<Pick<TooltipProps, "title" | "placement">> & {
     disabledTitle?: React.ReactNode;
   };
 
 /**
- * Convenience component for a icon button with a hover tooltip
+ * Convenience component for a toggle button with a hover tooltip
  */
-const TooltipIconButton: React.FC<Props> = ({
+const TooltipToggleButton: React.FC<Props> = ({
   title,
   disabledTitle,
   placement,
@@ -29,9 +29,9 @@ const TooltipIconButton: React.FC<Props> = ({
     placement={placement}
   >
     <span>
-      <IconButton disabled={disabled} {...rest} />
+      <ToggleButton disabled={disabled} {...rest} />
     </span>
   </Tooltip>
 );
 
-export default TooltipIconButton;
+export default TooltipToggleButton;

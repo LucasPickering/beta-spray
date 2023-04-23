@@ -19,6 +19,7 @@ import ProblemMetadata from "./EditorControls/ProblemMetadata";
 import EditorPalette from "./EditorPalette/EditorPalette";
 import EditorState from "./EditorState";
 import PlayPauseControls from "./EditorPalette/PlayPauseControls";
+import EditorTour from "./EditorTour";
 
 /**
  * Main app component, for viewing+editing boulders/problems/betas. This is
@@ -97,60 +98,62 @@ const EditorPage: React.FC = () => {
       <EditorHelmet queryRef={problemQueryRef} />
 
       <EditorState>
-        <ZoomPanProvider>
-          {/* The maximum possible display area (the full screen) */}
-          <Box
-            display="flex"
-            justifyContent="center"
-            // Anchor for overlay button positioning
-            position="relative"
-            width="100vw"
-            height="100vh"
-            // Hide the image when it grows bigger than the viewport
-            sx={{ overflow: "hidden" }}
-          >
-            {/* Wrapper for the SVG, to provide background color and spacing
-                during loading */}
+        <EditorTour>
+          <ZoomPanProvider>
+            {/* The maximum possible display area (the full screen) */}
             <Box
+              display="flex"
+              justifyContent="center"
+              // Anchor for overlay button positioning
               position="relative"
-              width="100%"
-              height="100%"
-              sx={({ palette }) => ({
-                backgroundColor: palette.background.default,
-              })}
+              width="100vw"
+              height="100vh"
+              // Hide the image when it grows bigger than the viewport
+              sx={{ overflow: "hidden" }}
             >
-              <EditorSvg
-                queryRef={problemQueryRef}
-                betaQueryRef={betaQueryRef}
-              />
+              {/* Wrapper for the SVG, to provide background color and spacing
+                during loading */}
+              <Box
+                position="relative"
+                width="100%"
+                height="100%"
+                sx={({ palette }) => ({
+                  backgroundColor: palette.background.default,
+                })}
+              >
+                <EditorSvg
+                  queryRef={problemQueryRef}
+                  betaQueryRef={betaQueryRef}
+                />
 
-              {/* These buttons live with the SVG, so that they don't get
+                {/* These buttons live with the SVG, so that they don't get
                   covered by the drawer on desktop */}
-              {/* Top-left overlay buttons */}
-              <EditorPalette
-                problemQueryRef={problemQueryRef}
-                betaQueryRef={betaQueryRef}
-              />
+                {/* Top-left overlay buttons */}
+                <EditorPalette
+                  problemQueryRef={problemQueryRef}
+                  betaQueryRef={betaQueryRef}
+                />
 
-              {/* Buttons at the bottom of the screen */}
-              <PlayPauseControls queryRef={betaQueryRef} />
-            </Box>
+                {/* Buttons at the bottom of the screen */}
+                <PlayPauseControls queryRef={betaQueryRef} />
+              </Box>
 
-            {/* Top-right drawer button is mobile-only, rendered by
+              {/* Top-right drawer button is mobile-only, rendered by
                 ToggleDrawer */}
 
-            {/* Controls sidebar/drawer */}
-            <EditorControls>
-              <ProblemMetadata queryRef={problemQueryRef} />
-              <BetaList
-                queryRef={problemQueryRef}
-                selectedBeta={selectedBeta}
-                onSelectBeta={onSelectBeta}
-              />
-              <BetaDetails queryRef={betaQueryRef} />
-            </EditorControls>
-          </Box>
-        </ZoomPanProvider>
+              {/* Controls sidebar/drawer */}
+              <EditorControls>
+                <ProblemMetadata queryRef={problemQueryRef} />
+                <BetaList
+                  queryRef={problemQueryRef}
+                  selectedBeta={selectedBeta}
+                  onSelectBeta={onSelectBeta}
+                />
+                <BetaDetails queryRef={betaQueryRef} />
+              </EditorControls>
+            </Box>
+          </ZoomPanProvider>
+        </EditorTour>
       </EditorState>
     </DndProvider>
   );

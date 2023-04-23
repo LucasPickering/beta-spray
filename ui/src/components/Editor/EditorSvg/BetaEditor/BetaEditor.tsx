@@ -86,7 +86,7 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
   // This implicitly works as a permission check, since we can't enter editor
   // mode without permission
   const [editorMode] = useContext(EditorModeContext);
-  const isEditing = editorMode === "editBetaMoves";
+  const isEditing = editorMode === "editBeta";
 
   const {
     create: { callback: createBetaMove, state: createState },

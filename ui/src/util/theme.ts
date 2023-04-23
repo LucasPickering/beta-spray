@@ -1,3 +1,4 @@
+import { GlobalStylesProps } from "@mui/material";
 import {
   createTheme,
   Theme as MuiTheme,
@@ -194,5 +195,14 @@ const theme = createTheme(
   },
   baseTheme
 );
+
+/**
+ * Overrides for built-in browser styles. Added via <GlobalStyles />
+ */
+export const globalStyles: GlobalStylesProps["styles"] = ({ spacing }) => ({
+  ul: {
+    paddingLeft: spacing(2),
+  },
+});
 
 export default theme;

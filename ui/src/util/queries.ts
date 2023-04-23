@@ -48,7 +48,7 @@ export const betaQuery = graphql`
     beta(id: $betaId) {
       ...BetaDetails_betaNode
       ...BetaEditor_betaNode
-      ...BetaMoveEditorModeButton_betaNode
+      ...BetaEditorModeButton_betaNode
       ...PlayPauseControls_betaNode
     }
   }
