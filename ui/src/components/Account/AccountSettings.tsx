@@ -27,54 +27,41 @@ const AccountSettings: React.FC<Props> = ({ userKey, open, onClose }) => {
     userKey
   );
 
-  const {
-    fieldStates: { username: usernameState },
-    hasChanges,
-    hasError,
-    onReset,
-  } = useForm({
+  const formState = useForm({
     username: {
       initialValue: user.username,
       validator: validateUsername,
     },
   });
 
-  const {
-    commit: updateUser,
-    state: updateState,
-    resetState: resetUpdateState,
-  } = useMutation<AccountSettings_updateUserMutation>(graphql`
-    mutation AccountSettings_updateUserMutation($input: UpdateUserInput!)
-    @raw_response_type {
-      updateUser(input: $input) {
-        id
-        username
+  const { commit: updateUser, state: updateState } =
+    useMutation<AccountSettings_updateUserMutation>(graphql`
+      mutation AccountSettings_updateUserMutation($input: UpdateUserInput!)
+      @raw_response_type {
+        updateUser(input: $input) {
+          id
+          username
+        }
       }
-    }
-  `);
+    `);
 
   return (
     <FormDialog
       title="Edit Account"
       open={open}
-      hasChanges={hasChanges}
-      hasError={hasError}
+      formState={formState}
       mutationState={updateState}
       onSave={() => {
         const id = user.id;
-        const username = usernameState.value;
+        const username = formState.fieldStates.username.value;
         updateUser({
           variables: { input: { id, username } },
           optimisticResponse: { updateUser: { id, username } },
         });
       }}
-      onClose={() => {
-        onReset();
-        resetUpdateState();
-        onClose?.();
-      }}
+      onClose={onClose}
     >
-      <TextFormField label="Username" state={usernameState} />
+      <TextFormField label="Username" state={formState.fieldStates.username} />
     </FormDialog>
   );
 };

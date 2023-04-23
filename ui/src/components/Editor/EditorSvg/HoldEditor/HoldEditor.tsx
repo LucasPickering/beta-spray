@@ -172,6 +172,7 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
         annotation={
           editingHoldId && findNode(problem.holds, editingHoldId)?.annotation
         }
+        mutationState={updateAnnotationState}
         onSave={(annotation) => {
           // This shouldn't be callable while no hold is being edited
           assertIsDefined(editingHoldId);
