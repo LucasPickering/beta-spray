@@ -34,12 +34,8 @@ const HoldEditorModeButton: React.FC<Props> = ({ problemKey }) => {
   ) : (
     <TooltipIconButton
       title="Edit Holds"
-      disabled={editorMode !== "view" || !problem.permissions.canEdit}
-      disabledTitle={
-        problem.permissions.canEdit
-          ? "Finish editing beta"
-          : "You don't have permission to edit holds on this problem"
-      }
+      disabled={!problem.permissions.canEdit}
+      disabledTitle="You don't have permission to edit holds on this problem"
       onClick={() => setEditorMode("editHolds")}
     >
       <HoldIconWrapped />
