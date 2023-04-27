@@ -15,7 +15,7 @@ import {
 } from "components/Editor/util/moves";
 import { isDefined } from "util/func";
 import ActionOrbs from "../common/ActionOrbs";
-import { Edit as IconEdit, Delete as IconDelete } from "@mui/icons-material";
+import { Delete as IconDelete, Notes as IconNotes } from "@mui/icons-material";
 import AddBetaMoveMark from "./AddBetaMoveMark";
 import ActionOrb from "../common/ActionOrb";
 import SvgTooltip from "../common/SvgTooltip";
@@ -142,7 +142,7 @@ const BetaMoveMark: React.FC<Props> = ({
                 onEditAnnotation && (() => onEditAnnotation(betaMove.id))
               }
             >
-              <IconEdit />
+              <IconNotes />
             </ActionOrb>
           </ActionOrbs>
         </Positioned>

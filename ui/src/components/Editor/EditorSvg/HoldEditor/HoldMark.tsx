@@ -12,7 +12,7 @@ import HoldIcon from "./HoldIcon";
 import { ClickAwayListener, useTheme } from "@mui/material";
 import { isDefined } from "util/func";
 import ActionOrbs from "../common/ActionOrbs";
-import { Delete as IconDelete, Edit as IconEdit } from "@mui/icons-material";
+import { Delete as IconDelete, Notes as IconNotes } from "@mui/icons-material";
 import ActionOrb from "../common/ActionOrb";
 import SvgTooltip from "../common/SvgTooltip";
 
@@ -124,7 +124,7 @@ const HoldMark: React.FC<Props> = ({
               color={palette.editorActionEdit.main}
               onClick={onEditAnnotation && (() => onEditAnnotation(hold.id))}
             >
-              <IconEdit />
+              <IconNotes />
             </ActionOrb>
           </ActionOrbs>
         </Positioned>
