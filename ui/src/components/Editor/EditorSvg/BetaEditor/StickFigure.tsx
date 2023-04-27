@@ -87,6 +87,8 @@ const StickFigure: React.FC<Props> = ({
       stroke={color}
       fill="none"
       filter={getEditableFilterUrl("beta")} // Color based on editability
+      // Don't interfere with dragging+dropping
+      css={{ pointerEvents: "none" }}
     >
       {/* Head */}
       <circle r={headRadius} cx={head.x} cy={head.y} />
