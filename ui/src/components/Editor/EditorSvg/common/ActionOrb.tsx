@@ -7,7 +7,7 @@ interface Props {
   children?: React.ReactNode;
 }
 
-export const orbRadius = 3; // Exported for AddBetaMoveMark
+export const orbRadius = 3.5; // Exported for AddBetaMoveMark
 
 /**
  * A button-like orb in SVG land.
