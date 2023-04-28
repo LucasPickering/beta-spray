@@ -1,5 +1,5 @@
 import { graphql, useFragment } from "react-relay";
-import { isDefined } from "util/func";
+import { findNode, isDefined } from "util/func";
 import useMutation, { MutationState } from "util/useMutation";
 import { DropResult } from "./dnd";
 import { useStanceControls } from "./stance";
@@ -9,7 +9,8 @@ import { useBetaMoveMutations_betaNode$key } from "./__generated__/useBetaMoveMu
 import { useBetaMoveMutations_deleteBetaMoveMutation } from "./__generated__/useBetaMoveMutations_deleteBetaMoveMutation.graphql";
 import { useBetaMoveMutations_updateBetaMoveAnnotationMutation } from "./__generated__/useBetaMoveMutations_updateBetaMoveAnnotationMutation.graphql";
 import { useBetaMoveMutations_relocateBetaMoveMutation } from "./__generated__/useBetaMoveMutations_relocateBetaMoveMutation.graphql";
-import { deleteBetaMoveLocal } from "./moves";
+import { createBetaMoveLocal, deleteBetaMoveLocal } from "./moves";
+import { generateUniqueClientID } from "relay-runtime";
 
 interface Mutation<T> {
   callback: (data: T) => void;
@@ -63,7 +64,7 @@ function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
     useMutation<useBetaMoveMutations_createBetaMoveMutation>(graphql`
       mutation useBetaMoveMutations_createBetaMoveMutation(
         $input: CreateBetaMoveInput!
-      ) {
+      ) @raw_response_type {
         createBetaMove(input: $input) {
           # We DON'T need appendNode here since we refetch the full list below.
           # Relay will automatically merge the fields for the new node into the
@@ -156,6 +157,13 @@ function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
   return {
     create: {
       callback: ({ bodyPart, previousBetaMoveId, dropResult }) => {
+        const optimisticId = generateUniqueClientID();
+        // Find the order of the previous move (if any), and we'll be +1
+        const previousBetaMove = isDefined(previousBetaMoveId)
+          ? findNode(beta.moves, previousBetaMoveId)
+          : undefined;
+        const newOrder = (previousBetaMove?.order ?? 0) + 1;
+
         createBetaMove({
           variables: {
             input: {
@@ -165,7 +173,26 @@ function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
               ...getDropParams(dropResult),
             },
           },
+          optimisticResponse: {
+            createBetaMove: {
+              id: optimisticId,
+              order: newOrder,
+              bodyPart,
+              annotation: "",
+              isStart: false, // Punting on calculating this for now
+              hold:
+                dropResult.kind === "hold" ? { id: dropResult.holdId } : null,
+              position:
+                dropResult.kind === "dropZone" ? dropResult.position : null,
+              beta: {
+                id: beta.id,
+                moves: createBetaMoveLocal(beta.moves, optimisticId, newOrder),
+              },
+            },
+          },
           onCompleted(data) {
+            // Move the stance to the new move. It'd be nice to do this
+            // optimistically, but that's not easy to integrate with optimisticResponse
             if (isDefined(data.createBetaMove)) {
               selectStance(data.createBetaMove.id);
             }
@@ -238,10 +265,6 @@ graphql`
     isStart
     hold {
       id
-      position {
-        x
-        y
-      }
     }
     position {
       x
