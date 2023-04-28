@@ -55,6 +55,7 @@ export function useStance(
     betaMoveNodeConnectionFragment,
     betaMoveConnectionKey
   );
+
   // A stance is defined by a single move, which is the *last* move in the
   // stance (generally speaking)
   const [stanceMoveId, setStanceMoveId] = useContext(StanceContext);

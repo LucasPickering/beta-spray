@@ -248,6 +248,29 @@ export function useBetaMoveVisualPosition(): (
 }
 
 /**
+ * Insert a new move into a beta. For optimistic responses only.
+ * @param moves List of moves to insert into
+ * @param betaMoveId ID of the new move
+ * @param newOrder Order of the new move
+ * @returns A *new* array, with the new move inserted
+ */
+export function createBetaMoveLocal(
+  moves: BetaMoves,
+  betaMoveId: string,
+  newOrder: number
+): BetaMoves {
+  const newIndex = newOrder - 1;
+  return {
+    edges: [
+      ...moves.edges.slice(0, newIndex),
+      // We intentionally don't calculate isStart, it's just not worth it
+      { node: { id: betaMoveId, order: newOrder, isStart: false } },
+      ...moves.edges.slice(newIndex),
+    ],
+  };
+}
+
+/**
  * Reorder a beta move in a beta. For optimistic responses only.
  * @param moves List of moves to reorder in
  * @param betaMoveId ID of the move to reorder
