@@ -51,6 +51,17 @@ export function assertDataKind<T extends { kind: string }, K extends T["kind"]>(
 }
 
 /**
+ * Coerce a value into a numeric range.
+ * @param value Value to coerce
+ * @param min Minimum acceptable value (inclusive)
+ * @param max Maximum acceptable value (inclusive)
+ * @returns Coerced value, or NaN if any input is NaN
+ */
+export function clamp(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(value, max));
+}
+
+/**
  * Get the last element in an array. This may seem pointless, but the typing
  * is more realistic, since Typescript pretends that array indices are
  * guaranteed to be valid.
