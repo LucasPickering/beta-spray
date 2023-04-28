@@ -25,6 +25,10 @@ module.exports = {
         message:
           "Use the local useMutation wrapper instead of the one from react-relay",
       },
+      {
+        selector: "CallExpression[callee.name=debug]",
+        message: "debug() is for debugging only",
+      },
     ],
   },
 };
