@@ -8,6 +8,18 @@ export function noop(): void {
 }
 
 /**
+ * Print a value and return it
+ * @param value Value to print and return
+ * @param message Information prefix for the debug message
+ * @returns Passed value
+ */
+export function debug<T>(value: T, message: string = "debug:"): T {
+  // eslint-disable-next-line no-console
+  console.log(message, value);
+  return value;
+}
+
+/**
  * Check if a value is not null/undefined
  */
 export function isDefined<T>(value: T): value is NonNullable<T> {
