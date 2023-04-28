@@ -100,7 +100,11 @@ const StickFigure: React.FC<Props> = ({
           <Line p1={positions[bodyPart]} p2={joint} />
           {editable && !stance[bodyPart] && (
             // TODO better visual here for non-editable?
-            <Positioned position={positions[bodyPart]}>
+            <Positioned
+              position={positions[bodyPart]}
+              // Re-enable pointer events for the interactive part
+              css={{ pointerEvents: "auto" }}
+            >
               <AddBetaMoveMark
                 bodyPart={bodyPart}
                 variant="stickFigure"
