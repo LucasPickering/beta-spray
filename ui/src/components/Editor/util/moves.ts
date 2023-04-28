@@ -4,6 +4,7 @@
 
 import {
   assertIsDefined,
+  clamp,
   findNodeIndex,
   groupBy,
   isDefined,
@@ -259,13 +260,17 @@ export function createBetaMoveLocal(
   betaMoveId: string,
   newOrder: number
 ): BetaMoves {
-  const newIndex = newOrder - 1;
+  const newIndex = clamp(newOrder - 1, 0, moves.edges.length);
+
   return {
     edges: [
       ...moves.edges.slice(0, newIndex),
       // We intentionally don't calculate isStart, it's just not worth it
-      { node: { id: betaMoveId, order: newOrder, isStart: false } },
-      ...moves.edges.slice(newIndex),
+      { node: { id: betaMoveId, order: newIndex + 1, isStart: false } },
+      // +1 to the order for everything shifted down
+      ...moves.edges.slice(newIndex).map(({ node: { order, ...rest } }) => ({
+        node: { order: order + 1, ...rest },
+      })),
     ],
   };
 }
@@ -276,7 +281,8 @@ export function createBetaMoveLocal(
  * @param betaMoveId ID of the move to reorder
  * @param newOrder New order value for the given move
  * @returns A *new* array, with the specified move reordered and all moves'
- *  orders adjusted accordingly
+ *  orders adjusted accordingly. *Unless*, if the given ID isn't in the
+ *  connection, the same input object is returned.
  */
 export function reorderBetaMoveLocal(
   moves: BetaMoves,
@@ -284,15 +290,22 @@ export function reorderBetaMoveLocal(
   newOrder: number
 ): BetaMoves {
   const oldIndex = findNodeIndex(moves, betaMoveId);
-  const newIndex = newOrder - 1;
-  const edges = [...moves.edges];
-  moveArrayElement(edges, oldIndex, newIndex);
-  return {
-    edges: edges.map(({ node: { id, isStart } }, i) => ({
-      // We intentionally don't recalculate isStart, it's just not worth it
-      node: { id, isStart, order: i + 1 },
-    })),
-  };
+
+  if (oldIndex >= 0) {
+    const newIndex = clamp(newOrder - 1, 0, moves.edges.length);
+    const edges = [...moves.edges];
+    moveArrayElement(edges, oldIndex, newIndex);
+    return {
+      edges: edges.map(({ node: { id, isStart } }, i) => ({
+        // We intentionally don't recalculate isStart, it's just not worth it
+        node: { id, isStart, order: i + 1 },
+      })),
+    };
+  } else {
+    // Move wasn't found - don't do anything. No point in copying here
+    // because the input is readonly
+    return moves;
+  }
 }
 
 /**

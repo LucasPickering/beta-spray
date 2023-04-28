@@ -1,4 +1,33 @@
-import { moveArrayElement } from "../func";
+import { clamp, moveArrayElement } from "../func";
+
+describe("clamp", () => {
+  test("in range", () => {
+    expect(clamp(0, 0, 5)).toEqual(0);
+    expect(clamp(3, 0, 5)).toEqual(3);
+    expect(clamp(5, 0, 5)).toEqual(5);
+  });
+
+  test("too low", () => {
+    expect(clamp(-1, 0, 5)).toEqual(0);
+  });
+
+  test("too high", () => {
+    expect(clamp(6, 0, 5)).toEqual(5);
+  });
+
+  test("wonky range", () => {
+    // Empty range
+    expect(clamp(3, 0, 0)).toEqual(0);
+    // Backward range
+    expect(clamp(3, 0, -1)).toEqual(0);
+  });
+
+  test("NaN", () => {
+    expect(clamp(NaN, 0, 5)).toEqual(NaN);
+    expect(clamp(3, NaN, 5)).toEqual(NaN);
+    expect(clamp(3, 0, NaN)).toEqual(NaN);
+  });
+});
 
 describe("moveArrayElement", () => {
   let array: string[];
