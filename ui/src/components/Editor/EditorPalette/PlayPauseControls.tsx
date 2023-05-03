@@ -111,11 +111,11 @@ const PlayPauseControls: React.FC<Props> = ({ betaKey }) => {
       <Paper
         sx={({ palette, shape, spacing }) => ({
           width: "100%",
-          maxWidth: "sm",
+          maxWidth: 320,
           display: "flex",
           justifyContent: "space-between",
           margin: `0 ${spacing(1)}`,
-          padding: 1,
+          padding: `0 ${spacing(1)}`,
           backgroundColor: alpha(
             palette.background.paper,
             palette.opacity.translucent
