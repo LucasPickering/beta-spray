@@ -1,4 +1,4 @@
-interface Props {
+interface Props extends React.SVGProps<SVGForeignObjectElement> {
   size?: number;
   x?: number;
   y?: number;
@@ -21,6 +21,7 @@ const EmbeddedIcon: React.FC<Props> = ({
   x = 0,
   y = 0,
   children,
+  ...rest
 }) => (
   // We assume the icon is a SvgIcon from material UI, which has a
   // known size. We'll scale the object down from that known size
@@ -32,6 +33,7 @@ const EmbeddedIcon: React.FC<Props> = ({
     x={-iconSizeForeign / 2 + x}
     y={-iconSizeForeign / 2 + y}
     transform={`scale(${size / iconSizeForeign})`}
+    {...rest}
   >
     {children}
   </foreignObject>

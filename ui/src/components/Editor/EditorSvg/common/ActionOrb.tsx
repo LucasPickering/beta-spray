@@ -2,7 +2,7 @@ import EmbeddedIcon from "components/common/EmbeddedIcon";
 import React from "react";
 
 interface Props {
-  color?: string;
+  color: string;
   onClick?: () => void;
   children?: React.ReactNode;
 }
@@ -25,7 +25,11 @@ const ActionOrb: React.FC<Props> = ({ color, onClick, children }) => (
   >
     <circle r={orbRadius} fill={color} />
     {/* Assume children is an SvgIcon */}
-    <EmbeddedIcon>{children}</EmbeddedIcon>
+    <EmbeddedIcon
+      css={({ palette }) => ({ color: palette.getContrastText(color) })}
+    >
+      {children}
+    </EmbeddedIcon>
   </g>
 );
 
