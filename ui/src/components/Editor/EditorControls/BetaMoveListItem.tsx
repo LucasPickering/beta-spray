@@ -131,7 +131,7 @@ const BetaMoveListItem = React.forwardRef<HTMLLIElement, Props>(
                 betaMove.isStart &&
                   (({ palette }) => ({
                     textDecorationLine: "underline",
-                    textDecorationColor: palette.secondary.main,
+                    textDecorationColor: palette.editor.betaMoves.start.main,
                   })),
               ]}
             >

@@ -8,12 +8,31 @@ import {
 import LinkBehavior from "components/common/LinkBehavior";
 
 /**
- * Helper for the custom colors we add
+ * Helper for the custom colors we add. Any nested colors will *not* be supported
+ * by buttons. If that functionality isn't needed though, the nesting is nice
+ * for organization.
  */
-type CustomColors<T> = Record<
-  "editorActionCreate" | "editorActionEdit" | "editorActionDelete",
-  T
->;
+interface CustomColors<T> {
+  editor: {
+    // Color of holds
+    holds: {
+      primary: T;
+    };
+    betaMoves: {
+      // Color of the first move and last moves in the beta (others are interpolated)
+      first: T;
+      last: T;
+      // The accent color applied to start moves
+      start: T;
+    };
+    actions: {
+      // Colors associated with different actions
+      create: T;
+      edit: T;
+      delete: T;
+    };
+  };
+}
 
 declare module "@mui/material/styles" {
   interface Palette extends CustomColors<PaletteColor> {
@@ -61,9 +80,25 @@ const baseTheme = createTheme({
     info: { main: "#FFC848" },
     warning: { main: "#FFBE26" },
 
-    editorActionCreate: { main: "#66BB6A" },
-    editorActionEdit: { main: "#FFBE26" },
-    editorActionDelete: { main: "#f44336" },
+    editor: {
+      // Color of holds
+      holds: {
+        primary: { main: "#FF9233" },
+      },
+      betaMoves: {
+        // Color of the first move and last moves in the beta (others are interpolated)
+        first: { main: "#FF9233" },
+        last: { main: "#48CFEA" },
+        // The accent color applied to start moves
+        start: { main: "48CFEA" },
+      },
+      actions: {
+        // Colors associated with different actions
+        create: { main: "#66BB6A" },
+        edit: { main: "#FFBE26" },
+        delete: { main: "#f44336" },
+      },
+    },
 
     opacity: {
       translucent: 0.6,

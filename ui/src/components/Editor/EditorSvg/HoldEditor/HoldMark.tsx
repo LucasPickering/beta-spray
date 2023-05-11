@@ -115,13 +115,13 @@ const HoldMark: React.FC<Props> = ({
 
           <ActionOrbs open={editable && isHighlighted}>
             <ActionOrb
-              color={palette.editorActionDelete.main}
+              color={palette.editor.actions.delete.main}
               onClick={onDelete && (() => onDelete(hold.id))}
             >
               <IconDelete />
             </ActionOrb>
             <ActionOrb
-              color={palette.editorActionEdit.main}
+              color={palette.editor.actions.edit.main}
               onClick={onEditAnnotation && (() => onEditAnnotation(hold.id))}
             >
               <IconNotes />

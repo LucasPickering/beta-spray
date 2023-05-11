@@ -122,7 +122,7 @@ const BetaMoveMark: React.FC<Props> = ({
 
           <ActionOrbs open={editable && isHighlighted}>
             <ActionOrb
-              color={palette.editorActionDelete.main}
+              color={palette.editor.actions.delete.main}
               onClick={onDelete && (() => onDelete(betaMove.id))}
             >
               <IconDelete />
@@ -137,7 +137,7 @@ const BetaMoveMark: React.FC<Props> = ({
               }}
             />
             <ActionOrb
-              color={palette.editorActionEdit.main}
+              color={palette.editor.actions.edit.main}
               onClick={
                 onEditAnnotation && (() => onEditAnnotation(betaMove.id))
               }

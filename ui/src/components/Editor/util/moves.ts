@@ -72,8 +72,8 @@ export function useBetaMoveColors(
 
   const { palette } = useTheme();
   const moves = betaMoveConnection.edges;
-  const startColor = htmlToHex(palette.primary.main);
-  const endColor = htmlToHex(palette.secondary.main);
+  const startColor = htmlToHex(palette.editor.betaMoves.first.main);
+  const endColor = htmlToHex(palette.editor.betaMoves.last.main);
   const colorMap: Map<string, string> = new Map();
 
   // Generate a color for each move

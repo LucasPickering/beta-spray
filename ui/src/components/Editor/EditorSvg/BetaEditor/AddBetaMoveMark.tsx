@@ -47,7 +47,7 @@ const AddBetaMoveMark: React.FC<Props> = ({
     },
   });
   const { palette } = useTheme();
-  const color = palette.editorActionCreate.main;
+  const color = palette.editor.actions.create.main;
 
   // TODO add onClick tooltip give drag hint
 
@@ -77,7 +77,7 @@ const AddBetaMoveMark: React.FC<Props> = ({
 const IconPlusRaw: React.FC<React.SVGProps<SVGGElement>> = (props) => {
   const { palette } = useTheme();
   const styles = {
-    stroke: palette.getContrastText(palette.editorActionCreate.main),
+    stroke: palette.getContrastText(palette.editor.actions.create.main),
     strokeWidth: 0.5,
   };
   const lineLength = 1.5;

@@ -40,7 +40,7 @@ const HoldIcon: React.FC<Props> = ({
         {
           r: 3,
           strokeWidth: 0.5,
-          stroke: palette.primary.main,
+          stroke: palette.editor.holds.primary.main,
           // We want the fill to be present so it captures events, but invisible
           fillOpacity: 0,
         },

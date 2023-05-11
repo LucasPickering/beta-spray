@@ -80,8 +80,8 @@ const BetaMoveIcon = React.forwardRef<
             isFree && { stroke: "white", strokeDasharray: "1,0.5" },
             isStart && {
               stroke: draggable
-                ? palette.secondary.main
-                : palette.secondary.light,
+                ? palette.editor.betaMoves.start.main
+                : palette.editor.betaMoves.start.light,
             },
           ]}
         />
