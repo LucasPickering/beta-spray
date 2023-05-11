@@ -232,6 +232,34 @@ class Mutation:
     )
 
     @gql.relay.input_mutation(directives=[CreateGuestUser()])
+    def copy_problem(self, info: Info, id: gql.relay.GlobalID) -> ProblemNode:
+        """
+        Copy a problem. A new problem will be created with the same boulder
+        and holds as the original.
+        """
+        original_problem = id.resolve_node(info, ensure_type=Problem)
+        # Copy the base problem. We'll point the new problem to the same
+        # boulder, so we get the same image.
+        new_problem = resolvers.create(
+            info,
+            Problem,
+            {
+                "boulder": original_problem.boulder,
+                "name": f"{original_problem.name} Copy",
+                "owner": info.context.request.user,
+            },
+        )
+
+        # Copy each hold in one big INSERT
+        new_holds = list(original_problem.holds.all())
+        for hold in new_holds:
+            hold.id = None  # This forces django to create a new move
+            hold.problem_id = new_problem.id
+        Hold.objects.bulk_create(new_holds)
+
+        return new_problem
+
+    @gql.relay.input_mutation(directives=[CreateGuestUser()])
     def create_beta(
         self, info: Info, problem: gql.relay.GlobalID, name: Optional[str]
     ) -> BetaNode:
@@ -266,7 +294,7 @@ class Mutation:
             Beta,
             {
                 "problem": original_beta.problem,
-                "name": f"{original_beta.name} 2.0",
+                "name": f"{original_beta.name} Copy",
                 "owner": info.context.request.user,
             },
         )
