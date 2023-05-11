@@ -172,6 +172,11 @@ input CopyBetaInput {
   id: ID!
 }
 
+"""Input data for `copyProblem` mutation"""
+input CopyProblemInput {
+  id: ID!
+}
+
 """Input data for `createBeta` mutation"""
 input CreateBetaInput {
   problem: ID!
@@ -330,6 +335,15 @@ type Mutation {
     """Input data for `updateHold` mutation"""
     input: UpdateHoldInput!
   ): HoldNode! @hasObjPerm(permissions: [{resource: "core", permission: "edit_hold"}], any: true)
+
+  """
+  Copy a problem. A new problem will be created with the same boulder
+  and holds as the original.
+  """
+  copyProblem(
+    """Input data for `copyProblem` mutation"""
+    input: CopyProblemInput!
+  ): ProblemNode! @createGuestUser
   createBeta(
     """Input data for `createBeta` mutation"""
     input: CreateBetaInput!
