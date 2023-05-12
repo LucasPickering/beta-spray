@@ -11,14 +11,37 @@ if TYPE_CHECKING:
     from .schema.query import Image
 
 problem_name_phrase_groups: list[list[Optional[str]]] = [
-    ["Up Up", "Monster", "Slab", "Crack", "Lateral"],
-    ["Up", "And Away", "Sauce", "Joy", "Wolves", "Psoriasis"],
-    # repetition => weighted odds
-    [None, None, None, "2.0", "But Harder"],
+    [
+        "Big",
+        "Up Up",
+        "Monster",
+        "Slab",
+        "Crack",
+        "Lateral",
+        "Crazy",
+        "Overhung",
+        "Heinous",
+        "Joyful",
+        "Lonesome",
+    ],
+    [
+        "Up",
+        "And Away",
+        "Sauce",
+        "Joy",
+        "Fest",
+        "Wolves",
+        "Psoriasis",
+        "Fish",
+        "Moose",
+        "War",
+        "Exposure",
+        "and Slopy",
+    ],
 ]
 
 beta_name_phrase_groups: list[list[Optional[str]]] = [
-    ["Simply", "Just", "You", "All you have to do is"],
+    ["Simply", "Just", "You", "All you have to do is", "Suggestion:"],
     [
         "Hang On",
         "Don't Let Go",
