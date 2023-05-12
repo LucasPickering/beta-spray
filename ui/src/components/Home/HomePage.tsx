@@ -21,8 +21,8 @@ const HomePage: React.FC = () => {
     // Problem lists are pretty dynamic (can be changed on other pages and by
     // other users), so we want to refetch any time we load this page. This
     // also saves us the hassle of complicated optimistic responses
-    loadYourProblemsQuery({ count: 3 }, { fetchPolicy: "store-and-network" });
-    loadPublicProblemsQuery({ count: 3 }, { fetchPolicy: "store-and-network" });
+    loadYourProblemsQuery({ count: 6 }, { fetchPolicy: "store-and-network" });
+    loadPublicProblemsQuery({ count: 6 }, { fetchPolicy: "store-and-network" });
   }, [loadYourProblemsQuery, loadPublicProblemsQuery]);
 
   return (
