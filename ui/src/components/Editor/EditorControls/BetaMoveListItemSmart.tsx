@@ -15,6 +15,7 @@ interface Props {
   betaMoveKey: BetaMoveListItemSmart_betaMoveNode$key;
   index: number;
   stanceColor: string | undefined;
+  onClick?: (betaMoveId: string) => void;
   onReorder?: (dragItem: DragItem<"listBetaMove">, newIndex: number) => void;
   onDrop?: DropHandler<"listBetaMove", "list">;
   onDelete?: () => void;
@@ -30,6 +31,7 @@ const BetaMoveListItemSmart: React.FC<Props> = ({
   betaMoveKey,
   index,
   stanceColor,
+  onClick,
   onReorder,
   onDrop,
   onDelete,
@@ -169,6 +171,7 @@ const BetaMoveListItemSmart: React.FC<Props> = ({
       stanceColor={stanceColor}
       draggable={canDrag}
       isDragging={isDragging}
+      onClick={onClick}
       onDelete={onDelete}
     />
   );

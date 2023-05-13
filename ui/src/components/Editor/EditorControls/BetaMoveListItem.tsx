@@ -8,6 +8,7 @@ import {
   Box,
   IconButton,
   ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
   alpha,
@@ -18,12 +19,13 @@ import { BetaMoveIconWrapped } from "../EditorSvg/BetaEditor/BetaMoveIcon";
 import { useBetaMoveColor } from "../util/moves";
 import { BetaMoveListItem_betaMoveNode$key } from "./__generated__/BetaMoveListItem_betaMoveNode.graphql";
 
-interface Props extends React.ComponentProps<typeof ListItem> {
+interface Props extends Omit<React.ComponentProps<typeof ListItem>, "onClick"> {
   betaMoveKey: BetaMoveListItem_betaMoveNode$key;
   stanceColor?: string;
   draggable?: boolean;
   isDragging?: boolean;
   dragRef?: React.Ref<SVGSVGElement>;
+  onClick?: (betaMoveId: string) => void;
   onDelete?: () => void;
 }
 
@@ -38,6 +40,7 @@ const BetaMoveListItem = React.forwardRef<HTMLLIElement, Props>(
       draggable = true,
       isDragging = false,
       dragRef,
+      onClick,
       onDelete,
       ...rest
     },
@@ -95,51 +98,55 @@ const BetaMoveListItem = React.forwardRef<HTMLLIElement, Props>(
               ),
             })),
         ]}
+        disablePadding
+        onClick={() => onClick?.(betaMove.id)}
         {...rest}
       >
-        <ListItemIcon>
-          {/* Only use the drag icon for dragging, to prevent interfering with
+        <ListItemButton>
+          <ListItemIcon>
+            {/* Only use the drag icon for dragging, to prevent interfering with
               scrolling on mobile */}
-          {draggable && (
-            <IconDragHandle
-              ref={dragRef}
-              sx={{ paddingRight: 1, cursor: "grab" }}
+            {draggable && (
+              <IconDragHandle
+                ref={dragRef}
+                sx={{ paddingRight: 1, cursor: "grab" }}
+              />
+            )}
+            <BetaMoveIconWrapped
+              bodyPart={betaMove.bodyPart}
+              order={betaMove.order}
+              color={color}
+              isStart={betaMove.isStart}
+              isFree={isFree}
             />
-          )}
-          <BetaMoveIconWrapped
-            bodyPart={betaMove.bodyPart}
-            order={betaMove.order}
-            color={color}
-            isStart={betaMove.isStart}
-            isFree={isFree}
-          />
-        </ListItemIcon>
+          </ListItemIcon>
 
-        <ListItemText
-          primary={
-            <Box
-              sx={[
-                { color },
-                // Apply text decoration to mimic the outline features on the
-                // move icon. Order here is important to get the proper
-                // precedence
-                isFree && {
-                  textDecorationLine: "underline",
-                  textDecorationStyle: "dashed",
-                  textDecorationColor: "white",
-                },
-                betaMove.isStart &&
-                  (({ palette }) => ({
+          <ListItemText
+            primary={
+              <Box
+                sx={[
+                  { color },
+                  // Apply text decoration to mimic the outline features on the
+                  // move icon. Order here is important to get the proper
+                  // precedence
+                  isFree && {
                     textDecorationLine: "underline",
-                    textDecorationColor: palette.editor.betaMoves.start.main,
-                  })),
-              ]}
-            >
-              {formatBodyPart(betaMove.bodyPart)}
-            </Box>
-          }
-          secondary={betaMove.annotation}
-        />
+                    textDecorationStyle: "dashed",
+                    textDecorationColor: "white",
+                  },
+                  betaMove.isStart &&
+                    (({ palette }) => ({
+                      textDecorationLine: "underline",
+                      textDecorationColor: palette.editor.betaMoves.start.main,
+                    })),
+                ]}
+              >
+                {formatBodyPart(betaMove.bodyPart)}
+              </Box>
+            }
+            secondary={betaMove.annotation}
+          />
+        </ListItemButton>
       </ListItem>
     );
   }

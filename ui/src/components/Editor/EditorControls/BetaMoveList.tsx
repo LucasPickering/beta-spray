@@ -8,6 +8,7 @@ import { deleteBetaMoveLocal, reorderBetaMoveLocal } from "../util/moves";
 import {
   useStance,
   useStickFigureColor as useStanceColor,
+  useStanceControls,
 } from "../util/stance";
 import { DragItem } from "../util/dnd";
 import BetaDetailsDragLayer from "./BetaDetailsDragLayer";
@@ -120,6 +121,7 @@ const BetaMoveList: React.FC<Props> = ({ betaKey }) => {
   }, [beta.moves, draggingMove]);
 
   const stance = useStance(beta.moves);
+  const { select: selectStance } = useStanceControls(beta.moves);
   // Calculate this here, otherwise each move would have to re-calculate the stance
   const stickFigureColor = useStanceColor(stance);
 
@@ -204,6 +206,7 @@ const BetaMoveList: React.FC<Props> = ({ betaKey }) => {
           stanceColor={
             stance[node.bodyPart] === node.id ? stickFigureColor : undefined
           }
+          onClick={selectStance}
           // We need to disable both onReorder and onDrop to get the child to
           // hide its drag handle
           onReorder={canEdit ? onReorder : undefined}
