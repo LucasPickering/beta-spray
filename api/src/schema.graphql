@@ -222,6 +222,7 @@ input CopyBetaInput {
 """Input data for `createBeta` mutation"""
 input CreateBetaInput {
   problem: ID!
+  name: String
 }
 
 """Input data for `createBetaMove` mutation"""
@@ -238,6 +239,8 @@ input CreateBetaMoveInput {
 """Input data for `createBoulderWithFriends` mutation"""
 input CreateBoulderWithFriendsInput {
   image: ImageUpload!
+  problemName: String
+  betaName: String
 }
 
 """Input data for `createHold` mutation"""
