@@ -62,7 +62,7 @@
     "build": "NODE_ENV=production webpack",
     "check": "npm run type-check && npm run lint",
     "analyze": "WEBPACK_BUNDLE_ANALYZER_MODE=server npm run build",
-    "lint": "eslint src/**/*.{ts,tsx}",
+    "lint": "eslint 'src/**/*.{ts,tsx}'",
     "lint:fix": "npm run lint -- --fix",
     "clean": "rm -rf build/",
     "test": "jest",
