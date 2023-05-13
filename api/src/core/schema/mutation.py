@@ -100,6 +100,8 @@ class Mutation:
         self,
         info: Info,
         image: ImageUpload,
+        problem_name: Optional[str],
+        beta_name: Optional[str],
     ) -> BetaNode:
         """
         Create a new boulder from an image, and create a default problem and
@@ -118,13 +120,21 @@ class Mutation:
         problem = resolvers.create(
             info,
             Problem,
-            {"boulder": boulder, "owner": info.context.request.user},
+            {
+                "boulder": boulder,
+                "owner": info.context.request.user,
+                "name": problem_name,
+            },
         )
         # User can grab the problem+boulder from the beta
         return resolvers.create(
             info,
             Beta,
-            {"problem": problem, "owner": info.context.request.user},
+            {
+                "problem": problem,
+                "owner": info.context.request.user,
+                "name": beta_name,
+            },
         )
 
     @gql.relay.input_mutation(
@@ -222,12 +232,18 @@ class Mutation:
     )
 
     @gql.relay.input_mutation(directives=[CreateGuestUser()])
-    def create_beta(self, info: Info, problem: gql.relay.GlobalID) -> BetaNode:
+    def create_beta(
+        self, info: Info, problem: gql.relay.GlobalID, name: Optional[str]
+    ) -> BetaNode:
         problem_dj = problem.resolve_node(info, ensure_type=Problem)
         return resolvers.create(
             info,
             Beta,
-            {"problem": problem_dj, "owner": info.context.request.user},
+            {
+                "problem": problem_dj,
+                "owner": info.context.request.user,
+                "name": name,
+            },
         )
 
     update_beta: BetaNode = gql.django.update_mutation(
