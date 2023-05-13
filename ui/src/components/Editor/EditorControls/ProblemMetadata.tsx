@@ -27,7 +27,7 @@ import { useNavigate } from "react-router-dom";
 import MutationLoadingBackdrop from "components/common/MutationLoadingBackdrop";
 import Username from "components/Account/Username";
 import DisabledTooltip from "components/common/DisabledTooltip";
-import { formatDate } from "util/date";
+import { formatDate } from "util/format";
 
 interface Props {
   problemKey: ProblemMetadata_problemNode$key;

@@ -12,6 +12,7 @@ import { optional, validateName } from "util/validator";
 import FormDialog from "components/common/FormDialog";
 import TextFormField from "components/common/TextFormField";
 import { assertIsDefined, isDefined } from "util/func";
+import { formatFileSize } from "util/format";
 
 const maxUploadSizeMB = 0.2; // 200 KB
 
@@ -126,7 +127,10 @@ const BoulderImageUpload: React.FC = () => {
 
       {/* A dialog for the user to fill in some settings *before• upload */}
       <FormDialog
-        title="Upload Problem"
+        title={
+          "Upload Problem" +
+          (isDefined(file) ? ` (${formatFileSize(file)})` : "")
+        }
         open={isDefined(file)}
         mutationState={createState}
         formState={formState}
