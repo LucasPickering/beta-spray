@@ -90,7 +90,7 @@ const baseTheme = createTheme({
         first: { main: "#FF9233" },
         last: { main: "#48CFEA" },
         // The accent color applied to start moves
-        start: { main: "48CFEA" },
+        start: { main: "#48CFEA" },
       },
       actions: {
         // Colors associated with different actions

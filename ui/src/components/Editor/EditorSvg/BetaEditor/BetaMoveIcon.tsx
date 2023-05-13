@@ -78,11 +78,7 @@ const BetaMoveIcon = React.forwardRef<
             // isStart rule, because that one should always take priority
             // for stroke color
             isFree && { stroke: "white", strokeDasharray: "1,0.5" },
-            isStart && {
-              stroke: draggable
-                ? palette.editor.betaMoves.start.main
-                : palette.editor.betaMoves.start.light,
-            },
+            isStart && { stroke: palette.editor.betaMoves.start.main },
           ]}
         />
       </g>
