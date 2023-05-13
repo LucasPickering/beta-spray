@@ -3,7 +3,7 @@ import TextFormField from "components/common/TextFormField";
 import { graphql, useFragment } from "react-relay";
 import useForm from "util/useForm";
 import useMutation from "util/useMutation";
-import { validateString } from "util/validator";
+import { validateName } from "util/validator";
 import { BetaSettings_betaNode$key } from "./__generated__/BetaSettings_betaNode.graphql";
 import { BetaSettings_updateBetaMutation } from "./__generated__/BetaSettings_updateBetaMutation.graphql";
 
@@ -28,7 +28,7 @@ const BetaSettings: React.FC<Props> = ({ betaKey, open, onClose }) => {
   );
 
   const formState = useForm({
-    name: { initialValue: beta.name, validator: validateString },
+    name: { initialValue: beta.name, validator: validateName },
   });
 
   const { commit: updateBeta, state: updateState } =

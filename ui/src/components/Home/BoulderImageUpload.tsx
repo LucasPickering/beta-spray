@@ -7,8 +7,11 @@ import useMutation from "util/useMutation";
 import { BoulderImageUpload_createBoulderWithFriendsMutation } from "./__generated__/BoulderImageUpload_createBoulderWithFriendsMutation.graphql";
 import { graphql } from "relay-runtime";
 import { useNavigate } from "react-router-dom";
-import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
-import MutationLoadingBackdrop from "components/common/MutationLoadingBackdrop";
+import useForm from "util/useForm";
+import { optional, validateName } from "util/validator";
+import FormDialog from "components/common/FormDialog";
+import TextFormField from "components/common/TextFormField";
+import { assertIsDefined, isDefined } from "util/func";
 
 const maxUploadSizeMB = 0.2; // 200 KB
 
@@ -35,6 +38,48 @@ const BoulderImageUpload: React.FC = () => {
 
   const navigate = useNavigate();
 
+  // After user picks a file, we'll store it in memory while they fill out the
+  // upload form.
+  const [file, setFile] = useState<File | undefined>();
+  const formState = useForm({
+    name: { initialValue: "", validator: optional(validateName) },
+  });
+
+  const upload = (): void => {
+    // This function shouldn't be callable if file isn't present
+    assertIsDefined(file);
+
+    createBoulderWithFriends({
+      variables: {
+        // null is a placeholder for the file data, which will be
+        // pulled from the request body and injected by the API
+        input: {
+          image: null,
+          // If name is blank, pass null to get a random one from the server
+          problemName: formState.fieldStates.name.value || undefined,
+        },
+      },
+      uploadables: {
+        // This has to match the variable path above
+        ["input.image"]: file,
+      },
+
+      // No optimistic response here, since the Editor page will
+      // need to refetch anyway and the home page refetches on load
+
+      // Redirect to the newly uploaded problem
+      onCompleted(data) {
+        // This shouldn't ever be null if the mutation succeeded
+        if (data.createBoulderWithFriends) {
+          setFile(undefined);
+          const { id: betaId, problem } = data.createBoulderWithFriends;
+          // Pre-select the created beta, to avoid waterfalled requests
+          navigate(`/problems/${problem.id}/beta/${betaId}`);
+        }
+      },
+    });
+  };
+
   return (
     <Card>
       <label htmlFor={inputId}>
@@ -50,38 +95,11 @@ const BoulderImageUpload: React.FC = () => {
               imageCompression(file, {
                 maxSizeMB: maxUploadSizeMB,
               })
-                .then((compressedFile) => {
-                  createBoulderWithFriends({
-                    variables: {
-                      // null is a placeholder for the file data, which will be
-                      // pulled from the request body and injected by the API
-                      input: { image: null },
-                    },
-                    uploadables: {
-                      // This has to match the variable path above
-                      ["input.image"]: compressedFile,
-                    },
-
-                    // No optimistic response here, since the Editor page will
-                    // need to refetch anyway and the home page refetches on load
-
-                    // Redirect to the newly uploaded problem
-                    onCompleted(data) {
-                      // This shouldn't ever be null if the mutation succeeded
-                      if (data.createBoulderWithFriends) {
-                        const { id: betaId, problem } =
-                          data.createBoulderWithFriends;
-                        // Pre-select the created beta, to avoid waterfalled requests
-                        navigate(`/problems/${problem.id}/beta/${betaId}`);
-                      }
-                    },
-                  });
-                })
+                // Store the file while the user fills out the form
+                .then((compressedFile) => setFile(compressedFile))
                 // Async errors aren't caught by error boundaries, so we need to
                 // handle this one manually
-                .catch((error: Error) => {
-                  setError(error);
-                });
+                .catch((error: Error) => setError(error));
             }
           }}
         />
@@ -106,16 +124,32 @@ const BoulderImageUpload: React.FC = () => {
         </CardActionArea>
       </label>
 
-      <ErrorSnackbar summary="Error compressing image" error={error} />
-
-      <MutationLoadingBackdrop
+      {/* A dialog for the user to fill in some settings *before• upload */}
+      <FormDialog
+        title="Upload Problem"
+        open={isDefined(file)}
         mutationState={createState}
-        message="Uploading problem…"
-      />
-      <MutationErrorSnackbar
-        message="Error uploading problem"
-        state={createState}
-      />
+        formState={formState}
+        assumeHasChanges
+        cancelWarningMessage="Cancel upload?"
+        errorMessage="Error uploading problem"
+        componentProps={{
+          saveButton: {
+            startIcon: <IconUpload />,
+            children: "Upload",
+          },
+        }}
+        onSave={upload}
+        onClose={() => setFile(undefined)}
+      >
+        <TextFormField
+          label="Problem Name"
+          state={formState.fieldStates.name}
+          helperText="Leave blank for a random name. You can change this later in the problem settings."
+        />
+      </FormDialog>
+
+      <ErrorSnackbar summary="Error compressing image" error={error} />
     </Card>
   );
 };

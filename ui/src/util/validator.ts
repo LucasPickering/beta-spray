@@ -3,9 +3,9 @@ import { isDefined } from "./func";
 type Validator = (value: string) => string | undefined;
 
 /**
- * Is the string empty, or only whitespace?
+ * Is the string *not* (empty or only whitespace)?
  */
-const empty: Validator = (value) => {
+const notBlank: Validator = (value) => {
   if (value.length === 0) {
     return "Cannot be empty";
   }
@@ -49,17 +49,18 @@ export const supportedExternalHosts = [
 ];
 
 /**
- * The default validator. Disallows empty and egregiously long strings.
+ * Generic name validator, e.g. for problem or beta names. Disallows empty and
+ * egregiously long strings.
  */
-export function validateString(value: string): string | undefined {
-  return empty(value) ?? maxLength(100)(value);
+export function validateName(value: string): string | undefined {
+  return notBlank(value) ?? maxLength(100)(value);
 }
 
 /**
  * Validate usernames
  */
 export function validateUsername(value: string): string | undefined {
-  return empty(value) ?? maxLength(25)(value) ?? simple(value);
+  return notBlank(value) ?? maxLength(25)(value) ?? simple(value);
 }
 
 /**
@@ -82,11 +83,6 @@ export function getExternalLinkLabel(url: URL): string | undefined {
  * - The length isn't too long
  */
 export function validateExternalLink(value: string): string | undefined {
-  // Empty strings are valid
-  if (value.length == 0) {
-    return undefined;
-  }
-
   try {
     const url = new URL(value);
     if (!/^https?:$/.test(url.protocol)) {
@@ -103,4 +99,13 @@ export function validateExternalLink(value: string): string | undefined {
   } catch (e) {
     return "Invalid URL";
   }
+}
+
+/**
+ * A wrapper to allow empty strings. Takes in a validator, and returns a new
+ * validator with the same logic, except that empty strings (but *not*
+ * whitespace-only strings) will be considered *valid*.
+ */
+export function optional(validator: Validator): Validator {
+  return (value) => (value.length === 0 ? undefined : validator(value));
 }
