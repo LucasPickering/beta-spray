@@ -1,20 +1,20 @@
+import { isDefined, findNodeIndex, moveArrayElement } from "util/func";
+import useMutation from "util/useMutation";
 import { List, Typography } from "@mui/material";
 import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
 import { useState, useMemo, useEffect } from "react";
 import { graphql, useFragment } from "react-relay";
-import { isDefined, findNodeIndex, moveArrayElement } from "util/func";
-import useMutation from "util/useMutation";
 import { deleteBetaMoveLocal, reorderBetaMoveLocal } from "../util/moves";
 import {
   useStance,
   useStickFigureColor as useStanceColor,
 } from "../util/stance";
+import { DragItem } from "../util/dnd";
 import BetaDetailsDragLayer from "./BetaDetailsDragLayer";
 import BetaMoveListItemSmart from "./BetaMoveListItemSmart";
 import { BetaMoveList_betaNode$key } from "./__generated__/BetaMoveList_betaNode.graphql";
 import { BetaMoveList_deleteBetaMoveMutation } from "./__generated__/BetaMoveList_deleteBetaMoveMutation.graphql";
 import { BetaMoveList_updateBetaMoveMutation } from "./__generated__/BetaMoveList_updateBetaMoveMutation.graphql";
-import { DragItem } from "../util/dnd";
 
 interface Props {
   betaKey: BetaMoveList_betaNode$key;

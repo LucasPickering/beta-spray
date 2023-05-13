@@ -1,7 +1,7 @@
+import usePreviousValue from "util/usePreviousValue";
 import { Divider, Stack, Typography, useTheme } from "@mui/material";
 import { TourProvider, useTour } from "@reactour/tour";
 import { useEffect } from "react";
-import usePreviousValue from "util/usePreviousValue";
 import { allBodyParts, formatBodyPart } from "./util/svg";
 import { BetaMoveIconWrapped } from "./EditorSvg/BetaEditor/BetaMoveIcon";
 import { HoldIconWrapped } from "./EditorSvg/HoldEditor/HoldIcon";

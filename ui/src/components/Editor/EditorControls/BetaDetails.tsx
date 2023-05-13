@@ -1,11 +1,11 @@
-import { graphql, useFragment } from "react-relay";
-import { BetaDetails_betaNode$key } from "./__generated__/BetaDetails_betaNode.graphql";
+import { queriesBetaQuery } from "util/__generated__/queriesBetaQuery.graphql";
 import { FormLabel, Skeleton } from "@mui/material";
 import { BetaContext } from "components/Editor/util/context";
-import { queriesBetaQuery } from "util/__generated__/queriesBetaQuery.graphql";
-import { betaQuery } from "../../../util/queries";
+import { graphql, useFragment } from "react-relay";
 import { withQuery } from "relay-query-wrapper";
 import { useBetaMoveColors } from "components/Editor/util/moves";
+import { betaQuery } from "../../../util/queries";
+import { BetaDetails_betaNode$key } from "./__generated__/BetaDetails_betaNode.graphql";
 import BetaMoveList from "./BetaMoveList";
 
 interface Props {

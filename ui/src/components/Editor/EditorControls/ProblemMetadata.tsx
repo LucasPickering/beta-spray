@@ -1,3 +1,6 @@
+import { queriesProblemQuery } from "util/__generated__/queriesProblemQuery.graphql";
+import useMutation from "util/useMutation";
+import { formatDate } from "util/format";
 import {
   Box,
   ListItemIcon,
@@ -8,26 +11,23 @@ import {
   TypographyProps,
 } from "@mui/material";
 import { withQuery } from "relay-query-wrapper";
-import { problemQuery } from "../../../util/queries";
-import { queriesProblemQuery } from "util/__generated__/queriesProblemQuery.graphql";
 import { graphql, useFragment } from "react-relay";
-import { ProblemMetadata_problemNode$key } from "./__generated__/ProblemMetadata_problemNode.graphql";
 import ExternalProblemLink from "components/common/ExternalProblemLink";
 import {
   Delete as IconDelete,
   Settings as IconSettings,
 } from "@mui/icons-material";
-import ProblemSettings from "./ProblemSettings";
 import { useState } from "react";
 import ActionsMenu from "components/common/ActionsMenu";
-import { ProblemMetadata_deleteProblemMutation } from "./__generated__/ProblemMetadata_deleteProblemMutation.graphql";
 import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
-import useMutation from "util/useMutation";
 import { useNavigate } from "react-router-dom";
 import MutationLoadingBackdrop from "components/common/MutationLoadingBackdrop";
 import Username from "components/Account/Username";
 import DisabledTooltip from "components/common/DisabledTooltip";
-import { formatDate } from "util/format";
+import { problemQuery } from "../../../util/queries";
+import { ProblemMetadata_deleteProblemMutation } from "./__generated__/ProblemMetadata_deleteProblemMutation.graphql";
+import ProblemSettings from "./ProblemSettings";
+import { ProblemMetadata_problemNode$key } from "./__generated__/ProblemMetadata_problemNode.graphql";
 
 interface Props {
   problemKey: ProblemMetadata_problemNode$key;

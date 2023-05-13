@@ -1,3 +1,5 @@
+import { queriesProblemQuery } from "util/__generated__/queriesProblemQuery.graphql";
+import { queriesBetaQuery } from "util/__generated__/queriesBetaQuery.graphql";
 import { useContext } from "react";
 import { alpha, Box, Divider, IconButton, Paper } from "@mui/material";
 import {
@@ -10,10 +12,8 @@ import { EditorVisibilityContext } from "components/Editor/util/context";
 import TooltipIconButton from "components/common/TooltipIconButton";
 import { Link } from "react-router-dom";
 import { PreloadedQuery } from "react-relay";
-import { queriesProblemQuery } from "util/__generated__/queriesProblemQuery.graphql";
-import { queriesBetaQuery } from "util/__generated__/queriesBetaQuery.graphql";
-import EditorModeSelect from "./EditorModeSelect";
 import { useTour } from "@reactour/tour";
+import EditorModeSelect from "./EditorModeSelect";
 
 interface Props {
   problemQueryRef: PreloadedQuery<queriesProblemQuery> | null | undefined;

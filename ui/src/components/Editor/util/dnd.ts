@@ -1,3 +1,4 @@
+import { DistributivePick } from "util/typing";
 import {
   // These are the O.G. approved imports
   /* eslint-disable no-restricted-syntax */
@@ -16,7 +17,6 @@ import {
   DropTargetMonitor,
 } from "react-dnd";
 import { BodyPart, OverlayPosition } from "./svg";
-import { DistributivePick } from "util/typing";
 
 /**
  * The classes of things we can drag, and the metadata attached to each

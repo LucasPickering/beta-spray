@@ -1,3 +1,4 @@
+import { isDefined } from "util/func";
 import React from "react";
 import {
   DragHandle as IconDragHandle,
@@ -13,10 +14,9 @@ import {
 } from "@mui/material";
 import { formatBodyPart } from "components/Editor/util/svg";
 import { graphql, useFragment } from "react-relay";
-import { BetaMoveListItem_betaMoveNode$key } from "./__generated__/BetaMoveListItem_betaMoveNode.graphql";
 import { BetaMoveIconWrapped } from "../EditorSvg/BetaEditor/BetaMoveIcon";
-import { isDefined } from "util/func";
 import { useBetaMoveColor } from "../util/moves";
+import { BetaMoveListItem_betaMoveNode$key } from "./__generated__/BetaMoveListItem_betaMoveNode.graphql";
 
 interface Props extends React.ComponentProps<typeof ListItem> {
   betaMoveKey: BetaMoveListItem_betaMoveNode$key;

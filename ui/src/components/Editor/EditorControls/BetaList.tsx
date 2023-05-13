@@ -1,12 +1,10 @@
-import { useEffect, useId } from "react";
-import { graphql, useFragment } from "react-relay";
-import { BetaList_problemNode$key } from "./__generated__/BetaList_problemNode.graphql";
-import { BetaList_createBetaMutation } from "./__generated__/BetaList_createBetaMutation.graphql";
-import { BetaList_deleteBetaMutation } from "./__generated__/BetaList_deleteBetaMutation.graphql";
-import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
 import useMutation from "util/useMutation";
 import { queriesProblemQuery } from "util/__generated__/queriesProblemQuery.graphql";
-import { problemQuery } from "../../../util/queries";
+import { isDefined } from "util/func";
+import { useOptimisiticUserFields } from "util/user";
+import { useEffect, useId } from "react";
+import { graphql, useFragment } from "react-relay";
+import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
 import { withQuery } from "relay-query-wrapper";
 import {
   Button,
@@ -17,11 +15,13 @@ import {
   Skeleton,
 } from "@mui/material";
 import { Add as IconAdd } from "@mui/icons-material";
+import { generateUniqueClientID } from "relay-runtime";
+import { problemQuery } from "../../../util/queries";
+import { BetaList_problemNode$key } from "./__generated__/BetaList_problemNode.graphql";
+import { BetaList_createBetaMutation } from "./__generated__/BetaList_createBetaMutation.graphql";
+import { BetaList_deleteBetaMutation } from "./__generated__/BetaList_deleteBetaMutation.graphql";
 import BetaListItem from "./BetaListItem";
 import { BetaList_copyBetaMutation } from "./__generated__/BetaList_copyBetaMutation.graphql";
-import { isDefined } from "util/func";
-import { generateUniqueClientID } from "relay-runtime";
-import { useOptimisiticUserFields } from "util/user";
 
 interface Props {
   problemKey: BetaList_problemNode$key;

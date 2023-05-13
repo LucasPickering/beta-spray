@@ -7,10 +7,10 @@ import {
   Typography,
 } from "@mui/material";
 import { graphql, useFragment } from "react-relay";
-import { ProblemCard_problemNode$key } from "./__generated__/ProblemCard_problemNode.graphql";
 import LinkBehavior from "components/common/LinkBehavior";
 import ExternalProblemLink from "components/common/ExternalProblemLink";
 import Username from "components/Account/Username";
+import { ProblemCard_problemNode$key } from "./__generated__/ProblemCard_problemNode.graphql";
 
 interface Props {
   problemKey: ProblemCard_problemNode$key;

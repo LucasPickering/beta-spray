@@ -1,9 +1,9 @@
+import { assertIsDefined, isDefined } from "util/func";
 import React, { useContext, useRef, useState } from "react";
 import { useDOMToSVGPosition } from "components/Editor/util/svg";
 import { useZoomPan } from "components/Editor/util/zoom";
 import { subtract } from "components/Editor/util/svg";
 import { useDrag } from "@use-gesture/react";
-import { assertIsDefined, isDefined } from "util/func";
 import { Interpolation, Theme } from "@emotion/react";
 import { SvgContext } from "components/Editor/util/context";
 import { useDrop } from "../util/dnd";

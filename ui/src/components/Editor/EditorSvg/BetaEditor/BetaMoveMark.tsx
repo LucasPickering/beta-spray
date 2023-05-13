@@ -1,3 +1,4 @@
+import { isDefined } from "util/func";
 import { useRef, useState } from "react";
 import {
   DragFinishHandler,
@@ -5,20 +6,19 @@ import {
   useDragLayer,
 } from "components/Editor/util/dnd";
 import { ClickAwayListener, useTheme } from "@mui/material";
-import Positioned from "../common/Positioned";
-import BetaMoveIcon from "./BetaMoveIcon";
 import { graphql, useFragment } from "react-relay";
-import { BetaMoveMark_betaMoveNode$key } from "./__generated__/BetaMoveMark_betaMoveNode.graphql";
 import {
   useBetaMoveColor,
   useBetaMoveVisualPosition,
 } from "components/Editor/util/moves";
-import { isDefined } from "util/func";
-import ActionOrbs from "../common/ActionOrbs";
 import { Delete as IconDelete, Notes as IconNotes } from "@mui/icons-material";
-import AddBetaMoveMark from "./AddBetaMoveMark";
+import ActionOrbs from "../common/ActionOrbs";
+import Positioned from "../common/Positioned";
 import ActionOrb from "../common/ActionOrb";
 import SvgTooltip from "../common/SvgTooltip";
+import AddBetaMoveMark from "./AddBetaMoveMark";
+import { BetaMoveMark_betaMoveNode$key } from "./__generated__/BetaMoveMark_betaMoveNode.graphql";
+import BetaMoveIcon from "./BetaMoveIcon";
 
 interface Props {
   betaMoveKey: BetaMoveMark_betaMoveNode$key;

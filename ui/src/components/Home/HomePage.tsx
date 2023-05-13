@@ -1,6 +1,7 @@
 import { Grid } from "@mui/material";
 import { useEffect } from "react";
 import { useQueryLoader } from "react-relay";
+import ErrorBoundary from "components/common/ErrorBoundary";
 import PublicProblemList from "./PublicProblemList";
 import type { YourProblemListQuery as YourProblemListQueryType } from "./__generated__/YourProblemListQuery.graphql";
 import YourProblemListQuery from "./__generated__/YourProblemListQuery.graphql";
@@ -8,7 +9,6 @@ import type { PublicProblemListQuery as PublicProblemListQueryType } from "./__g
 import PublicProblemListQuery from "./__generated__/PublicProblemListQuery.graphql";
 import YourProblemList from "./YourProblemList";
 import BoulderImageUpload from "./BoulderImageUpload";
-import ErrorBoundary from "components/common/ErrorBoundary";
 
 const HomePage: React.FC = () => {
   const [yourProblemsQueryRef, loadYourProblemsQuery] =

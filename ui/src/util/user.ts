@@ -3,6 +3,7 @@
  * current user.
  */
 
+import type { queriesCurrentUserQuery as queriesCurrentUserQueryType } from "util/__generated__/queriesCurrentUserQuery.graphql";
 import React, { useContext } from "react";
 import { PreloadedQuery, useFragment, usePreloadedQuery } from "react-relay";
 import {
@@ -10,10 +11,9 @@ import {
   generateUniqueClientID,
   graphql,
 } from "relay-runtime";
-import type { queriesCurrentUserQuery as queriesCurrentUserQueryType } from "util/__generated__/queriesCurrentUserQuery.graphql";
+import { useLocation } from "react-router-dom";
 import { currentUserQuery } from "./queries";
 import { userUseOptimisiticUserFields_currentUser$key } from "./__generated__/userUseOptimisiticUserFields_currentUser.graphql";
-import { useLocation } from "react-router-dom";
 
 interface UserQuery {
   queryRef: PreloadedQuery<queriesCurrentUserQueryType>;

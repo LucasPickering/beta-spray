@@ -1,14 +1,14 @@
-import { HoldIconWrapped } from "../EditorSvg/HoldEditor/HoldIcon";
-import TooltipIconButton from "components/common/TooltipIconButton";
 import { queriesProblemQuery } from "util/__generated__/queriesProblemQuery.graphql";
-import { withQuery } from "relay-query-wrapper";
-import { graphql, useFragment } from "react-relay";
 import { problemQuery } from "util/queries";
-import { HoldEditorModeButton_problemNode$key } from "./__generated__/HoldEditorModeButton_problemNode.graphql";
+import { graphql, useFragment } from "react-relay";
+import { withQuery } from "relay-query-wrapper";
+import TooltipIconButton from "components/common/TooltipIconButton";
 import { ToggleButtonProps } from "@mui/material";
-import { EditorMode } from "../util/context";
 import TooltipToggleButton from "components/common/TooltipToggleButton";
+import { EditorMode } from "../util/context";
+import { HoldIconWrapped } from "../EditorSvg/HoldEditor/HoldIcon";
 import { editorTourTags } from "../EditorTour";
+import { HoldEditorModeButton_problemNode$key } from "./__generated__/HoldEditorModeButton_problemNode.graphql";
 
 interface Props extends ToggleButtonProps {
   problemKey: HoldEditorModeButton_problemNode$key;

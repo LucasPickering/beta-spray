@@ -1,3 +1,4 @@
+import { isDefined } from "util/func";
 import { useRef, useState } from "react";
 import {
   DragFinishHandler,
@@ -6,15 +7,14 @@ import {
   useDrop,
 } from "components/Editor/util/dnd";
 import { graphql, useFragment } from "react-relay";
-import { HoldMark_holdNode$key } from "./__generated__/HoldMark_holdNode.graphql";
-import Positioned from "../common/Positioned";
-import HoldIcon from "./HoldIcon";
 import { ClickAwayListener, useTheme } from "@mui/material";
-import { isDefined } from "util/func";
-import ActionOrbs from "../common/ActionOrbs";
 import { Delete as IconDelete, Notes as IconNotes } from "@mui/icons-material";
+import ActionOrbs from "../common/ActionOrbs";
+import Positioned from "../common/Positioned";
 import ActionOrb from "../common/ActionOrb";
 import SvgTooltip from "../common/SvgTooltip";
+import HoldIcon from "./HoldIcon";
+import { HoldMark_holdNode$key } from "./__generated__/HoldMark_holdNode.graphql";
 
 interface Props {
   holdKey: HoldMark_holdNode$key;

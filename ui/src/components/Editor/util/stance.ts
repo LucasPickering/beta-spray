@@ -1,9 +1,9 @@
+import { findNodeIndex, isDefined, last, noop } from "util/func";
+import { hexToHtml, averageColors, htmlToHex } from "util/math";
 import React, { useCallback, useEffect } from "react";
 import { useContext } from "react";
 import { useFragment } from "react-relay";
 import { graphql } from "relay-runtime";
-import { findNodeIndex, isDefined, last, noop } from "util/func";
-import { hexToHtml, averageColors, htmlToHex } from "util/math";
 import { StateContext } from "./context";
 import { useBetaMoveColor } from "./moves";
 import { Stance } from "./svg";

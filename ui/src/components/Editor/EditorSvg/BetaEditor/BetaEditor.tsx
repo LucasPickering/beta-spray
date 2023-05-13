@@ -1,14 +1,10 @@
-import { useContext, useMemo, useState } from "react";
-import { useFragment } from "react-relay";
-import { graphql } from "relay-runtime";
-import { BetaEditor_betaNode$key } from "./__generated__/BetaEditor_betaNode.graphql";
 import { assertIsDefined, findNode, groupBy, isDefined } from "util/func";
-import StickFigure from "./StickFigure";
-import BetaChainLine from "./BetaChainLine";
-import BetaMoveMark from "./BetaMoveMark";
-import { withQuery } from "relay-query-wrapper";
 import { queriesBetaQuery } from "util/__generated__/queriesBetaQuery.graphql";
 import { betaQuery } from "util/queries";
+import { withQuery } from "relay-query-wrapper";
+import { graphql } from "relay-runtime";
+import { useFragment } from "react-relay";
+import { useContext, useMemo, useState } from "react";
 import { BetaContext, EditorModeContext } from "components/Editor/util/context";
 import { useLastMoveInStance, useStance } from "components/Editor/util/stance";
 import { DragFinishHandler } from "components/Editor/util/dnd";
@@ -20,6 +16,10 @@ import {
 import useBetaMoveMutations from "components/Editor/util/useBetaMoveMutations";
 import EditAnnotationDialog from "../EditAnnotationDialog";
 import EditableFilter from "../EditableFilter";
+import BetaMoveMark from "./BetaMoveMark";
+import BetaChainLine from "./BetaChainLine";
+import StickFigure from "./StickFigure";
+import { BetaEditor_betaNode$key } from "./__generated__/BetaEditor_betaNode.graphql";
 
 interface Props {
   betaKey: BetaEditor_betaNode$key;

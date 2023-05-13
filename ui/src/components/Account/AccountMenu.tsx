@@ -1,3 +1,7 @@
+import { currentUserQuery } from "util/queries";
+import useMutation from "util/useMutation";
+import { queriesCurrentUserQuery } from "util/__generated__/queriesCurrentUserQuery.graphql";
+import { UserQueryContext, useLogInPath } from "util/user";
 import {
   AccountCircle as IconAccountCircle,
   Login as IconLogin,
@@ -19,13 +23,9 @@ import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
 import { useState } from "react";
 import { graphql, useFragment } from "react-relay";
 import { withContextQuery } from "relay-query-wrapper";
-import { currentUserQuery } from "util/queries";
-import useMutation from "util/useMutation";
-import { queriesCurrentUserQuery } from "util/__generated__/queriesCurrentUserQuery.graphql";
 import AccountSettings from "./AccountSettings";
 import { AccountMenu_logOutMutation } from "./__generated__/AccountMenu_logOutMutation.graphql";
 import { AccountMenu_currentUser$key } from "./__generated__/AccountMenu_currentUser.graphql";
-import { UserQueryContext, useLogInPath } from "util/user";
 import Username from "./Username";
 
 interface Props {

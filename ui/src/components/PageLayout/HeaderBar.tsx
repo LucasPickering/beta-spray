@@ -1,3 +1,4 @@
+import useIsWide from "util/useIsWide";
 import {
   Box,
   Link,
@@ -10,7 +11,6 @@ import {
   Typography,
 } from "@mui/material";
 import AccountMenu from "components/Account/AccountMenu";
-import useIsWide from "util/useIsWide";
 import HeaderLink from "../common/HeaderLink";
 import Logo from "../common/Logo";
 import NavLink from "../common/NavLink";

@@ -1,10 +1,10 @@
+import useForm from "util/useForm";
+import { validateUsername } from "util/validator";
+import useMutation from "util/useMutation";
 import FormDialog from "components/common/FormDialog";
 import TextFormField from "components/common/TextFormField";
 import { graphql, useFragment } from "react-relay";
-import useForm from "util/useForm";
-import { validateUsername } from "util/validator";
 import { AccountSettings_userNode$key } from "./__generated__/AccountSettings_userNode.graphql";
-import useMutation from "util/useMutation";
 import { AccountSettings_updateUserMutation } from "./__generated__/AccountSettings_updateUserMutation.graphql";
 
 interface Props {

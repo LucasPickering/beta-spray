@@ -1,8 +1,8 @@
 import React, { useContext, useState } from "react";
 import { XYCoord } from "react-dnd";
-import { SvgContext } from "./context";
 import { noop } from "../../../util/func";
 import { coerce } from "../../../util/math";
+import { SvgContext } from "./context";
 import { add, OverlayPosition, useDOMToSVGPosition } from "./svg";
 
 /** Minimum editor zoom level */

@@ -1,6 +1,6 @@
-import { Link } from "@mui/material";
 import { isDefined } from "util/func";
 import { getExternalLinkLabel } from "util/validator";
+import { Link } from "@mui/material";
 
 interface Props {
   children?: string;

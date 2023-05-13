@@ -1,9 +1,9 @@
-import { useQueryLoader } from "react-relay";
 import queriesCurrentUserQuery from "util/__generated__/queriesCurrentUserQuery.graphql";
 import type { queriesCurrentUserQuery as queriesCurrentUserQueryType } from "util/__generated__/queriesCurrentUserQuery.graphql";
-import React, { useEffect } from "react";
 import { isDefined } from "util/func";
 import { UserQueryContext } from "util/user";
+import React, { useEffect } from "react";
+import { useQueryLoader } from "react-relay";
 
 interface Props {
   children?: React.ReactNode;

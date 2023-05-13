@@ -1,13 +1,13 @@
+import { currentUserQuery } from "util/queries";
+import { queriesCurrentUserQuery } from "util/__generated__/queriesCurrentUserQuery.graphql";
+import { UserQueryContext } from "util/user";
 import { Button, Grid, Link, Paper, Typography } from "@mui/material";
 import { IconGoogle } from "assets";
 import Loading from "components/common/Loading";
 import { graphql, useFragment } from "react-relay";
 import { Navigate, useSearchParams } from "react-router-dom";
 import { withContextQuery } from "relay-query-wrapper";
-import { currentUserQuery } from "util/queries";
-import { queriesCurrentUserQuery } from "util/__generated__/queriesCurrentUserQuery.graphql";
 import { LogInPage_currentUser$key } from "./__generated__/LogInPage_currentUser.graphql";
-import { UserQueryContext } from "util/user";
 
 interface Props {
   currentUserKey: LogInPage_currentUser$key;

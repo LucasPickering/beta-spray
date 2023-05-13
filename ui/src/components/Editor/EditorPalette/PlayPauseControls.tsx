@@ -1,3 +1,4 @@
+import { queriesBetaQuery } from "util/__generated__/queriesBetaQuery.graphql";
 import {
   PlayArrow as IconPlayArrow,
   Pause as IconPause,
@@ -9,15 +10,14 @@ import {
 import { useContext, useEffect, useMemo, useState } from "react";
 import { graphql, useFragment } from "react-relay";
 import { withQuery } from "relay-query-wrapper";
-import { betaQuery } from "../../../util/queries";
-import { queriesBetaQuery } from "util/__generated__/queriesBetaQuery.graphql";
-import { PlayPauseControls_betaNode$key } from "./__generated__/PlayPauseControls_betaNode.graphql";
 import {
   EditorModeContext,
   EditorVisibilityContext,
 } from "components/Editor/util/context";
-import { useStanceControls } from "../util/stance";
 import { alpha, Box, IconButton, Paper } from "@mui/material";
+import { betaQuery } from "../../../util/queries";
+import { useStanceControls } from "../util/stance";
+import { PlayPauseControls_betaNode$key } from "./__generated__/PlayPauseControls_betaNode.graphql";
 
 /**
  * Length of time (in milliseconds) between steps while playing moves.

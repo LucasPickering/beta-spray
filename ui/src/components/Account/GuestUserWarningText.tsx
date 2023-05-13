@@ -1,5 +1,5 @@
-import { Link } from "@mui/material";
 import { useLogInPath } from "util/user";
+import { Link } from "@mui/material";
 
 /**
  * Friendly little text blob warning user that their shit could get lost.

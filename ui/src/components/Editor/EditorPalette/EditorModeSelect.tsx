@@ -1,13 +1,13 @@
+import { queriesProblemQuery } from "util/__generated__/queriesProblemQuery.graphql";
+import { queriesBetaQuery } from "util/__generated__/queriesBetaQuery.graphql";
+import { isDefined } from "util/func";
 import { useContext } from "react";
 import { ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { Visibility as IconVisibility } from "@mui/icons-material";
 import { EditorMode, EditorModeContext } from "components/Editor/util/context";
 import { PreloadedQuery } from "react-relay";
-import { queriesProblemQuery } from "util/__generated__/queriesProblemQuery.graphql";
-import { queriesBetaQuery } from "util/__generated__/queriesBetaQuery.graphql";
 import HoldEditorModeButton from "./HoldEditorModeButton";
 import BetaEditorModeButton from "./BetaEditorModeButton";
-import { isDefined } from "util/func";
 
 interface Props {
   problemQueryRef: PreloadedQuery<queriesProblemQuery> | null | undefined;

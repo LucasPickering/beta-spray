@@ -1,5 +1,7 @@
-import { graphql, useFragment } from "react-relay";
-import { GuestUserWarningDialog_currentUser$key } from "./__generated__/GuestUserWarningDialog_currentUser.graphql";
+import { queriesCurrentUserQuery } from "util/__generated__/queriesCurrentUserQuery.graphql";
+import { UserQueryContext, useLogInPath } from "util/user";
+import { currentUserQuery } from "util/queries";
+import { withContextQuery } from "relay-query-wrapper";
 import {
   Button,
   Dialog,
@@ -9,11 +11,9 @@ import {
   DialogTitle,
   Link,
 } from "@mui/material";
-import { queriesCurrentUserQuery } from "util/__generated__/queriesCurrentUserQuery.graphql";
-import { UserQueryContext, useLogInPath } from "util/user";
-import { withContextQuery } from "relay-query-wrapper";
-import { currentUserQuery } from "util/queries";
+import { graphql, useFragment } from "react-relay";
 import { useEffect, useState } from "react";
+import { GuestUserWarningDialog_currentUser$key } from "./__generated__/GuestUserWarningDialog_currentUser.graphql";
 import GuestUserWarningText from "./GuestUserWarningText";
 
 const storageKey = "guestUserWarning";

@@ -1,6 +1,7 @@
-import { graphql, useFragment } from "react-relay";
 import { findNode, isDefined } from "util/func";
 import useMutation, { MutationState } from "util/useMutation";
+import { graphql, useFragment } from "react-relay";
+import { generateUniqueClientID } from "relay-runtime";
 import { DropResult } from "./dnd";
 import { useStanceControls } from "./stance";
 import { BodyPart, OverlayPosition } from "./svg";
@@ -10,7 +11,6 @@ import { useBetaMoveMutations_deleteBetaMoveMutation } from "./__generated__/use
 import { useBetaMoveMutations_updateBetaMoveAnnotationMutation } from "./__generated__/useBetaMoveMutations_updateBetaMoveAnnotationMutation.graphql";
 import { useBetaMoveMutations_relocateBetaMoveMutation } from "./__generated__/useBetaMoveMutations_relocateBetaMoveMutation.graphql";
 import { createBetaMoveLocal, deleteBetaMoveLocal } from "./moves";
-import { generateUniqueClientID } from "relay-runtime";
 
 interface Mutation<T> {
   callback: (data: T) => void;

@@ -1,5 +1,5 @@
-import React from "react";
 import { noop } from "util/func";
+import React from "react";
 import { Dimensions, OverlayPosition } from "./svg";
 
 export interface SvgContextType {

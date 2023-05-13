@@ -1,9 +1,9 @@
 import { graphql, usePaginationFragment } from "react-relay";
+import { withQuery } from "relay-query-wrapper";
 import { PublicProblemList_query$key } from "./__generated__/PublicProblemList_query.graphql";
 import PublicProblemListQuery, {
   PublicProblemListQuery as PublicProblemListQueryType,
 } from "./__generated__/PublicProblemListQuery.graphql";
-import { withQuery } from "relay-query-wrapper";
 import ProblemList, { ProblemListSkeleton } from "./ProblemList";
 
 interface Props {

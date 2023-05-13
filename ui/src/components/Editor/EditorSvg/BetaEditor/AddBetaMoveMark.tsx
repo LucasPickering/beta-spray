@@ -1,10 +1,10 @@
+import { isDefined } from "util/func";
 import { useTheme } from "@mui/material";
 import { DragFinishHandler, useDrag } from "components/Editor/util/dnd";
 import { BodyPart } from "components/Editor/util/svg";
 import { styleDraggable, styleDragging } from "styles/svg";
-import { isDefined } from "util/func";
-import BetaMoveIcon from "./BetaMoveIcon";
 import { orbRadius } from "../common/ActionOrb";
+import BetaMoveIcon from "./BetaMoveIcon";
 
 interface Props {
   bodyPart: BodyPart;

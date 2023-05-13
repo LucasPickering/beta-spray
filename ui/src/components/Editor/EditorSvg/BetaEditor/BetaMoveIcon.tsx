@@ -1,3 +1,4 @@
+import { isDefined } from "util/func";
 import React from "react";
 import { BodyPart } from "components/Editor/util/svg";
 import {
@@ -7,7 +8,6 @@ import {
   styleClickable,
 } from "styles/svg";
 import { Interpolation, Theme } from "@emotion/react";
-import { isDefined } from "util/func";
 import { SvgIcon, SvgIconProps } from "@mui/material";
 import { getEditableFilterUrl } from "../EditableFilter";
 

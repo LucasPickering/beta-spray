@@ -9,15 +9,15 @@ import {
   subtract,
   unit,
 } from "components/Editor/util/svg";
-import { stance_betaMoveNodeConnection$key } from "../../util/__generated__/stance_betaMoveNodeConnection.graphql";
-import Line from "../common/Line";
 import { useStance, useStickFigureColor } from "components/Editor/util/stance";
 import { SvgContext } from "components/Editor/util/context";
 import { DragFinishHandler } from "components/Editor/util/dnd";
 import { useBetaMoveVisualPosition } from "components/Editor/util/moves";
-import AddBetaMoveMark from "./AddBetaMoveMark";
+import Line from "../common/Line";
+import { stance_betaMoveNodeConnection$key } from "../../util/__generated__/stance_betaMoveNodeConnection.graphql";
 import Positioned from "../common/Positioned";
 import { getEditableFilterUrl } from "../EditableFilter";
+import AddBetaMoveMark from "./AddBetaMoveMark";
 
 /**
  * The torso will always be this percentage of the distance between hands and

@@ -1,8 +1,8 @@
+import { assertIsDefined } from "util/func";
 import { useCallback, useContext } from "react";
 import { XYCoord } from "react-dnd";
-import { SvgContext } from "./context";
-import { assertIsDefined } from "util/func";
 import type { BodyPart as BodyPartAPI } from "../EditorSvg/BetaEditor/__generated__/BetaEditor_betaNode.graphql";
+import { SvgContext } from "./context";
 
 /**
  * 2D dimension of a rectangle

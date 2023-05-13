@@ -1,21 +1,21 @@
+import useMutation from "util/useMutation";
+import { assertIsDefined, findNode } from "util/func";
 import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
 import { useFragment } from "react-relay";
 import { generateUniqueClientID, graphql } from "relay-runtime";
-import useMutation from "util/useMutation";
-import { HoldEditor_problemNode$key } from "./__generated__/HoldEditor_problemNode.graphql";
-import HoldMark from "./HoldMark";
-import PanZone from "../PanZone";
-import { HoldEditor_createHoldMutation } from "./__generated__/HoldEditor_createHoldMutation.graphql";
-import { HoldEditor_deleteHoldMutation } from "./__generated__/HoldEditor_deleteHoldMutation.graphql";
 import { DragFinishHandler } from "components/Editor/util/dnd";
 import { useContext, useState } from "react";
-import EditAnnotationDialog from "../EditAnnotationDialog";
-import { assertIsDefined, findNode } from "util/func";
-import { HoldEditor_updateHoldPositionMutation } from "./__generated__/HoldEditor_updateHoldPositionMutation.graphql";
-import { HoldEditor_updateHoldAnnotationMutation } from "./__generated__/HoldEditor_updateHoldAnnotationMutation.graphql";
 import { useDOMToSVGPosition } from "components/Editor/util/svg";
 import { EditorModeContext } from "components/Editor/util/context";
+import PanZone from "../PanZone";
+import EditAnnotationDialog from "../EditAnnotationDialog";
 import EditableFilter from "../EditableFilter";
+import { HoldEditor_problemNode$key } from "./__generated__/HoldEditor_problemNode.graphql";
+import HoldMark from "./HoldMark";
+import { HoldEditor_createHoldMutation } from "./__generated__/HoldEditor_createHoldMutation.graphql";
+import { HoldEditor_deleteHoldMutation } from "./__generated__/HoldEditor_deleteHoldMutation.graphql";
+import { HoldEditor_updateHoldPositionMutation } from "./__generated__/HoldEditor_updateHoldPositionMutation.graphql";
+import { HoldEditor_updateHoldAnnotationMutation } from "./__generated__/HoldEditor_updateHoldAnnotationMutation.graphql";
 
 interface Props {
   problemKey: HoldEditor_problemNode$key;

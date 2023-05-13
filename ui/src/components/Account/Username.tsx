@@ -1,8 +1,8 @@
 import { Box, IconProps, Skeleton } from "@mui/material";
 import { graphql, useFragment } from "react-relay";
-import { Username_userNode$key } from "./__generated__/Username_userNode.graphql";
 import HelpAnnotated from "components/common/HelpAnnotated";
 import { Person as IconPerson } from "@mui/icons-material";
+import { Username_userNode$key } from "./__generated__/Username_userNode.graphql";
 import GuestUserWarningText from "./GuestUserWarningText";
 
 interface Props {

@@ -1,6 +1,6 @@
+import { isDefined } from "util/func";
 import { useEffect, useRef } from "react";
 import { graphql, useFragment } from "react-relay";
-import { BetaMoveListItemSmart_betaMoveNode$key } from "./__generated__/BetaMoveListItemSmart_betaMoveNode.graphql";
 import { XYCoord } from "react-dnd";
 import {
   DragItem,
@@ -8,8 +8,8 @@ import {
   useDrag,
   useDrop,
 } from "components/Editor/util/dnd";
+import { BetaMoveListItemSmart_betaMoveNode$key } from "./__generated__/BetaMoveListItemSmart_betaMoveNode.graphql";
 import BetaMoveListItem from "./BetaMoveListItem";
-import { isDefined } from "util/func";
 
 interface Props {
   betaMoveKey: BetaMoveListItemSmart_betaMoveNode$key;

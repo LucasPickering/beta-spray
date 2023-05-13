@@ -1,15 +1,15 @@
-import React from "react";
-import { BetaMoveIconWrapped } from "../EditorSvg/BetaEditor/BetaMoveIcon";
-import TooltipIconButton from "components/common/TooltipIconButton";
-import { withQuery } from "relay-query-wrapper";
-import { graphql, useFragment } from "react-relay";
 import { betaQuery } from "util/queries";
 import { queriesBetaQuery } from "util/__generated__/queriesBetaQuery.graphql";
-import { BetaEditorModeButton_betaNode$key } from "./__generated__/BetaEditorModeButton_betaNode.graphql";
+import { withQuery } from "relay-query-wrapper";
+import { graphql, useFragment } from "react-relay";
+import TooltipIconButton from "components/common/TooltipIconButton";
+import React from "react";
 import { ToggleButtonProps } from "@mui/material";
-import { EditorMode } from "../util/context";
 import TooltipToggleButton from "components/common/TooltipToggleButton";
+import { BetaMoveIconWrapped } from "../EditorSvg/BetaEditor/BetaMoveIcon";
+import { EditorMode } from "../util/context";
 import { editorTourTags } from "../EditorTour";
+import { BetaEditorModeButton_betaNode$key } from "./__generated__/BetaEditorModeButton_betaNode.graphql";
 
 interface Props extends ToggleButtonProps {
   betaKey: BetaEditorModeButton_betaNode$key;

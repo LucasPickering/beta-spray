@@ -1,6 +1,6 @@
+import { assertIsDefined, findNode } from "util/func";
 import { graphql, useFragment } from "react-relay";
 import { DragItemWithKind } from "components/Editor/util/dnd";
-import { assertIsDefined, findNode } from "util/func";
 import BetaMoveListItem from "./BetaMoveListItem";
 import { BetaDetailsDragPreview_betaMoveNodeConnection$key } from "./__generated__/BetaDetailsDragPreview_betaMoveNodeConnection.graphql";
 

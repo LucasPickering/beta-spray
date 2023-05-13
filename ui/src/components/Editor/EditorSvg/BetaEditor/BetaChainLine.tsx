@@ -1,12 +1,12 @@
 import { graphql } from "relay-runtime";
 import { useFragment } from "react-relay";
-import { BetaChainLine_startBetaMoveNode$key } from "./__generated__/BetaChainLine_startBetaMoveNode.graphql";
-import { BetaChainLine_endBetaMoveNode$key } from "./__generated__/BetaChainLine_endBetaMoveNode.graphql";
 import {
   useBetaMoveColor,
   useBetaMoveVisualPosition,
 } from "components/Editor/util/moves";
 import { getEditableFilterUrl } from "../EditableFilter";
+import { BetaChainLine_startBetaMoveNode$key } from "./__generated__/BetaChainLine_startBetaMoveNode.graphql";
+import { BetaChainLine_endBetaMoveNode$key } from "./__generated__/BetaChainLine_endBetaMoveNode.graphql";
 
 interface Props {
   startMoveKey: BetaChainLine_startBetaMoveNode$key;

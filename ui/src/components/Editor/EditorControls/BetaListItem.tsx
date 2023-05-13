@@ -13,11 +13,11 @@ import {
   Settings as IconSettings,
 } from "@mui/icons-material";
 import { graphql, useFragment } from "react-relay";
-import { BetaListItem_betaNode$key } from "./__generated__/BetaListItem_betaNode.graphql";
 import ActionsMenu from "components/common/ActionsMenu";
 import Username from "components/Account/Username";
-import BetaSettings from "./BetaSettings";
 import DisabledTooltip from "components/common/DisabledTooltip";
+import BetaSettings from "./BetaSettings";
+import { BetaListItem_betaNode$key } from "./__generated__/BetaListItem_betaNode.graphql";
 
 interface Props {
   betaKey: BetaListItem_betaNode$key;

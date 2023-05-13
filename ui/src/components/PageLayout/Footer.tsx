@@ -1,6 +1,6 @@
+import useIsWide from "util/useIsWide";
 import { Box, Divider, Link, Stack, Typography } from "@mui/material";
 import { IconGitHub, IconInstagram } from "assets";
-import useIsWide from "util/useIsWide";
 
 const Footer: React.FC = () => {
   const isWide = useIsWide();

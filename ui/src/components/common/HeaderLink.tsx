@@ -1,7 +1,7 @@
 import React from "react";
 import { Link as MuiLink, useTheme } from "@mui/material";
-import NavLink from "./NavLink";
 import { ClassNames } from "@emotion/react";
+import NavLink from "./NavLink";
 
 type Props = React.ComponentProps<typeof MuiLink> &
   React.ComponentProps<typeof NavLink>;
