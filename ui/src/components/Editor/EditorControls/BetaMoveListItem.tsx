@@ -123,26 +123,7 @@ const BetaMoveListItem = React.forwardRef<HTMLLIElement, Props>(
 
           <ListItemText
             primary={
-              <Box
-                sx={[
-                  { color },
-                  // Apply text decoration to mimic the outline features on the
-                  // move icon. Order here is important to get the proper
-                  // precedence
-                  isFree && {
-                    textDecorationLine: "underline",
-                    textDecorationStyle: "dashed",
-                    textDecorationColor: "white",
-                  },
-                  betaMove.isStart &&
-                    (({ palette }) => ({
-                      textDecorationLine: "underline",
-                      textDecorationColor: palette.editor.betaMoves.start.main,
-                    })),
-                ]}
-              >
-                {formatBodyPart(betaMove.bodyPart)}
-              </Box>
+              <Box sx={{ color }}>{formatBodyPart(betaMove.bodyPart)}</Box>
             }
             secondary={betaMove.annotation}
           />
