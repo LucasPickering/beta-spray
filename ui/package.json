@@ -29,7 +29,7 @@
     "@babel/preset-typescript": "^7.18.6",
     "@ch1ffa/relay-compiler-webpack-plugin": "^0.3.0",
     "@emotion/babel-plugin": "^11.10.2",
-    "@lucaspickering/eslint-config": "^1.2.0",
+    "@lucaspickering/eslint-config": "^1.3.0",
     "@lucaspickering/tsconfig": "^1.0.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.10",
     "@svgr/webpack": "^6.4.0",
