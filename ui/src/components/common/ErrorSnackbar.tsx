@@ -11,10 +11,12 @@ import {
   Close as IconClose,
   ExpandMore as IconExpandMore,
 } from "@mui/icons-material";
+import TimeProgress from "./TimeProgress";
 
 interface Props<E> {
   summary: string;
   error: E | undefined;
+  autoHideDuration?: number;
   renderError?: (error: E) => React.ReactNode;
 }
 
@@ -33,6 +35,7 @@ interface Props<E> {
 function ErrorSnackbar<E extends object = Error>({
   summary,
   error,
+  autoHideDuration = 5000,
   renderError = (error) => error.toString(),
 }: Props<E>): React.ReactElement {
   // hidden - render nothing
@@ -54,11 +57,24 @@ function ErrorSnackbar<E extends object = Error>({
       open={visibility !== "hidden"}
       // Once the user has expanded the accordion, we don't want to auto-hide
       // since they're probably reading the error (which may be long)
-      autoHideDuration={visibility !== "detail" ? 5000 : null}
+      autoHideDuration={visibility !== "detail" ? autoHideDuration : null}
       sx={{ maxWidth: "sm" }}
       onClose={() => setVisibility("hidden")}
     >
-      <Alert severity="error">
+      <Alert
+        severity="error"
+        icon={
+          // If in decay mode, show a timer, otherwise a static icon
+          visibility === "detail" ? undefined : (
+            <TimeProgress
+              color="inherit"
+              size={22}
+              duration={autoHideDuration}
+              decay
+            />
+          )
+        }
+      >
         <Accordion
           elevation={0}
           disableGutters
