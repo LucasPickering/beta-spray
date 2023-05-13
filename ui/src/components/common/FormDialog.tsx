@@ -2,6 +2,7 @@ import { Clear as IconClear, Save as IconSave } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import {
   Button,
+  ButtonProps,
   Dialog,
   DialogActions,
   DialogContent,
@@ -19,9 +20,12 @@ interface Props {
   title: string;
   open: boolean;
   formState: FormState<unknown>;
-  closeOnSuccess?: boolean;
   mutationState: MutationState;
+  closeOnSuccess?: boolean;
+  assumeHasChanges?: boolean;
+  cancelWarningMessage?: string;
   errorMessage?: string;
+  componentProps?: { cancelButton?: ButtonProps; saveButton?: ButtonProps };
   onSave?: () => void;
   onClose?: () => void;
   children?: React.ReactNode;
@@ -35,18 +39,42 @@ interface Props {
  * directly from there. Optionally, you can also pass in a mutation state to
  * get loading and error states. If an error message is given, we'll also render
  * an error snackbar.
+ *
+ * @param title Dialog title text
+ * @param open Controlled open state flag
+ * @param formState FormState object from useForm
+ * @param mutationState MutationState object from useMutation
+ * @param closeOnSuccess Close the dialog when the mutation is successful?
+ * @param assumeHasChanges Treat the form as always "having changes", meaning
+ *  saving will be enabled (barring validation errors) and cancelling will
+ *  trigger a warning dialog.
+ * @param cancelWarningMessage Message to show when cancelling out of the
+ *  dialog with unsaved changes
+ * @param errorMessage Message to show in a snackbar if the mutation fails
+ * @param componentProps Props to forward to child components
+ * @param onSave Callback when save button is clicked
+ * @param onClose Callback to close the dialog (for both cancel *and* success)
+ * @param children Dialog contents
  */
 const FormDialog: React.FC<Props> = ({
   title,
   open,
-  closeOnSuccess = true,
   formState,
   mutationState,
+  closeOnSuccess = true,
+  assumeHasChanges = false,
+  cancelWarningMessage = "Are you sure? You have unsaved changes.",
   errorMessage,
+  componentProps: {
+    cancelButton: cancelButtonProps,
+    saveButton: saveButtonProps,
+  } = {},
   onSave,
   onClose: onCloseProp,
   children,
 }) => {
+  const hasChanges = assumeHasChanges || formState.hasChanges;
+
   const onClose = useCallback(() => {
     onCloseProp?.();
     // Reset mutation state. Otherwise, we'll immediately close
@@ -96,25 +124,26 @@ const FormDialog: React.FC<Props> = ({
             <Button
               startIcon={<IconClear />}
               onClick={() => {
-                if (
-                  !formState.hasChanges ||
-                  window.confirm("Are you sure? You have unsaved changes.")
-                ) {
+                if (!hasChanges || window.confirm(cancelWarningMessage)) {
                   onClose();
                 }
               }}
-            >
-              Cancel
-            </Button>
+              // children needs to be a prop so it can be overriden
+              // eslint-disable-next-line react/no-children-prop
+              children="Cancel"
+              {...cancelButtonProps}
+            />
             <LoadingButton
               startIcon={<IconSave />}
               variant="contained"
               type="submit"
               loading={mutationStatus === "loading"}
-              disabled={!formState.hasChanges || formState.hasError}
-            >
-              Save
-            </LoadingButton>
+              disabled={!hasChanges || formState.hasError}
+              // children needs to be a prop so it can be overriden
+              // eslint-disable-next-line react/no-children-prop
+              children="Save"
+              {...saveButtonProps}
+            />
           </DialogActions>
         </form>
       </Dialog>

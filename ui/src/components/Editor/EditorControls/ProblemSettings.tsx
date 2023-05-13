@@ -4,7 +4,7 @@ import TextFormField from "components/common/TextFormField";
 import { graphql, useFragment } from "react-relay";
 import useForm from "util/useForm";
 import useMutation from "util/useMutation";
-import { validateExternalLink, validateString } from "util/validator";
+import { optional, validateExternalLink, validateName } from "util/validator";
 import {
   ProblemSettings_problemNode$key,
   Visibility,
@@ -39,10 +39,10 @@ const ProblemSettings: React.FC<Props> = ({ problemKey, open, onClose }) => {
   );
 
   const formState = useForm({
-    name: { initialValue: problem.name, validator: validateString },
+    name: { initialValue: problem.name, validator: validateName },
     externalLink: {
       initialValue: problem.externalLink,
-      validator: validateExternalLink,
+      validator: optional(validateExternalLink),
     },
     visibility: { initialValue: problem.visibility },
   });
