@@ -64,12 +64,20 @@ export function useOptimisiticUserFields(): {
     `,
     data.currentUser
   );
+
   return {
     // We know we'll be the owner. If we're already logged in, then it's easy. If
     // not though, we anticipate the API will create a guest user for us.
     owner:
       currentUser.__typename === "UserNode"
-        ? currentUser
+        ? {
+            // currentUser will have extra fields that make Relay upset, so we
+            // need to make sure we're only including what we need
+            id: currentUser.id,
+            username: currentUser.username,
+            isCurrentUser: true,
+            isGuest: currentUser.isGuest, // Could be a pre-existing guest user
+          }
         : {
             id: generateUniqueClientID(),
             username: "",
