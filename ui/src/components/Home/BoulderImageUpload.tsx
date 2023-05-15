@@ -6,18 +6,13 @@ import { formatFileSize } from "util/format";
 import { useId, useState } from "react";
 import { Card, CardActionArea, CardContent, Typography } from "@mui/material";
 import { Upload as IconUpload } from "@mui/icons-material";
-import imageCompression from "browser-image-compression";
-import ErrorSnackbar from "components/common/ErrorSnackbar";
 import { graphql } from "relay-runtime";
 import { useNavigate } from "react-router-dom";
 import FormDialog from "components/common/FormDialog";
 import TextFormField from "components/common/TextFormField";
 import { BoulderImageUpload_createBoulderWithFriendsMutation } from "./__generated__/BoulderImageUpload_createBoulderWithFriendsMutation.graphql";
 
-const maxUploadSizeMB = 0.2; // 200 KB
-
 const BoulderImageUpload: React.FC = () => {
-  const [error, setError] = useState<Error | undefined>();
   const inputId = useId();
 
   // For now, we enforce one problem per image, so auto-create the problem now
@@ -92,15 +87,8 @@ const BoulderImageUpload: React.FC = () => {
           onChange={(e) => {
             const file = e.target.files?.[0];
             if (file) {
-              // Compress now to get around max API size and reduce network load
-              imageCompression(file, {
-                maxSizeMB: maxUploadSizeMB,
-              })
-                // Store the file while the user fills out the form
-                .then((compressedFile) => setFile(compressedFile))
-                // Async errors aren't caught by error boundaries, so we need to
-                // handle this one manually
-                .catch((error: Error) => setError(error));
+              // This will be compressed by the Relay network layer
+              setFile(file);
             }
           }}
         />
@@ -152,8 +140,6 @@ const BoulderImageUpload: React.FC = () => {
           helperText="Leave blank for a random name. You can change this later in the problem settings."
         />
       </FormDialog>
-
-      <ErrorSnackbar summary="Error compressing image" error={error} />
     </Card>
   );
 };
