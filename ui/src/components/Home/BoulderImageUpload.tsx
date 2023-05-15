@@ -57,8 +57,7 @@ const BoulderImageUpload: React.FC = () => {
         input: {
           image: null,
           // If name is blank, pass null to get a random one from the server
-          // problemName: formState.fieldStates.name.value || undefined,
-          problemName: "",
+          problemName: formState.fieldStates.name.value || undefined,
         },
       },
       uploadables: {
