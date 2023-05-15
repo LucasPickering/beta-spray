@@ -37,8 +37,9 @@ INSTALLED_APPS = [
     "strawberry_django_plus",
     "rules",
     "social_django",
-    "guest_user",
+    "guest_user",  # TODO remove after migration
     "core",
+    "bs_auth",
 ]
 
 MIDDLEWARE = [
@@ -59,15 +60,15 @@ AUTHENTICATION_BACKENDS = [
     "social_core.backends.google.GoogleOAuth2",
     "django.contrib.auth.backends.ModelBackend",  # For admin/testing logins
     "rules.permissions.ObjectPermissionBackend",
-    "guest_user.backends.GuestBackend",
+    "bs_auth.backends.GuestBackend",
+    "guest_user.backends.GuestBackend",  # TODO remove after migration
 ]
-GUEST_USER_NAME_GENERATOR = "guest_user.functions.generate_friendly_username"
 SOCIAL_AUTH_JSONFIELD_ENABLED = True
 SOCIAL_AUTH_PIPELINE = (
     "social_core.pipeline.social_auth.social_details",
     "social_core.pipeline.social_auth.social_uid",
     "social_core.pipeline.social_auth.auth_allowed",
-    "core.pipeline.find_existing_user",
+    "bs_auth.pipeline.find_existing_user",
     # This doesn't do anything currently since we only allow one provider, but
     # eventually it may be helpful
     "social_core.pipeline.social_auth.associate_by_email",
@@ -75,7 +76,7 @@ SOCIAL_AUTH_PIPELINE = (
     "social_core.pipeline.social_auth.associate_user",
     "social_core.pipeline.social_auth.load_extra_data",
     "social_core.pipeline.user.user_details",
-    "core.pipeline.convert_guest_user",
+    "bs_auth.pipeline.convert_guest_user",
 )
 # Disable protection for the email field, because we want to populate it when
 # converting guest users. Keep it "immutable" though, meaning it won't be

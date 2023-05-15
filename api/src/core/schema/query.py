@@ -3,7 +3,6 @@ from typing import Annotated, Iterable, Optional, Union
 from django.contrib.auth.models import User
 from django.db.models import Model, Q
 from django.db.models.fields.files import ImageFieldFile
-from guest_user.functions import is_guest_user
 from strawberry import UNSET
 from strawberry.types import Info
 from strawberry_django_plus import gql
@@ -141,25 +140,20 @@ class UserNode(relay.Node):
     username: gql.auto = gql.field(description="Username")
 
     @gql.field
-    def is_current_user(self, info: Info) -> bool:
+    def is_current_user(self: User, info: Info) -> bool:
         """
         Is this the authenticated user? False if unauthenticated.
         """
         return self.id == info.context.request.user.id
 
-    @gql.field
-    def is_guest(self) -> bool:
+    @gql.django.field(select_related="profile", only=["profile__is_guest"])
+    def is_guest(self: User) -> bool:
         """
         Is this user a guest? True if the user has not created an account. Only
         exposed to self.
         """
         # TODO only expose to current user
-        # Unfortunately this triggers a new query every time it's run, since
-        # we're not accessing a property on the model (it explicitly queries).
-        # I think the only way to fix this would be to define our own model,
-        # at which point we should just ditch django-guest-user and add a new
-        # user model with is_guest
-        return is_guest_user(self)
+        return self.profile.is_guest
 
 
 @gql.django.type(Boulder)

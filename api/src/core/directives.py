@@ -2,13 +2,14 @@ from typing import Any, Callable
 
 import strawberry
 from graphql.type.definition import GraphQLResolveInfo
-from guest_user.functions import maybe_create_guest_user
 from strawberry.schema_directive import Location
 from strawberry.utils.await_maybe import AwaitableOrValue
 from strawberry_django_plus.directives import (
     SchemaDirectiveHelper,
     SchemaDirectiveWithResolver,
 )
+
+from bs_auth.models import UserProfile
 
 
 @strawberry.schema_directive(
@@ -32,5 +33,5 @@ class CreateGuestUser(SchemaDirectiveWithResolver):
         *args: Any,
         **kwargs: Any,
     ) -> AwaitableOrValue[Any]:
-        maybe_create_guest_user(info.context.request)
+        UserProfile.maybe_create_guest(info.context.request)
         return _next(root, info, *args, **kwargs)
