@@ -3,11 +3,8 @@ from typing import Any
 from django.contrib.auth import login
 from django.contrib.auth.models import User
 from django.http import HttpRequest
-from guest_user.functions import get_guest_model, is_guest_user
 from social_core.backends.base import BaseAuth
 from social_core.exceptions import AuthAlreadyAssociated
-
-from .models import Beta, Problem
 
 
 def find_existing_user(
@@ -24,17 +21,13 @@ def find_existing_user(
     """
     provider = backend.name
     social = backend.strategy.storage.user.get_social_auth(provider, uid)
+    # `user` is the *potential* existing user
+    # `social.user` is user that's currently logging in
     if social:
         if user and social.user != user:
-            if is_guest_user(user):
-                # Link the guest into the existing user. The guest user may
-                # own some objects, so we need to update those to point to the
-                # new owner. We'll have to add to this list any time we add
-                # `owner` columns, which kinda sucks
-                Problem.objects.filter(owner=user).update(owner=social.user)
-                Beta.objects.filter(owner=user).update(owner=social.user)
-
-                user.delete()
+            if user.profile.is_guest:
+                # Merge the existing guest into the authenticated user
+                social.user.profile.absorb(user)
                 user = social.user
                 # Update the request session to point to the logged-in user
                 backend_class = backend.__class__
@@ -66,4 +59,4 @@ def convert_guest_user(user: User, *args: Any, **kwargs: Any) -> None:
     """
     Convert a guest user to a full blown one after they log in with social
     """
-    get_guest_model().objects.filter(user=user).delete()
+    user.profile.convert_guest()
