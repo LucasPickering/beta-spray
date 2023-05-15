@@ -172,8 +172,6 @@ class BoulderNode(relay.Node, PermissionsMixin):
 
     created_at: gql.auto = gql.field(description="Date+time of object creation")
     image: Image = gql.field()
-    problems: relay.Connection["ProblemNode"] = gql.django.connection()
-    holds: relay.Connection["HoldNode"] = gql.django.connection()
 
 
 @gql.django.type(Problem)
@@ -287,13 +285,6 @@ class BetaMoveNode(relay.Node, PermissionsMixin):
 
 @gql.type
 class Query:
-    boulders: relay.Connection[BoulderNode] = gql.django.connection(
-        description="Access boulders by list"
-    )
-    boulder: Optional[BoulderNode] = gql.django.node(
-        description="Get a boulder by ID"
-    )
-
     @gql.django.connection
     def problems(
         self,
