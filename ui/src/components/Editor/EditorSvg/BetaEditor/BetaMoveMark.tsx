@@ -11,12 +11,15 @@ import {
   useBetaMoveColor,
   useBetaMoveVisualPosition,
 } from "components/Editor/util/moves";
-import { Delete as IconDelete, Notes as IconNotes } from "@mui/icons-material";
+import {
+  OpenWith as IconOpenWith,
+  Delete as IconDelete,
+  Notes as IconNotes,
+} from "@mui/icons-material";
 import ActionOrbs from "../common/ActionOrbs";
 import Positioned from "../common/Positioned";
 import ActionOrb from "../common/ActionOrb";
 import SvgTooltip from "../common/SvgTooltip";
-import AddBetaMoveMark from "./AddBetaMoveMark";
 import { BetaMoveMark_betaMoveNode$key } from "./__generated__/BetaMoveMark_betaMoveNode.graphql";
 import BetaMoveIcon from "./BetaMoveIcon";
 
@@ -60,18 +63,19 @@ const BetaMoveMark: React.FC<Props> = ({
   const position = useBetaMoveVisualPosition()(moveId);
 
   const ref = useRef<SVGCircleElement>(null);
+  const [isRelocating, setIsRelocating] = useState<boolean>(false);
+  const [isHighlighted, setIsHighlighted] = useState<boolean>(false);
+  const draggable = editable && (isRelocating || isInCurrentStance);
 
   const [{ isDragging }, drag] = useDrag<
     "overlayBetaMove",
     { isDragging: boolean }
   >({
     type: "overlayBetaMove",
-    item: {
-      action: "relocate",
-      betaMoveId: moveId,
-      bodyPart: betaMove.bodyPart,
-    },
-    canDrag: editable,
+    item: isRelocating
+      ? { action: "relocate", betaMoveId: moveId, bodyPart: betaMove.bodyPart }
+      : { action: "create", bodyPart: betaMove.bodyPart },
+    canDrag: draggable,
     collect(monitor) {
       return {
         isDragging: Boolean(monitor.isDragging()),
@@ -94,13 +98,18 @@ const BetaMoveMark: React.FC<Props> = ({
   }));
   const isDraggingOther = isDraggingAny && !isDragging;
 
-  const [isHighlighted, setIsHighlighted] = useState<boolean>(false);
   const { palette } = useTheme();
 
   drag(ref);
   return (
     <>
-      <ClickAwayListener onClickAway={() => setIsHighlighted(false)}>
+      <ClickAwayListener
+        onClickAway={() => {
+          // Reset local state when the user gets bored
+          setIsRelocating(false);
+          setIsHighlighted(false);
+        }}
+      >
         <Positioned position={position}>
           <BetaMoveIcon
             ref={ref}
@@ -108,34 +117,31 @@ const BetaMoveMark: React.FC<Props> = ({
             order={betaMove.order}
             isStart={betaMove.isStart}
             isFree={!isDefined(betaMove.hold)}
-            color={color}
-            variant={isInCurrentStance || isHighlighted ? "large" : "small"}
+            // Override color while relocating
+            color={isRelocating ? palette.editor.actions.relocate.main : color}
+            icon={isRelocating ? <IconOpenWith /> : undefined}
+            size={isInCurrentStance || isHighlighted ? "large" : "small"}
             clickable // Move can be highlighted, even when not editing
-            draggable={editable}
+            draggable={draggable}
             isDragging={isDragging}
             isHighlighted={isHighlighted}
             // Don't block drop events when another element is being dragged
             css={isDraggingOther && { pointerEvents: "none" }}
             // Click => toggle highlight
-            onClick={() => setIsHighlighted((prev) => !prev)}
+            onClick={() => {
+              setIsHighlighted((prev) => !prev);
+              setIsRelocating(false); // This just kinda feels natural
+            }}
           />
 
-          <ActionOrbs open={editable && isHighlighted}>
+          {/* Hide orbs while relocating so dragging is easier */}
+          <ActionOrbs open={isHighlighted && editable && !isRelocating}>
             <ActionOrb
               color={palette.editor.actions.delete.main}
               onClick={onDelete && (() => onDelete(betaMove.id))}
             >
               <IconDelete />
             </ActionOrb>
-            <AddBetaMoveMark
-              bodyPart={betaMove.bodyPart}
-              variant="move"
-              onDragFinish={(...args) => {
-                // Unhighlight current move when adding a new one
-                setIsHighlighted(false);
-                onDragFinish?.(...args);
-              }}
-            />
             <ActionOrb
               color={palette.editor.actions.edit.main}
               onClick={
@@ -143,6 +149,12 @@ const BetaMoveMark: React.FC<Props> = ({
               }
             >
               <IconNotes />
+            </ActionOrb>
+            <ActionOrb
+              color={palette.editor.actions.relocate.main}
+              onClick={() => setIsRelocating(true)}
+            >
+              <IconOpenWith />
             </ActionOrb>
           </ActionOrbs>
         </Positioned>

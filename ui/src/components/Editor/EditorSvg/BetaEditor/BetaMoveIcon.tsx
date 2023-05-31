@@ -9,13 +9,15 @@ import {
 } from "styles/svg";
 import { Interpolation, Theme } from "@emotion/react";
 import { SvgIcon, SvgIconProps } from "@mui/material";
+import EmbeddedIcon from "components/common/EmbeddedIcon";
 import { getEditableFilterUrl } from "../EditableFilter";
 
 interface Props {
   bodyPart: BodyPart;
   order?: number;
   color?: string;
-  variant?: "small" | "large";
+  icon?: React.ReactElement;
+  size?: "small" | "large";
   isFree?: boolean;
   isStart?: boolean;
   clickable?: boolean;
@@ -28,6 +30,19 @@ interface Props {
 /**
  * Dumb component representing a beta move. This is a "raw" icon, meaning it's
  * just the inline SVG element, *without* the wrapping SVG.
+ *
+ * @param bodyPart Body part associated with the move
+ * @param order Cardinal ordering of the move within the beta
+ * @param color Color of the icon fill
+ * @param icon Icon to render in place of move order (large size only)
+ * @param size Large or small? Large size shows more info
+ * @param isFree Is the move *not* attached to a hold?
+ * @param isStart Is the move the first of its body part in the beta?
+ * @param clickable Can the icon be clicked?
+ * @param draggable Can the icon be dragged?
+ * @param isDragging Is the icon actively being dragged?
+ * @param isHighlighted Is the icon in "highlight" mode?
+ * @param css Additional CSS rules
  */
 const BetaMoveIcon = React.forwardRef<
   SVGGElement,
@@ -38,7 +53,8 @@ const BetaMoveIcon = React.forwardRef<
       bodyPart,
       order,
       color,
-      variant = "large",
+      size = "large",
+      icon,
       isFree = false,
       isStart = false,
       clickable = false,
@@ -46,7 +62,6 @@ const BetaMoveIcon = React.forwardRef<
       isDragging = false,
       isHighlighted = false,
       css: parentCss,
-      children,
       ...rest
     },
     ref
@@ -68,7 +83,7 @@ const BetaMoveIcon = React.forwardRef<
             icon does on itself.*/}
       <g
         filter={getEditableFilterUrl("beta")} // Color based on editability
-        css={{ transform: `scale(${variant === "large" ? 1.5 : 0.75})` }}
+        css={{ transform: `scale(${size === "large" ? 1.5 : 0.75})` }}
       >
         <IconBodyPartRaw
           bodyPart={bodyPart}
@@ -83,23 +98,32 @@ const BetaMoveIcon = React.forwardRef<
         />
       </g>
 
-      {isDefined(order) && variant === "large" && (
-        <text
-          css={{
-            fontSize: 4,
-            userSelect: "none",
-            pointerEvents: "none",
-            // This should contrast all possible fill colors
-            color: "black",
-          }}
-          textAnchor="middle"
-          dominantBaseline="middle"
-        >
-          {order}
-        </text>
-      )}
-
-      {children}
+      {/* Icon takes priority over order */}
+      {size === "large" &&
+        (isDefined(icon) ? (
+          <EmbeddedIcon
+            css={({ palette }) => ({
+              color: color ? palette.getContrastText(color) : "black",
+            })}
+          >
+            {icon}
+          </EmbeddedIcon>
+        ) : (
+          isDefined(order) && (
+            <text
+              css={({ palette }) => ({
+                fontSize: 4,
+                userSelect: "none",
+                pointerEvents: "none",
+                color: color ? palette.getContrastText(color) : "black",
+              })}
+              textAnchor="middle"
+              dominantBaseline="middle"
+            >
+              {order}
+            </text>
+          )
+        ))}
     </g>
   )
 );

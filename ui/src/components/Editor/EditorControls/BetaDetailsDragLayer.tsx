@@ -1,7 +1,14 @@
+import { findNode, assertIsDefined } from "util/func";
 import { Portal } from "@mui/material";
-import { getItemWithKind, useDragLayer } from "components/Editor/util/dnd";
-import BetaDetailsDragPreview from "./BetaDetailsDragPreview";
-import { BetaDetailsDragPreview_betaMoveNodeConnection$key } from "./__generated__/BetaDetailsDragPreview_betaMoveNodeConnection.graphql";
+import {
+  DragItemWithKind,
+  getItemWithKind,
+  useDragLayer,
+} from "components/Editor/util/dnd";
+import { useFragment } from "react-relay";
+import { graphql } from "relay-runtime";
+import { BetaDetailsDragLayer_betaMoveNodeConnection$key } from "./__generated__/BetaDetailsDragLayer_betaMoveNodeConnection.graphql";
+import BetaMoveListItem from "./BetaMoveListItem";
 
 const layerStyles: React.CSSProperties = {
   position: "fixed",
@@ -14,7 +21,7 @@ const layerStyles: React.CSSProperties = {
 };
 
 interface Props {
-  betaMoveConnectionKey: BetaDetailsDragPreview_betaMoveNodeConnection$key;
+  betaMoveConnectionKey: BetaDetailsDragLayer_betaMoveNodeConnection$key;
 }
 
 /**
@@ -52,6 +59,54 @@ const BetaDetailsDragLayer: React.FC<Props> = ({ betaMoveConnectionKey }) => {
       </div>
     </Portal>
   );
+};
+
+/**
+ * Drag-and-drop preview specific to the beta move list.
+ */
+const BetaDetailsDragPreview: React.FC<{
+  betaMoveConnectionKey: BetaDetailsDragLayer_betaMoveNodeConnection$key;
+  itemWithKind: DragItemWithKind;
+}> = ({ betaMoveConnectionKey, itemWithKind }) => {
+  const betaMoveConnection = useFragment(
+    graphql`
+      fragment BetaDetailsDragLayer_betaMoveNodeConnection on BetaMoveNodeConnection {
+        edges {
+          node {
+            id
+            ...BetaMoveListItem_betaMoveNode
+          }
+        }
+      }
+    `,
+    betaMoveConnectionKey
+  );
+
+  switch (itemWithKind.kind) {
+    case "listBetaMove": {
+      const betaMove = findNode(
+        betaMoveConnection,
+        itemWithKind.item.betaMoveId
+      );
+      // If the user is dragging the move, it had better fucking be defined
+      assertIsDefined(betaMove);
+      return (
+        <BetaMoveListItem
+          betaMoveKey={betaMove}
+          // Hacky translation: DnD uses the drag handle as the component
+          // root, so the parent offset will align to that. We want to align
+          // to the list item though (the parent of the drag handle), so we
+          // need to apply a static offset to adjust. There's no way to attach
+          // DnD to the list item itself, so this is the next best option.
+          sx={{ transform: "translate(-16px, -12px)" }}
+        />
+      );
+    }
+    default:
+      // Whatever item is being dragged, it isn't supported by this preview so
+      // it's someone else's problem
+      return null;
+  }
 };
 
 export default BetaDetailsDragLayer;
