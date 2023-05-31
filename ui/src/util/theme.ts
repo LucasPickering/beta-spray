@@ -29,6 +29,7 @@ interface CustomColors<T> {
       // Colors associated with different actions
       create: T;
       edit: T;
+      relocate: T;
       delete: T;
     };
   };
@@ -96,6 +97,7 @@ const baseTheme = createTheme({
         // Colors associated with different actions
         create: { main: "#66BB6A" },
         edit: { main: "#FFBE26" },
+        relocate: { main: "#9763a6" },
         delete: { main: "#f44336" },
       },
     },

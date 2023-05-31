@@ -107,7 +107,6 @@ const StickFigure: React.FC<Props> = ({
             >
               <AddBetaMoveMark
                 bodyPart={bodyPart}
-                variant="stickFigure"
                 onDragFinish={onDragFinish}
               />
             </Positioned>

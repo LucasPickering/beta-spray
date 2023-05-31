@@ -34,7 +34,7 @@ const BetaMoveList: React.FC<Props> = ({ betaKey }) => {
           canEdit
         }
         moves {
-          ...BetaDetailsDragPreview_betaMoveNodeConnection
+          ...BetaDetailsDragLayer_betaMoveNodeConnection
           ...stance_betaMoveNodeConnection
           edges {
             node {
