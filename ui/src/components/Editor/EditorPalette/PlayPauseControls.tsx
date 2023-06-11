@@ -55,7 +55,7 @@ const PlayPauseControls: React.FC<Props> = ({ betaKey }) => {
   const [visibility] = useContext(EditorVisibilityContext);
   const [editorMode] = useContext(EditorModeContext);
   // Hide overlay when editing holds, since the beta is hidden anyway
-  const isVisible = visibility && editorMode !== "editHolds";
+  const isVisible = visibility && editorMode === "beta";
   // Play/pause handler needs the list of move IDs so it knows how to walk
   // through them
   const moveIds = useMemo(

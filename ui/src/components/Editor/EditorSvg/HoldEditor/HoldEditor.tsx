@@ -29,6 +29,9 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
     graphql`
       fragment HoldEditor_problemNode on ProblemNode {
         id
+        permissions {
+          canEdit
+        }
         boulder {
           id
         }
@@ -102,7 +105,7 @@ const HoldEditor: React.FC<Props> = ({ problemKey }) => {
   // This implicitly works as a permission check, since we can't enter editor
   // mode without permission
   const [editorMode] = useContext(EditorModeContext);
-  const isEditing = editorMode === "editHolds";
+  const isEditing = editorMode === "holds" && problem.permissions.canEdit;
 
   const domToSVGPosition = useDOMToSVGPosition();
 

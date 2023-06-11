@@ -12,7 +12,8 @@ const EditableFilter: React.FC<Props> = ({ kind, isEditing }) => (
       type="saturate"
       in="SourceGraphic"
       // TODO put this value in the theme
-      values={isEditing ? "1.0" : "0.4"}
+      // TODO this is temporarily disabled, either re-enable or remove it
+      values={isEditing ? "1.0" : "1.0"}
     />
   </filter>
 );
