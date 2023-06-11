@@ -36,7 +36,6 @@ const HoldIcon: React.FC<Props> = ({
     <circle
       filter={getEditableFilterUrl("hold")} // Color based on editability
       css={[
-        parentCss,
         {
           r: 3,
           strokeWidth: 0.5,
@@ -44,6 +43,7 @@ const HoldIcon: React.FC<Props> = ({
           // We want the fill to be present so it captures events, but invisible
           fillOpacity: 0,
         },
+        parentCss,
         clickable && styleClickable,
         draggable && styleDraggable,
         isDragging && styleDragging,
@@ -65,7 +65,10 @@ export const HoldIconWrapped: React.FC<
   // Center and viewbox need to account for the radius *and* stroke width
   <SvgIcon viewBox="-1.25 -1.25 2.5 2.5">
     {/* Normalize scale for generic contexts*/}
-    <HoldIcon css={{ transform: "scale(0.333)" }} {...rest} />
+    <HoldIcon
+      css={{ transform: "scale(0.333)", stroke: "currentColor" }}
+      {...rest}
+    />
     {children}
   </SvgIcon>
 );

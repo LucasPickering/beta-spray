@@ -3,11 +3,17 @@ import { queriesBetaQuery } from "util/__generated__/queriesBetaQuery.graphql";
 import { isDefined } from "util/func";
 import { useContext } from "react";
 import { ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
-import { Visibility as IconVisibility } from "@mui/icons-material";
-import { EditorMode, EditorModeContext } from "components/Editor/util/context";
+import {
+  EditorMode,
+  EditorModeContext,
+  EditorSelectedBetaContext,
+} from "components/Editor/util/context";
 import { PreloadedQuery } from "react-relay";
-import HoldEditorModeButton from "./HoldEditorModeButton";
-import BetaEditorModeButton from "./BetaEditorModeButton";
+import { BetaMoveIconWrapped } from "../EditorSvg/BetaEditor/BetaMoveIcon";
+import { HoldIconWrapped } from "../EditorSvg/HoldEditor/HoldIcon";
+import { editorTourTags } from "../EditorTour";
+import HoldEditorModeLabel from "./HoldEditorModeLabel";
+import BetaEditorModeLabel from "./BetaEditorModeLabel";
 
 interface Props {
   problemQueryRef: PreloadedQuery<queriesProblemQuery> | null | undefined;
@@ -22,22 +28,25 @@ const EditorModeSelect: React.FC<Props> = ({
   betaQueryRef,
 }) => {
   const [editorMode, setEditorMode] = useContext(EditorModeContext);
+  const selectedBetaId = useContext(EditorSelectedBetaContext);
 
   return (
     <>
-      <Typography
-        component="div"
-        variant="caption"
-        margin={1}
-        marginBottom={0}
-        lineHeight={1}
-      >
-        Mode: {getLabel(editorMode)}
+      <Typography component="div" variant="caption" margin={1} lineHeight={1}>
+        {/* These are separate components so they can load permissions */}
+        {editorMode === "holds" && (
+          <HoldEditorModeLabel queryRef={problemQueryRef} />
+        )}
+        {editorMode === "beta" && (
+          <BetaEditorModeLabel queryRef={betaQueryRef} />
+        )}
       </Typography>
 
       <ToggleButtonGroup
         value={editorMode}
         exclusive
+        color="primary"
+        fullWidth
         onChange={(e, value: EditorMode) => {
           // Don't allow untoggling a button
           if (isDefined(value)) {
@@ -45,27 +54,22 @@ const EditorModeSelect: React.FC<Props> = ({
           }
         }}
       >
-        <ToggleButton value="view" aria-label="view beta">
-          <IconVisibility />
+        <ToggleButton
+          value="holds"
+          data-tour={editorTourTags.editHoldsModeButton}
+        >
+          <HoldIconWrapped />
         </ToggleButton>
-        {/* These need a `value` prop because ToggleButtonGroup accesses its
-            children dynamically to know when they're selected. */}
-        <HoldEditorModeButton queryRef={problemQueryRef} value="editHolds" />
-        <BetaEditorModeButton queryRef={betaQueryRef} value="editBeta" />
+        <ToggleButton
+          value="beta"
+          disabled={!isDefined(selectedBetaId)}
+          data-tour={editorTourTags.editBetaModeButton}
+        >
+          <BetaMoveIconWrapped bodyPart="LEFT_HAND" />
+        </ToggleButton>
       </ToggleButtonGroup>
     </>
   );
 };
-
-function getLabel(editorMode: EditorMode): string {
-  switch (editorMode) {
-    case "view":
-      return "View Only";
-    case "editHolds":
-      return "Edit Holds";
-    case "editBeta":
-      return "Edit Beta";
-  }
-}
 
 export default EditorModeSelect;

@@ -23,14 +23,21 @@ export const SvgContext = React.createContext<SvgContextType>(
  */
 export type StateContext<T> = [T, React.Dispatch<React.SetStateAction<T>>];
 
+/**
+ * ID of the beta selected in the beta list (undefined for none)
+ */
+export const EditorSelectedBetaContext = React.createContext<
+  StateContext<string | undefined>
+>([undefined, noop]);
+
 export const EditorVisibilityContext = React.createContext<
   StateContext<boolean>
 >([true, noop]);
 
-export type EditorMode = "editHolds" | "editBeta" | "view";
+export type EditorMode = "holds" | "beta";
 
 export const EditorModeContext = React.createContext<StateContext<EditorMode>>([
-  "view",
+  "beta",
   noop,
 ]);
 

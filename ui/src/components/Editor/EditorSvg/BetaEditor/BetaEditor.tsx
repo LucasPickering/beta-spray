@@ -32,6 +32,9 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
   const beta = useFragment(
     graphql`
       fragment BetaEditor_betaNode on BetaNode {
+        permissions {
+          canEdit
+        }
         ...useBetaMoveMutations_betaNode
         moves {
           edges {
@@ -83,10 +86,8 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
     ? findNode(beta.moves, editingBetaMoveId)
     : undefined;
 
-  // This implicitly works as a permission check, since we can't enter editor
-  // mode without permission
   const [editorMode] = useContext(EditorModeContext);
-  const isEditing = editorMode === "editBeta";
+  const isEditing = editorMode === "beta" && beta.permissions.canEdit;
 
   const {
     create: { callback: createBetaMove, state: createState },
