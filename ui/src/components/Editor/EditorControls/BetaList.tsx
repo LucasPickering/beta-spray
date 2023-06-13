@@ -2,7 +2,7 @@ import useMutation from "util/useMutation";
 import { queriesProblemQuery } from "util/__generated__/queriesProblemQuery.graphql";
 import { isDefined } from "util/func";
 import { useOptimisiticUserFields } from "util/user";
-import { useEffect, useId } from "react";
+import { useId } from "react";
 import { graphql, useFragment } from "react-relay";
 import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
 import { withQuery } from "relay-query-wrapper";
@@ -58,12 +58,11 @@ const BetaList: React.FC<Props> = ({
 
   const labelId = useId();
 
-  // Auto-select the first beta if nothing else is selected
-  useEffect(() => {
-    if (!selectedBeta && problem.betas.edges.length > 0) {
-      onSelectBeta(problem.betas.edges[0].node.id);
-    }
-  }, [selectedBeta, onSelectBeta, problem.betas.edges]);
+  // WARNING: We used to auto-select the first beta here if there's none selected,
+  // but that breaks because it tries to select an optimistic beta (which
+  // doesn't have a real ID) if you create a beta from a blank list. Auto-selection
+  // isn't that useful anyway though, since anything that links to this page
+  // should select the first beta anyway.
 
   const { commit: createBeta, state: createState } =
     useMutation<BetaList_createBetaMutation>(graphql`
