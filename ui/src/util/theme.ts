@@ -203,7 +203,7 @@ const theme = createTheme(
       },
       MuiTooltip: {
         defaultProps: {
-          leaveTouchDelay: 3000,
+          enterTouchDelay: 0, // By default you need to long-press to show...
         },
         styleOverrides: {
           tooltip: {
