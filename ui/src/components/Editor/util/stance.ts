@@ -1,4 +1,4 @@
-import { findNodeIndex, isDefined, last, noop } from "util/func";
+import { clamp, noop } from "util/func";
 import { hexToHtml, averageColors, htmlToHex } from "util/math";
 import React, { useCallback, useEffect } from "react";
 import { useContext } from "react";
@@ -14,15 +14,18 @@ import {
 
 /**
  * State defining the current stance (which is reflect by the stick figure).
- * We store the state as a single ID, representing the *most recent* (i.e.
- * highest order) move in the stance. To retrieve the rest of the stance, we
- * look at the most recent move for each body part *before* the stance move.
- * This will be undefined iff the beta is empty.
+ * We store the state as a move *index* (NOT order), representing the *most
+ * recent* (i.e. highest order) move in the stance. To retrieve the rest of the
+ * stance, we look at the most recent move for each body part *before* the
+ * stance move. This will be -1 iff the beta is empty.
+ *
+ * This stores index instead of ID for two reasons:
+ *  - Roll forward to the next move if the stance move is deleted
+ *  - Optimistically update stance when move is added
+ *    - We don't know the new ID until after the response, but we know the new
+ *      order ahead of time
  */
-const StanceContext = React.createContext<StateContext<string | undefined>>([
-  undefined,
-  noop,
-]);
+const StanceContext = React.createContext<StateContext<number>>([-1, noop]);
 
 /**
  * Only export the provider. We want to restrict all read access to go through
@@ -58,7 +61,8 @@ export function useStance(
 
   // A stance is defined by a single move, which is the *last* move in the
   // stance (generally speaking)
-  const [stanceMoveId, setStanceMoveId] = useContext(StanceContext);
+  const [stanceMoveIndexSketchy, setStanceMoveIndex] =
+    useContext(StanceContext);
 
   // We need to do some normalization on the selected stance move. There are a
   // few scenarios where an invalid move can be selected for the stance:
@@ -69,31 +73,25 @@ export function useStance(
   // the first selectable move (i.e. the final *start* move), and taking the
   // later of the two (since nothing before the start is valid, including -1)
   const firstSelectableIndex = getFirstSelectableIndex(betaMoveConnection);
-  // This will be -1 if the ID is no longer in the list (it got deleted)
-  const stanceMoveIndexSketchy = stanceMoveId
-    ? findNodeIndex(betaMoveConnection, stanceMoveId)
-    : -1;
+  const lastSelectableIndex = getLastSelectableIndex(betaMoveConnection);
   // This will be -1 iff the beta is empty
-  const stanceMoveIndex = Math.max(
+  const stanceMoveIndex = clamp(
+    stanceMoveIndexSketchy,
     firstSelectableIndex,
-    stanceMoveIndexSketchy
+    lastSelectableIndex
   );
   // If the move list is empty, then stanceMoveIndex will be -1 here
 
   // Update stance state to match the normalization we just did. This makes sure
   // the controls state stays in sync with what we've established here.
-  const stanceInSync =
-    // Captures if move is deleted
-    stanceMoveIndexSketchy == stanceMoveIndex &&
-    // Needed to catch last move being deleted, or changing to empty beta
-    stanceMoveIndex >= 0 == isDefined(stanceMoveId);
+  const stanceInSync = stanceMoveIndexSketchy === stanceMoveIndex;
   useEffect(() => {
     if (!stanceInSync) {
-      setStanceMoveId(betaMoveConnection.edges[stanceMoveIndex]?.node.id);
+      setStanceMoveIndex(stanceMoveIndex);
     }
   }, [
     betaMoveConnection.edges,
-    setStanceMoveId,
+    setStanceMoveIndex,
     stanceInSync,
     stanceMoveIndex,
   ]);
@@ -114,13 +112,15 @@ export function useStance(
  * @returns ID of the move in the current stance with the highest order, or
  * `undefined` if there is no current stance
  */
-export function useLastMoveInStance(): string | undefined {
-  // This might seem pointless since we could just expose the context, but this
-  // abstraction allows us to potentially change the way we define the stance
-  // internally (e.g. defined by first move instead of last) without having
-  // to change an external consumers.
-  const [stanceMoveId] = useContext(StanceContext);
-  return stanceMoveId;
+export function useLastMoveInStance(
+  betaMoveConnectionKey: stance_betaMoveNodeConnection$key
+): string | undefined {
+  const betaMoveConnection = useFragment(
+    betaMoveNodeConnectionFragment,
+    betaMoveConnectionKey
+  );
+  const [stanceMoveIndex] = useContext(StanceContext);
+  return betaMoveConnection.edges[stanceMoveIndex]?.node.id;
 }
 
 /**
@@ -154,10 +154,12 @@ export interface StanceControls {
    */
   hasNext: boolean;
   /**
-   * Select a stance by move ID. This should only be used for absolute updates,
+   * Select a stance by move order. This should only be used for absolute updates,
    * e.g. after adding a move, and not for relative steps.
+   *
+   * See {@link StanceContext} for why we accept order, not ID.
    */
-  select(betaMoveId: string): void;
+  select(order: number): void;
   /**
    * Select the first stance in the beta
    */
@@ -176,6 +178,10 @@ export interface StanceControls {
    * last stance is already selected.
    */
   selectNext(): void;
+  /**
+   * Reset stance to undefined. Should be called whenever changing between betas.
+   */
+  reset(): void;
 }
 
 /**
@@ -189,80 +195,81 @@ export function useStanceControls(
     betaMoveNodeConnectionFragment,
     betaMoveConnectionKey
   );
-  const [stanceMoveId, setStanceMoveId] = useContext(StanceContext);
+  const [stanceMoveIndex, setStanceMoveIndex] = useContext(StanceContext);
 
-  const firstMoveId = getFirstSelectableMove(betaMoveConnection);
-  const lastMoveId = last(betaMoveConnection.edges)?.node.id;
+  const firstMoveIndex = getFirstSelectableIndex(betaMoveConnection);
+  const lastMoveIndex = getLastSelectableIndex(betaMoveConnection);
 
-  const hasPrevious = isDefined(stanceMoveId) && stanceMoveId !== firstMoveId;
-  const hasNext = isDefined(stanceMoveId) && stanceMoveId !== lastMoveId;
+  const hasPrevious = stanceMoveIndex > firstMoveIndex;
+  const hasNext = stanceMoveIndex < lastMoveIndex;
 
+  const select = useCallback(
+    (order: number) => {
+      setStanceMoveIndex(order - 1);
+    },
+    [setStanceMoveIndex]
+  );
   const step = useCallback(
     (steps: number) => {
-      setStanceMoveId((prev) => {
-        if (!isDefined(prev)) {
-          return undefined;
-        }
-        const prevIndex = findNodeIndex(betaMoveConnection, prev);
+      setStanceMoveIndex((prevIndex) => {
         const newIndex = prevIndex + steps;
 
         // This shouldn't be called when a step isn't possible, so let's log it
-        if (newIndex < 0 || newIndex >= betaMoveConnection.edges.length) {
+        if (newIndex < firstMoveIndex || newIndex > lastMoveIndex) {
           // eslint-disable-next-line no-console
           console.warn(
             `Attempted to step ${steps} moves in stance when not possible`
           );
-          return prev;
+          return prevIndex;
         }
 
-        return betaMoveConnection.edges[newIndex].node.id;
+        return newIndex;
       });
     },
-    [betaMoveConnection, setStanceMoveId]
+    [firstMoveIndex, lastMoveIndex, setStanceMoveIndex]
   );
   const selectPrevious = useCallback(() => step(-1), [step]);
   const selectNext = useCallback(() => step(1), [step]);
   const selectFirst = useCallback(
-    () => setStanceMoveId(firstMoveId),
+    () => setStanceMoveIndex(firstMoveIndex),
     // firstMoveId should only change when the beta is edited
-    [firstMoveId, setStanceMoveId]
+    [firstMoveIndex, setStanceMoveIndex]
   );
   const selectLast = useCallback(
-    () => setStanceMoveId(lastMoveId),
+    () => setStanceMoveIndex(lastMoveIndex),
     // lastMoveId should only change when the beta is edited
-    [lastMoveId, setStanceMoveId]
+    [lastMoveIndex, setStanceMoveIndex]
   );
+  const reset = useCallback(() => setStanceMoveIndex(-1), [setStanceMoveIndex]);
 
   return {
     hasPrevious,
     hasNext,
-    select: setStanceMoveId,
+    select,
     selectPrevious,
     selectNext,
     selectFirst,
     selectLast,
+    reset,
   };
 }
 
 /**
- * Get the first move in the beta that can be selected as a "stance move". This
- * is the last *start* move in the beta. Selecting any moves before the final
- * start move is pointless, since selecting any start move results in the stance
- * just being the start stance.
- */
-function getFirstSelectableMove(
-  betaMoveConnection: stance_betaMoveNodeConnection$data
-): string | undefined {
-  const index = getFirstSelectableIndex(betaMoveConnection);
-  return index >= 0 ? betaMoveConnection.edges[index].node.id : undefined;
-}
-
-/**
- * Get the *index* of the first move in the beta that can be selected for
+ * Get the index of the first move in the beta that can be selected for
  * a stance.
  */
 function getFirstSelectableIndex(
   betaMoveConnection: stance_betaMoveNodeConnection$data
 ): number {
   return betaMoveConnection.edges.findLastIndex(({ node }) => node.isStart);
+}
+
+/**
+ * Get the index of the last move in the beta that can be selected for
+ * a stance.
+ */
+function getLastSelectableIndex(
+  betaMoveConnection: stance_betaMoveNodeConnection$data
+): number {
+  return betaMoveConnection.edges.length - 1;
 }

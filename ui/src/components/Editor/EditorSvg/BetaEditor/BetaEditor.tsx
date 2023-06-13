@@ -79,7 +79,7 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
   const betaMoveVisualPositions = useBetaMoveVisualPositions(beta.moves);
 
   const stance = useStance(beta.moves);
-  const lastStanceMoveId = useLastMoveInStance();
+  const lastStanceMoveId = useLastMoveInStance(beta.moves);
   // The ID of the move whose annotation is being edited
   const [editingBetaMoveId, setEditingBetaMoveId] = useState<string>();
   const editingBetaMove = isDefined(editingBetaMoveId)

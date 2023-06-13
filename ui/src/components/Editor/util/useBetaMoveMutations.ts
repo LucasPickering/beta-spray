@@ -70,6 +70,7 @@ function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
           # Relay will automatically merge the fields for the new node into the
           # updated connection.
           id
+          order
           # Get all used fields for the new move
           ...useBetaMoveMutations_all_betaMoveNode
 
@@ -190,15 +191,9 @@ function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
               },
             },
           },
-          onCompleted(data) {
-            // Move the stance to the new move. It'd be nice to do this
-            // optimistically, but that's not easy to integrate with optimisticResponse
-            if (isDefined(data.createBetaMove)) {
-              selectStance(data.createBetaMove.id);
-            }
-          },
-          // Punting on optimistic update because ordering is hard
         });
+        // Update stance optimistically (which is why we use order)
+        selectStance(newOrder);
       },
       state: createBetaMoveState,
     },
