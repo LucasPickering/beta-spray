@@ -62,29 +62,6 @@ export function clamp(value: number, min: number, max: number): number {
 }
 
 /**
- * Get the last element in an array. This may seem pointless, but the typing
- * is more realistic, since Typescript pretends that array indices are
- * guaranteed to be valid.
- * @param array Array to index
- * @returns Last element in the array, or undefined if the array is empty
- */
-export function last<T>(array: ReadonlyArray<T>): T | undefined {
-  return array[array.length - 1];
-}
-
-/**
- * Get an array of a range of numbers
- * @param start First number in the range (inclusive)
- * @param stop First number *not* in the range (i.e. exclusive bound)
- * @returns Array of [start, ..., stop - 1]
- */
-export function range(start: number, stop: number): number[] {
-  return Array(stop - start)
-    .fill(0)
-    .map((e, i) => start + i);
-}
-
-/**
  * Slide an element up or down an array, *mutating the array*
  */
 export function moveArrayElement<T>(

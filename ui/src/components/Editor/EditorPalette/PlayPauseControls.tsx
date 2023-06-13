@@ -12,6 +12,7 @@ import { graphql, useFragment } from "react-relay";
 import { withQuery } from "relay-query-wrapper";
 import {
   EditorModeContext,
+  EditorSelectedBetaContext,
   EditorVisibilityContext,
 } from "components/Editor/util/context";
 import { alpha, Box, IconButton, Paper } from "@mui/material";
@@ -71,8 +72,15 @@ const PlayPauseControls: React.FC<Props> = ({ betaKey }) => {
     selectLast,
     selectPrevious,
     selectNext,
+    reset,
   } = useStanceControls(beta.moves);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+
+  // Reset stance when beta changes
+  const [selectedBeta] = useContext(EditorSelectedBetaContext);
+  useEffect(() => {
+    reset();
+  }, [selectedBeta, reset]);
 
   const pause = (): void => setIsPlaying(false);
 

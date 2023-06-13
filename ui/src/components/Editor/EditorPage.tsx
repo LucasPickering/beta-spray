@@ -32,7 +32,7 @@ const EditorPage: React.FC = () => {
   const editorModeState = useState<EditorMode>("beta");
   // Which move denotes the current stick figure stance? This will be the *last*
   // move in the stance
-  const stanceState = useState<string | undefined>();
+  const stanceState = useState<number>(-1);
 
   // Make sure state stays in sync with the URL
   // In most cases we should update both of these simultaneously so this hook

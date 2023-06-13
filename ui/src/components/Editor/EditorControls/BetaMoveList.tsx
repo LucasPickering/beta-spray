@@ -206,7 +206,7 @@ const BetaMoveList: React.FC<Props> = ({ betaKey }) => {
           stanceColor={
             stance[node.bodyPart] === node.id ? stickFigureColor : undefined
           }
-          onClick={selectStance}
+          onClick={() => selectStance(node.order)}
           // We need to disable both onReorder and onDrop to get the child to
           // hide its drag handle
           onReorder={canEdit ? onReorder : undefined}
