@@ -167,7 +167,7 @@ USE_TZ = True
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Home-rolled field, we'll export the schema to this path on every startup
-GRAPHQL_SCHEMA_PATH = "./schema.graphql"
+GRAPHQL_SCHEMA_PATH = BASE_DIR / "schema.graphql"
 
 APPEND_SLASH = False
 

@@ -25,6 +25,9 @@ debugpy = "^1.6.6"
 flake8-black = "0.3.6"
 flake8-isort = "^6.0.0"
 mypy = "^1.0.1"
+pytest = "^7.4.0"
+pytest-django = "^4.5.2"
+pytest-mock = "^3.11.1"
 
 [build-system]
 build-backend = "poetry.core.masonry.api"
@@ -45,3 +48,7 @@ disallow_untyped_defs = true
 files = ["src/"]
 ignore_missing_imports = true
 plugins = "strawberry.ext.mypy_plugin"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "beta_spray.settings.settings_dev"
+python_files = ["test_*.py"]

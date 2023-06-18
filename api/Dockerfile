@@ -5,6 +5,7 @@ ARG BUILD_PRODUCTION
 ENV PATH=$PATH:/root/.local/bin/:/app/.venv/bin/ \
     POETRY_VERSION=1.3.2 \
     POETRY_INSTALL_ARGS=${BUILD_PRODUCTION:+"--without dev"} \
+    PYTHONPATH=src \
     PYTHONUNBUFFERED=1 \
     DJANGO_SETTINGS_MODULE=beta_spray.settings.settings_dev
 WORKDIR /app

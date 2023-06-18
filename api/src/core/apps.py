@@ -12,14 +12,15 @@ class CoreConfig(AppConfig):
     name = "core"
 
     def ready(self) -> None:
-        # We have to defer this import so it doesn't happen before the app is
-        # ready, otherwise django gets very upset
-        from .schema import schema
+        if settings.DEBUG:
+            # We have to defer this import so it doesn't happen before the app
+            # is ready, otherwise django gets very upset
+            from .schema import schema
 
-        # Export GQL schema upon startup
-        schema_string = print_schema(schema)
-        with open(settings.GRAPHQL_SCHEMA_PATH, "w") as f:
-            f.write(schema_string)
-        logger.info(
-            f"Exported GraphQL schema to {settings.GRAPHQL_SCHEMA_PATH}"
-        )
+            # Export GQL schema upon startup
+            schema_string = print_schema(schema)
+            with open(settings.GRAPHQL_SCHEMA_PATH, "w") as f:
+                f.write(schema_string)
+            logger.info(
+                f"Exported GraphQL schema to {settings.GRAPHQL_SCHEMA_PATH}"
+            )
