@@ -33,7 +33,14 @@ def permission(model: Model, permission_type: PermissionType) -> str:
 
 @rules.predicate
 def is_current_user(user: User, obj: Optional[User]) -> bool:
+    """It me?"""
     return obj is not None and user == obj
+
+
+@rules.predicate
+def is_resident_user(user: User) -> bool:
+    """Is the user *not* a guest?"""
+    return not user.profile.is_guest
 
 
 @rules.predicate
@@ -62,7 +69,11 @@ def is_beta_owner(user: User, obj: Optional[BetaMove]) -> bool:
 
 
 # User
-rules.add_perm(permission(User, PermissionType.EDIT), is_current_user)
+rules.add_perm(
+    permission(User, PermissionType.EDIT),
+    # Guest users can't be edited at all
+    is_current_user & is_resident_user,
+)
 rules.add_perm(permission(User, PermissionType.DELETE), False)
 # Problem
 rules.add_perm(permission(Problem, PermissionType.EDIT), is_owner)

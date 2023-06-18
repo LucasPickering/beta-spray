@@ -371,7 +371,7 @@ class Mutation:
             beta_dj.problem.boulder.image
         )
 
-        # Make sure the move belongs to the same beta
+        # ===== Validation =====
         if (
             previous_beta_move_dj
             and previous_beta_move_dj.beta_id != beta_dj.id
@@ -379,9 +379,15 @@ class Mutation:
             return ValidationError(
                 "Previous move must belong to the given beta"
             )
+        if hold_dj and hold_dj.problem_id != beta_dj.problem_id:
+            return ValidationError(
+                "Hold and beta must belong to the same problem"
+            )
+        if (hold and position) or (not hold and not position):
+            return ValidationError(
+                "Exactly one of hold or position must be given"
+            )
 
-        # TODO validate that hold and beta belong to the same problem
-        # TODO validate that exactly one of hold+position is given
         return resolvers.create(
             info,
             BetaMove,

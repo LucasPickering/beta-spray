@@ -11,8 +11,10 @@ from core.models import Boulder, Problem, Visibility
 class UserFactory(DjangoModelFactory):
     class Meta:
         model = User
+        skip_postgeneration_save = True
 
     username = Faker("name")
+    password = "!placeholder"
     profile = factory.RelatedFactory(
         "core.tests.factories.UserProfileFactory", factory_related_name="user"
     )
