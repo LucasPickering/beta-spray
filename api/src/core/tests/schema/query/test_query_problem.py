@@ -9,7 +9,6 @@ from core.schema.query import ProblemNode
 from core.tests.factories import BoulderFactory, ProblemFactory, UserFactory
 from core.tests.schema.conftest import assert_graphql_result
 
-# TODO is there a way to move this into conftest.py?
 pytestmark = pytest.mark.django_db
 
 problem_query = """

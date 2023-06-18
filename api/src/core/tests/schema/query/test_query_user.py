@@ -4,7 +4,6 @@ from strawberry.django.context import StrawberryDjangoContext
 from core.schema import schema
 from core.tests.schema.conftest import assert_graphql_result
 
-# TODO is there a way to move this into conftest.py?
 pytestmark = pytest.mark.django_db
 
 current_user_query = """

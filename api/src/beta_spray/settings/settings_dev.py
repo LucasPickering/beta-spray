@@ -11,15 +11,13 @@ SECRET_KEY = (
 
 # Configure INTERNAL_IPS correctly for docker
 INTERNAL_IPS = ["127.0.0.1"]
-try:
-    ip = socket.gethostbyname(socket.gethostname())
-    # Include the full docker subnet in INTERNAL_IPS, so requests proxied from
-    # the UI container are considered internal
-    subnet = ip[: ip.rfind(".")] + ".0/24"
-    INTERNAL_IPS += [str(ip) for ip in ipaddress.ip_network(subnet)]
-except socket.gaierror:
-    # This can fail when running locally
-    pass
+# .local suffix doesn't work with gethostbyname, causes a slow failure
+hostname = socket.gethostname().removesuffix(".local")
+ip = socket.gethostbyname(hostname)
+# Include the full docker subnet in INTERNAL_IPS, so requests proxied from
+# the UI container are considered internal
+subnet = ip[: ip.rfind(".")] + ".0/24"
+INTERNAL_IPS += [str(ip) for ip in ipaddress.ip_network(subnet)]
 
 # In dev, we store static files and media on the local FS. In prod, both live
 # in GCS buckets and are served directly by nginx, so we don't need any of these
