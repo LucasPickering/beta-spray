@@ -82,7 +82,7 @@ jobs:
         working-directory: api/
         # We need to scope down to our apps here, in case a dependency has a
         # dangling migration
-        run: poetry run ./src/manage.py makemigrations core --skip-checks --dry-run --check
+        run: poetry run ./src/manage.py makemigrations --skip-checks --dry-run --check
 
   # This runs in a docker container because it needs DB access
   api-test:
@@ -95,4 +95,4 @@ jobs:
         run: docker-compose build api
 
       - name: Run Tests
-        run: docker-compose run api ./m.sh test
+        run: docker-compose run api pytest
