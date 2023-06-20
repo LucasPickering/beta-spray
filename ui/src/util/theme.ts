@@ -204,6 +204,7 @@ const theme = createTheme(
       MuiTooltip: {
         defaultProps: {
           enterTouchDelay: 0, // By default you need to long-press to show...
+          enterDelay: 300, // Don't show when just driving by
         },
         styleOverrides: {
           tooltip: {
