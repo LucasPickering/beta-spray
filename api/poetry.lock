@@ -427,18 +427,6 @@ files = [
 Django = ">=3.2"
 
 [[package]]
-name = "django-guest-user"
-version = "0.5.4"
-description = "A Django app that lets visitors interact with your site without registration."
-category = "main"
-optional = false
-python-versions = ">=3.7,<4.0"
-files = [
-    {file = "django_guest_user-0.5.4-py3-none-any.whl", hash = "sha256:8ca777438cc05ceff5d6de6097c3a5dc369dc5b3913f767f8b442399ae469616"},
-    {file = "django_guest_user-0.5.4.tar.gz", hash = "sha256:12e63182469ae77b9109e752c406e5ba1fb0bdebe06e809f6421a08dda6ca4f9"},
-]
-
-[[package]]
 name = "django-storages"
 version = "1.13.2"
 description = "Support for many storage backends in Django"
@@ -1464,4 +1452,4 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "47435ddf8a549dd7bbc63623a03533b0823dcf18071be0e01873fa6a9dcaf5bc"
+content-hash = "ba0a770c168b2277a32f24571c5c93f4610e0c306e948bf2a656cfa3bbbee771"
