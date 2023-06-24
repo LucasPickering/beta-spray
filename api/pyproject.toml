@@ -22,12 +22,12 @@ strawberry-django-plus = "^2.1.0"
 
 [tool.poetry.group.dev.dependencies]
 debugpy = "^1.6.6"
-flake8-black = "0.3.6"
-flake8-isort = "^6.0.0"
 mypy = "^1.0.1"
 pytest = "^7.4.0"
 pytest-django = "^4.5.2"
 pytest-mock = "^3.11.1"
+ruff = "^0.0.275"
+black = "^23.3.0"
 
 [build-system]
 build-backend = "poetry.core.masonry.api"
@@ -36,11 +36,6 @@ requires = ["poetry-core>=1.0.0"]
 [tool.black]
 line-length = 80
 
-[tool.isort]
-line_length = 80
-profile = "black"
-skip_gitignore = true
-
 [tool.mypy]
 disallow_incomplete_defs = true
 disallow_untyped_calls = true
@@ -48,6 +43,13 @@ disallow_untyped_defs = true
 files = ["src/"]
 ignore_missing_imports = true
 plugins = "strawberry.ext.mypy_plugin"
+
+[tool.ruff]
+exclude = [".venv/"]
+fixable = ["E", "F", "I"]
+line-length = 80
+select = ["E", "F", "I"]
+src = ["src/"]
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "beta_spray.settings.settings_dev"
