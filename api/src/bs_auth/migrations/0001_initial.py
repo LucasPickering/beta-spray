@@ -14,17 +14,22 @@ def create_profiles(
     """Create a profile for every existing user, and set is_guest"""
     User = get_user_model()
     UserProfile = apps.get_model("bs_auth", "UserProfile")
-    Guest = apps.get_model("guest_user", "Guest")
-    UserProfile.objects.bulk_create(
-        [
-            UserProfile(
-                user_id=user.id,
-                # Copy over is_guest from the guest_user package (to be removed)
-                is_guest=Guest.objects.filter(user_id=user.id).exists(),
-            )
-            for user in User.objects.all()
-        ]
-    )
+    try:
+        Guest = apps.get_model("guest_user", "Guest")
+        UserProfile.objects.bulk_create(
+            [
+                UserProfile(
+                    user_id=user.id,
+                    # Copy over is_guest from the guest_user package
+                    is_guest=Guest.objects.filter(user_id=user.id).exists(),
+                )
+                for user in User.objects.all()
+            ]
+        )
+    except LookupError:
+        # guest_user isn't installed - this is probably being run _after_ the
+        # app was deleted, so there's no data to migrate anyway
+        pass
 
 
 class Migration(migrations.Migration):
