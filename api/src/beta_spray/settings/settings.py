@@ -37,7 +37,6 @@ INSTALLED_APPS = [
     "strawberry_django_plus",
     "rules",
     "social_django",
-    "guest_user",  # TODO remove after migration
     "core",
     "bs_auth",
 ]
@@ -61,7 +60,6 @@ AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",  # For admin/testing logins
     "rules.permissions.ObjectPermissionBackend",
     "bs_auth.backends.GuestBackend",
-    "guest_user.backends.GuestBackend",  # TODO remove after migration
 ]
 SOCIAL_AUTH_JSONFIELD_ENABLED = True
 SOCIAL_AUTH_PIPELINE = (
