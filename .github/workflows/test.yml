@@ -68,9 +68,13 @@ jobs:
         working-directory: api/
         run: poetry run mypy
 
+      - name: Check formatting
+        working-directory: api/
+        run: poetry run black --check .
+
       - name: Lint
         working-directory: api/
-        run: poetry run flake8
+        run: poetry run ruff .
 
       - name: Check for GraphQL schema changes
         working-directory: api/
