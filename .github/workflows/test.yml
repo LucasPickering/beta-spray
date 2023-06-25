@@ -1,7 +1,7 @@
 name: Lint & Test
 
 env:
-  # Keep this in sync with api/Dockerfile,api/prd.Dockerfile
+  # Keep this in sync with api/Dockerfile
   PYTHON_VERSION: "3.10"
   # Keep this in sync with ui/Dockerfile and ui/.nvmrc
   NODE_VERSION: "16"

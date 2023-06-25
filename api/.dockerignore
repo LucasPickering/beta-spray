@@ -1,5 +1,8 @@
+.*_cache
 Dockerfile
 .dockerignore
 *.pyc
 __pycache__/
 src/media/
+src/static/
+.venv/

@@ -2,7 +2,6 @@
 
 set -ex
 
-source $(poetry env info --path)/bin/activate
 cd src
 
 ./manage.py migrate

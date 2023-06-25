@@ -1,6 +1,11 @@
 FROM python:3.10-alpine
 
-ENV PYTHONUNBUFFERED=1 \
+ARG BUILD_PRODUCTION
+
+ENV PATH=$PATH:/root/.local/bin/:/app/.venv/bin/ \
+    POETRY_VERSION=1.3.2 \
+    POETRY_INSTALL_ARGS=${BUILD_PRODUCTION:+"--without dev"} \
+    PYTHONUNBUFFERED=1 \
     DJANGO_SETTINGS_MODULE=beta_spray.settings.settings_dev
 WORKDIR /app
 
@@ -15,13 +20,13 @@ RUN apk add --no-cache \
     postgresql14-client
 
 # Install poetry
-ENV PATH=$PATH:/root/.local/bin/ \
-    POETRY_VERSION=1.3.2
 RUN apk add --no-cache --virtual .build-deps curl && \
     curl -sSL https://install.python-poetry.org | python - && \
     apk del .build-deps
 
 ADD poetry.toml pyproject.toml poetry.lock ./
-RUN poetry install
+RUN poetry install ${POETRY_INSTALL_ARGS}
+
+ADD . .
 
 CMD ["./scripts/cmd_dev.sh"]
