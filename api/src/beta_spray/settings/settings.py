@@ -126,7 +126,9 @@ WSGI_APPLICATION = "beta_spray.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
+        "ENGINE": os.getenv(
+            "BETA_SPRAY_DB_BACKEND", "django.db.backends.postgresql"
+        ),
         "NAME": os.getenv("BETA_SPRAY_DB_NAME", "beta_spray"),
         "USER": os.getenv("BETA_SPRAY_DB_USER"),
         "PASSWORD": os.getenv("BETA_SPRAY_DB_PASSWORD"),
