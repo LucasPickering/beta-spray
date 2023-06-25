@@ -14,7 +14,7 @@ on:
 jobs:
   build:
     name: Build
-    uses: LucasPickering/beta-spray/.github/workflows/build.yml@master
+    uses: ./.github/workflows/build.yml
     permissions:
       contents: read
       packages: write
@@ -22,7 +22,7 @@ jobs:
     secrets: inherit
   deploy:
     name: Deploy
-    uses: LucasPickering/beta-spray/.github/workflows/deploy.yml@master
+    uses: ./.github/workflows/deploy.yml
     needs:
       - build
     with:

@@ -35,11 +35,12 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: ./api/
-          file: ./api/prd.Dockerfile
+          file: ./api/Dockerfile
           tags: ghcr.io/lucaspickering/beta-spray-api:${{ env.SHA }}
           push: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          build-args: BUILD_PRODUCTION=true
 
       - name: Build Django static assets
         # Use dev settings here so we don't need to load secrets
