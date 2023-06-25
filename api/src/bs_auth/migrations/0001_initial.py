@@ -56,7 +56,7 @@ class Migration(migrations.Migration):
                     "is_guest",
                     models.BooleanField(
                         default=False,
-                        help_text="Is the user a *not* fully authenticated?",
+                        help_text="Is the user *not* fully authenticated?",
                     ),
                 ),
                 (

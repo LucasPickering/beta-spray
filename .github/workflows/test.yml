@@ -80,9 +80,9 @@ jobs:
 
       - name: Check for DB schema changes
         working-directory: api/
-        # We need to scope down to our apps here, in case a dependency has a
-        # dangling migration
-        run: poetry run ./src/manage.py makemigrations --skip-checks --dry-run --check
+        env:
+          BETA_SPRAY_DB_BACKEND: django.db.backends.dummy
+        run: poetry run ./src/manage.py makemigrations --skip-checks --check
 
   # This runs in a docker container because it needs DB access
   api-test:
