@@ -27,9 +27,7 @@ services:
     tty: true # Colors!
     environment:
       - DJANGO_SETTINGS_MODULE=beta_spray.settings.settings_dev
-      - BETA_SPRAY_DB_NAME=beta_spray
-      - BETA_SPRAY_DB_USER=beta_spray
-      - BETA_SPRAY_DB_PASSWORD=beta_spray
+      - BETA_SPRAY_DB_HOST=db
       - BETA_SPRAY_GOOGLE_CLIENT_ID
       - BETA_SPRAY_GOOGLE_CLIENT_SECRET
     depends_on:
