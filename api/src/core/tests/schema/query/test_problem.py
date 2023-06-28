@@ -42,41 +42,36 @@ problems_query = """
 """
 
 
-def test_query_problem_null() -> None:
-    # ID with wrong type
+@pytest.mark.parametrize(
+    "problem_id",
+    [
+        "QmV0YU5vZGU6ODQ=",  # ID with wrong type
+        "UHJvYmxlbU5vZGU6NDE=",  # ID with correct type but unknown primary key
+    ],
+)
+def test_query_problem_null(problem_id: str) -> None:
     assert_graphql_result(
         schema.execute_sync(
-            problem_query, variable_values={"problemId": "QmV0YU5vZGU6ODQ="}
+            problem_query, variable_values={"problemId": problem_id}
         ),
         {"problem": None},
     )
 
-    # ID with correct type but unknown primary key
+
+@pytest.mark.parametrize(
+    "problem_id,expected",
+    [
+        ("unknown", "invalid value 'unknown'"),  # Invalid base64
+        ("dW5rbm93bg==", "expected to contain only 2 items"),  # meaningless b64
+    ],
+)
+def test_query_problem_invalid_id(problem_id: str, expected: str) -> None:
     assert_graphql_result(
         schema.execute_sync(
-            problem_query, variable_values={"problemId": "UHJvYmxlbU5vZGU6NDE="}
-        ),
-        {"problem": None},
-    )
-
-
-def test_query_problem_invalid_id() -> None:
-    # Invalid base64
-    assert_graphql_result(
-        schema.execute_sync(
-            problem_query, variable_values={"problemId": "unknown"}
+            problem_query, variable_values={"problemId": problem_id}
         ),
         None,
-        ["invalid value 'unknown'"],
-    )
-
-    # base64 that decodes to the wrong format
-    assert_graphql_result(
-        schema.execute_sync(
-            problem_query, variable_values={"problemId": "dW5rbm93bg=="}
-        ),
-        None,
-        ["expected to contain only 2 items"],
+        [expected],
     )
 
 
