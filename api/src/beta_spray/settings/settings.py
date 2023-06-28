@@ -130,9 +130,9 @@ DATABASES = {
             "BETA_SPRAY_DB_BACKEND", "django.db.backends.postgresql"
         ),
         "NAME": os.getenv("BETA_SPRAY_DB_NAME", "beta_spray"),
-        "USER": os.getenv("BETA_SPRAY_DB_USER"),
-        "PASSWORD": os.getenv("BETA_SPRAY_DB_PASSWORD"),
-        "HOST": os.getenv("BETA_SPRAY_DB_HOST", "db"),
+        "USER": os.getenv("BETA_SPRAY_DB_USER", "beta_spray"),
+        "PASSWORD": os.getenv("BETA_SPRAY_DB_PASSWORD", "beta_spray"),
+        "HOST": os.getenv("BETA_SPRAY_DB_HOST", "localhost"),
         "PORT": 5432,
         "ATOMIC_REQUESTS": True,
     }

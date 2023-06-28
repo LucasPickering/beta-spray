@@ -14,6 +14,13 @@
       "port": 8001,
       "host": "127.0.0.1",
       "justMyCode": false
+    },
+    {
+      "name": "Debug Pytest",
+      "type": "python",
+      "request": "launch",
+      "purpose": ["debug-test"],
+      "justMyCode": false
     }
   ]
 }
