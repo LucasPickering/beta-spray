@@ -7,7 +7,7 @@ ENV PATH=$PATH:/root/.local/bin/:/app/.venv/bin/ \
     POETRY_INSTALL_ARGS=${BUILD_PRODUCTION:+"--without dev"} \
     PYTHONPATH=src \
     PYTHONUNBUFFERED=1 \
-    DJANGO_SETTINGS_MODULE=beta_spray.settings.settings_dev
+    DJANGO_SETTINGS_MODULE=beta_spray.settings.settings_prd
 WORKDIR /app
 
 # Dependencies first, for layer caching
