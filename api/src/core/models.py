@@ -1,5 +1,6 @@
 from typing import Any, Literal, Optional
 
+import strawberry
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import (
@@ -14,15 +15,14 @@ from django.db.models import (
 from django.db.models.functions import Coalesce
 from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch import receiver
-from strawberry_django_plus import gql
 
 from . import fields, util
 from .queryset import BetaMoveQuerySet
 
 
-# Typing on this seems to be wonky because gql.enum is made for stock enums,
-# not Django choice enums
-@gql.enum
+# Typing on this seems to be wonky because strawberry.enum is made for stock
+# enums, not Django choice enums
+@strawberry.enum
 class BodyPart(models.TextChoices):  # type: ignore
     """A body part that someone could put on a hold"""
 
@@ -33,7 +33,7 @@ class BodyPart(models.TextChoices):  # type: ignore
     RIGHT_FOOT = "RF"
 
 
-@gql.enum
+@strawberry.enum
 class Visibility(models.TextChoices):  # type: ignore
     """Visibility of an object within the platform, i.e. who else can see it?"""
 

@@ -1,35 +1,22 @@
 """
-If unauthenticated, a guest user will be created for you when calling this mutation.
-"""
-directive @createGuestUser on FIELD_DEFINITION
-
-"""
 Will check if the user has any/all permissions for the resolved value of this field before returning it.
 
-When the condition fails, the following can happen (following this priority):
-1) If the return value can return an `OperationMessage`, it is returned as that type.
-2) If the field is mandatory (e.g. `String!`), this will result in an error.
-3) If the field is not mandatory and a list (e.g. `[String]`), an empty list will be returned.
-4) If the field is not mandatory and any scalar or object (e.g. `String`), `null` will be returned.
-5) If the field is a relay `Connection`, an empty connection will be returned.
+When the condition fails, the following can be returned (following this priority):
+1) `OperationInfo`/`OperationMessage` if those types are allowed at the return type
+2) `null` in case the field is not mandatory (e.g. `String` or `[String]`)
+3) An empty list in case the field is a list (e.g. `[String]!`)
+4) An empty `Connection` in case the return type is a relay connection
+2) Otherwise, an error will be raised
 """
-directive @hasObjPerm(permissions: [PermDefinition!]!, any: Boolean! = true) on FIELD_DEFINITION
+directive @hasRetvalPerm(permissions: [PermDefinition!]!, any: Boolean! = true) repeatable on FIELD_DEFINITION
 
-"""
-A singular move within a beta, which is a body part+location pairing. This
-may be confusing because a "move" can also refer to the motion of a body
-part from point A to point B, but in the context of this API, a move
-always refers to a particular body part in a particular position.
-
-Most moves are attached to a particular hold, but not all. For example,
-flagging a leg or smearing a foot will apply to a general area on the
-boulder rather than a particular hold.
-"""
 type BetaMoveNode implements Node {
+  """The Globally Unique ID of this object"""
   id: ID!
 
   """Date+time of object creation"""
   createdAt: DateTime!
+  permissions: Permissions!
   beta: BetaNode!
 
   """Body part being moved"""
@@ -49,13 +36,6 @@ type BetaMoveNode implements Node {
   """
   hold: HoldNode
 
-  """
-  Permissions for the requesting user (you) on the parent object.
-  Attempting any mutation that you don't have permission for will result
-  in an error.
-  """
-  permissions: Permissions!
-
   """Position of a free move. Null for attached moves."""
   position: SVGPosition
 }
@@ -67,9 +47,6 @@ type BetaMoveNodeConnection {
 
   """Contains the nodes in this connection"""
   edges: [BetaMoveNodeEdge!]!
-
-  """Total quantity of existing nodes"""
-  totalCount: Int
 }
 
 """An edge in a connection."""
@@ -81,12 +58,8 @@ type BetaMoveNodeEdge {
   node: BetaMoveNode!
 }
 
-"""
-A beta is a sequence of moves that solves a problem. The word is really used
-as a mass known so the phrase "a beta" is actually incorrect, but treating
-it as a singular noun makes the verbiage much easier in code.
-"""
 type BetaNode implements Node {
+  """The Globally Unique ID of this object"""
   id: ID!
 
   """User-friendly name of the beta"""
@@ -95,6 +68,7 @@ type BetaNode implements Node {
   """Date+time of object creation"""
   createdAt: DateTime!
   owner: UserNode!
+  permissions: Permissions!
   problem: ProblemNode!
   moves(
     """Returns the items in the list that come before the specified cursor."""
@@ -109,13 +83,6 @@ type BetaNode implements Node {
     """Returns the items in the list that come after the specified cursor."""
     last: Int = null
   ): BetaMoveNodeConnection!
-
-  """
-  Permissions for the requesting user (you) on the parent object.
-  Attempting any mutation that you don't have permission for will result
-  in an error.
-  """
-  permissions: Permissions!
 }
 
 """A connection to a list of items."""
@@ -125,9 +92,6 @@ type BetaNodeConnection {
 
   """Contains the nodes in this connection"""
   edges: [BetaNodeEdge!]!
-
-  """Total quantity of existing nodes"""
-  totalCount: Int
 }
 
 """An edge in a connection."""
@@ -139,7 +103,6 @@ type BetaNodeEdge {
   node: BetaNode!
 }
 
-"""A body part that someone could put on a hold"""
 enum BodyPart {
   LEFT_HAND
   RIGHT_HAND
@@ -147,43 +110,29 @@ enum BodyPart {
   RIGHT_FOOT
 }
 
-"""
-A boulder is a wall or rock that has holds on it. In the context of this
-API, a boulder is defined by a 2D raster image of it. The holds are then
-defined in X/Y coordinates, in reference to the image.
-"""
 type BoulderNode implements Node {
+  """The Globally Unique ID of this object"""
   id: ID!
 
   """Date+time of object creation"""
   createdAt: DateTime!
-  image: Image!
-
-  """
-  Permissions for the requesting user (you) on the parent object.
-  Attempting any mutation that you don't have permission for will result
-  in an error.
-  """
   permissions: Permissions!
+  image: Image!
 }
 
-"""Input data for `copyBeta` mutation"""
 input CopyBetaInput {
   id: ID!
 }
 
-"""Input data for `copyProblem` mutation"""
 input CopyProblemInput {
   id: ID!
 }
 
-"""Input data for `createBeta` mutation"""
 input CreateBetaInput {
   problem: ID!
   name: String
 }
 
-"""Input data for `createBetaMove` mutation"""
 input CreateBetaMoveInput {
   beta: ID!
   bodyPart: BodyPart!
@@ -194,14 +143,12 @@ input CreateBetaMoveInput {
   previousBetaMove: ID
 }
 
-"""Input data for `createBoulderWithFriends` mutation"""
 input CreateBoulderWithFriendsInput {
   image: ImageUpload!
   problemName: String
   betaName: String
 }
 
-"""Input data for `createHold` mutation"""
 input CreateHoldInput {
   """The ID of the problem to add the hold to."""
   problem: ID!
@@ -213,26 +160,17 @@ input CreateHoldInput {
 """Date with time (isoformat)"""
 scalar DateTime
 
-"""
-A hold is a particular point on a boulder that can be grabbed or otherwise
-used by a climber.
-"""
 type HoldNode implements Node {
+  """The Globally Unique ID of this object"""
   id: ID!
   problem: ProblemNode!
 
   """Date+time of object creation"""
   createdAt: DateTime!
+  permissions: Permissions!
 
   """Informative text related to the hold, created by the user"""
   annotation: String!
-
-  """
-  Permissions for the requesting user (you) on the parent object.
-  Attempting any mutation that you don't have permission for will result
-  in an error.
-  """
-  permissions: Permissions!
 
   """Position of the hold within the boulder image"""
   position: SVGPosition!
@@ -245,9 +183,6 @@ type HoldNodeConnection {
 
   """Contains the nodes in this connection"""
   edges: [HoldNodeEdge!]!
-
-  """Total quantity of existing nodes"""
-  totalCount: Int
 }
 
 """An edge in a connection."""
@@ -259,7 +194,6 @@ type HoldNodeEdge {
   node: HoldNode!
 }
 
-"""An image, e.g. JPG or PNG"""
 type Image {
   """Image access URL"""
   url: String!
@@ -269,16 +203,7 @@ type Image {
 
   """Image height, in pixels"""
   height: Int!
-
-  """
-  Image width, either `100` if portrait or `width/height*100` if landscape
-  """
   svgWidth: Float!
-
-  """
-  Image height, either `100` if landscape or `height/width*100` if
-  portrait
-  """
   svgHeight: Float!
 }
 
@@ -288,92 +213,48 @@ An uploaded image. To upload a file, see: https://strawberry.rocks/docs/guides/f
 scalar ImageUpload
 
 type Mutation {
-  updateUser(input: UpdateUserInput!): UserNode! @hasObjPerm(permissions: [{resource: "auth", permission: "edit_user"}], any: true)
-  deleteHold(
-    """Input of an object that implements the `Node` interface."""
-    input: NodeInput!
-  ): HoldNode! @hasObjPerm(permissions: [{resource: "core", permission: "delete_hold"}], any: true)
-  updateProblem(input: UpdateProblemInput!): ProblemNode! @hasObjPerm(permissions: [{resource: "core", permission: "edit_problem"}], any: true)
-  deleteProblem(
-    """Input of an object that implements the `Node` interface."""
-    input: NodeInput!
-  ): ProblemNode! @hasObjPerm(permissions: [{resource: "core", permission: "delete_problem"}], any: true)
-  updateBeta(input: UpdateBetaInput!): BetaNode! @hasObjPerm(permissions: [{resource: "core", permission: "edit_beta"}], any: true)
-  deleteBeta(
-    """Input of an object that implements the `Node` interface."""
-    input: NodeInput!
-  ): BetaNode! @hasObjPerm(permissions: [{resource: "core", permission: "delete_beta"}], any: true)
-  deleteBetaMove(
-    """Input of an object that implements the `Node` interface."""
-    input: NodeInput!
-  ): BetaMoveNode! @hasObjPerm(permissions: [{resource: "core", permission: "delete_betamove"}], any: true)
-
-  """Log out the current user (if any)"""
+  updateUser(input: UpdateUserInput!): UserNode! @hasRetvalPerm(permissions: [{app: "auth", permission: "edit_user"}], any: true)
+  deleteHold(input: NodeInput!): HoldNode! @hasRetvalPerm(permissions: [{app: "core", permission: "delete_hold"}], any: true)
+  updateProblem(input: UpdateProblemInput!): ProblemNode! @hasRetvalPerm(permissions: [{app: "core", permission: "edit_problem"}], any: true)
+  deleteProblem(input: NodeInput!): ProblemNode! @hasRetvalPerm(permissions: [{app: "core", permission: "delete_problem"}], any: true)
+  updateBeta(input: UpdateBetaInput!): BetaNode! @hasRetvalPerm(permissions: [{app: "core", permission: "edit_beta"}], any: true)
+  deleteBeta(input: NodeInput!): BetaNode! @hasRetvalPerm(permissions: [{app: "core", permission: "delete_beta"}], any: true)
+  deleteBetaMove(input: NodeInput!): BetaMoveNode! @hasRetvalPerm(permissions: [{app: "core", permission: "delete_betamove"}], any: true)
   logOut: Void
-
-  """
-  Create a new boulder from an image, and create a default problem and
-  beta along with it.
-  
-  Returns the created beta, which can be used to grab the created problem
-  and boulder as well (via nested objects).
-  """
   createBoulderWithFriends(
     """Input data for `createBoulderWithFriends` mutation"""
     input: CreateBoulderWithFriendsInput!
-  ): BetaNode! @createGuestUser
-
-  """
-  Create a new hold and add it to a problem. There is no option to create
-  a hold just on a boulder, because there's no use case for that yet.
-  """
+  ): BetaNode!
   createHold(
     """Input data for `createHold` mutation"""
     input: CreateHoldInput!
-  ): HoldNode! @hasObjPerm(permissions: [{resource: "core", permission: "create_hold"}], any: true)
+  ): HoldNode! @hasRetvalPerm(permissions: [{app: "core", permission: "create_hold"}], any: true)
   updateHold(
     """Input data for `updateHold` mutation"""
     input: UpdateHoldInput!
-  ): HoldNode! @hasObjPerm(permissions: [{resource: "core", permission: "edit_hold"}], any: true)
-
-  """
-  Copy a problem. A new problem will be created with the same boulder
-  and holds as the original.
-  """
+  ): HoldNode! @hasRetvalPerm(permissions: [{app: "core", permission: "edit_hold"}], any: true)
   copyProblem(
     """Input data for `copyProblem` mutation"""
     input: CopyProblemInput!
-  ): ProblemNode! @createGuestUser
+  ): ProblemNode!
   createBeta(
     """Input data for `createBeta` mutation"""
     input: CreateBetaInput!
-  ): BetaNode! @createGuestUser
+  ): BetaNode!
   copyBeta(
     """Input data for `copyBeta` mutation"""
     input: CopyBetaInput!
-  ): BetaNode! @createGuestUser
-
-  """
-  Add a new move to a beta. The move can either be appended to the end,
-  or inserted in the middle (by specifying a previousBetaMove).
-  """
+  ): BetaNode!
   createBetaMove(
     """Input data for `createBetaMove` mutation"""
     input: CreateBetaMoveInput!
-  ): BetaMoveNode! @hasObjPerm(permissions: [{resource: "core", permission: "create_betamove"}], any: true)
+  ): BetaMoveNode! @hasRetvalPerm(permissions: [{app: "core", permission: "create_betamove"}], any: true)
   updateBetaMove(
     """Input data for `updateBetaMove` mutation"""
     input: UpdateBetaMoveInput!
-  ): BetaMoveNode! @hasObjPerm(permissions: [{resource: "core", permission: "edit_betamove"}], any: true)
+  ): BetaMoveNode! @hasRetvalPerm(permissions: [{app: "core", permission: "edit_betamove"}], any: true)
 }
 
-"""
-An empty object representing an unauthenticated user. This is essentially
-a null, but Relay has limitations around store management for null values
-(you can't invalidate a null value to force a refetch), so we need to
-provide this instead. And you can't have empty types, so we need a
-placeholder field.
-"""
 type NoUser {
   ignore: String!
 }
@@ -404,7 +285,6 @@ type PageInfo {
   endCursor: String
 }
 
-"""Permission info for the requesting user on the parent object."""
 type Permissions {
   """Can you edit this object?"""
   canEdit: Boolean!
@@ -413,11 +293,8 @@ type Permissions {
   canDelete: Boolean!
 }
 
-"""
-A "problem" is a boulder route. It consists of a series of holds on a
-boulder.
-"""
 type ProblemNode implements Node {
+  """The Globally Unique ID of this object"""
   id: ID!
 
   """User-friendly name of the problem"""
@@ -429,6 +306,7 @@ type ProblemNode implements Node {
   """Date+time of object creation"""
   createdAt: DateTime!
   owner: UserNode!
+  permissions: Permissions!
 
   """Access level for other users to this problem"""
   visibility: Visibility!
@@ -459,13 +337,6 @@ type ProblemNode implements Node {
     """Returns the items in the list that come after the specified cursor."""
     last: Int = null
   ): BetaNodeConnection!
-
-  """
-  Permissions for the requesting user (you) on the parent object.
-  Attempting any mutation that you don't have permission for will result
-  in an error.
-  """
-  permissions: Permissions!
 }
 
 """A connection to a list of items."""
@@ -475,9 +346,6 @@ type ProblemNodeConnection {
 
   """Contains the nodes in this connection"""
   edges: [ProblemNodeEdge!]!
-
-  """Total quantity of existing nodes"""
-  totalCount: Int
 }
 
 """An edge in a connection."""
@@ -501,9 +369,15 @@ type Query {
     """The ID of the object."""
     id: ID!
   ): BetaNode
-
-  """Access problems by list"""
   problems(
+    """
+    Are you the creator of the problem? If set, show only your problems, or only someone else's.
+    """
+    isMine: Boolean
+
+    """Filter by problem visibility"""
+    visibility: Visibility
+
     """Returns the items in the list that come before the specified cursor."""
     before: String = null
 
@@ -515,37 +389,10 @@ type Query {
 
     """Returns the items in the list that come after the specified cursor."""
     last: Int = null
-
-    """
-    Are you the creator of the problem? If set, show only your problems, or only someone else's.
-    """
-    isMine: Boolean
-
-    """Filter by problem visibility"""
-    visibility: Visibility
   ): ProblemNodeConnection!
-
-  """
-  Get data on the requesting user (you). Null for unauthenticated users.
-  Unauthenticated users who have performed a mutation will be logged in
-  as a guest user.
-  """
   currentUser: UserNodeNoUser!
 }
 
-"""
-A 2D position in an image, in the terms that the UI uses. The bounds of the
-coordinates are:
-    - `[0, 100]` in the smaller of the two dimensions
-    - `[0, 100 * width / height]` or `[0, 100 * height / width]`
-
-The origin is the top-left, with X increasing to the right and Y increasing
-down.
-
-The purpose of this system is to provide normalized width and height so that
-UI elements can be sized statically without having to worry about varying
-image resolutions.
-"""
 type SVGPosition {
   """X position, 0-100ish"""
   x: Float!
@@ -567,7 +414,6 @@ input UpdateBetaInput {
   name: String
 }
 
-"""Input data for `updateBetaMove` mutation"""
 input UpdateBetaMoveInput {
   id: ID!
   order: Int
@@ -576,7 +422,6 @@ input UpdateBetaMoveInput {
   annotation: String
 }
 
-"""Input data for `updateHold` mutation"""
 input UpdateHoldInput {
   id: ID!
   position: SVGPositionInput
@@ -601,26 +446,18 @@ input UpdateUserInput {
   username: String
 }
 
-"""A user of Beta Spray"""
 type UserNode implements Node {
+  """The Globally Unique ID of this object"""
   id: ID!
 
   """Username"""
   username: String!
-
-  """Is this the authenticated user? False if unauthenticated."""
   isCurrentUser: Boolean!
-
-  """
-  Is this user a guest? True if the user has not created an account. Only
-  exposed to self.
-  """
   isGuest: Boolean!
 }
 
 union UserNodeNoUser = UserNode | NoUser
 
-"""Visibility of an object within the platform, i.e. who else can see it?"""
 enum Visibility {
   UNLISTED
   PUBLIC
@@ -631,6 +468,13 @@ scalar Void
 
 """Permission definition for schema directives."""
 input PermDefinition {
-  resource: String
+  """
+  The app to which we are requiring permission. If this is empty that means that we are checking the permission directly.
+  """
+  app: String
+
+  """
+  The permission itself. If this is empty that means that we are checking for any permission for the given app.
+  """
   permission: String
 }

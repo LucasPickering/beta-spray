@@ -1,12 +1,11 @@
 from typing import Annotated, Iterable, Optional, Union
 
+import strawberry
 from django.contrib.auth.models import User
 from django.db.models import Model, Q
 from django.db.models.fields.files import ImageFieldFile
-from strawberry import UNSET
+from strawberry import UNSET, relay
 from strawberry.types import Info
-from strawberry_django_plus import gql
-from strawberry_django_plus.gql import relay
 from typing_extensions import Self
 
 from .. import util
@@ -23,59 +22,49 @@ from ..models import (
 from ..permissions import PermissionType, permission
 
 
-@gql.type
+@strawberry.type
 class Permissions:
     """
     Permission info for the requesting user on the parent object.
     """
 
-    can_edit: bool = gql.field(description="Can you edit this object?")
-    can_delete: bool = gql.field(description="Can you delete this object?")
+    can_edit: bool = strawberry.field(description="Can you edit this object?")
+    can_delete: bool = strawberry.field(
+        description="Can you delete this object?"
+    )
 
 
-class PermissionsMixin:
+def get_permissions(self: Model, info: Info) -> Permissions:
     """
-    A slightly-janky class to easily provide a `permissions` field to any
-    child class. We have to do some type hackery to tell mypy that the instance
-    of this will definitely be a model instance.
-
-    This should definitely be improved at some point but it's a decent stopgap.
+    Permissions for the requesting user (you) on the parent object.
+    Attempting any mutation that you don't have permission for will result
+    in an error.
     """
-
-    @gql.field
-    def permissions(self: Model, info: Info) -> Permissions:  # type: ignore
-        """
-        Permissions for the requesting user (you) on the parent object.
-        Attempting any mutation that you don't have permission for will result
-        in an error.
-        """
-        user = info.context.request.user
-        return Permissions(
-            can_edit=user.has_perm(permission(self, PermissionType.EDIT), self),
-            can_delete=user.has_perm(
-                permission(self, PermissionType.DELETE), self
-            ),
-        )
+    user = info.context.request.user
+    return Permissions(
+        can_edit=user.has_perm(permission(self, PermissionType.EDIT), self),
+        can_delete=user.has_perm(permission(self, PermissionType.DELETE), self),
+    )
 
 
-@gql.type
+@strawberry.type
 class Image:
     """
     An image, e.g. JPG or PNG
     """
 
-    url: str = gql.field(description="Image access URL")
-    width: int = gql.field(description="Image width, in pixels")
-    height: int = gql.field(description="Image height, in pixels")
+    url: str = strawberry.field(description="Image access URL")
+    width: int = strawberry.field(description="Image width, in pixels")
+    height: int = strawberry.field(description="Image height, in pixels")
 
-    @gql.field
+    @strawberry.field
     def svg_width(self) -> float:
         """
         Image width, either `100` if portrait or `width/height*100` if landscape
         """
         return util.get_svg_dimensions(self)[0]
 
-    @gql.field
+    @strawberry.field
     def svg_height(self) -> float:
         """
         Image height, either `100` if landscape or `height/width*100` if
@@ -84,7 +73,7 @@ class Image:
         return util.get_svg_dimensions(self)[1]
 
 
-@gql.type
+@strawberry.type
 class SVGPosition:
     """
     A 2D position in an image, in the terms that the UI uses. The bounds of the
@@ -100,8 +89,8 @@ class SVGPosition:
     image resolutions.
     """
 
-    x: float = gql.field(description="X position, 0-100ish")
-    y: float = gql.field(description="Y position, 0-100ish")
+    x: float = strawberry.field(description="X position, 0-100ish")
+    y: float = strawberry.field(description="Y position, 0-100ish")
 
     @classmethod
     def from_boulder_position(
@@ -118,7 +107,7 @@ class SVGPosition:
         )
 
 
-@gql.type
+@strawberry.type
 class NoUser:
     """
     An empty object representing an unauthenticated user. This is essentially
@@ -131,22 +120,24 @@ class NoUser:
     ignore: str = ""
 
 
-@gql.django.type(User)
+@strawberry.django.type(User)
 class UserNode(relay.Node):
     """
     A user of Beta Spray
     """
 
-    username: gql.auto = gql.field(description="Username")
+    username: strawberry.auto = strawberry.field(description="Username")
 
-    @gql.field
+    @strawberry.field
     def is_current_user(self: User, info: Info) -> bool:
         """
         Is this the authenticated user? False if unauthenticated.
         """
         return self.id == info.context.request.user.id
 
-    @gql.django.field(select_related="profile", only=["profile__is_guest"])
+    @strawberry.django.field(
+        select_related="profile", only=["profile__is_guest"]
+    )
     def is_guest(self: User) -> bool:
         """
         Is this user a guest? True if the user has not created an account. Only
@@ -156,55 +147,66 @@ class UserNode(relay.Node):
         return self.profile.is_guest
 
 
-@gql.django.type(Boulder)
-class BoulderNode(relay.Node, PermissionsMixin):
+@strawberry.django.type(Boulder)
+class BoulderNode(relay.Node):
     """
     A boulder is a wall or rock that has holds on it. In the context of this
     API, a boulder is defined by a 2D raster image of it. The holds are then
     defined in X/Y coordinates, in reference to the image.
     """
 
-    created_at: gql.auto = gql.field(description="Date+time of object creation")
-    image: Image = gql.field()
+    created_at: strawberry.auto = strawberry.field(
+        description="Date+time of object creation"
+    )
+    permissions: Permissions = strawberry.field(resolver=get_permissions)
+    image: Image = strawberry.field()
 
 
-@gql.django.type(Problem)
-class ProblemNode(relay.Node, PermissionsMixin):
+@strawberry.django.type(Problem)
+class ProblemNode(relay.Node):
     """
     A "problem" is a boulder route. It consists of a series of holds on a
     boulder.
     """
 
-    name: gql.auto = gql.field(description="User-friendly name of the problem")
-    external_link: gql.auto = gql.field(
+    name: strawberry.auto = strawberry.field(
+        description="User-friendly name of the problem"
+    )
+    external_link: strawberry.auto = strawberry.field(
         description="External link, e.g. to Mountain Project"
     )
-    created_at: gql.auto = gql.field(description="Date+time of object creation")
-    owner: UserNode = gql.field()
-    visibility: Visibility = gql.field()
-    boulder: BoulderNode = gql.field()
-    holds: relay.Connection["HoldNode"] = gql.django.connection(
+    created_at: strawberry.auto = strawberry.field(
+        description="Date+time of object creation"
+    )
+    owner: UserNode = strawberry.field()
+    permissions: Permissions = strawberry.field(resolver=get_permissions)
+    visibility: Visibility = strawberry.field()
+    boulder: BoulderNode = strawberry.field()
+    holds: relay.ListConnection["HoldNode"] = strawberry.django.connection(
         prefetch_related="holds"
     )
-    betas: relay.Connection["BetaNode"] = gql.django.connection(
+    betas: relay.ListConnection["BetaNode"] = strawberry.django.connection(
         prefetch_related="betas"
     )
 
 
-@gql.django.type(Hold)
-class HoldNode(relay.Node, PermissionsMixin):
+@strawberry.django.type(Hold)
+class HoldNode(relay.Node):
     """
     A hold is a particular point on a boulder that can be grabbed or otherwise
     used by a climber.
     """
 
-    problem: ProblemNode = gql.field()
-    created_at: gql.auto = gql.field(description="Date+time of object creation")
-    annotation: gql.auto = gql.field(
+    problem: ProblemNode = strawberry.field()
+    created_at: strawberry.auto = strawberry.field(
+        description="Date+time of object creation"
+    )
+    permissions: Permissions = strawberry.field(resolver=get_permissions)
+    annotation: strawberry.auto = strawberry.field(
         description="Informative text related to the hold, created by the user"
     )
 
-    @gql.django.field(
+    @strawberry.django.field(
         select_related=["problem__boulder"], only=["problem__boulder__image"]
     )
     def position(self) -> SVGPosition:
@@ -213,25 +215,30 @@ class HoldNode(relay.Node, PermissionsMixin):
         )
 
 
-@gql.django.type(Beta)
-class BetaNode(relay.Node, PermissionsMixin):
+@strawberry.django.type(Beta)
+class BetaNode(relay.Node):
     """
     A beta is a sequence of moves that solves a problem. The word is really used
     as a mass known so the phrase "a beta" is actually incorrect, but treating
     it as a singular noun makes the verbiage much easier in code.
     """
 
-    name: gql.auto = gql.field(description="User-friendly name of the beta")
-    created_at: gql.auto = gql.field(description="Date+time of object creation")
-    owner: UserNode = gql.field()
-    problem: ProblemNode = gql.field()
-    moves: relay.Connection["BetaMoveNode"] = gql.django.connection(
+    name: strawberry.auto = strawberry.field(
+        description="User-friendly name of the beta"
+    )
+    created_at: strawberry.auto = strawberry.field(
+        description="Date+time of object creation"
+    )
+    owner: UserNode = strawberry.field()
+    permissions: Permissions = strawberry.field(resolver=get_permissions)
+    problem: ProblemNode = strawberry.field()
+    moves: relay.ListConnection["BetaMoveNode"] = strawberry.django.connection(
         prefetch_related="moves"
     )
 
 
-@gql.django.type(BetaMove)
-class BetaMoveNode(relay.Node, PermissionsMixin):
+@strawberry.django.type(BetaMove)
+class BetaMoveNode(relay.Node):
     """
     A singular move within a beta, which is a body part+location pairing. This
     may be confusing because a "move" can also refer to the motion of a body
@@ -243,25 +250,28 @@ class BetaMoveNode(relay.Node, PermissionsMixin):
     boulder rather than a particular hold.
     """
 
-    created_at: gql.auto = gql.field(description="Date+time of object creation")
-    beta: BetaNode = gql.field()
-    body_part: BodyPart = gql.field(description="Body part being moved")
-    order: int = gql.field(
+    created_at: strawberry.auto = strawberry.field(
+        description="Date+time of object creation"
+    )
+    permissions: Permissions = strawberry.field(resolver=get_permissions)
+    beta: BetaNode = strawberry.field()
+    body_part: BodyPart = strawberry.field(description="Body part being moved")
+    order: int = strawberry.field(
         description="The ordering of this move within the beta, starting at 1"
     )
-    is_start: bool = gql.field(
+    is_start: bool = strawberry.field(
         description="Is this one of the initial moves for the beta?"
     )
-    annotation: gql.auto = gql.field(
+    annotation: strawberry.auto = strawberry.field(
         description="Informative text related to the move, created by the user"
     )
     # TODO is there a better way to represent mutually exclusive fields?
-    hold: Optional[HoldNode] = gql.django.field(
+    hold: Optional[HoldNode] = strawberry.field(
         description="The optional hold that this move is attached to. If null,"
         " the move is 'free', e.g. a flag or smear."
     )
 
-    @gql.django.field(
+    @strawberry.django.field(
         description="Position of a free move. Null for attached moves.",
         select_related=["beta__problem__boulder"],
         only=["beta__problem__boulder__image"],
@@ -277,22 +287,22 @@ class BetaMoveNode(relay.Node, PermissionsMixin):
         )
 
 
-@gql.type
+@strawberry.type
 class Query:
-    @gql.django.connection
+    @strawberry.relay.connection(relay.ListConnection[ProblemNode])
     def problems(
         self,
         info: Info,
         is_mine: Annotated[
             Optional[bool],
-            gql.argument(
+            strawberry.argument(
                 description="Are you the creator of the problem?"
                 " If set, show only your problems, or only someone else's."
             ),
         ] = UNSET,
         visibility: Annotated[
             Optional[Visibility],
-            gql.argument(description="Filter by problem visibility"),
+            strawberry.argument(description="Filter by problem visibility"),
         ] = UNSET,
     ) -> Iterable[ProblemNode]:
         """
@@ -319,14 +329,16 @@ class Query:
 
         return Problem.objects.filter(q)
 
-    problem: Optional[ProblemNode] = gql.django.node(
+    problem: Optional[ProblemNode] = strawberry.django.node(
         description="Get a problem by ID"
     )
-    beta: Optional[BetaNode] = gql.django.node(description="Get a beta by ID")
+    beta: Optional[BetaNode] = strawberry.django.node(
+        description="Get a beta by ID"
+    )
 
     # TODO rename return type to CurrentUser after
     # https://github.com/strawberry-graphql/strawberry/issues/2302
-    @gql.field()
+    @strawberry.field()
     def current_user(self, info: Info) -> Union[UserNode, NoUser]:
         """
         Get data on the requesting user (you). Null for unauthenticated users.
