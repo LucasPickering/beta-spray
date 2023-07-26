@@ -1,7 +1,7 @@
 import pytest
 from django.contrib.auth.models import User
+from strawberry import relay
 from strawberry.django.context import StrawberryDjangoContext
-from strawberry_django_plus import relay
 
 from core.models import Problem, Visibility
 from core.schema import schema
@@ -30,7 +30,6 @@ problem_query = """
 problems_query = """
     query($isMine: Boolean, $visibility: Visibility) {
         problems(isMine: $isMine, visibility: $visibility) {
-            totalCount
             edges {
                 node {
                     id
@@ -115,7 +114,6 @@ def test_query_problems(context: StrawberryDjangoContext, user: User) -> None:
     def get_result(*problems: Problem) -> dict:
         return {
             "problems": {
-                "totalCount": len(problems),
                 "edges": [
                     {
                         "node": {

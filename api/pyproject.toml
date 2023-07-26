@@ -18,7 +18,7 @@ python = "^3.10"
 random-username = "^1.0.2"
 rules = "^3.3"
 social-auth-app-django = "^5.0.0"
-strawberry-django-plus = "^2.1.0"
+strawberry-graphql-django = "^0.14.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.3.0"

@@ -1,13 +1,17 @@
 import random
 from typing import Annotated, NewType, Optional
 
+import strawberry
+import strawberry.django
 from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from django.forms import ValidationError
+from strawberry import relay
+from strawberry.field_extensions import InputMutationExtension
 from strawberry.types.info import Info
-from strawberry_django_plus import gql
-from strawberry_django_plus.mutations import resolvers
-from strawberry_django_plus.permissions import HasObjPerm
+from strawberry_django import mutations
+from strawberry_django.mutations import resolvers
+from strawberry_django.permissions import HasRetvalPerm
 
 from .. import util
 from ..directives import CreateGuestUser
@@ -32,7 +36,7 @@ from .query import (
     UserNode,
 )
 
-ImageUpload = gql.scalar(
+ImageUpload = strawberry.scalar(
     NewType("ImageUpload", bytes),
     description="An uploaded image. To upload a file, see: "
     # Shout out to flake8, really stellar formatting here (:
@@ -43,10 +47,10 @@ ImageUpload = gql.scalar(
 )
 
 
-@gql.input
+@strawberry.input
 class SVGPositionInput:
-    x: float = gql.field(description="X position, 0-100ish")
-    y: float = gql.field(description="Y position, 0-100ish")
+    x: float = strawberry.field(description="X position, 0-100ish")
+    y: float = strawberry.field(description="Y position, 0-100ish")
 
     def to_normalized(self, image: Image) -> BoulderPosition:
         """
@@ -57,45 +61,47 @@ class SVGPositionInput:
         return BoulderPosition(self.x / svg_width, self.y / svg_height)
 
 
-@gql.django.partial(User)
-class UpdateUserInput(gql.NodeInput):
+@strawberry.django.partial(User)
+class UpdateUserInput(strawberry.django.NodeInput):
+    id: relay.GlobalID
     # TODO validate username
-    username: gql.auto
+    username: strawberry.auto
 
 
-@gql.django.partial(Problem)
-class UpdateProblemInput(gql.NodeInput):
-    name: gql.auto
-    external_link: gql.auto
+@strawberry.django.partial(Problem)
+class UpdateProblemInput(strawberry.django.NodeInput):
+    name: strawberry.auto
+    external_link: strawberry.auto
     visibility: Optional[Visibility]
 
 
-@gql.django.input(Beta)
+@strawberry.django.input(Beta)
 class CreateBetaInput:
-    problem: gql.relay.GlobalID
+    problem: relay.GlobalID
 
 
-@gql.django.partial(Beta)
-class UpdateBetaInput(gql.NodeInput):
-    name: gql.auto
+@strawberry.django.partial(Beta)
+class UpdateBetaInput(strawberry.django.NodeInput):
+    name: strawberry.auto
 
 
-@gql.type
+@strawberry.type
 class Mutation:
-    @gql.mutation
+    @strawberry.mutation
     def log_out(self, info: Info) -> None:
         """
         Log out the current user (if any)
         """
         logout(info.context.request)
 
-    update_user: UserNode = gql.django.update_mutation(
+    update_user: UserNode = mutations.update(
         UpdateUserInput,
-        handle_django_errors=False,
-        directives=[HasObjPerm(permission(User, PermissionType.EDIT))],
+        extensions=[HasRetvalPerm(permission(User, PermissionType.EDIT))],
     )
 
-    @gql.relay.input_mutation(directives=[CreateGuestUser()])
+    @strawberry.mutation(
+        extensions=[InputMutationExtension(), CreateGuestUser()]
+    )
     def create_boulder_with_friends(
         self,
         info: Info,
@@ -137,21 +143,24 @@ class Mutation:
             },
         )
 
-    @gql.relay.input_mutation(
-        directives=[HasObjPerm(permission(Hold, PermissionType.CREATE))]
+    @strawberry.mutation(
+        extensions=[
+            InputMutationExtension(),
+            HasRetvalPerm(permission(Hold, PermissionType.CREATE)),
+        ],
     )
     def create_hold(
         self,
         info: Info,
         problem: Annotated[
-            gql.relay.GlobalID,
-            gql.argument(
+            relay.GlobalID,
+            strawberry.argument(
                 description="The ID of the problem to add the hold to."
             ),
         ],
         position: Annotated[
             Optional[SVGPositionInput],
-            gql.argument(
+            strawberry.argument(
                 description="Position of the hold within the boulder image,"
                 " or null for random"
             ),
@@ -162,7 +171,9 @@ class Mutation:
         a hold just on a boulder, because there's no use case for that yet.
         """
         # Resolve input to a django object
-        problem_dj = problem.resolve_node(info, ensure_type=Problem)
+        problem_dj: Problem = problem.resolve_node_sync(
+            info, ensure_type=Problem
+        )
 
         normal_position: BoulderPosition
         if position:
@@ -190,17 +201,20 @@ class Mutation:
 
         return hold_dj
 
-    @gql.relay.input_mutation(
-        directives=[HasObjPerm(permission(Hold, PermissionType.EDIT))]
+    @strawberry.mutation(
+        extensions=[
+            InputMutationExtension(),
+            HasRetvalPerm(permission(Hold, PermissionType.EDIT)),
+        ],
     )
     def update_hold(
         self,
         info: Info,
-        id: gql.relay.GlobalID,
+        id: relay.GlobalID,
         position: Optional[SVGPositionInput],
         annotation: Optional[str],
     ) -> HoldNode:
-        hold: Hold = id.resolve_node(info, ensure_type=Hold)
+        hold: Hold = id.resolve_node_sync(info, ensure_type=Hold)
         # Convert position from SVG coords to normalized (DB) coords
         normal_position = position and position.to_normalized(
             hold.problem.boulder.image
@@ -214,30 +228,31 @@ class Mutation:
             },
         )
 
-    delete_hold: HoldNode = gql.django.delete_mutation(
-        gql.NodeInput,
-        handle_django_errors=False,
-        directives=[HasObjPerm(permission(Hold, PermissionType.DELETE))],
+    delete_hold: HoldNode = mutations.delete(
+        strawberry.django.NodeInput,
+        extensions=[HasRetvalPerm(permission(Hold, PermissionType.DELETE))],
     )
 
-    update_problem: ProblemNode = gql.django.update_mutation(
+    update_problem: ProblemNode = mutations.update(
         UpdateProblemInput,
-        handle_django_errors=False,
-        directives=[HasObjPerm(permission(Problem, PermissionType.EDIT))],
+        extensions=[HasRetvalPerm(permission(Problem, PermissionType.EDIT))],
     )
-    delete_problem: ProblemNode = gql.django.delete_mutation(
-        gql.NodeInput,
-        handle_django_errors=False,
-        directives=[HasObjPerm(permission(Problem, PermissionType.DELETE))],
+    delete_problem: ProblemNode = mutations.delete(
+        strawberry.django.NodeInput,
+        extensions=[HasRetvalPerm(permission(Problem, PermissionType.DELETE))],
     )
 
-    @gql.relay.input_mutation(directives=[CreateGuestUser()])
-    def copy_problem(self, info: Info, id: gql.relay.GlobalID) -> ProblemNode:
+    @strawberry.mutation(
+        extensions=[InputMutationExtension(), CreateGuestUser()]
+    )
+    def copy_problem(self, info: Info, id: relay.GlobalID) -> ProblemNode:
         """
         Copy a problem. A new problem will be created with the same boulder
         and holds as the original.
         """
-        original_problem = id.resolve_node(info, ensure_type=Problem)
+        original_problem: Problem = id.resolve_node_sync(
+            info, ensure_type=Problem
+        )
         # Copy the base problem. We'll point the new problem to the same
         # boulder, so we get the same image.
         new_problem = resolvers.create(
@@ -259,11 +274,18 @@ class Mutation:
 
         return new_problem
 
-    @gql.relay.input_mutation(directives=[CreateGuestUser()])
+    @strawberry.mutation(
+        extensions=[InputMutationExtension(), CreateGuestUser()]
+    )
     def create_beta(
-        self, info: Info, problem: gql.relay.GlobalID, name: Optional[str]
+        self,
+        info: Info,
+        problem: relay.GlobalID,
+        name: Optional[str],
     ) -> BetaNode:
-        problem_dj = problem.resolve_node(info, ensure_type=Problem)
+        problem_dj: Problem = problem.resolve_node_sync(
+            info, ensure_type=Problem
+        )
         return resolvers.create(
             info,
             Beta,
@@ -274,20 +296,20 @@ class Mutation:
             },
         )
 
-    update_beta: BetaNode = gql.django.update_mutation(
+    update_beta: BetaNode = mutations.update(
         UpdateBetaInput,
-        handle_django_errors=False,
-        directives=[HasObjPerm(permission(Beta, PermissionType.EDIT))],
+        extensions=[HasRetvalPerm(permission(Beta, PermissionType.EDIT))],
     )
-    delete_beta: BetaNode = gql.django.delete_mutation(
-        gql.NodeInput,
-        handle_django_errors=False,
-        directives=[HasObjPerm(permission(Beta, PermissionType.DELETE))],
+    delete_beta: BetaNode = mutations.delete(
+        strawberry.django.NodeInput,
+        extensions=[HasRetvalPerm(permission(Beta, PermissionType.DELETE))],
     )
 
-    @gql.relay.input_mutation(directives=[CreateGuestUser()])
-    def copy_beta(self, info: Info, id: gql.relay.GlobalID) -> BetaNode:
-        original_beta = id.resolve_node(info, ensure_type=Beta)
+    @strawberry.mutation(
+        extensions=[InputMutationExtension(), CreateGuestUser()]
+    )
+    def copy_beta(self, info: Info, id: relay.GlobalID) -> BetaNode:
+        original_beta = id.resolve_node_sync(info, ensure_type=Beta)
         # Copy the base beta
         new_beta = resolvers.create(
             info,
@@ -308,19 +330,24 @@ class Mutation:
 
         return new_beta
 
-    @gql.relay.input_mutation(
-        directives=[HasObjPerm(permission(BetaMove, PermissionType.CREATE))],
+    @strawberry.mutation(
+        extensions=[
+            InputMutationExtension(),
+            HasRetvalPerm(permission(BetaMove, PermissionType.CREATE)),
+        ],
     )
     def create_beta_move(
         self,
         info: Info,
-        beta: gql.relay.GlobalID,
+        beta: relay.GlobalID,
         body_part: BodyPart,
-        hold: Optional[gql.relay.GlobalID],
+        hold: Optional[relay.GlobalID],
         position: Optional[SVGPositionInput],
         previous_beta_move: Annotated[
-            Optional[gql.relay.GlobalID],
-            gql.argument(description="Move prior to this one in the beta"),
+            Optional[relay.GlobalID],
+            strawberry.argument(
+                description="Move prior to this one in the beta"
+            ),
         ],
     ) -> BetaMoveNode:
         """
@@ -329,11 +356,14 @@ class Mutation:
         """
 
         # Convert GQL IDs to PKs
-        beta_dj = beta.resolve_node(info, ensure_type=Beta)
-        hold_dj = hold and hold.resolve_node(info, ensure_type=Hold)
-        previous_beta_move_dj = (
-            previous_beta_move
-            and previous_beta_move.resolve_node(info, ensure_type=BetaMove)
+        beta_dj: Beta = beta.resolve_node_sync(info, ensure_type=Beta)
+        hold_dj: Hold | None = (
+            hold.resolve_node_sync(info, ensure_type=Hold) if hold else None
+        )
+        previous_beta_move_dj: BetaMove | None = (
+            previous_beta_move.resolve_node_sync(info, ensure_type=BetaMove)
+            if previous_beta_move
+            else None
         )
 
         # Convert position from SVG coords to normalized [0,1]
@@ -369,20 +399,27 @@ class Mutation:
             full_clean={"exclude": ["beta"]},
         )
 
-    @gql.relay.input_mutation(
-        directives=[HasObjPerm(permission(BetaMove, PermissionType.EDIT))],
+    @strawberry.mutation(
+        extensions=[
+            InputMutationExtension(),
+            HasRetvalPerm(permission(BetaMove, PermissionType.EDIT)),
+        ],
     )
     def update_beta_move(
         self,
         info: Info,
-        id: gql.relay.GlobalID,
+        id: relay.GlobalID,
         order: Optional[int],
-        hold: Optional[gql.relay.GlobalID],
+        hold: Optional[relay.GlobalID],
         position: Optional[SVGPositionInput],
         annotation: Optional[str],
     ) -> BetaMoveNode:
-        beta_move_dj = id.resolve_node(info, ensure_type=BetaMove)
-        hold_dj = hold and hold.resolve_node(info, ensure_type=Hold)
+        beta_move_dj: BetaMove = id.resolve_node_sync(
+            info, ensure_type=BetaMove
+        )
+        hold_dj: Hold | None = (
+            hold.resolve_node_sync(info, ensure_type=Hold) if hold else None
+        )
         normal_position = position and position.to_normalized(
             beta_move_dj.beta.problem.boulder.image
         )
@@ -412,8 +449,7 @@ class Mutation:
             full_clean={"exclude": ["beta"]},
         )
 
-    delete_beta_move: BetaMoveNode = gql.django.delete_mutation(
-        gql.NodeInput,
-        handle_django_errors=False,
-        directives=[HasObjPerm(permission(BetaMove, PermissionType.DELETE))],
+    delete_beta_move: BetaMoveNode = mutations.delete(
+        strawberry.django.NodeInput,
+        extensions=[HasRetvalPerm(permission(BetaMove, PermissionType.DELETE))],
     )

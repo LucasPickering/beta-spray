@@ -34,7 +34,7 @@ INSTALLED_APPS = [
     "dbbackup",
     "debug_toolbar",  # Disabled in prod via INTERNAL_IPS
     "strawberry.django",
-    "strawberry_django_plus",
+    "strawberry_django",
     "rules",
     "social_django",
     "core",
@@ -42,7 +42,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    "strawberry_django_plus.middlewares.debug_toolbar.DebugToolbarMiddleware",
+    "strawberry_django.middlewares.debug_toolbar.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -53,6 +53,11 @@ MIDDLEWARE = [
     # Uncomment to test UI loading state
     # "core.middleware.TimeDelayMiddleware",
 ]
+
+STRAWBERRY_DJANGO = {
+    "FIELD_DESCRIPTION_FROM_HELP_TEXT": True,
+    "MUTATIONS_DEFAULT_ARGUMENT_NAME": "input",
+}
 
 # Auth
 AUTHENTICATION_BACKENDS = [
