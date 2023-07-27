@@ -22,10 +22,8 @@ from .queryset import BetaMoveQuerySet
 
 # Typing on this seems to be wonky because strawberry.enum is made for stock
 # enums, not Django choice enums
-@strawberry.enum
+@strawberry.enum(description="A body part that someone could put on a hold")
 class BodyPart(models.TextChoices):  # type: ignore
-    """A body part that someone could put on a hold"""
-
     # we could easily expand this later to include knees, spleen, etc.
     LEFT_HAND = "LH"
     RIGHT_HAND = "RH"
@@ -33,12 +31,33 @@ class BodyPart(models.TextChoices):  # type: ignore
     RIGHT_FOOT = "RF"
 
 
-@strawberry.enum
+@strawberry.enum(
+    description="Visibility of an object, i.e. who else can see it?"
+)
 class Visibility(models.TextChoices):  # type: ignore
-    """Visibility of an object within the platform, i.e. who else can see it?"""
-
     UNLISTED = "unlisted"
     PUBLIC = "public"
+
+
+@strawberry.enum(description="General category/description of a hold")
+class HoldKind(models.TextChoices):  # type: ignore
+    JUG = "jug"
+    CRIMP = "crimp"
+    SLOPER = "sloper"
+    PINCH = "pinch"
+    POCKET = "pocket"
+    CHIP = "chip"
+
+
+@strawberry.enum(
+    description="Direction that the (most) usable side of a hold is facing,"
+    " i.e. opposite the normal direction of pull"
+)
+class HoldOrientation(models.TextChoices):  # type: ignore
+    UP = "up"
+    DOWN = "down"
+    LEFT = "left"
+    RIGHT = "right"
 
 
 class HoldAnnotationSource(models.TextChoices):
@@ -60,8 +79,6 @@ class Boulder(models.Model):
     image = models.ImageField(unique=True, upload_to="boulders")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-    # TODO override __str__ after name field is actually populated
 
 
 class Problem(models.Model):
@@ -110,6 +127,16 @@ class Hold(models.Model):
         max_length=4,
         choices=HoldAnnotationSource.choices,
         help_text="Source of this boulder-hold attribution (auto or manual)",
+    )
+    kind = models.TextField(
+        choices=HoldKind.choices,
+        default=HoldKind.JUG,  # Let's be optimistic here
+        help_text="Type/kind of a hold",
+    )
+    orientation = models.TextField(
+        choices=HoldOrientation.choices,
+        default=HoldOrientation.UP,
+        help_text="Direction the good part of a hold faces (most will be UP)",
     )
     annotation = models.TextField(
         blank=True, help_text="Free-form annotations created by the user"

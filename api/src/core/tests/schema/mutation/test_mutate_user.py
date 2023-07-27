@@ -80,7 +80,7 @@ def test_update_user_someone_else(
             },
         ),
         None,
-        ["You don't have permission to access this app"],
+        ["You don't have permission"],
     )
 
 
@@ -98,5 +98,5 @@ def test_update_user_guest(
             },
         ),
         None,
-        ["You don't have permission to access this app"],
+        ["You don't have permission"],
     )

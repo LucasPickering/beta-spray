@@ -1,9 +1,11 @@
+from dataclasses import dataclass
 from typing import Any, Optional
 
 from django.db import models
 from typing_extensions import Self
 
 
+@dataclass
 class BoulderPosition:
     """
     Positions are *0-1*, not in pixels!! This allows for scaling on the image
@@ -11,10 +13,6 @@ class BoulderPosition:
 
     x: float
     y: float
-
-    def __init__(self, x: float, y: float):
-        self.x = x
-        self.y = y
 
     @classmethod
     def parse(cls, value: str) -> Self:

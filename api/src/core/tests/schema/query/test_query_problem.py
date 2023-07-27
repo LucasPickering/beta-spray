@@ -6,7 +6,7 @@ from strawberry.django.context import StrawberryDjangoContext
 from core.models import Problem, Visibility
 from core.schema import schema
 from core.schema.query import ProblemNode
-from core.tests.factories import BoulderFactory, ProblemFactory, UserFactory
+from core.tests.factories import BoulderFactory, ProblemFactory
 from core.tests.schema.conftest import assert_graphql_result
 
 pytestmark = pytest.mark.django_db
@@ -92,8 +92,9 @@ def test_query_problem_success(problem: Problem) -> None:
     )
 
 
-def test_query_problems(context: StrawberryDjangoContext, user: User) -> None:
-    other_user = UserFactory()
+def test_query_problems(
+    context: StrawberryDjangoContext, user: User, other_user: User
+) -> None:
     boulder1 = BoulderFactory()
     boulder2 = BoulderFactory()
     problem_mine_public = ProblemFactory(

@@ -98,6 +98,7 @@ type BetaNodeEdge {
   node: BetaNode!
 }
 
+"""A body part that someone could put on a hold"""
 enum BodyPart {
   LEFT_HAND
   RIGHT_HAND
@@ -148,12 +149,25 @@ input CreateHoldInput {
   """The ID of the problem to add the hold to."""
   problem: ID!
 
+  """Category of hold to create"""
+  kind: HoldKind!
+
   """Position of the hold within the boulder image, or null for random"""
   position: SVGPositionInput
 }
 
 """Date with time (isoformat)"""
 scalar DateTime
+
+"""General category/description of a hold"""
+enum HoldKind {
+  JUG
+  CRIMP
+  SLOPER
+  PINCH
+  POCKET
+  CHIP
+}
 
 type HoldNode implements Node {
   """The Globally Unique ID of this object"""
@@ -163,6 +177,12 @@ type HoldNode implements Node {
   """Date+time of object creation"""
   createdAt: DateTime!
   permissions: Permissions!
+
+  """Type of hold, e.g. jug or crimp"""
+  kind: HoldKind!
+
+  """Orientation of the hold (opposite the direction of pull)"""
+  orientation: HoldOrientation!
 
   """Informative text related to the hold, created by the user"""
   annotation: String!
@@ -190,6 +210,16 @@ type HoldNodeEdge {
 }
 
 union HoldNodeSVGPosition = HoldNode | SVGPosition
+
+"""
+Direction that the (most) usable side of a hold is facing, i.e. opposite the normal direction of pull
+"""
+enum HoldOrientation {
+  UP
+  DOWN
+  LEFT
+  RIGHT
+}
 
 type Image {
   """Image access URL"""
@@ -423,6 +453,8 @@ input UpdateHoldInput {
   id: ID!
   position: SVGPositionInput
   annotation: String
+  kind: HoldKind
+  orientation: HoldOrientation
 }
 
 input UpdateProblemInput {
@@ -455,6 +487,7 @@ type UserNode implements Node {
 
 union UserNodeNoUser = UserNode | NoUser
 
+"""Visibility of an object, i.e. who else can see it?"""
 enum Visibility {
   UNLISTED
   PUBLIC

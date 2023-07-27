@@ -23,6 +23,8 @@ from ..models import (
     Boulder,
     Hold,
     HoldAnnotationSource,
+    HoldKind,
+    HoldOrientation,
     Problem,
     Visibility,
 )
@@ -158,6 +160,10 @@ class Mutation:
                 description="The ID of the problem to add the hold to."
             ),
         ],
+        kind: Annotated[
+            HoldKind,
+            strawberry.argument(description="Category of hold to create"),
+        ],
         position: Annotated[
             Optional[SVGPositionInput],
             strawberry.argument(
@@ -194,6 +200,7 @@ class Mutation:
             Hold,
             {
                 "problem": problem_dj,
+                "kind": kind,
                 "position": normal_position,
                 "source": source,
             },
@@ -213,6 +220,8 @@ class Mutation:
         id: relay.GlobalID,
         position: Optional[SVGPositionInput],
         annotation: Optional[str],
+        kind: Optional[HoldKind],
+        orientation: Optional[HoldOrientation],
     ) -> HoldNode:
         hold: Hold = id.resolve_node_sync(info, ensure_type=Hold)
         # Convert position from SVG coords to normalized (DB) coords
@@ -225,6 +234,8 @@ class Mutation:
             {
                 "position": normal_position,
                 "annotation": annotation,
+                "kind": kind,
+                "orientation": orientation,
             },
         )
 

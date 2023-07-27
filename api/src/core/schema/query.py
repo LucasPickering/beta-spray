@@ -16,6 +16,8 @@ from ..models import (
     BodyPart,
     Boulder,
     Hold,
+    HoldKind,
+    HoldOrientation,
     Problem,
     Visibility,
 )
@@ -202,6 +204,12 @@ class HoldNode(relay.Node):
         description="Date+time of object creation"
     )
     permissions: Permissions = strawberry.field(resolver=get_permissions)
+    kind: HoldKind = strawberry.field(
+        description="Type of hold, e.g. jug or crimp"
+    )
+    orientation: HoldOrientation = strawberry.field(
+        description="Orientation of the hold (opposite the direction of pull)"
+    )
     annotation: strawberry.auto = strawberry.field(
         description="Informative text related to the hold, created by the user"
     )
