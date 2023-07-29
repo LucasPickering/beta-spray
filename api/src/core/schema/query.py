@@ -1,4 +1,4 @@
-from typing import Annotated, Iterable, Optional, Union
+from typing import Annotated, Iterable, Optional
 
 import strawberry
 from django.contrib.auth.models import User
@@ -265,26 +265,23 @@ class BetaMoveNode(relay.Node):
     annotation: strawberry.auto = strawberry.field(
         description="Informative text related to the move, created by the user"
     )
-    # TODO is there a better way to represent mutually exclusive fields?
-    hold: Optional[HoldNode] = strawberry.field(
-        description="The optional hold that this move is attached to. If null,"
-        " the move is 'free', e.g. a flag or smear."
-    )
 
     @strawberry.django.field(
-        description="Position of a free move. Null for attached moves.",
+        description="Where the move is going; either a hold or a free position",
         select_related=["beta__problem__boulder"],
         only=["beta__problem__boulder__image"],
     )
-    def position(self) -> Optional[SVGPosition]:
+    def target(self: BetaMove) -> HoldNode | SVGPosition:  # type: ignore[misc]
         # Note: You may be tempted to have this return the hold position when
         # available so the frontend doesn't have to handle that logic. But wait!
         # That doesn't work because then if the hold position is modified, Relay
         # doesn't know to update the associated move position(s) in local state,
         # so the data gets out of sync.
-        return self.position and SVGPosition.from_boulder_position(
-            self.position, self.beta.problem.boulder.image
-        )
+        if self.position:
+            return SVGPosition.from_boulder_position(
+                self.position, self.beta.problem.boulder.image
+            )
+        return self.hold
 
 
 @strawberry.type
@@ -339,7 +336,7 @@ class Query:
     # TODO rename return type to CurrentUser after
     # https://github.com/strawberry-graphql/strawberry/issues/2302
     @strawberry.field()
-    def current_user(self, info: Info) -> Union[UserNode, NoUser]:
+    def current_user(self, info: Info) -> UserNode | NoUser:
         """
         Get data on the requesting user (you). Null for unauthenticated users.
         Unauthenticated users who have performed a mutation will be logged in
