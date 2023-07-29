@@ -1,21 +1,18 @@
 import { isDefined, findNodeIndex, moveArrayElement } from "util/func";
-import useMutation from "util/useMutation";
 import { List, Typography } from "@mui/material";
 import MutationErrorSnackbar from "components/common/MutationErrorSnackbar";
 import { useState, useMemo, useEffect } from "react";
 import { graphql, useFragment } from "react-relay";
-import { deleteBetaMoveLocal, reorderBetaMoveLocal } from "../util/moves";
 import {
   useStance,
   useStickFigureColor as useStanceColor,
   useStanceControls,
 } from "../util/stance";
 import { DragItem } from "../util/dnd";
+import useBetaMoveMutations from "../util/useBetaMoveMutations";
 import BetaDetailsDragLayer from "./BetaDetailsDragLayer";
 import BetaMoveListItemSmart from "./BetaMoveListItemSmart";
 import { BetaMoveList_betaNode$key } from "./__generated__/BetaMoveList_betaNode.graphql";
-import { BetaMoveList_deleteBetaMoveMutation } from "./__generated__/BetaMoveList_deleteBetaMoveMutation.graphql";
-import { BetaMoveList_updateBetaMoveMutation } from "./__generated__/BetaMoveList_updateBetaMoveMutation.graphql";
 
 interface Props {
   betaKey: BetaMoveList_betaNode$key;
@@ -29,6 +26,7 @@ const BetaMoveList: React.FC<Props> = ({ betaKey }) => {
   const beta = useFragment(
     graphql`
       fragment BetaMoveList_betaNode on BetaNode {
+        ...useBetaMoveMutations_betaNode
         id
         permissions {
           canEdit
@@ -36,6 +34,7 @@ const BetaMoveList: React.FC<Props> = ({ betaKey }) => {
         moves {
           ...BetaDetailsDragLayer_betaMoveNodeConnection
           ...stance_betaMoveNodeConnection
+          __id
           edges {
             node {
               id
@@ -51,46 +50,10 @@ const BetaMoveList: React.FC<Props> = ({ betaKey }) => {
     betaKey
   );
 
-  const { commit: updateBetaMove, state: updateState } =
-    useMutation<BetaMoveList_updateBetaMoveMutation>(graphql`
-      mutation BetaMoveList_updateBetaMoveMutation($input: UpdateBetaMoveInput!)
-      @raw_response_type {
-        updateBetaMove(input: $input) {
-          beta {
-            # Refetch all moves to get the new ordering
-            moves {
-              edges {
-                node {
-                  id
-                  order
-                  isStart
-                }
-              }
-            }
-          }
-        }
-      }
-    `);
-  const { commit: deleteBetaMove, state: deleteState } =
-    useMutation<BetaMoveList_deleteBetaMoveMutation>(graphql`
-      mutation BetaMoveList_deleteBetaMoveMutation($input: NodeInput!)
-      @raw_response_type {
-        deleteBetaMove(input: $input) {
-          beta {
-            # Refetch all moves to get the new ordering
-            moves {
-              edges {
-                node {
-                  id
-                  order
-                  isStart
-                }
-              }
-            }
-          }
-        }
-      }
-    `);
+  const {
+    reorder: { callback: reorderBetaMove, state: reorderState },
+    delete: { callback: deleteBetaMove, state: deleteState },
+  } = useBetaMoveMutations(beta);
 
   // When reordering moves, we need to track temporary state of where the
   // dragged move is. We'll use this to reorder the moves locally. Once the
@@ -140,45 +103,9 @@ const BetaMoveList: React.FC<Props> = ({ betaKey }) => {
       // convert now. The API will take care of sliding the
       // other moves up/down to fit this one in
       const newOrder = item.index + 1;
-      updateBetaMove({
-        variables: {
-          input: {
-            id: item.betaMoveId,
-            order: newOrder,
-          },
-        },
-        optimisticResponse: {
-          updateBetaMove: {
-            id: item.betaMoveId,
-            beta: {
-              id: beta.id,
-              moves: reorderBetaMoveLocal(
-                beta.moves,
-                item.betaMoveId,
-                newOrder
-              ),
-            },
-          },
-        },
-      });
+      reorderBetaMove({ betaMoveId: item.betaMoveId, newOrder });
     }
     setDraggingMove(undefined);
-  };
-  const onDelete = (betaMoveId: string): void => {
-    deleteBetaMove({
-      variables: {
-        input: { id: betaMoveId },
-      },
-      optimisticResponse: {
-        deleteBetaMove: {
-          id: betaMoveId,
-          beta: {
-            id: beta.id,
-            moves: deleteBetaMoveLocal(beta.moves, betaMoveId),
-          },
-        },
-      },
-    });
   };
 
   const {
@@ -211,14 +138,16 @@ const BetaMoveList: React.FC<Props> = ({ betaKey }) => {
           // hide its drag handle
           onReorder={canEdit ? onReorder : undefined}
           onDrop={canEdit ? onDrop : undefined}
-          onDelete={canEdit ? () => onDelete(node.id) : undefined}
+          onDelete={
+            canEdit ? () => deleteBetaMove({ betaMoveId: node.id }) : undefined
+          }
         />
       ))}
 
       <BetaDetailsDragLayer betaMoveConnectionKey={beta.moves} />
       <MutationErrorSnackbar
-        message="Error updating move"
-        state={updateState}
+        message="Error reordering move"
+        state={reorderState}
       />
       <MutationErrorSnackbar
         message="Error deleting move"

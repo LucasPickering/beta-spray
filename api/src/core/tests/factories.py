@@ -82,10 +82,16 @@ class HoldFactory(DjangoModelFactory):
 class BetaFactory(DjangoModelFactory):
     class Meta:
         model = Beta
+        skip_postgeneration_save = True
 
     problem = factory.SubFactory(ProblemFactory)
     owner = factory.SubFactory(UserFactory)
     name = Faker("name")
+    moves = factory.RelatedFactoryList(
+        "core.tests.factories.BetaMoveFactory",
+        factory_related_name="beta",
+        size=5,
+    )
 
 
 class BetaMoveFactory(DjangoModelFactory):
@@ -95,7 +101,8 @@ class BetaMoveFactory(DjangoModelFactory):
     class Params:
         is_free = Faker("pybool")
 
-    beta = factory.SubFactory(BetaFactory)
+    beta = factory.SubFactory(BetaFactory, moves=[])
+    order = factory.Sequence(lambda n: n)
     hold = factory.Maybe(
         "is_free",
         yes_declaration=None,
@@ -110,6 +117,7 @@ class BetaMoveFactory(DjangoModelFactory):
 
 # We have to register at the bottom, to avoid circular import issues
 register(UserFactory)
+register(UserFactory, _name="other_user")
 register(UserProfileFactory)
 register(BoulderFactory)
 register(ProblemFactory)
