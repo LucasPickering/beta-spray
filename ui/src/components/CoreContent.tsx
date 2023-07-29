@@ -2,6 +2,7 @@ import environment from "util/environment";
 import theme, { globalStyles } from "util/theme";
 import React, { Suspense } from "react";
 import { BrowserRouter } from "react-router-dom";
+import relayRuntime from "relay-runtime";
 import { RelayEnvironmentProvider } from "react-relay";
 import { ThemeProvider } from "@mui/material/styles";
 import { CssBaseline, GlobalStyles } from "@mui/material";
@@ -16,6 +17,9 @@ import TextLayout from "./PageLayout/TextLayout";
 import LogInPage from "./Account/LogInPage";
 import UserQueryProvider from "./UserQueryProvider";
 import GuestUserWarningDialog from "./Account/GuestUserWarningDialog";
+
+// https://relay.dev/docs/guides/relay-resolvers/#current-limitations
+relayRuntime.RelayFeatureFlags.ENABLE_RELAY_RESOLVERS = true;
 
 // Code splitting!
 const HomePage = React.lazy(
