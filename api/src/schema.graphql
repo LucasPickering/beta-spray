@@ -31,13 +31,8 @@ type BetaMoveNode implements Node {
   """Informative text related to the move, created by the user"""
   annotation: String!
 
-  """
-  The optional hold that this move is attached to. If null, the move is 'free', e.g. a flag or smear.
-  """
-  hold: HoldNode
-
-  """Position of a free move. Null for attached moves."""
-  position: SVGPosition
+  """Where the move is going; either a hold or a free position"""
+  target: HoldNodeSVGPosition!
 }
 
 """A connection to a list of items."""
@@ -193,6 +188,8 @@ type HoldNodeEdge {
   """The item at the end of the edge"""
   node: HoldNode!
 }
+
+union HoldNodeSVGPosition = HoldNode | SVGPosition
 
 type Image {
   """Image access URL"""

@@ -1,11 +1,28 @@
 import factory
+import factory.random
 from django.contrib.auth.models import User
+from factory import Factory
 from factory.django import DjangoModelFactory
 from factory.faker import Faker
 from pytest_factoryboy import register
 
 from bs_auth.models import UserProfile
-from core.models import Boulder, Problem, Visibility
+from core.fields import BoulderPosition
+from core.models import (
+    Beta,
+    BetaMove,
+    Boulder,
+    Hold,
+    HoldAnnotationSource,
+    Problem,
+    Visibility,
+)
+
+
+def position_factory() -> str:
+    x = factory.random.random.random()
+    y = factory.random.random.random()
+    return f"{x},{y}"
 
 
 class UserFactory(DjangoModelFactory):
@@ -45,8 +62,58 @@ class ProblemFactory(DjangoModelFactory):
     visibility = Visibility.PUBLIC
 
 
+class BoulderPositionFactory(Factory):
+    class Meta:
+        model = BoulderPosition
+
+    x = factory.LazyFunction(factory.random.random.random)
+    y = factory.LazyFunction(factory.random.random.random)
+
+
+class HoldFactory(DjangoModelFactory):
+    class Meta:
+        model = Hold
+
+    problem = factory.SubFactory(ProblemFactory)
+    position = factory.SubFactory(BoulderPositionFactory)
+    source = HoldAnnotationSource.USER
+
+
+class BetaFactory(DjangoModelFactory):
+    class Meta:
+        model = Beta
+
+    problem = factory.SubFactory(ProblemFactory)
+    owner = factory.SubFactory(UserFactory)
+    name = Faker("name")
+
+
+class BetaMoveFactory(DjangoModelFactory):
+    class Meta:
+        model = BetaMove
+
+    class Params:
+        is_free = Faker("pybool")
+
+    beta = factory.SubFactory(BetaFactory)
+    hold = factory.Maybe(
+        "is_free",
+        yes_declaration=None,
+        no_declaration=factory.SubFactory(HoldFactory),
+    )
+    position = factory.Maybe(
+        "is_free",
+        yes_declaration=factory.SubFactory(BoulderPositionFactory),
+        no_declaration=None,
+    )
+
+
 # We have to register at the bottom, to avoid circular import issues
 register(UserFactory)
 register(UserProfileFactory)
 register(BoulderFactory)
 register(ProblemFactory)
+register(BoulderPositionFactory)
+register(HoldFactory)
+register(BetaFactory)
+register(BetaMoveFactory)

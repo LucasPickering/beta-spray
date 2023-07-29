@@ -182,6 +182,10 @@ class BetaMove(models.Model):
                 name="beta_order_unique",
                 fields=("beta", "order"),
                 deferrable=models.Deferrable.DEFERRED,
+            ),
+            models.CheckConstraint(
+                name="hold_position_mutually_exclusive",
+                check=Q(hold_id__isnull=True) ^ Q(position__isnull=True),
             )
             # TODO enforce that orders are always consecutive
         ]
