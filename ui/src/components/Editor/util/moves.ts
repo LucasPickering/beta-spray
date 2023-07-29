@@ -11,15 +11,15 @@ import {
   moveArrayElement,
 } from "util/func";
 import { hexToHtml, htmlToHex, lerpColor } from "util/math";
-import { disambiguationDistance } from "styles/svg";
-import { useContext, useCallback } from "react";
-import { graphql } from "relay-runtime";
-import { useFragment } from "react-relay";
 import { useTheme } from "@mui/material";
-import { add, BodyPart, OverlayPosition, polarToSvg } from "./svg";
-import { BetaContext } from "./context";
-import { moves_visualPositions_betaMoveNodeConnection$key } from "./__generated__/moves_visualPositions_betaMoveNodeConnection.graphql";
+import { useCallback, useContext } from "react";
+import { useFragment } from "react-relay";
+import { graphql } from "relay-runtime";
+import { disambiguationDistance } from "styles/svg";
 import { moves_colors_betaMoveNodeConnection$key } from "./__generated__/moves_colors_betaMoveNodeConnection.graphql";
+import { moves_visualPositions_betaMoveNodeConnection$key } from "./__generated__/moves_visualPositions_betaMoveNodeConnection.graphql";
+import { BetaContext } from "./context";
+import { BodyPart, OverlayPosition, add, polarToSvg } from "./svg";
 
 /**
  * List of beta moves, from Relay, that we will update locally for the purpose
@@ -110,16 +110,11 @@ export function useBetaMoveVisualPositions(
           node {
             id
             bodyPart
-            hold {
-              id
-              position {
-                x
-                y
+            position @required(action: THROW)
+            target {
+              ... on HoldNode {
+                id
               }
-            }
-            position {
-              x
-              y
             }
           }
         }
@@ -133,15 +128,7 @@ export function useBetaMoveVisualPositions(
 
   // Start by just jamming every move into the map
   for (const { node } of moves) {
-    // Grab position from either the hold (for attached moves) or the move
-    // itself (for free moves)
-    const position = node.position ?? node.hold?.position;
-    if (position) {
-      positionMap.set(node.id, position);
-    } else {
-      // eslint-disable-next-line no-console
-      console.warn("No position available for move:", node);
-    }
+    positionMap.set(node.id, node.position);
   }
 
   // Next, we'll apply offsets to moves that share the same hold+body part, so
@@ -156,8 +143,8 @@ export function useBetaMoveVisualPositions(
   for (const movesByHold of groupBy(
     // Exclude free moves, since they'll never share the *exact* some position
     // Maybe we'll need a more dynamic disambiguation, but not yet
-    moves.filter(({ node }) => isDefined(node.hold)),
-    ({ node }) => node.hold?.id
+    moves.filter(({ node }) => isDefined(node.target.id)),
+    ({ node }) => node.target.id
   ).values()) {
     const movesByBodyPart = groupBy(movesByHold, ({ node }) => node.bodyPart);
 

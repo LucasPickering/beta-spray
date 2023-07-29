@@ -2,15 +2,15 @@ import { findNode, isDefined } from "util/func";
 import useMutation, { MutationState } from "util/useMutation";
 import { graphql, useFragment } from "react-relay";
 import { generateUniqueClientID } from "relay-runtime";
+import { useBetaMoveMutations_betaNode$key } from "./__generated__/useBetaMoveMutations_betaNode.graphql";
+import { useBetaMoveMutations_createBetaMoveMutation } from "./__generated__/useBetaMoveMutations_createBetaMoveMutation.graphql";
+import { useBetaMoveMutations_deleteBetaMoveMutation } from "./__generated__/useBetaMoveMutations_deleteBetaMoveMutation.graphql";
+import { useBetaMoveMutations_relocateBetaMoveMutation } from "./__generated__/useBetaMoveMutations_relocateBetaMoveMutation.graphql";
+import { useBetaMoveMutations_updateBetaMoveAnnotationMutation } from "./__generated__/useBetaMoveMutations_updateBetaMoveAnnotationMutation.graphql";
 import { DropResult } from "./dnd";
+import { createBetaMoveLocal, deleteBetaMoveLocal } from "./moves";
 import { useStanceControls } from "./stance";
 import { BodyPart, OverlayPosition } from "./svg";
-import { useBetaMoveMutations_createBetaMoveMutation } from "./__generated__/useBetaMoveMutations_createBetaMoveMutation.graphql";
-import { useBetaMoveMutations_betaNode$key } from "./__generated__/useBetaMoveMutations_betaNode.graphql";
-import { useBetaMoveMutations_deleteBetaMoveMutation } from "./__generated__/useBetaMoveMutations_deleteBetaMoveMutation.graphql";
-import { useBetaMoveMutations_updateBetaMoveAnnotationMutation } from "./__generated__/useBetaMoveMutations_updateBetaMoveAnnotationMutation.graphql";
-import { useBetaMoveMutations_relocateBetaMoveMutation } from "./__generated__/useBetaMoveMutations_relocateBetaMoveMutation.graphql";
-import { createBetaMoveLocal, deleteBetaMoveLocal } from "./moves";
 
 interface Mutation<T> {
   callback: (data: T) => void;
@@ -117,16 +117,19 @@ function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
           # These are the only fields we modify
           # Yes, we need to refetch both positions, in case the move was
           # converted from free to attached or vice versa
-          hold {
-            id
-            position {
+          target {
+            __typename
+            ... on HoldNode {
+              id
+              position {
+                x
+                y
+              }
+            }
+            ... on SVGPosition {
               x
               y
             }
-          }
-          position {
-            x
-            y
           }
         }
       }
@@ -181,10 +184,7 @@ function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
               bodyPart,
               annotation: "",
               isStart: false, // Punting on calculating this for now
-              hold:
-                dropResult.kind === "hold" ? { id: dropResult.holdId } : null,
-              position:
-                dropResult.kind === "dropZone" ? dropResult.position : null,
+              target: getOptimisticTarget(dropResult),
               beta: {
                 id: beta.id,
                 moves: createBetaMoveLocal(beta.moves, optimisticId, newOrder),
@@ -217,7 +217,7 @@ function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
           optimisticResponse: {
             updateBetaMove: {
               id: betaMoveId,
-              ...getDropResponse(dropResult),
+              target: getOptimisticTarget(dropResult),
             },
           },
         });
@@ -258,12 +258,19 @@ graphql`
     order
     annotation
     isStart
-    hold {
-      id
-    }
-    position {
-      x
-      y
+    target {
+      __typename
+      ... on HoldNode {
+        id
+        position {
+          x
+          y
+        }
+      }
+      ... on SVGPosition {
+        x
+        y
+      }
     }
   }
 `;
@@ -286,24 +293,40 @@ function getDropParams(
 }
 
 /**
- * Get a set of common response fields for a move mutation, related to the
- * object it was dropped onto. These can be used for an optimistic response.
+ * Get an optimistic value for the `target` field, basd on the object it was
+ * dropped onto.
  * @param dropResult Object that the move was dropped onto to trigger the mutation (hold or free?)
- * @returns Params to be passed to a move mutation
+ * @returns Valid value for the `target` field
  */
-function getDropResponse(
+function getOptimisticTarget(
   dropResult: DropResult<"overlayBetaMove">
-):
-  | { hold: { id: string; position: OverlayPosition }; position: null }
-  | { hold: null; position: OverlayPosition } {
+): // These response types have some weird cruft because of the types that Relay generates :(
+| {
+      __typename: "HoldNode";
+      __isNode: "HoldNode";
+      id: string;
+      position: OverlayPosition;
+    }
+  | ({
+      __typename: "SVGPosition";
+      __isNode: "SVGPosition";
+      id: string;
+    } & OverlayPosition) {
   switch (dropResult.kind) {
     case "hold":
       return {
-        hold: { id: dropResult.holdId, position: dropResult.position },
-        position: null,
+        __typename: "HoldNode",
+        __isNode: "HoldNode",
+        id: dropResult.holdId,
+        position: dropResult.position,
       };
     case "dropZone":
-      return { hold: null, position: dropResult.position };
+      return {
+        __typename: "SVGPosition",
+        __isNode: "SVGPosition",
+        id: "",
+        ...dropResult.position,
+      };
   }
 }
 

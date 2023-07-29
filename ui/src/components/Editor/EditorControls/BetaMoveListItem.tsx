@@ -1,8 +1,7 @@
 import { isDefined } from "util/func";
-import React from "react";
 import {
-  DragHandle as IconDragHandle,
   Close as IconClose,
+  DragHandle as IconDragHandle,
 } from "@mui/icons-material";
 import {
   Box,
@@ -14,6 +13,7 @@ import {
   alpha,
 } from "@mui/material";
 import { formatBodyPart } from "components/Editor/util/svg";
+import React from "react";
 import { graphql, useFragment } from "react-relay";
 import { BetaMoveIconWrapped } from "../EditorSvg/BetaEditor/BetaMoveIcon";
 import { useBetaMoveColor } from "../util/moves";
@@ -54,14 +54,11 @@ const BetaMoveListItem = React.forwardRef<HTMLLIElement, Props>(
           order
           annotation
           isStart
-          hold {
-            id
-          }
+          isFree @required(action: THROW)
         }
       `,
       betaMoveKey
     );
-    const isFree = !isDefined(betaMove.hold);
 
     const color = useBetaMoveColor()(betaMove.id);
     return (
@@ -117,7 +114,7 @@ const BetaMoveListItem = React.forwardRef<HTMLLIElement, Props>(
               order={betaMove.order}
               color={color}
               isStart={betaMove.isStart}
-              isFree={isFree}
+              isFree={betaMove.isFree}
             />
           </ListItemIcon>
 

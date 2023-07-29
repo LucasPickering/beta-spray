@@ -1,27 +1,27 @@
 import { isDefined } from "util/func";
-import { useRef, useState } from "react";
+import {
+  Delete as IconDelete,
+  Notes as IconNotes,
+  OpenWith as IconOpenWith,
+} from "@mui/icons-material";
+import { ClickAwayListener, useTheme } from "@mui/material";
 import {
   DragFinishHandler,
   useDrag,
   useDragLayer,
 } from "components/Editor/util/dnd";
-import { ClickAwayListener, useTheme } from "@mui/material";
-import { graphql, useFragment } from "react-relay";
 import {
   useBetaMoveColor,
   useBetaMoveVisualPosition,
 } from "components/Editor/util/moves";
-import {
-  OpenWith as IconOpenWith,
-  Delete as IconDelete,
-  Notes as IconNotes,
-} from "@mui/icons-material";
+import { useRef, useState } from "react";
+import { graphql, useFragment } from "react-relay";
+import ActionOrb from "../common/ActionOrb";
 import ActionOrbs from "../common/ActionOrbs";
 import Positioned from "../common/Positioned";
-import ActionOrb from "../common/ActionOrb";
 import SvgTooltip from "../common/SvgTooltip";
-import { BetaMoveMark_betaMoveNode$key } from "./__generated__/BetaMoveMark_betaMoveNode.graphql";
 import BetaMoveIcon from "./BetaMoveIcon";
+import { BetaMoveMark_betaMoveNode$key } from "./__generated__/BetaMoveMark_betaMoveNode.graphql";
 
 interface Props {
   betaMoveKey: BetaMoveMark_betaMoveNode$key;
@@ -49,11 +49,9 @@ const BetaMoveMark: React.FC<Props> = ({
         id
         bodyPart
         order
-        hold {
-          id
-        }
         isStart
         annotation
+        isFree @required(action: THROW)
       }
     `,
     betaMoveKey
@@ -116,7 +114,7 @@ const BetaMoveMark: React.FC<Props> = ({
             bodyPart={betaMove.bodyPart}
             order={betaMove.order}
             isStart={betaMove.isStart}
-            isFree={!isDefined(betaMove.hold)}
+            isFree={betaMove.isFree}
             // Override color while relocating
             color={isRelocating ? palette.editor.actions.relocate.main : color}
             icon={isRelocating ? <IconOpenWith /> : undefined}
