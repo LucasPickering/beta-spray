@@ -1,16 +1,24 @@
-import { findNode, isDefined } from "util/func";
 import useMutation, { MutationState } from "util/useMutation";
+import { assertIsDefined, findNode, isDefined } from "util/func";
 import { graphql, useFragment } from "react-relay";
-import { generateUniqueClientID } from "relay-runtime";
+import {
+  ConnectionInterface,
+  RecordProxy,
+  generateUniqueClientID,
+} from "relay-runtime";
 import { useBetaMoveMutations_betaNode$key } from "./__generated__/useBetaMoveMutations_betaNode.graphql";
 import { useBetaMoveMutations_createBetaMoveMutation } from "./__generated__/useBetaMoveMutations_createBetaMoveMutation.graphql";
 import { useBetaMoveMutations_deleteBetaMoveMutation } from "./__generated__/useBetaMoveMutations_deleteBetaMoveMutation.graphql";
 import { useBetaMoveMutations_relocateBetaMoveMutation } from "./__generated__/useBetaMoveMutations_relocateBetaMoveMutation.graphql";
 import { useBetaMoveMutations_updateBetaMoveAnnotationMutation } from "./__generated__/useBetaMoveMutations_updateBetaMoveAnnotationMutation.graphql";
 import { DropResult } from "./dnd";
-import { createBetaMoveLocal, deleteBetaMoveLocal } from "./moves";
 import { useStanceControls } from "./stance";
 import { BodyPart, OverlayPosition } from "./svg";
+import { useBetaMoveMutations_reorderBetaMoveMutation } from "./__generated__/useBetaMoveMutations_reorderBetaMoveMutation.graphql";
+import { useBetaMoveMutations_create_betaNode$key } from "./__generated__/useBetaMoveMutations_create_betaNode.graphql";
+import { useBetaMoveMutations_reorder_betaNode$key } from "./__generated__/useBetaMoveMutations_reorder_betaNode.graphql";
+import { useBetaMoveMutations_delete_betaNode$key } from "./__generated__/useBetaMoveMutations_delete_betaNode.graphql";
+import { createBetaMoveLocal, reorderBetaMoveLocal } from "./moves";
 
 interface Mutation<T> {
   callback: (data: T) => void;
@@ -18,29 +26,50 @@ interface Mutation<T> {
 }
 
 /**
- * A helper for BetaEditor to encapsulate mutation callbacks. There are a lot
- * of these, so it's helpful to keep them in one place, separate from the visual
- * layout.
+ * A helper for BetaEditor and BetaMoveList to encapsulate mutation callbacks.
+ * There are a lot of these, so it's helpful to keep them in one place,
+ * separate from the visual layout.
  */
 function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
-  create: Mutation<{
-    bodyPart: BodyPart;
-    previousBetaMoveId?: string;
-    dropResult: DropResult<"overlayBetaMove">;
-  }>;
-  updateAnnotation: Mutation<{
-    betaMoveId: string;
-    annotation: string;
-  }>;
-  relocate: Mutation<{
-    betaMoveId: string;
-    dropResult: DropResult<"overlayBetaMove">;
-  }>;
-  delete: Mutation<{ betaMoveId: string }>;
+  create: ReturnType<typeof useCreate>;
+  updateAnnotation: ReturnType<typeof useUpdateAnnotation>;
+  relocate: ReturnType<typeof useRelocate>;
+  reorder: ReturnType<typeof useReorder>;
+  delete: ReturnType<typeof useDelete>;
 } {
   const beta = useFragment(
     graphql`
       fragment useBetaMoveMutations_betaNode on BetaNode {
+        ...useBetaMoveMutations_create_betaNode
+        ...useBetaMoveMutations_reorder_betaNode
+        ...useBetaMoveMutations_delete_betaNode
+      }
+    `,
+    betaKey
+  );
+
+  return {
+    create: useCreate(beta),
+    updateAnnotation: useUpdateAnnotation(),
+    relocate: useRelocate(),
+    reorder: useReorder(beta),
+    delete: useDelete(beta),
+  };
+}
+
+/**
+ * Create a new move
+ */
+function useCreate(
+  betaKey: useBetaMoveMutations_create_betaNode$key
+): Mutation<{
+  bodyPart: BodyPart;
+  previousBetaMoveId?: string;
+  dropResult: DropResult<"overlayBetaMove">;
+}> {
+  const beta = useFragment(
+    graphql`
+      fragment useBetaMoveMutations_create_betaNode on BetaNode {
         id
         moves {
           ...stance_betaMoveNodeConnection
@@ -56,11 +85,7 @@ function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
     `,
     betaKey
   );
-
-  const { select: selectStance } = useStanceControls(beta.moves);
-
-  // Append new move to end of the beta
-  const { commit: createBetaMove, state: createBetaMoveState } =
+  const { commit: createBetaMove, state } =
     useMutation<useBetaMoveMutations_createBetaMoveMutation>(graphql`
       mutation useBetaMoveMutations_createBetaMoveMutation(
         $input: CreateBetaMoveInput!
@@ -92,22 +117,87 @@ function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
         }
       }
     `);
-  // Edit annotation on a move
-  const {
-    commit: updateBetaMoveAnnotation,
-    state: updateBetaMoveAnnotationState,
-  } = useMutation<useBetaMoveMutations_updateBetaMoveAnnotationMutation>(graphql`
-    mutation useBetaMoveMutations_updateBetaMoveAnnotationMutation(
-      $input: UpdateBetaMoveInput!
-    ) @raw_response_type {
-      updateBetaMove(input: $input) {
-        id
-        annotation
+  const { select: selectStance } = useStanceControls(beta.moves);
+
+  return {
+    callback: ({ bodyPart, previousBetaMoveId, dropResult }) => {
+      const optimisticId = generateUniqueClientID();
+      // Find the order of the previous move (if any), and we'll be +1
+      const previousBetaMove = isDefined(previousBetaMoveId)
+        ? findNode(beta.moves, previousBetaMoveId)
+        : undefined;
+      const newOrder = (previousBetaMove?.order ?? 0) + 1;
+
+      createBetaMove({
+        variables: {
+          input: {
+            beta: beta.id,
+            previousBetaMove: previousBetaMoveId,
+            bodyPart,
+            ...getDropParams(dropResult),
+          },
+        },
+        optimisticResponse: {
+          createBetaMove: {
+            id: optimisticId,
+            order: newOrder,
+            bodyPart,
+            annotation: "",
+            isStart: false, // Punting on calculating this for now
+            target: getOptimisticTarget(dropResult),
+            beta: {
+              id: beta.id,
+              moves: createBetaMoveLocal(beta.moves, optimisticId, newOrder),
+            },
+          },
+        },
+      });
+      // Update stance optimistically (which is why we use order)
+      selectStance(newOrder);
+    },
+    state,
+  };
+}
+
+/**
+ * Update annotation on an existing move
+ */
+function useUpdateAnnotation(): Mutation<{
+  betaMoveId: string;
+  annotation: string;
+}> {
+  const { commit: updateBetaMoveAnnotation, state } =
+    useMutation<useBetaMoveMutations_updateBetaMoveAnnotationMutation>(graphql`
+      mutation useBetaMoveMutations_updateBetaMoveAnnotationMutation(
+        $input: UpdateBetaMoveInput!
+      ) @raw_response_type {
+        updateBetaMove(input: $input) {
+          id
+          annotation
+        }
       }
-    }
-  `);
-  // Relocate an existing move
-  const { commit: relocateBetaMove, state: relocateBetaMoveState } =
+    `);
+  return {
+    callback: ({ betaMoveId, annotation }) => {
+      updateBetaMoveAnnotation({
+        variables: { input: { id: betaMoveId, annotation } },
+        optimisticResponse: {
+          updateBetaMove: { id: betaMoveId, annotation },
+        },
+      });
+    },
+    state,
+  };
+}
+
+/**
+ * Change the target (hold or position) of an existing move
+ */
+function useRelocate(): Mutation<{
+  betaMoveId: string;
+  dropResult: DropResult<"overlayBetaMove">;
+}> {
+  const { commit: relocateBetaMove, state } =
     useMutation<useBetaMoveMutations_relocateBetaMoveMutation>(graphql`
       mutation useBetaMoveMutations_relocateBetaMoveMutation(
         $input: UpdateBetaMoveInput!
@@ -134,20 +224,60 @@ function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
         }
       }
     `);
-  // Delete a move
-  const { commit: deleteBetaMove, state: deleteBetaMoveState } =
-    useMutation<useBetaMoveMutations_deleteBetaMoveMutation>(graphql`
-      mutation useBetaMoveMutations_deleteBetaMoveMutation($input: NodeInput!)
-      @raw_response_type {
-        deleteBetaMove(input: $input) {
-          # This can reorder moves, so we have to refetch the whole move list
+
+  return {
+    callback: ({ betaMoveId, dropResult }) => {
+      relocateBetaMove({
+        variables: {
+          input: { id: betaMoveId, ...getDropParams(dropResult) },
+        },
+        optimisticResponse: {
+          updateBetaMove: {
+            id: betaMoveId,
+            target: getOptimisticTarget(dropResult),
+          },
+        },
+      });
+    },
+    state,
+  };
+}
+
+/**
+ * Change the order on a move. Surrounding moves will be ordered accordingly.
+ */
+function useReorder(
+  betaKey: useBetaMoveMutations_reorder_betaNode$key
+): Mutation<{ betaMoveId: string; newOrder: number }> {
+  const beta = useFragment(
+    graphql`
+      fragment useBetaMoveMutations_reorder_betaNode on BetaNode {
+        id
+        moves {
+          edges {
+            node {
+              id
+              order
+              isStart
+            }
+          }
+        }
+      }
+    `,
+    betaKey
+  );
+  const { commit: reorderBetaMove, state } =
+    useMutation<useBetaMoveMutations_reorderBetaMoveMutation>(graphql`
+      mutation useBetaMoveMutations_reorderBetaMoveMutation(
+        $input: UpdateBetaMoveInput!
+      ) @raw_response_type {
+        updateBetaMove(input: $input) {
           beta {
-            id
+            # Refetch all moves to get the new ordering
             moves {
               edges {
                 node {
                   id
-                  # These are the fields that can change after a delete
                   order
                   isStart
                 }
@@ -157,92 +287,85 @@ function useBetaMoveMutations(betaKey: useBetaMoveMutations_betaNode$key): {
         }
       }
     `);
+  return {
+    callback: ({ betaMoveId, newOrder }) =>
+      reorderBetaMove({
+        variables: {
+          input: {
+            id: betaMoveId,
+            order: newOrder,
+          },
+        },
+        optimisticResponse: {
+          updateBetaMove: {
+            id: betaMoveId,
+            beta: {
+              id: beta.id,
+              moves: reorderBetaMoveLocal(beta.moves, betaMoveId, newOrder),
+            },
+          },
+        },
+      }),
+    state,
+  };
+}
+
+/**
+ * Delete a move
+ */
+function useDelete(
+  betaKey: useBetaMoveMutations_delete_betaNode$key
+): Mutation<{ betaMoveId: string }> {
+  const beta = useFragment(
+    graphql`
+      fragment useBetaMoveMutations_delete_betaNode on BetaNode {
+        moves {
+          __id
+        }
+      }
+    `,
+    betaKey
+  );
+  const { commit: deleteBetaMove, state } =
+    useMutation<useBetaMoveMutations_deleteBetaMoveMutation>(graphql`
+      mutation useBetaMoveMutations_deleteBetaMoveMutation(
+        $input: NodeInput!
+        $connections: [ID!]!
+      ) @raw_response_type {
+        deleteBetaMove(input: $input) {
+          id @deleteEdge(connections: $connections) @deleteRecord
+        }
+      }
+    `);
 
   return {
-    create: {
-      callback: ({ bodyPart, previousBetaMoveId, dropResult }) => {
-        const optimisticId = generateUniqueClientID();
-        // Find the order of the previous move (if any), and we'll be +1
-        const previousBetaMove = isDefined(previousBetaMoveId)
-          ? findNode(beta.moves, previousBetaMoveId)
-          : undefined;
-        const newOrder = (previousBetaMove?.order ?? 0) + 1;
-
-        createBetaMove({
-          variables: {
-            input: {
-              beta: beta.id,
-              previousBetaMove: previousBetaMoveId,
-              bodyPart,
-              ...getDropParams(dropResult),
-            },
-          },
-          optimisticResponse: {
-            createBetaMove: {
-              id: optimisticId,
-              order: newOrder,
-              bodyPart,
-              annotation: "",
-              isStart: false, // Punting on calculating this for now
-              target: getOptimisticTarget(dropResult),
-              beta: {
-                id: beta.id,
-                moves: createBetaMoveLocal(beta.moves, optimisticId, newOrder),
-              },
-            },
-          },
-        });
-        // Update stance optimistically (which is why we use order)
-        selectStance(newOrder);
-      },
-      state: createBetaMoveState,
+    callback: ({ betaMoveId }) => {
+      deleteBetaMove({
+        variables: {
+          input: { id: betaMoveId },
+          connections: [beta.moves.__id],
+        },
+        updater(store) {
+          // Imperatively collapse the orders to fill in the gap of the
+          // deleted node. You may want to try doing this by refetching the
+          // entire beta instead, but the API returns the *old* beta for a
+          // deleted move so that doesn't work.
+          const { EDGES, NODE } = ConnectionInterface.get();
+          const betaMoveConnection = store.get(beta.moves.__id);
+          if (isDefined(betaMoveConnection)) {
+            const edges = betaMoveConnection.getLinkedRecords(EDGES);
+            assertIsDefined(edges);
+            for (let i = 0; i < edges.length; i++) {
+              const edge: RecordProxy<object> = edges[i];
+              const node = edge.getLinkedRecord(NODE);
+              assertIsDefined(node);
+              node.setValue(i + 1, "order");
+            }
+          }
+        },
+      });
     },
-    updateAnnotation: {
-      callback: ({ betaMoveId, annotation }) => {
-        updateBetaMoveAnnotation({
-          variables: { input: { id: betaMoveId, annotation } },
-          optimisticResponse: {
-            updateBetaMove: { id: betaMoveId, annotation },
-          },
-        });
-      },
-      state: updateBetaMoveAnnotationState,
-    },
-    relocate: {
-      callback: ({ betaMoveId, dropResult }) => {
-        relocateBetaMove({
-          variables: {
-            input: { id: betaMoveId, ...getDropParams(dropResult) },
-          },
-          optimisticResponse: {
-            updateBetaMove: {
-              id: betaMoveId,
-              target: getOptimisticTarget(dropResult),
-            },
-          },
-        });
-      },
-      state: relocateBetaMoveState,
-    },
-    delete: {
-      callback: ({ betaMoveId }) => {
-        deleteBetaMove({
-          variables: {
-            input: { id: betaMoveId },
-          },
-          optimisticResponse: {
-            deleteBetaMove: {
-              id: betaMoveId,
-              beta: {
-                id: beta.id,
-                moves: deleteBetaMoveLocal(beta.moves, betaMoveId),
-              },
-            },
-          },
-        });
-      },
-      state: deleteBetaMoveState,
-    },
+    state,
   };
 }
 

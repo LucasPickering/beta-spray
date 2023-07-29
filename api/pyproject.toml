@@ -55,4 +55,8 @@ src = ["src/"]
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "beta_spray.settings.settings_dev"
+filterwarnings = [
+  # These are from internal strawberry code
+  "ignore:Argument name-based matching*:DeprecationWarning",
+]
 python_files = ["test_*.py"]

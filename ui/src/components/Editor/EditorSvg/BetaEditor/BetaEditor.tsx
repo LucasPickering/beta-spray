@@ -37,6 +37,7 @@ const BetaEditor: React.FC<Props> = ({ betaKey }) => {
         }
         ...useBetaMoveMutations_betaNode
         moves {
+          __id
           edges {
             node {
               id

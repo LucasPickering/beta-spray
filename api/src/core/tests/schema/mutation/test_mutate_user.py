@@ -5,7 +5,6 @@ from strawberry.django.context import StrawberryDjangoContext
 
 from core.schema import schema
 from core.schema.query import UserNode
-from core.tests.factories import UserFactory
 from core.tests.schema.conftest import assert_graphql_result
 
 pytestmark = pytest.mark.django_db
@@ -50,10 +49,7 @@ def test_update_user_success(
         ("aa", "Invalid username"),
         ("bad@", "Invalid username"),
         ("emoji bad 💀", "Invalid username"),
-        (
-            "too_long_too_long_too_long_too_long",
-            "Invalid username",
-        ),
+        ("too_long_too_long_too_long_too_long", "Invalid username"),
     ],
 )
 def test_update_user_invalid_username(
@@ -71,8 +67,9 @@ def test_update_user_invalid_username(
     )
 
 
-def test_update_user_someone_else(context: StrawberryDjangoContext) -> None:
-    other_user = UserFactory()
+def test_update_user_someone_else(
+    context: StrawberryDjangoContext, other_user: User
+) -> None:
     other_user_id = relay.to_base64(UserNode, other_user.id)
     assert_graphql_result(
         schema.execute_sync(

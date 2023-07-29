@@ -1,8 +1,4 @@
-import {
-  createBetaMoveLocal,
-  deleteBetaMoveLocal,
-  reorderBetaMoveLocal,
-} from "../moves";
+import { createBetaMoveLocal, reorderBetaMoveLocal } from "../moves";
 
 const moves = {
   edges: [
@@ -149,35 +145,5 @@ describe("reorderBetaMoveLocal", () => {
 
   test("handle missing move", () => {
     expect(reorderBetaMoveLocal(moves, "unknown", 1)).toEqual(moves);
-  });
-});
-
-describe("deleteBetaMoveLocal", () => {
-  test("delete first move", () => {
-    expect(deleteBetaMoveLocal(moves, "move1")).toEqual({
-      edges: [
-        { node: { id: "move2", order: 1, isStart: true } },
-        { node: { id: "move3", order: 2, isStart: false } },
-      ],
-    });
-  });
-
-  test("delete last move", () => {
-    expect(deleteBetaMoveLocal(moves, "move3")).toEqual({
-      edges: [
-        { node: { id: "move1", order: 1, isStart: true } },
-        { node: { id: "move2", order: 2, isStart: true } },
-      ],
-    });
-  });
-
-  test("handle missing move", () => {
-    expect(deleteBetaMoveLocal(moves, "unknown")).toEqual({
-      edges: [
-        { node: { id: "move1", order: 1, isStart: true } },
-        { node: { id: "move2", order: 2, isStart: true } },
-        { node: { id: "move3", order: 3, isStart: false } },
-      ],
-    });
   });
 });
