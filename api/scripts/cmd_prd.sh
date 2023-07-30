@@ -2,7 +2,5 @@
 
 set -ex
 
-cd src
-
-./manage.py migrate
+./m.sh migrate
 gunicorn beta_spray.wsgi -b :8000

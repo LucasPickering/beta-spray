@@ -29,5 +29,3 @@ ADD poetry.toml pyproject.toml poetry.lock ./
 RUN poetry install ${POETRY_INSTALL_ARGS}
 
 ADD . .
-
-CMD ["./scripts/cmd_dev.sh"]

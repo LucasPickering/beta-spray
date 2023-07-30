@@ -22,6 +22,8 @@ spec:
       containers:
         - name: api
           image: "ghcr.io/lucaspickering/beta-spray-api:{{ .Values.versionSha }}"
+          command:
+            - ./scripts/cmd_prd.sh
           resources:
             requests:
               cpu: 50m
