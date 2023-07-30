@@ -9,11 +9,8 @@ interface Props<T> extends StandardTextFieldProps {
 }
 
 /**
- * An editable text field in a form. Meant to be used with {@link useForm} to
- * render one field in a form. When the field is not being edited, the value
- * will be displayed as plain text. For values that need additional formatting,
- * you can pass an element as a child. The text value will be injected as the
- * child of this child to render it.
+ * An editable text field in a form. Meant to be used with useForm to
+ * render one field in a form.
  */
 const TextFormField = <T extends string = string>({
   state: { value, setValue, error },

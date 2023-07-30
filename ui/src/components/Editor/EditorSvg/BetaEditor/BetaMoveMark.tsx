@@ -135,18 +135,18 @@ const BetaMoveMark: React.FC<Props> = ({
           {/* Hide orbs while relocating so dragging is easier */}
           <ActionOrbs open={isHighlighted && editable && !isRelocating}>
             <ActionOrb
-              color={palette.editor.actions.delete.main}
-              onClick={onDelete && (() => onDelete(betaMove.id))}
-            >
-              <IconDelete />
-            </ActionOrb>
-            <ActionOrb
               color={palette.editor.actions.edit.main}
               onClick={
                 onEditAnnotation && (() => onEditAnnotation(betaMove.id))
               }
             >
               <IconNotes />
+            </ActionOrb>
+            <ActionOrb
+              color={palette.editor.actions.delete.main}
+              onClick={onDelete && (() => onDelete(betaMove.id))}
+            >
+              <IconDelete />
             </ActionOrb>
             <ActionOrb
               color={palette.editor.actions.relocate.main}

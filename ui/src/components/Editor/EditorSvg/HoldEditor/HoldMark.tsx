@@ -8,7 +8,7 @@ import {
 } from "components/Editor/util/dnd";
 import { graphql, useFragment } from "react-relay";
 import { ClickAwayListener, useTheme } from "@mui/material";
-import { Delete as IconDelete, Notes as IconNotes } from "@mui/icons-material";
+import { Edit as IconEdit, Delete as IconDelete } from "@mui/icons-material";
 import ActionOrbs from "../common/ActionOrbs";
 import Positioned from "../common/Positioned";
 import ActionOrb from "../common/ActionOrb";
@@ -52,6 +52,7 @@ const HoldMark: React.FC<Props> = ({
           y
         }
         annotation
+        kind
       }
     `,
     holdKey
@@ -104,6 +105,7 @@ const HoldMark: React.FC<Props> = ({
       <ClickAwayListener onClickAway={() => setIsHighlighted(false)}>
         <Positioned ref={ref} position={hold.position}>
           <HoldIcon
+            kind={hold.kind}
             clickable // Move can be highlighted, even when not editing
             draggable={editable}
             isDragging={isDragging}
@@ -115,16 +117,16 @@ const HoldMark: React.FC<Props> = ({
 
           <ActionOrbs open={editable && isHighlighted}>
             <ActionOrb
+              color={palette.editor.actions.edit.main}
+              onClick={onEditAnnotation && (() => onEditAnnotation(hold.id))}
+            >
+              <IconEdit />
+            </ActionOrb>
+            <ActionOrb
               color={palette.editor.actions.delete.main}
               onClick={onDelete && (() => onDelete(hold.id))}
             >
               <IconDelete />
-            </ActionOrb>
-            <ActionOrb
-              color={palette.editor.actions.edit.main}
-              onClick={onEditAnnotation && (() => onEditAnnotation(hold.id))}
-            >
-              <IconNotes />
             </ActionOrb>
           </ActionOrbs>
         </Positioned>
@@ -135,6 +137,7 @@ const HoldMark: React.FC<Props> = ({
           open={isHighlighted}
           anchorEl={ref.current}
           title={hold.annotation}
+          placement="right"
         />
       )}
     </>

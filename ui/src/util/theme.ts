@@ -192,15 +192,6 @@ const theme = createTheme(
           variant: "standard",
         },
       },
-      MuiToggleButton: {
-        styleOverrides: {
-          root: {
-            // Match styling of IconButton
-            padding: 8,
-            border: "none",
-          },
-        },
-      },
       MuiTooltip: {
         defaultProps: {
           enterTouchDelay: 0, // By default you need to long-press to show...

@@ -1,6 +1,7 @@
 import { assertIsDefined } from "util/func";
 import { useCallback, useContext } from "react";
 import { XYCoord } from "react-dnd";
+import type { HoldKind as HoldKindAPI } from "../EditorSvg/HoldEditor/__generated__/HoldMark_holdNode.graphql";
 import type { BodyPart as BodyPartAPI } from "../EditorSvg/BetaEditor/__generated__/BetaEditor_betaNode.graphql";
 import { SvgContext } from "./context";
 
@@ -22,6 +23,11 @@ export interface OverlayPosition {
 }
 
 /**
+ * Re-export of the HoldKind type from GraphQL, for convenience.
+ */
+export type HoldKind = HoldKindAPI;
+
+/**
  * Re-export of the BodyPart type from GraphQL, for convenience. We need
  * separate import and export statements though, so we can also refer to the
  * type within this file.
@@ -35,6 +41,18 @@ export type BodyPart = BodyPartAPI;
 export type Stance = Record<BodyPart, string>;
 
 /**
+ * All hold kinds, in an arbitrary order that makes sense to me
+ */
+export const allHoldKinds: HoldKind[] = [
+  "JUG",
+  "CRIMP",
+  "PINCH",
+  "SLOPER",
+  "POCKET",
+  "CHIP",
+];
+
+/**
  * Body parts, order top-left to bottom-right
  */
 export const allBodyParts: BodyPart[] = [
@@ -43,6 +61,26 @@ export const allBodyParts: BodyPart[] = [
   "LEFT_FOOT",
   "RIGHT_FOOT",
 ];
+
+/**
+ * Format a hold kind as a user-friendly string.
+ */
+export function formatHoldKind(kind: HoldKind): string {
+  switch (kind) {
+    case "JUG":
+      return "Jug";
+    case "CRIMP":
+      return "Crimp";
+    case "PINCH":
+      return "Pinch";
+    case "SLOPER":
+      return "Sloper";
+    case "POCKET":
+      return "Pocket";
+    case "CHIP":
+      return "Chip";
+  }
+}
 
 /**
  * Format a body part key as a user-friendly string.

@@ -15,21 +15,20 @@ TAN_30 = math.tan(math.radians(30))
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("shape", choices=["triangle", "oval"])
+    parser.add_argument("shape", choices=SHAPES.keys())
     parser.add_argument("--length", "-l", type=float, default=6.5)
     parser.add_argument("--width", "-w", type=float, default=3.0)
     parser.add_argument("--radius", "-r", type=float, default=1.0)
-    args = parser.parse_args()
+    args = vars(parser.parse_args())
 
-    if args.shape == "triangle":
-        path = triangle(args.length, args.radius)
-    elif args.shape == "oval":
-        path = oval(args.length, args.width, args.radius)
-    print(format_path(path))
+    shape = args.pop("shape")
+    func = SHAPES[shape]
+    path = func(**args)
+    print(f'd="{format_path(path)}"')
 
 
-def triangle(side_length, radius):
-    half_length = side_length / 2.0
+def triangle(length, width, radius):
+    half_length = length / 2.0
     d = half_length / COS_30
     h = d / 2.0
     s = radius / TAN_30
@@ -83,12 +82,77 @@ def oval(length, width, radius):
     ]
 
 
+def rectangle(length, width, radius):
+    x_right = width / 2
+    x_left = -x_right
+    x_right_inner = x_right - radius
+    x_left_inner = -x_right_inner
+    y_bottom = length / 2
+    y_top = -y_bottom
+    y_bottom_inner = y_bottom - radius
+    y_top_inner = -y_bottom_inner
+
+    # Points are clockwise from the top-left
+    return [
+        ("M", [x_left, y_top_inner]),  # Start at bottom of top-left arc
+        ("A", [radius, radius, 0, 0, 1, x_left_inner, y_top]),  # Top-left
+        ("L", [x_right_inner, y_top]),  # Top
+        ("A", [radius, radius, 0, 0, 1, x_right, y_top_inner]),  # Top-right
+        ("L", [x_right, y_bottom_inner]),  # Right side
+        ("A", [radius, radius, 0, 0, 1, x_right_inner, y_bottom]),  # Bot-right
+        ("L", [x_left_inner, y_bottom]),  # Bottom
+        ("A", [radius, radius, 0, 0, 1, x_left, y_bottom_inner]),  # Bot-left
+        ("Z", []),  # Left
+    ]
+
+
+def staple(length, width, radius):
+    x_right = width / 2
+    x_left = -x_right
+    x_right_inner = x_right - radius
+    x_left_inner = -x_right_inner
+    y_bottom = length / 2
+    y_top = -y_bottom
+    y_top_inner = y_top + math.copysign(radius, length)  # Allow inversion
+    sweep = int(length >= 0)
+
+    return [
+        ("M", [x_left, y_bottom]),  # Start at bottom-left
+        ("L", [x_left, y_top_inner]),  # Left
+        ("A", [radius, radius, 0, 0, sweep, x_left_inner, y_top]),  # Top-left
+        ("L", [x_right_inner, y_top]),  # Top
+        ("A", [radius, radius, 0, 0, sweep, x_right, y_top_inner]),  # Top-right
+        ("L", [x_right, y_bottom]),  # Right side
+    ]
+
+
+def gumdrop(width, length, radius):
+    x_right = width / 2
+    x_left = -x_right
+    y_bottom = length / 2
+
+    return [
+        ("M", [x_left, y_bottom]),
+        ("A", [radius, radius, 0, 0, 1, x_right, y_bottom]),
+        ("Z", []),
+    ]
+
+
 def format_path(path):
     half_done = (
         (instr, ",".join(f"{param:.3g}" for param in params))
         for instr, params in path
     )
     return " ".join(f"{instr}{params}" for instr, params in half_done)
+
+
+SHAPES = {
+    "triangle": triangle,
+    "oval": oval,
+    "rectangle": rectangle,
+    "staple": staple,
+    "gumdrop": gumdrop,
+}
 
 
 if __name__ == "__main__":

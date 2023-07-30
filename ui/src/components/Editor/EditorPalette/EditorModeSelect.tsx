@@ -53,6 +53,7 @@ const EditorModeSelect: React.FC<Props> = ({
             setEditorMode(value);
           }
         }}
+        size="small"
       >
         <ToggleButton
           value="holds"

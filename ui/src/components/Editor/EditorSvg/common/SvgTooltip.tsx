@@ -16,9 +16,9 @@ const placementParams: Record<
 > = {
   top: { textAnchor: "middle", offset: { x: 0, y: -8 } },
   "top-right": { textAnchor: "start", offset: { x: 4, y: -8 } },
+  right: { textAnchor: "start", offset: { x: 4, y: 0 } },
   bottom: { textAnchor: "middle", offset: { x: 0, y: 8 } },
-  left: { textAnchor: "start", offset: { x: -4, y: 0 } },
-  right: { textAnchor: "end", offset: { x: -4, y: 0 } },
+  left: { textAnchor: "end", offset: { x: -4, y: 0 } },
 };
 
 interface Props {

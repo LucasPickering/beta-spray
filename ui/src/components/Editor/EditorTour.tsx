@@ -147,6 +147,7 @@ const steps = [
           sx={{ marginTop: 1, marginBottom: 1 }}
         />
 
+        {/* TODO add all hold kinds */}
         <LegendIcon icon={<HoldIconWrapped />} label="Hold" />
 
         {allBodyParts.map((bodyPart) => (
