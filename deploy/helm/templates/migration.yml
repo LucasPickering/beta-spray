@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  # We have to version this because existing jobs can't be overwritten
+  name: "migrations-{{ .Release.Revision }}"
+  namespace: "{{ .Release.Namespace }}"
+spec:
+  template:
+    spec:
+      containers:
+        - name: migrations
+          image: "ghcr.io/lucaspickering/beta-spray-api:{{ .Values.versionSha }}"
+          command: ["./m.sh", "migrate"]
+          resources:
+            requests:
+              cpu: 50m
+              memory: 150Mi
+          env:
+            - name: BETA_SPRAY_DB_HOST
+              value: db
+            - name: BETA_SPRAY_DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: database-creds
+                  key: database
+            - name: BETA_SPRAY_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: database-creds
+                  key: username
+            - name: BETA_SPRAY_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: database-creds
+                  key: password
+      restartPolicy: Never
+  backoffLimit: 2
