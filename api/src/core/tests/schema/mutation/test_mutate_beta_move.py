@@ -18,50 +18,29 @@ create_beta_move_mutation = """
             bodyPart
             isStart
             annotation
-            target
+            target {
+                __typename
+                ... on HoldNode {
+                    id
+                }
+                ... on SVGPosition {
+                    x
+                    y
+                }
+            }
             permissions {
                 canEdit
                 canDelete
-            }
-            beta {
-                moves {
-                    edges {
-                        node {
-                            id
-                            order
-                        }
-                    }
-                }
             }
         }
     }
 """
 
-update_beta_move_mutation = """
+update_annotation_mutation = """
     mutation($input: UpdateBetaMoveInput!) {
         updateBetaMove(input: $input) {
             id
-            order
-            bodyPart
-            isStart
             annotation
-            target {
-                __typename
-            }
-            permissions {
-                canEdit
-                canDelete
-            }
-            beta {
-                moves {
-                    edges {
-                        node {
-                            id
-                            order
-                        }
-                    }
-                }
-            }
         }
     }
 """
@@ -83,6 +62,28 @@ delete_beta_move_mutation = """
         }
     }
 """
+
+
+@pytest.mark.parametrize(
+    "beta_move__is_free", [False, True], ids=["hold", "free"]
+)
+def test_update_annotation(
+    context: StrawberryDjangoContext, beta_move: BetaMove
+) -> None:
+    beta_move_id = relay.to_base64(BetaMoveNode, beta_move.id)
+    assert_graphql_result(
+        schema.execute_sync(
+            update_annotation_mutation,
+            context_value=context,
+            variable_values={
+                "input": {"id": beta_move_id, "annotation": "new value"}
+            },
+        ),
+        {"updateBetaMove": {"id": beta_move_id, "annotation": "new value"}},
+    )
+
+
+# TODO test missing permissions
 
 
 def test_delete_beta_move(

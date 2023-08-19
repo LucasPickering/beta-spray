@@ -1,4 +1,5 @@
 import factory
+import factory.fuzzy
 import factory.random
 from django.contrib.auth.models import User
 from factory import Factory
@@ -11,6 +12,7 @@ from core.fields import BoulderPosition
 from core.models import (
     Beta,
     BetaMove,
+    BodyPart,
     Boulder,
     Hold,
     HoldAnnotationSource,
@@ -103,6 +105,10 @@ class BetaMoveFactory(DjangoModelFactory):
 
     beta = factory.SubFactory(BetaFactory, moves=[])
     order = factory.Sequence(lambda n: n)
+    body_part = Faker(
+        "random_element",
+        elements=[key for key, _ in BodyPart.choices],
+    )
     hold = factory.Maybe(
         "is_free",
         yes_declaration=None,
