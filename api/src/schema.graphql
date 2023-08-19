@@ -134,7 +134,7 @@ input CreateBetaMoveInput {
   hold: ID
   position: SVGPositionInput
 
-  """Move prior to this one in the beta"""
+  """Move prior to this one in the beta (null for first move)"""
   previousBetaMove: ID
 }
 

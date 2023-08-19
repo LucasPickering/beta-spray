@@ -346,7 +346,8 @@ class Mutation:
         previous_beta_move: Annotated[
             Optional[relay.GlobalID],
             strawberry.argument(
-                description="Move prior to this one in the beta"
+                description="Move prior to this one in the beta "
+                "(null for first move)"
             ),
         ],
     ) -> BetaMoveNode:
@@ -357,13 +358,9 @@ class Mutation:
 
         # Convert GQL IDs to PKs
         beta_dj: Beta = beta.resolve_node_sync(info, ensure_type=Beta)
-        hold_dj: Hold | None = (
-            hold.resolve_node_sync(info, ensure_type=Hold) if hold else None
-        )
-        previous_beta_move_dj: BetaMove | None = (
+        hold_dj = hold and (hold.resolve_node_sync(info, ensure_type=Hold))
+        previous_beta_move_dj = previous_beta_move and (
             previous_beta_move.resolve_node_sync(info, ensure_type=BetaMove)
-            if previous_beta_move
-            else None
         )
 
         # Convert position from SVG coords to normalized [0,1]
@@ -423,9 +420,7 @@ class Mutation:
         beta_move_dj: BetaMove = id.resolve_node_sync(
             info, ensure_type=BetaMove
         )
-        hold_dj: Hold | None = (
-            hold.resolve_node_sync(info, ensure_type=Hold) if hold else None
-        )
+        hold_dj = hold and (hold.resolve_node_sync(info, ensure_type=Hold))
         normal_position = position and position.to_normalized(
             beta_move_dj.beta.problem.boulder.image
         )
