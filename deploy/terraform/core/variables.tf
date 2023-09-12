@@ -1,9 +1,3 @@
-variable "digitalocean_token" {
-  description = "DigitalOcean Personal Access Token, to allow CI to auth with doctl"
-  type        = string
-  sensitive   = true
-}
-
 variable "github_owner" {
   description = "GitHub repository owner"
   default     = "LucasPickering"
@@ -34,12 +28,6 @@ variable "gcp_region" {
   description = "GCP region"
   default     = "us-east1"
   type        = string
-}
-
-variable "kubernetes_cluster_name" {
-  description = "Name of the Kubernetes cluster (within DigitalOcean) that we'll deploy to"
-  type        = string
-  default     = "keskne"
 }
 
 variable "static_assets_bucket" {
