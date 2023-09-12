@@ -25,6 +25,9 @@ jobs:
     uses: ./.github/workflows/deploy.yml
     needs:
       - build
+    permissions:
+      contents: read
+      id-token: write
     with:
       # Default to production for master push
       environment: ${{ inputs.environment || 'production' }}

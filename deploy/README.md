@@ -29,7 +29,7 @@ These are one-time "singleton" resources. Resources include:
 
 - Google Cloud OIDC creds ([see here](https://github.com/google-github-actions/auth#setup))
 - GCS static assets bucket
-- GitHub Actions secrets to auth with DigitalOcean and GCP
+- GitHub Actions secrets to auth with GCP
 
 #### Setup
 
@@ -37,15 +37,13 @@ These are one-time "singleton" resources. Resources include:
 1. Create a new file `secrets.auto.tfvars`
 1. Generate a GitHub Personal Access Token
    1. [Go here](https://github.com/settings/tokens)
-   1. Create a new token with the scopes:
-      - `workflow`
-      - `read:org`
-      - `read:discussion`
+   1. Create a new token for the Beta Spray repo
+   1. Give it these scopes:
+      - Administration: R/W (for branch protection)
+      - Environments: R/W
+      - Secrets: R/W
+      - Variables: R/W
    1. Add `github_token = "<token>"` to the `tfvars` file
-1. Generate a DigitalOcean Personal Access Token
-   1. [Go here](https://cloud.digitalocean.com/account/api/tokens)
-   1. Create a new token with the scopes: `Read`
-   1. Add `digitalocean_token = "<token>"` to the `tfvars` file
 1. Auth to Google with `gcloud auth login`
 1. ` terraform init -backend-config encryption_key="<key>"`
    1. MAKE SURE TO INCLUDE THE SPACE AT THE BEGINNING, so your shell doesn't store the key in command history
