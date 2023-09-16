@@ -15,3 +15,14 @@ resource "google_project_iam_custom_role" "database_backup" {
     "storage.multipartUploads.listParts",
   ]
 }
+
+resource "google_project_iam_custom_role" "database_restore" {
+  role_id     = "storage.databaseRestore"
+  title       = "Database Restore storage user"
+  description = "Role to download database backup objects from a bucket"
+  permissions = [
+    "storage.buckets.get",
+    "storage.objects.get",
+    "storage.objects.list",
+  ]
+}

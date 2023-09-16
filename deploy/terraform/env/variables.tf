@@ -34,6 +34,13 @@ variable "database_backup_role" {
   default     = "projects/beta-spray/roles/storage.databaseBackup"
 }
 
+
+variable "database_restore_role" {
+  description = "GCloud IAM role for database restore"
+  type        = string
+  default     = "projects/beta-spray/roles/storage.databaseRestore"
+}
+
 variable "deployment_branch_policy" {
   description = "Deployment branch policy for GitHub Actions Environment"
   type = object({

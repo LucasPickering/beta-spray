@@ -40,6 +40,10 @@ restore_kube() {
 
     echo "Restoring latest backup to $pod_namespace..."
     # TODO finish this part
+    # Step 1: download files from prod bucket
+    # Step 2: anonymize
+    # Step 3: upload to dev bucket
+    # Step 4: restore
 }
 
 # Download latest backup from production, and restore it to the local DB

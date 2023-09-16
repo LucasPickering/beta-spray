@@ -1,6 +1,11 @@
 output "database_backup_role" {
   value       = google_project_iam_custom_role.database_backup.name
-  description = "Name of the IAM role used to access database backup buckets"
+  description = "Name of the IAM role used to access database backup buckets for upload"
+}
+
+output "database_restore_role" {
+  value       = google_project_iam_custom_role.database_restore.name
+  description = "Name of the IAM role used to access database backup buckets for download"
 }
 
 output "project_id" {
