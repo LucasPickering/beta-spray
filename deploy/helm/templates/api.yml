@@ -63,6 +63,9 @@ spec:
                 secretKeyRef:
                   name: google-oauth-client
                   key: secret
+            # Backup is done by a job but we need this for restoring
+            - name: BETA_SPRAY_BACKUP_BUCKET
+              value: "{{ .Values.databaseBackupBucket }}"
             - name: BETA_SPRAY_MEDIA_BUCKET
               value: "{{ .Values.mediaBucket }}"
             # https://django-storages.readthedocs.io/en/latest/backends/gcloud.html#authentication

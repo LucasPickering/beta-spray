@@ -47,6 +47,13 @@ resource "google_storage_bucket" "database_backup" {
   uniform_bucket_level_access = true
 }
 
+# API SA can download objects from DB backup bucket
+resource "google_storage_bucket_iam_binding" "database_backup_read" {
+  bucket  = google_storage_bucket.database_backup.name
+  role    = var.database_restore_role
+  members = ["serviceAccount:${google_service_account.api_service_account.email}"]
+}
+
 # Backup SA can upload objects to DB Backup bucket
 resource "google_storage_bucket_iam_binding" "database_backup_write" {
   bucket  = google_storage_bucket.database_backup.name
